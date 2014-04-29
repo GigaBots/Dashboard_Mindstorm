@@ -33,11 +33,17 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(500, 500, Phaser.AUTO, null, {
+        var game = new Phaser.Game(1000, 1000, Phaser.AUTO, null, {
             preload: preload,
             create: create,
             update: update
         });
+
+        var buttonGo;
+        var buttonStop;
+        var lightOn;
+        var lightOff;
+        var background;
 
         //keep track of when players join (open the browser window) and leave (close the browser window):
         //function onSubscribers(joinFunction(joined);, leaveFunction(left);){}
@@ -48,19 +54,42 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             spawn(joined);*/
         },function(left){
             //console.log(left +" left");
-            kill(left);
+            //kill(left);
         });
 
 
 
         function preload() {
-            
+            game.load.image('stall', 'images/lights/red_light.png');
+            game.load.image('on', 'images/lights/green_light.png');
+            game.load.image('stop', 'images/buttons/stop_button.png');
+            game.load.image('go', 'images/buttons/go_button.png');
         }
 
         function create() {
-            game.stage.backgroundColor = '#9966FF';
-
+            game.stage.backgroundColor = '#F0F0F0';
+            buttonGo = game.add.button(100,100,'go', actionGoOnClick);
+            buttonStop = game.add.button(400,100,'stop', actionStopOnClick);
         }  
+
+        function actionGoOnClick () {
+            console.log("go");
+            lightOn = game.add.sprite(250,20,'on');
+            lightOn.scale.setTo(0.25, 0.25);
+            if(lightOff) {
+                lightOff.destroy(); //delete the lightOff sprite (if it's there)
+            }
+        }
+
+        function actionStopOnClick () {
+            console.log("stop");
+            lightOff = game.add.sprite(250,20,'stall');
+            lightOff.scale.setTo(0.25, 0.25);
+            if(lightOn) {
+                lightOn.destroy(); //delete the lightOn sprite (if it's there)
+            }
+        }
+
 
         function update() {
 

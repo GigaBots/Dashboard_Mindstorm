@@ -51,9 +51,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var status;
         var box;
         var statusBar = {
-             width : 10,
-             height : 0
+             //width : 10,
+             //height : 0
         }
+        var power = 0;
+        var width = 8;
+        var height = 0;
         
         var dialNeedle;
         var degreeWheel;
@@ -61,8 +64,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var x = 0;
         var y = 10;
 
-        var a = 100;
-        var b = 100;
+        
 
         var labelMA = "Motor A";
         var style = {
@@ -103,9 +105,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             
             /* and box around status bar */
             box = game.add.graphics(0,0);
-            box.lineStyle(2, 0x0000FF, 1);
+            box.lineStyle(1, 0x000000, 1);
             box.beginFill(0xFFFFFF,1);
             box.drawRect(50, 200, 10, 100);
+
+            var hashmark = game.add.graphics(0,0);
+            box.beginFill(0xFFFFFF,1);
+            box.drawRect(48, 250, 14, 1);
 
             /* status bar experimentation */
             status = game.add.graphics(0, 0);  //init rect
@@ -113,8 +119,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             status.beginFill(0xFFFF0B, 1); // color (0xFFFF0B), alpha (0 -> 1) // required settings
             
             statusBar = game.add.graphics(0, 0);  //init rect
-            statusBar.beginFill(0xFFFF0B, 1); // color (0xFFFF0B), alpha (0 -> 1) // required settings
-            //statusBar.drawRect(50,400,width, height);
+            statusBar.beginFill(0xFF0000, 1); // color (0xFFFF0B), alpha (0 -> 1) // required settings
+            //statusBar.drawRect(50,250, width, height);
 
             /* on/stall light experimentation */
 
@@ -126,9 +132,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             /* dial experimentation */
             degreeWheel = game.add.sprite(400,0,'wheel');
             degreeWheel.scale.setTo(0.5,0.5);
+            degreeWheel.anchor.setTo(1,0);
+            degreeWheel.angle = -90; // let's rotate our dial face 90 degrees counterclockwise
 
             dialNeedle = game.add.sprite(525,125,'needle');
-            dialNeedle.anchor.setTo(0.95,0.5);
+            dialNeedle.anchor.setTo(0.944,0.5); // 0.944 ( = 83/88) because the point about which the needle should rotate is around at 83 pixels along the 88-pixel length of the needle image
             //dialNeedle.scale.setTo(0.5,0.5);
         }  
         
@@ -151,6 +159,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         function update() {
 
+            /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 dialNeedle.angle += 5;
             }
@@ -163,15 +172,42 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             }
             else {
                 /* add a little animating so that the needle slowly returns to its previous position */
-                if (dialNeedle.angle >= 0) {
-                    for (i=dialNeedle.angle; i>0; i--) {
-                        dialNeedle.angle -= 0.15;
-                    }
-                } else {
-                    for (i=dialNeedle.angle; i<0; i++) {
-                        dialNeedle.angle += 0.15;
+                // rotation goes from 0' to 180' to -180' to 0' */
+                if (dialNeedle.angle != 0) {
+                    var g;
+                    if (dialNeedle.angle > 0) {
+                        g = dialNeedle.angle;
+                    } else if (dialNeedle.angle < -0.1) { // the -0.1 is so the needle doesn't keep spinning, since it won't get exactly to 0 with our increment of 0.1 (it could go slightly past)
+                        g = 360 + dialNeedle.angle;
                     }
                 }
+
+                if (g > 0) {
+                    for (var i = g; i >= 0; i--) {
+                        dialNeedle.angle -= 0.1;
+                    }
+                }
+
+
+/*                    if (dialNeedle.angle > 0) {
+                        for (var i = dialNeedle.angle; i > 0; i--) {
+                            dialNeedle.angle -= 0.1; // -0.15 seems to be a good enough "rate"
+                        }
+                    } else if (dialNeedle.angle < 0) {
+                        for (var i = (-1)*dialNeedle.angle; i <= 180; i++) {
+                            dialNeedle.angle -= 0.1;
+                        }
+                    }*/
+            }
+
+            /* Press W to increase power, and S to decrease power */
+            if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+                power -= 2;
+                statusBar.drawRect(51,250, width, power);
+            }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.S)){
+                power += 2;
+                statusBar.drawRect(51,250, width, power);
             }
         }
 
@@ -179,13 +215,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //console.log("render");
         }
 
-        function paused() {
+        /*function paused() {
             console.log("paused");
         }
 
         function destroy() {
             console.log("destroy");
-        }
+        }*/
 
     }
 });

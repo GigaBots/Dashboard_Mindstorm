@@ -110,8 +110,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             box.drawRect(50, 200, 10, 100);
 
             var hashmark = game.add.graphics(0,0);
-            box.beginFill(0xFFFFFF,1);
-            box.drawRect(48, 250, 14, 1);
+            hashmark.beginFill(0x000000,1);
+            hashmark.drawRect(47, 250, 16, 1);
 
             /* status bar experimentation */
             status = game.add.graphics(0, 0);  //init rect
@@ -201,18 +201,22 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             /* Press W to increase power, and S to decrease power */
             //NOTE: this works, but we should figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
             if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-                power -= 2;
-                statusBar.destroy();
-                statusBar = game.add.graphics(0, 0);  //init rect
-                statusBar.beginFill(0xFF0000, 1);
-                statusBar.drawRect(51,250, width, power);
+                if (power >= -48) {
+                    power -= 2;
+                    statusBar.destroy();
+                    statusBar = game.add.graphics(0, 0);  //init rect
+                    statusBar.beginFill(0xFF0000, 1);
+                    statusBar.drawRect(51,250, width, power);
+                }
             }
             else if (game.input.keyboard.isDown(Phaser.Keyboard.S)){
-                power += 2;
-                statusBar.destroy();
-                statusBar = game.add.graphics(0, 0);  //init rect
-                statusBar.beginFill(0xFF0000, 1);
-                statusBar.drawRect(51,250, width, power);
+                if (power <= +48) {
+                    power += 2;
+                    statusBar.destroy();
+                    statusBar = game.add.graphics(0, 0);  //init rect
+                    statusBar.beginFill(0xFF0000, 1);
+                    statusBar.drawRect(51,250, width, power);
+                }
             }
         }
 

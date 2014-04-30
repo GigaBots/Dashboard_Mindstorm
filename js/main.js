@@ -162,12 +162,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 dialNeedle.angle += 5;
-            }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
                 dialNeedle.angle -= 5;
             } else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
 
-            }else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
 
             }
             else {
@@ -181,7 +180,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                         g = 360 + dialNeedle.angle;
                     }
                 }
-
                 if (g > 0) {
                     for (var i = g; i >= 0; i--) {
                         dialNeedle.angle -= 0.1;
@@ -201,12 +199,19 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             }
 
             /* Press W to increase power, and S to decrease power */
+            //NOTE: this works, but we should figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
             if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
                 power -= 2;
+                statusBar.destroy();
+                statusBar = game.add.graphics(0, 0);  //init rect
+                statusBar.beginFill(0xFF0000, 1);
                 statusBar.drawRect(51,250, width, power);
             }
             else if (game.input.keyboard.isDown(Phaser.Keyboard.S)){
                 power += 2;
+                statusBar.destroy();
+                statusBar = game.add.graphics(0, 0);  //init rect
+                statusBar.beginFill(0xFF0000, 1);
                 statusBar.drawRect(51,250, width, power);
             }
         }

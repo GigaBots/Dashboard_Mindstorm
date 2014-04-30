@@ -1,3 +1,16 @@
+$(document).ready(function() {
+        $("#progressbar").progressbar({value: 10});
+        var progress = setInterval(function() {
+       var currentVal = $("#progressbar").progressbar("option", "value");
+       var nextVal = currentVal + 15;
+       if (nextVal > 100) {
+           clearInterval(progress);
+       } else {
+           $("#progressbar").progressbar({value: nextVal});
+       }
+    }, 400);
+});
+
 require.config({
     baseUrl: 'js',
         // set baseURL to 'js' when bbclient.min.js is in the folder entitled 'js' along with main.js, phaser.min.js, and require.js
@@ -89,6 +102,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 lightOn.destroy(); //delete the lightOn sprite (if it's there)
             }
         }
+        
 
 
         function update() {

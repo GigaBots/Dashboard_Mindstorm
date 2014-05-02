@@ -60,6 +60,21 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             speed : '', // rpm
             position : '' //degrees
         }
+        var motorB = {
+            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            speed : '', // rpm
+            position : '' //degrees
+        }
+        var motorC = {
+            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            speed : '', // rpm
+            position : '' //degrees
+        }
+        var motorD = {
+            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            speed : '', // rpm
+            position : '' //degrees
+        }
 
         var buttonGo;
         var buttonStop;
@@ -135,20 +150,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             labelD = game.add.text(122, 100, labelMotors[3], labelStyle);
 
             /*statusMotorA = game.add.graphics(0,0);
-            statusMotorA.beginFill(0x00FF00, 1);
+            statusMotorA.beginFill(0x629632, 1);
             statusMotorA.drawCircle(36, 88, 5);*/
 
-            statusMotorB = game.add.graphics(0,0);
-            statusMotorB.beginFill(0x00FF00, 1);
-            statusMotorB.drawCircle(66, 88, 5);
 
-            statusMotorB = game.add.graphics(0,0);
-            statusMotorB.beginFill(0x00FF00, 1);
-            statusMotorB.drawCircle(96, 88, 5);
-
-            statusMotorB = game.add.graphics(0,0);
-            statusMotorB.beginFill(0x101010, 1);
-            statusMotorB.drawCircle(126, 88, 5);
 
 
             //buttonGo = game.add.button(100,100,'go', actionGoOnClick);
@@ -217,31 +222,80 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         }*/
 
         function update() {
-            /* motor status */
+            /* motor A status */
             var msg = { Astatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-                msg.Astatus = 0;
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-                msg.Astatus = 1;
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.S)) {
-                msg.Astatus = 2;
-            }
-
-            statusMotorA = game.add.graphics(0,0);
+            if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
             if (motorA.status == msg.Astatus) {
             } else {
+                statusMotorA = game.add.graphics(0,0);
                 motorA.status = msg.Astatus;
                 if (motorA.status == 1) {
-                    statusMotorA.beginFill(0x00FF00, 1); //green
+                    statusMotorA.beginFill(0x629632, 1); //green
                 } else if (motorA.status == 2) {
-                    statusMotorA.beginFill(0xF00000, 1); //red
+                    statusMotorA.beginFill(0xF3F315, 1); //red
                 } else if (motorA.status == 0) { //default
                     statusMotorA.beginFill(0x383838, 1); //dark grey
                 }
                 statusMotorA.drawCircle(36, 88, 5);
             }
+            /* motor B status */
+            var msg = { Bstatus : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
+            if (motorB.status == msg.Bstatus) {
+            } else {
+                statusMotorB = game.add.graphics(0,0);
+                motorB.status = msg.Bstatus;
+                if (motorB.status == 1) {
+                    statusMotorB.beginFill(0x629632, 1); //green
+                } else if (motorB.status == 2) {
+                    statusMotorB.beginFill(0xF3F315, 1); //yellow
+                } else if (motorB.status == 0) { //default
+                    statusMotorB.beginFill(0x383838, 1); //dark grey
+                }
+                statusMotorB.drawCircle(66, 88, 5);
+            }
+            /* motor C status */
+            var msg = { Cstatus : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
+            if (motorC.status == msg.Cstatus) {
+            } else {
+                statusMotorC = game.add.graphics(0,0);
+                motorC.status = msg.Cstatus;
+                if (motorC.status == 1) {
+                    statusMotorC.beginFill(0x629632, 1); //green
+                } else if (motorC.status == 2) {
+                    statusMotorC.beginFill(0xF3F315, 1); //yellow
+                } else if (motorC.status == 0) { //default
+                    statusMotorC.beginFill(0x383838, 1); //dark grey
+                }
+                statusMotorC.drawCircle(96, 88, 5);
+            }
+            /* motor D status */
+            var msg = { Dstatus : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
+            if (motorD.status == msg.Dstatus) {
+            } else {
+                statusMotorD = game.add.graphics(0,0);
+                motorD.status = msg.Dstatus;
+                if (motorD.status == 1) {
+                    statusMotorD.beginFill(0x629632, 1); //green
+                } else if (motorD.status == 2) {
+                    statusMotorD.beginFill(0xF3F315, 1); //yellow
+                } else if (motorD.status == 0) { //default
+                    statusMotorD.beginFill(0x383838, 1); //dark grey
+                }
+                statusMotorD.drawCircle(126, 88, 5);
+            }
+
+
             
 
 

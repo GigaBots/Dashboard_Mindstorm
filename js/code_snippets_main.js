@@ -33,7 +33,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(1024, 768, Phaser.AUTO, null, {
+        var game = new Phaser.Game(1280, 800, Phaser.AUTO, null, {
             preload: preload,
             create: create,
             update: update,
@@ -57,20 +57,24 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var power = 0;
         var width = 8;
         var height = 0;
+
+        var startButton;
         
         var dialNeedle;
         var degreeWheel;
 
         var x = 0;
-        var y = 10;
-
-        
+        var y = 10;        
 
         var labelMA = "Motor A";
         var style = {
                 font: "11px Arial",
                 fill: "#000000"
             }
+
+        var cursorx;
+        var cursory;
+        var cursorLabel;
 
         //keep track of when players join (open the browser window) and leave (close the browser window):
         //function onSubscribers(joinFunction(joined);, leaveFunction(left);){}
@@ -84,34 +88,40 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //kill(left);
         });
 
-
         function preload() {
-            game.load.image('stall', 'images/lights/red_light.png');
-            game.load.image('on', 'images/lights/green_light.png');
-            game.load.image('stop', 'images/buttons/stop_button.png');
-            game.load.image('go', 'images/buttons/go_button.png');
-            game.load.image('needle','images/needle.png');
-            game.load.image('wheel','images/degree_wheel.png')
+            
+            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png')
+            game.load.image('stall','assets/lights/red_light.png');
+            game.load.image('on','assets/lights/green_light.png');
+            //game.load.image('stop','assets/buttons/stop_button.png');
+            //game.load.image('go','assets/buttons/go_button.png');
+            game.load.image('needle','assets/needle.png');
+            game.load.image('wheel','assets/degree_wheel.png')
         }
 
         function create() {
-            game.stage.backgroundColor = '#9966FF';
+            game.stage.backgroundColor = '#808080';
+
+            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
+            this.game.stage.disableVisibilityChange = false;    
+
             
-            /* go? stop? let's go */
-            buttonGo = game.add.button(100,100,'go', actionGoOnClick);
-            buttonGo.scale.setTo(0.25,0.25);
-            buttonStop = game.add.button(200,100,'stop', actionStopOnClick);
-            buttonStop.scale.setTo(0.375,0.375);
+            //buttonGo = game.add.button(100,100,'go', actionGoOnClick);
+            //buttonGo.scale.setTo(0.25,0.25);
+            //buttonStop = game.add.button(200,100,'stop', actionStopOnClick);
+            //buttonStop.scale.setTo(0.375,0.375);
             
+            //startButton = game.add.button(100, 100, 'startButton', actionStartOnClick, this, 2, 1, 0)
+
             /* and box around status bar */
             box = game.add.graphics(0,0);
             box.lineStyle(1, 0x000000, 1);
             box.beginFill(0xFFFFFF,1);
             box.drawRect(50, 200, 10, 100);
 
-            var hashmark = game.add.graphics(0,0);
-            hashmark.beginFill(0x000000,1);
-            hashmark.drawRect(47, 250, 16, 1);
+            var tickmark = game.add.graphics(0,0);
+            tickmark.beginFill(0x000000,1);
+            tickmark.drawRect(47, 250, 16, 1);
 
             /* status bar experimentation */
             status = game.add.graphics(0, 0);  //init rect
@@ -126,7 +136,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             labelMA = game.add.text(250, 60, labelMA, style);
 
-            lightOff = game.add.sprite(250,20,'stall');
+            
+            
+
+            lightOff = game.add.button(250,20,'stall', actionDragOnClick);
             lightOff.scale.setTo(0.25, 0.25);
 
             /* dial experimentation */
@@ -138,10 +151,22 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             dialNeedle = game.add.sprite(525,125,'needle');
             dialNeedle.anchor.setTo(0.944,0.5); // 0.944 ( = 83/88) because the point about which the needle should rotate is around at 83 pixels along the 88-pixel length of the needle image
             //dialNeedle.scale.setTo(0.5,0.5);
+
+
+            //var buttonOn = new Button(this.game, 100, 100);
+            //var button = new Button(game, 2, 146, 'button-texture', doSomething, this, 0, 0, 0);
+
+
         }  
+
+        function actionDragOnClick() {
+            console.log("click");
+            //lightOff.x = game.input.x;
+            lightOff.y = game.input.y;
+        }
         
-        function actionGoOnClick () {
-            console.log("go");
+        /*function actionStartOnClick () {
+            console.log("start");
             if(lightOff) {
                 lightOff.destroy(); //delete the lightOff sprite (if it's there)
                 lightOn = game.add.sprite(250,20,'on');
@@ -155,33 +180,45 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 lightOff = game.add.sprite(250,20,'stall');
                 lightOff.scale.setTo(0.25, 0.25);
             }
-        }
+        }*/
 
         function update() {
+
+            var cursorLabel;
+            cursorx = game.input.x;
+            cursory = game.input.y;
+
+            //lightOff.x = game.input.x;
+            //lightOff.y = game.input.y;
+            cursorLabel = cursorx + ", " + cursory;
+            cursorLabel = game.add.text(10,10, cursorLabel, style);
 
             /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 dialNeedle.angle += 5;
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+            } 
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
                 dialNeedle.angle -= 5;
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+            } 
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
 
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+            } 
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
 
             }
             else {
                 /* add a little animating so that the needle slowly returns to its previous position */
                 // rotation goes from 0' to 180' to -180' to 0' */
                 if (dialNeedle.angle != 0) {
-                    var g;
+                    var r;
                     if (dialNeedle.angle > 0) {
-                        g = dialNeedle.angle;
+                        r = dialNeedle.angle;
                     } else if (dialNeedle.angle < -0.1) { // the -0.1 is so the needle doesn't keep spinning, since it won't get exactly to 0 with our increment of 0.1 (it could go slightly past)
-                        g = 360 + dialNeedle.angle;
+                        r = 360 + dialNeedle.angle;
                     }
                 }
-                if (g > 0) {
-                    for (var i = g; i >= 0; i--) {
+                if (r > 0) {
+                    for (var i = r; i >= 0; i--) {
                         dialNeedle.angle -= 0.1;
                     }
                 }
@@ -199,7 +236,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             }
 
             /* Press W to increase power, and S to decrease power */
-            //NOTE: this works, but we should figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
+            //NOTE: this works, but we should prob figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
             if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
                 if (power >= -48) {
                     power -= 2;

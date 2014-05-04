@@ -43,9 +43,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         });
 
         var dashboardName = "GigaBots Dashboard";
-        var titleStyle = { font: "32px Lucida Console, Arial",fill: "#282828"}        
+        var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
+        var labelStyle = { font: "12px Arial", fill: "#000000" }        
 
-        var backgroundBox;
+        var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
         var frameSensorPorts, labelSensorPorts = "Sensors";
         
@@ -55,32 +56,44 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD;
         var statusSensor1,statusSensor2, statusSensor3, statusSensor4;
 
+        var startButton, stopButton;
+
         var motorA = {
-            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
             speed : '', // rpm
             position : '' //degrees
         }
         var motorB = {
-            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
             speed : '', // rpm
             position : '' //degrees
         }
         var motorC = {
-            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
             speed : '', // rpm
             position : '' //degrees
         }
         var motorD = {
-            status : 4, //0 = unplugged, 1 = plugged-in, 2 = stalled
+            status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
             speed : '', // rpm
             position : '' //degrees
         }
 
-        var buttonGo;
-        var buttonStop;
+        var sensor1 = {
+            status : 2, //0 = unplugged, 1 = plugged-in // 2 for initial setting
+        }
+        var sensor2 = {
+            status : 2, //0 = unplugged, 1 = plugged-in // 2 for initial setting
+        }
+        var sensor3 = {
+            status : 2, //0 = unplugged, 1 = plugged-in // 2 for initial setting
+        }
+        var sensor4 = {
+            status : 2, //0 = unplugged, 1 = plugged-in // 2 for initial setting
+        }
+
         var lightOn;
         var lightOff;
-        var background;
         var status;
         var box;
         var statusBar = {
@@ -91,7 +104,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var width = 8;
         var height = 0;
 
-        var startButton;
         
         var dialNeedle;
         var degreeWheel;
@@ -99,7 +111,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var x = 0;
         var y = 10;        
 
-        var labelStyle = { font: "12px Arial", fill: "#000000" }
+
 
         var cursorx;
         var cursory;
@@ -118,7 +130,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         });
 
         function preload() {
-            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png')
+            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49)
+            game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49)
             game.load.image('stall','assets/lights/red_light.png');
             game.load.image('on','assets/lights/green_light.png');
             game.load.image('needle','assets/needle.png');
@@ -131,6 +144,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             /* Background */
             game.stage.backgroundColor = '#C0C0C0';
+            var titleBox = game.add.graphics(0,0);
+            titleBox.beginFill(0xFF3333,1);
+            titleBox.drawRect(0,0,960,50);
+
             backgroundBox = game.add.graphics(0,0);
             backgroundBox.lineStyle(1,0x282828,1);
             backgroundBox.drawRect(0,0,960,1064);
@@ -143,24 +160,29 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             frameMotorPorts.lineStyle(1, 0x282828, 1);
             //frameMotorPorts.beginFill(0xFFFFFF,1);
             frameMotorPorts.drawRect(20, 60, 130, 60);
+
+            frameSensorPorts = game.add.graphics(0,0);
+            frameSensorPorts.lineStyle(1, 0x282828, 1);
+            //frameSensorPorts.beginFill(0xFFFFFF,1);
+            frameSensorPorts.drawRect(155, 60, 130, 60);
+
+            /* Labels */
             labelMotorPorts = game.add.text(60,64, labelMotorPorts, labelStyle); //label at top of box indicating status of motor ports
-            labelA = game.add.text(32, 100, labelMotors[0], labelStyle);
-            labelB = game.add.text(62, 100, labelMotors[1], labelStyle);
-            labelC = game.add.text(92, 100, labelMotors[2], labelStyle);
-            labelD = game.add.text(122, 100, labelMotors[3], labelStyle);
+            labelA = game.add.text(33, 100, labelMotors[0], labelStyle);
+            labelB = game.add.text(63, 100, labelMotors[1], labelStyle);
+            labelC = game.add.text(93, 100, labelMotors[2], labelStyle);
+            labelD = game.add.text(123, 100, labelMotors[3], labelStyle);
 
-            /*statusMotorA = game.add.graphics(0,0);
-            statusMotorA.beginFill(0x629632, 1);
-            statusMotorA.drawCircle(36, 88, 5);*/
+            labelSensorPorts = game.add.text(195,64, labelSensorPorts, labelStyle); //label at top of box indicating status of motor ports
+            label1 = game.add.text(168, 100, labelSensors[0], labelStyle);
+            label2 = game.add.text(198, 100, labelSensors[1], labelStyle);
+            label3 = game.add.text(228, 100, labelSensors[2], labelStyle);
+            label4 = game.add.text(258, 100, labelSensors[3], labelStyle);
 
+            /* Add button for starting all motors at their current settings */
+            startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2);
+            stopButton = game.add.button(120, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2);
 
-
-
-            //buttonGo = game.add.button(100,100,'go', actionGoOnClick);
-            //buttonGo.scale.setTo(0.25,0.25);
-            //buttonStop = game.add.button(200,100,'stop', actionStopOnClick);
-            //buttonStop.scale.setTo(0.375,0.375);
-            //startButton = game.add.button(100, 100, 'startButton', actionStartOnClick, this, 2, 1, 0)
 
             /* status bar experimentation */
             // box around status bar
@@ -198,6 +220,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         }  
 
+        function actionStartOnClick () {
+            // start all motors at their current settings
+        }
+        function actionStopOnClick () {
+            // stop all motors at their current settings
+        }
+
         function actionDragOnClick() {
             console.log("click");
             //lightOff.x = game.input.x;
@@ -232,13 +261,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 statusMotorA = game.add.graphics(0,0);
                 motorA.status = msg.Astatus;
                 if (motorA.status == 1) {
-                    statusMotorA.beginFill(0x629632, 1); //green
+                    statusMotorA.beginFill(0x33FF33, 1); //green
                 } else if (motorA.status == 2) {
-                    statusMotorA.beginFill(0xF3F315, 1); //red
+                    statusMotorA.beginFill(0xFF0000, 1); //red
                 } else if (motorA.status == 0) { //default
-                    statusMotorA.beginFill(0x383838, 1); //dark grey
+                    statusMotorA.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorA.drawCircle(36, 88, 5);
+                statusMotorA.lineStyle(1, 0x282828, 1);
+                statusMotorA.drawCircle(37, 88, 5);
             }
             /* motor B status */
             var msg = { Bstatus : 0 }
@@ -250,13 +280,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 statusMotorB = game.add.graphics(0,0);
                 motorB.status = msg.Bstatus;
                 if (motorB.status == 1) {
-                    statusMotorB.beginFill(0x629632, 1); //green
+                    statusMotorB.beginFill(0x33FF33, 1); //green
                 } else if (motorB.status == 2) {
-                    statusMotorB.beginFill(0xF3F315, 1); //yellow
+                    statusMotorB.beginFill(0xFF0000, 1); //red
                 } else if (motorB.status == 0) { //default
-                    statusMotorB.beginFill(0x383838, 1); //dark grey
+                    statusMotorB.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorB.drawCircle(66, 88, 5);
+                statusMotorB.lineStyle(1, 0x282828, 1);
+                statusMotorB.drawCircle(67, 88, 5);
             }
             /* motor C status */
             var msg = { Cstatus : 0 }
@@ -268,13 +299,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 statusMotorC = game.add.graphics(0,0);
                 motorC.status = msg.Cstatus;
                 if (motorC.status == 1) {
-                    statusMotorC.beginFill(0x629632, 1); //green
+                    statusMotorC.beginFill(0x33FF33, 1); //green
                 } else if (motorC.status == 2) {
-                    statusMotorC.beginFill(0xF3F315, 1); //yellow
+                    statusMotorC.beginFill(0xFF0000, 1); //red
                 } else if (motorC.status == 0) { //default
-                    statusMotorC.beginFill(0x383838, 1); //dark grey
+                    statusMotorC.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorC.drawCircle(96, 88, 5);
+                statusMotorC.lineStyle(1, 0x282828, 1);
+                statusMotorC.drawCircle(97, 88, 5);
             }
             /* motor D status */
             var msg = { Dstatus : 0 }
@@ -286,28 +318,101 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 statusMotorD = game.add.graphics(0,0);
                 motorD.status = msg.Dstatus;
                 if (motorD.status == 1) {
-                    statusMotorD.beginFill(0x629632, 1); //green
+                    statusMotorD.beginFill(0x33FF33, 1); //green
                 } else if (motorD.status == 2) {
-                    statusMotorD.beginFill(0xF3F315, 1); //yellow
+                    statusMotorD.beginFill(0xFF0000, 1); //red
                 } else if (motorD.status == 0) { //default
-                    statusMotorD.beginFill(0x383838, 1); //dark grey
+                    statusMotorD.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorD.drawCircle(126, 88, 5);
+                statusMotorD.lineStyle(1, 0x282828, 1);
+                statusMotorD.drawCircle(127, 88, 5);
             }
-
+            //=============================================================================
+            /* sensor 1 status */
+            var msg = { status1 : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
+            if (sensor1.status == msg.status1) {
+            } else {
+                statusSensor1 = game.add.graphics(0,0);
+                sensor1.status = msg.status1;
+                if (sensor1.status == 1) {
+                    statusSensor1.beginFill(0x33FF33, 1); //green
+                } else if (sensor1.status == 0) { //default
+                    statusSensor1.beginFill(0x909090, 1); //dark grey
+                }
+                statusSensor1.lineStyle(1, 0x282828, 1);
+                statusSensor1.drawCircle(172, 88, 5);
+            }
+            /* sensor 2 status */
+            var msg = { status2 : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
+            if (sensor2.status == msg.status2) {
+            } else {
+                statusSensor2 = game.add.graphics(0,0);
+                sensor2.status = msg.status2;
+                if (sensor2.status == 1) {
+                    statusSensor2.beginFill(0x33FF33, 1); //green
+                } else if (sensor2.status == 0) { //default
+                    statusSensor2.beginFill(0x909090, 1); //dark grey
+                }
+                statusSensor2.lineStyle(1, 0x282828, 1);
+                statusSensor2.drawCircle(202, 88, 5);
+            }
+            /* sensor 3 status */
+            var msg = { status3 : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
+            if (sensor3.status == msg.status3) {
+            } else {
+                statusSensor3 = game.add.graphics(0,0);
+                sensor3.status = msg.status3;
+                if (sensor3.status == 1) {
+                    statusSensor3.beginFill(0x33FF33, 1); //green
+                } else if (sensor3.status == 0) { //default
+                    statusSensor3.beginFill(0x909090, 1); //dark grey
+                }
+                statusSensor3.lineStyle(1, 0x282828, 1);
+                statusSensor3.drawCircle(232, 88, 5);
+            }
+            /* sensor 4 status */
+            var msg = { status4 : 0 }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
+            else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
+            if (sensor4.status == msg.status4) {
+            } else {
+                statusSensor4 = game.add.graphics(0,0);
+                sensor4.status = msg.status4;
+                if (sensor4.status == 1) {
+                    statusSensor4.beginFill(0x33FF33, 1); //green
+                } else if (sensor4.status == 0) { //default
+                    statusSensor4.beginFill(0x909090, 1); //dark grey
+                }
+                statusSensor4.lineStyle(1, 0x282828, 1);
+                statusSensor4.drawCircle(262, 88, 5);
+            }
+            //=============================================================================
 
             
-
-
-
-            var cursorLabel;
-            cursorx = game.input.x;
+            //var cursorLabel;
+            ////cursorx = game.input.x;
             cursory = game.input.y;
 
             //lightOff.x = game.input.x;
             //lightOff.y = game.input.y;
-            cursorLabel = cursorx + ", " + cursory;
-            cursorLabel = game.add.text(10,10, cursorLabel, labelStyle);
+            //cursorLabel = cursorx + ", " + cursory;
+            //cursorLabel = game.add.text(10,10, cursorLabel, labelStyle);
+
+            /* Convert degrees value (between 0 and 360) in message from gigabot to a degrees (between 0 and 180, and -180 and 0) value Phaser can use for rotation */ 
+            var msgDegrees, phaserDegrees;
+            if (msgDegrees >= 0) {
+                if (msgDegrees <= 180) {
+                    phaserDegrees = msgDegrees;
+                } else { // so if msgDegrees > 180
+                    phaserDegrees = 360 + msgDegrees; // so -180 < phaserDegrees < 0
+                }
+            }
 
             /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
@@ -325,7 +430,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else {
                 /* add a little animating so that the needle slowly returns to its previous position */
                 // rotation goes from 0' to 180' to -180' to 0' */
-                if (dialNeedle.angle != 0) {
+/*                if (dialNeedle.angle != 0) {
                     var r;
                     if (dialNeedle.angle > 0) {
                         r = dialNeedle.angle;
@@ -337,8 +442,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                     for (var i = r; i >= 0; i--) {
                         dialNeedle.angle -= 0.1;
                     }
-                }
-
+                }*/
 
 /*                    if (dialNeedle.angle > 0) {
                         for (var i = dialNeedle.angle; i > 0; i--) {

@@ -24,13 +24,13 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":49},
 	"sourceSize": {"w":97,"h":49}
 }],
-//"meta": {
+/*"meta": {
 	"app": "http://www.texturepacker.com",
 	"version": "1.0",
-	"image": "button_texture_atlas.png",
+	"image": "gigabot_dashboard_button_start_texture_atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":97,"h":213},
+	"size": {"w":293,"h":51},
 	"scale": "1",
 	"smartupdate": "$TexturePacker:SmartUpdate:94df81041404a206a4e9cd597a1e3495$"
-}
+}*/
 }

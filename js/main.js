@@ -149,7 +149,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.image('minusButton','assets/buttons/gigabot_dashboard_button_minus.png', 44, 44);
             game.load.image('plusButton','assets/buttons/gigabot_dashboard_button_plus.png', 44, 44);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
-            game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 80, 5);
+            game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
         }
 
         function create() {
@@ -226,11 +226,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
             dialA.lineStyle(1, 0x282828, 1);
-            dialA.drawCircle(315, 282, 80);
+            dialA.drawCircle(328, 282, 80);
             //NEED DIALS FOR THE OTHER 3 MOTORS
 
-            needleA = game.add.sprite(315, 282, 'dialNeedle');
-            needleA.anchor.setTo(0.0375, 0.5);
+            needleA = game.add.sprite(328, 282, 'dialNeedle');
+            needleA.anchor.setTo(0.5, 0.9625);
             //NEED NEEDLES FOR THE OTHER 3 MOTORS
         
         }  

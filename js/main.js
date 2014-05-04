@@ -44,19 +44,35 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         var dashboardName = "GigaBots Dashboard";
         var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
-        var labelStyle = { font: "12px Arial", fill: "#000000" }        
+        var labelStyle = { font: "12px Arial", fill: "#000000" }
+        var labelStyle2 = { font: "18px Arial", fill: "#000000" }        
 
         var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
         var frameSensorPorts, labelSensorPorts = "Sensors";
+        var frameMotorA, frameMotorB, frameMotorC, frameMotorD;
         
         var labelMotors = ["A","B","C","D"];
         var labelSensors = ["1","2","3","4"];
+        var labelMotorA = "Motor A", labelMotorB = "Motor B", labelMotorC = "Motor C", labelMotorD = "Motor D";
 
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD;
         var statusSensor1,statusSensor2, statusSensor3, statusSensor4;
 
         var startButton, stopButton;
+        var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
+        var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
+        var fAover, fAout, fAdown, fAup;
+        var rAover, rAout, rAdown, rAup;
+
+        var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
+        var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
+        var powerA, powerB, powerC, powerD;
+        var minusButtonA, minusButtonB, minusButtonC, minusButtonD;
+        var plusButtonA, plusButtonB, plusButtonC, plusButtonD;
+
+        var dialA, dialB, dialC, dialD;
+        var needleA, needleB, needleC, needleD;
 
         var motorA = {
             status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
@@ -104,14 +120,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var width = 8;
         var height = 0;
 
-        
-        var dialNeedle;
-        var degreeWheel;
-
         var x = 0;
         var y = 10;        
 
-
+        
 
         var cursorx;
         var cursory;
@@ -130,12 +142,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         });
 
         function preload() {
-            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49)
-            game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49)
-            game.load.image('stall','assets/lights/red_light.png');
-            game.load.image('on','assets/lights/green_light.png');
-            game.load.image('needle','assets/needle.png');
-            game.load.image('wheel','assets/degree_wheel.png')
+            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
+            game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
+            game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
+            game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
+            game.load.image('minusButton','assets/buttons/gigabot_dashboard_button_minus.png', 44, 44);
+            game.load.image('plusButton','assets/buttons/gigabot_dashboard_button_plus.png', 44, 44);
+            game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
+            game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 80, 5);
         }
 
         function create() {
@@ -166,6 +180,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //frameSensorPorts.beginFill(0xFFFFFF,1);
             frameSensorPorts.drawRect(155, 60, 130, 60);
 
+            frameMotorA = game.add.graphics(0,0);
+            frameMotorA.lineStyle(1, 0x282828, 1);
+            //frameMotorPorts.beginFill(0xFFFFFF,1);
+            frameMotorA.drawRect(20, 188, 400, 200);
+
             /* Labels */
             labelMotorPorts = game.add.text(60,64, labelMotorPorts, labelStyle); //label at top of box indicating status of motor ports
             labelA = game.add.text(33, 100, labelMotors[0], labelStyle);
@@ -179,47 +198,44 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             label3 = game.add.text(228, 100, labelSensors[2], labelStyle);
             label4 = game.add.text(258, 100, labelSensors[3], labelStyle);
 
-            /* Add button for starting all motors at their current settings */
-            startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2);
-            stopButton = game.add.button(120, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2);
+            labelMotorA = game.add.text(30, 193, labelMotorA, labelStyle2);
+            //NEED LABELS FOR OTHER 3 MOTORS
 
+            /* Buttons */
+            //Add button for starting all motors at their current settings
+            startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2, 0);
+            stopButton = game.add.button(120, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2, 0);
+            //Add forward and reverse buttons for each motor
+            fAover = 1, fAout = 0, fAdown = 2, fAup = 0;
+            rAover = 1, rAout = 0, rAdown = 2, rAup = 0;
+            forwardButtonA = game.add.button(30, 216, 'forwardButton', actionForwardOnClick, this, fAover, fAout, fAdown, fAup);
+            reverseButtonB = game.add.button(30, 274, 'reverseButton', actionReverseOnClick, this, rAover, rAout, rAdown, rAup);
+            //NEED FORWARD AND REVERSE BUTTONS FOR THE OTHER 3 MOTORS
+            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClick);
+            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClick);
+            //NEED PLUS AND MINUS BUTTONS FOR OTHER 3 MOTORS
 
-            /* status bar experimentation */
-            // box around status bar
-            box = game.add.graphics(0,0);
-            box.lineStyle(1, 0x000000, 1);
-            box.beginFill(0xFFFFFF,1);
-            box.drawRect(50, 200, 10, 100);
-            var tickmark = game.add.graphics(0,0);
-            tickmark.beginFill(0x000000,1);
-            tickmark.drawRect(47, 250, 16, 1);
-            status = game.add.graphics(0, 0);  //init rect
-            //status.lineStyle(2, 0x0000FF, 1); // width, color (0x0000FF), alpha (0 -> 1) // required settings
-            status.beginFill(0xFFFF0B, 1); // color (0xFFFF0B), alpha (0 -> 1) // required settings
-            statusBar = game.add.graphics(0, 0);  //init rect
-            statusBar.beginFill(0xFF0000, 1); // color (0xFFFF0B), alpha (0 -> 1) // required settings
-            //statusBar.drawRect(50,250, width, height);            
+            /* Click and drag motor speed setting & display */
+            sliderTrackA = game.add.graphics(0,0);
+            sliderTrackA.beginFill(0x282828, 1);
+            sliderTrackA.drawRect(175, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarA = game.add.sprite(145, 350, 'sliderBar');
+            //NEED SLIDERS FOR THE OTHER 3 MOTORS
 
-            lightOff = game.add.button(500,200,'stall', actionDragOnClick);
-            lightOff.scale.setTo(0.25, 0.25);
+            /* Rotational position dials and needles for motors */
+            dialA = game.add.graphics(0,0);
+            dialA.beginFill(0xD8D8D8, 1);
+            dialA.lineStyle(1, 0x282828, 1);
+            dialA.drawCircle(315, 282, 80);
+            //NEED DIALS FOR THE OTHER 3 MOTORS
 
-            /* dial experimentation */
-            //degreeWheel = game.add.sprite(400,0,'wheel');
-            //degreeWheel.scale.setTo(0.5,0.5);
-            //degreeWheel.anchor.setTo(1,0);
-            //degreeWheel.angle = -90; // let's rotate our dial face 90 degrees counterclockwise
-
-            dialNeedle = game.add.sprite(525,125,'needle');
-            dialNeedle.anchor.setTo(0.944,0.5); // 0.944 ( = 83/88) because the point about which the needle should rotate is around at 83 pixels along the 88-pixel length of the needle image
-            //dialNeedle.scale.setTo(0.5,0.5);
-
-
-            //var buttonOn = new Button(this.game, 100, 100);
-            //var button = new Button(game, 2, 146, 'button-texture', doSomething, this, 0, 0, 0);
-
-
+            needleA = game.add.sprite(315, 282, 'dialNeedle');
+            needleA.anchor.setTo(0.0375, 0.5);
+            //NEED NEEDLES FOR THE OTHER 3 MOTORS
+        
         }  
 
+        /* Button-click functions */
         function actionStartOnClick () {
             // start all motors at their current settings
         }
@@ -227,6 +243,28 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             // stop all motors at their current settings
         }
 
+        //NEED TO DISTINGUISH EACH OF THE 4 MOTORS!
+        function actionForwardOnClick () {
+            // forward motor
+            forwardButtonA.overFrame = 0, forwardButtonA.outFrame = 0, forwardButtonA.downFrame = 0, forwardButtonA.downFrame = 0;
+            rAout = 0;
+            console.log ("ForwardOnClick: fAout = " + fAout + " & rAout = " +rAout);
+        }
+        function actionReverseOnClick () {
+            // reverse motor
+            fAout = 2;
+            rAout = 2;
+            console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
+
+        }
+        function actionDecreaseOnClick() {
+
+        }
+        function actionIncreaseOnClick() {
+
+        }
+
+        /* Click-and-drag functions */
         function actionDragOnClick() {
             console.log("click");
             //lightOff.x = game.input.x;
@@ -265,9 +303,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 } else if (motorA.status == 2) {
                     statusMotorA.beginFill(0xFF0000, 1); //red
                 } else if (motorA.status == 0) { //default
+                    statusMotorA.lineStyle(1, 0x282828, 1);
                     statusMotorA.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorA.lineStyle(1, 0x282828, 1);
                 statusMotorA.drawCircle(37, 88, 5);
             }
             /* motor B status */
@@ -284,9 +322,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 } else if (motorB.status == 2) {
                     statusMotorB.beginFill(0xFF0000, 1); //red
                 } else if (motorB.status == 0) { //default
+                    statusMotorB.lineStyle(1, 0x282828, 1);
                     statusMotorB.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorB.lineStyle(1, 0x282828, 1);
                 statusMotorB.drawCircle(67, 88, 5);
             }
             /* motor C status */
@@ -303,9 +341,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 } else if (motorC.status == 2) {
                     statusMotorC.beginFill(0xFF0000, 1); //red
                 } else if (motorC.status == 0) { //default
+                    statusMotorC.lineStyle(1, 0x282828, 1);
                     statusMotorC.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorC.lineStyle(1, 0x282828, 1);
                 statusMotorC.drawCircle(97, 88, 5);
             }
             /* motor D status */
@@ -322,9 +360,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 } else if (motorD.status == 2) {
                     statusMotorD.beginFill(0xFF0000, 1); //red
                 } else if (motorD.status == 0) { //default
+                    statusMotorD.lineStyle(1, 0x282828, 1);
                     statusMotorD.beginFill(0x909090, 1); //dark grey
                 }
-                statusMotorD.lineStyle(1, 0x282828, 1);
                 statusMotorD.drawCircle(127, 88, 5);
             }
             //=============================================================================
@@ -339,9 +377,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 if (sensor1.status == 1) {
                     statusSensor1.beginFill(0x33FF33, 1); //green
                 } else if (sensor1.status == 0) { //default
+                    statusSensor1.lineStyle(1, 0x282828, 1);
                     statusSensor1.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor1.lineStyle(1, 0x282828, 1);
                 statusSensor1.drawCircle(172, 88, 5);
             }
             /* sensor 2 status */
@@ -355,9 +393,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 if (sensor2.status == 1) {
                     statusSensor2.beginFill(0x33FF33, 1); //green
                 } else if (sensor2.status == 0) { //default
+                    statusSensor2.lineStyle(1, 0x282828, 1);
                     statusSensor2.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor2.lineStyle(1, 0x282828, 1);
                 statusSensor2.drawCircle(202, 88, 5);
             }
             /* sensor 3 status */
@@ -371,9 +409,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 if (sensor3.status == 1) {
                     statusSensor3.beginFill(0x33FF33, 1); //green
                 } else if (sensor3.status == 0) { //default
+                    statusSensor3.lineStyle(1, 0x282828, 1);
                     statusSensor3.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor3.lineStyle(1, 0x282828, 1);
                 statusSensor3.drawCircle(232, 88, 5);
             }
             /* sensor 4 status */
@@ -387,9 +425,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 if (sensor4.status == 1) {
                     statusSensor4.beginFill(0x33FF33, 1); //green
                 } else if (sensor4.status == 0) { //default
+                    statusSensor4.lineStyle(1, 0x282828, 1);
                     statusSensor4.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor4.lineStyle(1, 0x282828, 1);
                 statusSensor4.drawCircle(262, 88, 5);
             }
             //=============================================================================
@@ -416,10 +454,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                dialNeedle.angle += 5;
+                needleA.angle += 5;
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
-                dialNeedle.angle -= 5;
+                needleA.angle -= 5;
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
 
@@ -428,29 +466,30 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             }
             else {
+                //NEED TO FIX THESE ANIMATIONS IF WE WANT THEM
                 /* add a little animating so that the needle slowly returns to its previous position */
                 // rotation goes from 0' to 180' to -180' to 0' */
-/*                if (dialNeedle.angle != 0) {
+/*                if (needleA.angle != 0) {
                     var r;
-                    if (dialNeedle.angle > 0) {
-                        r = dialNeedle.angle;
-                    } else if (dialNeedle.angle < -0.1) { // the -0.1 is so the needle doesn't keep spinning, since it won't get exactly to 0 with our increment of 0.1 (it could go slightly past)
-                        r = 360 + dialNeedle.angle;
+                    if (needleA.angle > 0) {
+                        r = needleA.angle;
+                    } else if (needleA.angle < -0.1) { // the -0.1 is so the needle doesn't keep spinning, since it won't get exactly to 0 with our increment of 0.1 (it could go slightly past)
+                        r = 360 + needleA.angle;
                     }
                 }
                 if (r > 0) {
                     for (var i = r; i >= 0; i--) {
-                        dialNeedle.angle -= 0.1;
+                        needleA.angle -= 0.1;
                     }
-                }*/
+                }
 
-/*                    if (dialNeedle.angle > 0) {
-                        for (var i = dialNeedle.angle; i > 0; i--) {
-                            dialNeedle.angle -= 0.1; // -0.15 seems to be a good enough "rate"
+                    if (needleA.angle > 0) {
+                        for (var i = needleA.angle; i > 0; i--) {
+                            needleA.angle -= 0.1; // -0.15 seems to be a good enough "rate"
                         }
-                    } else if (dialNeedle.angle < 0) {
-                        for (var i = (-1)*dialNeedle.angle; i <= 180; i++) {
-                            dialNeedle.angle -= 0.1;
+                    } else if (needleA.angle < 0) {
+                        for (var i = (-1)*needleA.angle; i <= 180; i++) {
+                            needleA.angle -= 0.1;
                         }
                     }*/
             }
@@ -458,22 +497,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             /* Press W to increase power, and S to decrease power */
             //NOTE: this works, but we should prob figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                if (power >= -48) {
-                    power -= 2;
-                    statusBar.destroy();
-                    statusBar = game.add.graphics(0, 0);  //init rect
-                    statusBar.beginFill(0xFF0000, 1);
-                    statusBar.drawRect(51,250, width, power);
-                }
+
             }
             else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
-                if (power <= +48) {
-                    power += 2;
-                    statusBar.destroy();
-                    statusBar = game.add.graphics(0, 0);  //init rect
-                    statusBar.beginFill(0xFF0000, 1);
-                    statusBar.drawRect(51,250, width, power);
-                }
+
             }
         }
 

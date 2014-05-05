@@ -1,16 +1,3 @@
-/*$(document).ready(function() {
-        $("#progressbar").progressbar({value: 10});
-        var progress = setInterval(function() {
-       var currentVal = $("#progressbar").progressbar("option", "value");
-       var nextVal = currentVal + 1;
-       if (nextVal > 100) {
-           clearInterval(progress);
-       } else {
-           $("#progressbar").progressbar({value: nextVal});
-       }
-    }, 400);
-}); */
-
 require.config({
     baseUrl: 'js',
         // set baseURL to 'js' when bbclient.min.js is in the folder entitled 'js' along with main.js, phaser.min.js, and require.js
@@ -126,22 +113,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         var lightOn;
         var lightOff;
-<<<<<<< HEAD
-        var background;
-        
-        $(document).ready(function() {
-        $("#progressbar").progressbar({value: 10});
-        var progress = setInterval(function() {
-       var currentVal = $("#progressbar").progressbar("option", "value");
-       var nextVal = currentVal + 1;
-       if (nextVal > 100) {
-           clearInterval(progress);
-       } else {
-           $("#progressbar").progressbar({value: nextVal});
-       }
-    }, 400);
-});
-=======
         var status;
         var box;
         var statusBar = {
@@ -160,7 +131,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var cursorx;
         var cursory;
         var cursorLabel;
->>>>>>> John
 
         //keep track of when players join (open the browser window) and leave (close the browser window):
         //function onSubscribers(joinFunction(joined);, leaveFunction(left);){}
@@ -342,8 +312,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         function actionStopOnClick () {
             // stop all motors at their current settings
         }
-<<<<<<< HEAD
-=======
 
 
         function actionForwardOnClickA () {
@@ -495,7 +463,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             powerD = (0.10 * (566 - sliderBarD.y) / 16);
             console.log(powerD.toFixed(2));
         }
->>>>>>> John
         
     //==============================================================================================================================
         function update() {
@@ -696,10 +663,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 console.log("right");
             }*/
 
-<<<<<<< HEAD
-        function update() {
-=======
->>>>>>> John
 
         }
 

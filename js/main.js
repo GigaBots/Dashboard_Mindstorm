@@ -124,15 +124,17 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* IR sensor */
         var frameIR;
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
+        var IRDist = 25; // THIS IS A PLACEHOLDER FOR NOW!
 
         /* Color sensor */
         var frameColor;
-        var labelColor = "Color Sensor";
-        var colorRed, colorGreen, colorBlue, color; 
-
+        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
+        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "Yellow"; //THESE ARE PLACEHOLDERS FOR NOW
+ 
         /* Ultrasonic sensor */
         var frameUltrasonic;
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
+        var ultrasonicDist = 250; // THIS IS A PLACEHOLDER FOR NOW!
 
         /* Battery level sensor */
         var frameBattery;
@@ -252,8 +254,20 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //touchCount = game.add.text(410, 155, touchCount, labelStyle3);
 
             labelIR = game.add.text(472, 135, labelIR, labelStyle3);
+            labelIRDist = game.add.text(472, 157, labelIRDist, labelStyle);
+            labelIRUnits = game.add.text(580, 157, labelIRUnits, labelStyle);
+
             labelColor = game.add.text(440, 65, labelColor, labelStyle3);
+            labelColorR = game.add.text(440, 95, labelColorR, labelStyle);
+            labelColorG = game.add.text(505, 95, labelColorG, labelStyle);
+            labelColorB = game.add.text(585, 95, labelColorB, labelStyle);
+            //labelColorValue = game.add.text(580, 67, labelColorValue, labelStyle);
+            labelColorName = game.add.text(551, 67, labelColorName, labelStyle);
+
             labelUltrasonic = game.add.text(682, 65, labelUltrasonic, labelStyle3);
+            labelUltrasonicDist = game.add.text(682, 87, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(790, 87, labelUltrasonicUnits, labelStyle);
+
             labelBattery = game.add.text(310, 65, labelBattery, labelStyle3);
 
         /* Buttons */
@@ -368,11 +382,17 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             touchIndicator.animations.add('pressed', [1], 1);
 
         /* IR Sensor */
-
+            IRDist = game.add.text(533, 155, IRDist.toFixed(2), labelStyle3);
 
         /* Color Sensor */
+            colorR = game.add.text(470, 93, Math.round(colorR), labelStyle3);
+            colorG = game.add.text(546, 93, Math.round(colorG), labelStyle3);
+            colorB = game.add.text(619, 93, Math.round(colorB), labelStyle3);
+            //colorValue = game.add.text(619, 65, Math.round(colorValue), labelStyle3);
+            colorName = game.add.text(590, 65, colorName, labelStyle3);
 
         /* Ultrasonic Sensor */
+            ultrasonicDist = game.add.text(743, 85, ultrasonicDist.toFixed(1), labelStyle3);
 
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);

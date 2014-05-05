@@ -69,7 +69,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
-        var powerA, powerB, powerC, powerD;
+        var powerA = 0, powerB = 0, powerC = 0, powerD = 0;
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD;
 
@@ -148,10 +148,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
-            //game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
-            //game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
-            game.load.image('minusButton','assets/buttons/gigabot_dashboard_button_minus.png', 44, 44);
-            game.load.image('plusButton','assets/buttons/gigabot_dashboard_button_plus.png', 44, 44);
+            game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
+            game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
         }
@@ -240,46 +238,35 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             forwardButtonD = game.add.button(440, 426, 'forwardButton', actionForwardOnClick, this, fDover, fDout, fDdown, fDup);
             reverseButtonD = game.add.button(440, 484, 'reverseButton', actionReverseOnClick, this, rDover, rDout, rDdown, rDup);
 
-
-            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClick);
-            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClick);
-            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClick);
-            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClick);
-            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClick);
-            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClick);
-            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClick);
-            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClick);
-/*
-            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
-            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
-            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
-            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
-            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
-            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
-            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
-            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
-*/
+            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
+            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
+            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClickB, this, 1, 0, 2, 0);
+            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClickB, this, 1, 0, 2, 0);
+            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClickC, this, 1, 0, 2, 0);
+            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClickC, this, 1, 0, 2, 0);
+            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
+            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
             /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(0x282828, 1);
             sliderTrackA.drawRect(175, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarA = game.add.sprite(145, 350, 'sliderBar');
+            sliderBarA = game.add.button(145, 356, 'sliderBar', actionDragOnClickA);
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(0x282828, 1);
             sliderTrackB.drawRect(585, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarB = game.add.sprite(555, 350, 'sliderBar');
+            sliderBarB = game.add.button(555, 356, 'sliderBar', actionDragOnClickB);
                         
             sliderTrackC = game.add.graphics(0,0);
             sliderTrackC.beginFill(0x282828, 1);
             sliderTrackC.drawRect(175, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarC = game.add.sprite(145, 560, 'sliderBar');
+            sliderBarC = game.add.button(145, 566, 'sliderBar', actionDragOnClickC);
 
             sliderTrackD = game.add.graphics(0,0);
             sliderTrackD.beginFill(0x282828, 1);
             sliderTrackD.drawRect(585, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarD = game.add.sprite(555, 560, 'sliderBar');
+            sliderBarD = game.add.button(555, 566, 'sliderBar', actionDragOnClickD);
 
             /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
@@ -339,38 +326,116 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //rAout = 2;
             //console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
 
+        //=============================================================================
+        /* Plus and Minus Buttons For Increase and Decreasing Motor Speeds (an alternative to clicking and dragging) */
         }
-        function actionDecreaseOnClick() {
-            console.log("decrease");
+        function actionDecreaseOnClickA() {
+            if (powerA >= 0.1) {
+                powerA = powerA - 0.10;
+                sliderBarA.y = sliderBarA.y + 16;
+            }
+            console.log(powerA.toFixed(2)); //this makes powerA a string with 2 decimal places
         }
-        function actionIncreaseOnClick() {
-            console.log("increase");
+        function actionIncreaseOnClickA() {
+            if (powerA <= 0.9) {
+                powerA = powerA + 0.10;
+                sliderBarA.y = sliderBarA.y - 16;
+            }
+            console.log(powerA.toFixed(2));
+        }
+        function actionDecreaseOnClickB() {
+            if (powerB >= 0.1) {
+                powerB = powerB - 0.10;
+                sliderBarB.y = sliderBarB.y + 16;
+            }
+            console.log(powerB.toFixed(2));
+        }
+        function actionIncreaseOnClickB() {
+            if (powerB <= 0.9) {
+                powerB = powerB + 0.10;
+                sliderBarB.y = sliderBarB.y - 16;
+            }
+            console.log(powerB.toFixed(2));
+        }
+        function actionDecreaseOnClickC() {
+            if (powerC >= 0.1) {
+                powerC = powerC - 0.10;
+                sliderBarC.y = sliderBarC.y + 16;
+            }
+            console.log(powerC.toFixed(2));
+        }
+        function actionIncreaseOnClickC() {
+            if (powerC <= 0.9) {
+                powerC = powerC + 0.10;
+                sliderBarC.y = sliderBarC.y - 16;
+            }
+            console.log(powerC.toFixed(2));
+        }
+        function actionDecreaseOnClickD() {
+            if (powerD >= 0.1) {
+                powerD = powerD - 0.10;
+                sliderBarD.y = sliderBarD.y + 16;
+            }
+            console.log(powerD.toFixed(2));
+        }
+        function actionIncreaseOnClickD() {
+            if (powerD <= 0.9) {
+                powerD = powerD + 0.10;
+                sliderBarD.y = sliderBarD.y - 16;
+            }
+            console.log(powerD.toFixed(2));
         }
 
-        /* Click-and-drag functions */
-        function actionDragOnClick() {
-            console.log("click");
-            //lightOff.x = game.input.x;
-            lightOff.y = game.input.y;
+        //=============================================================================
+        /* Click-and-drag functions (an alternative to the plus and minus buttons) */
+        function actionDragOnClickA() {
+            //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            sliderBarA.y = 356 - Math.round( (356 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+            if (sliderBarA.y < 196) { //set max power boundary limit
+                sliderBarA.y = 196;
+            } else if (sliderBarA.y > 356) { //set min power boundary limit
+                sliderBarA.y = 356;
+            }
+            powerA = (0.10 * (356 - sliderBarA.y) / 16);
+            console.log(powerA.toFixed(2)); //this makes powerA a string with 2 decimal places
+        }
+
+        function actionDragOnClickB() {
+            //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            sliderBarB.y = 356 - Math.round( (356 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+            if (sliderBarB.y < 196) { //set max power boundary limit
+                sliderBarB.y = 196;
+            } else if (sliderBarB.y > 356) { //set min power boundary limit
+                sliderBarB.y = 356;
+            }
+            powerB = (0.10 * (356 - sliderBarB.y) / 16);
+            console.log(powerB.toFixed(2));
+        }
+
+        function actionDragOnClickC() {
+            //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
+            sliderBarC.y = 566 - Math.round( (566 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+            if (sliderBarC.y < 406) { //set max power boundary limit
+                sliderBarC.y = 406;
+            } else if (sliderBarC.y > 566) { //set min power boundary limit
+                sliderBarC.y = 406;
+            }
+            powerC = (0.10 * (566 - sliderBarC.y) / 16);
+            console.log(powerC.toFixed(2));
+        }
+
+        function actionDragOnClickD() {
+            //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
+            sliderBarD.y = 566 - Math.round( (566 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+            if (sliderBarD.y < 406) { //set max power boundary limit
+                sliderBarD.y = 406;
+            } else if (sliderBarD.y > 566) { //set min power boundary limit
+                sliderBarD.y = 566;
+            }
+            powerD = (0.10 * (566 - sliderBarD.y) / 16);
+            console.log(powerD.toFixed(2));
         }
         
-        /*function actionStartOnClick () {
-            console.log("start");
-            if(lightOff) {
-                lightOff.destroy(); //delete the lightOff sprite (if it's there)
-                lightOn = game.add.sprite(250,20,'on');
-                lightOn.scale.setTo(0.25, 0.25);
-            }
-        }
-        function actionStopOnClick () {
-            console.log("stop");
-            if(lightOn) {
-                lightOn.destroy(); //delete the lightOn sprite (if it's there)
-                lightOff = game.add.sprite(250,20,'stall');
-                lightOff.scale.setTo(0.25, 0.25);
-            }
-        }*/
-
         function update() {
             /* motor A status */
             var msg = { Astatus : 0 }
@@ -539,55 +604,34 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 }
             }*/
 
-            /* Press up to increase degrees, and down to decrease degrees */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                //placeholder numbers below (just for looks, since these are all taking the same input for now):
-                needleA.angle += 5;
-                needleB.angle += 6;
-                needleC.angle += 7;
-                needleD.angle += 8;
+            var multiplier = 50; // THIS NUMBER IS JUST A PLACE HOLDER, AND IT LIKELY BE DIFFERENT FOR LARGE AND MEDIUM MOTORS
+            if (powerA > 0) {
+                needleA.angle += multiplier * powerA;
+            }
+            if (powerB > 0) {
+                needleB.angle += multiplier * powerB;
+            }
+            if (powerC > 0) {
+                needleC.angle += multiplier * powerC;
+            }
+            if (powerD > 0) {
+                needleD.angle += multiplier * powerD;
+            }
+
+
+            //=============================================================================
+            /*  if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                console.log("up");
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+                console.log("down");
             } 
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
-                //placeholder numbers below (just for looks, since these all are taking the same input for now):
-                needleA.angle -= 5;
-                needleB.angle -= 6;
-                needleC.angle -= 7;
-                needleD.angle -= 8;
-            } 
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+            if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
                 console.log("left");
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
                 console.log("right");
-            }
-            //else {
-                //NEED TO FIX THESE ANIMATIONS IF WE WANT THEM
-                /* add a little animating so that the needle slowly returns to its previous position */
-                // rotation goes from 0' to 180' to -180' to 0' */
-/*                if (needleA.angle != 0) {
-                    var r;
-                    if (needleA.angle > 0) {
-                        r = needleA.angle;
-                    } else if (needleA.angle < -0.1) { // the -0.1 is so the needle doesn't keep spinning, since it won't get exactly to 0 with our increment of 0.1 (it could go slightly past)
-                        r = 360 + needleA.angle;
-                    }
-                }
-                if (r > 0) {
-                    for (var i = r; i >= 0; i--) {
-                        needleA.angle -= 0.1;
-                    }
-                }
+            }*/
 
-                    if (needleA.angle > 0) {
-                        for (var i = needleA.angle; i > 0; i--) {
-                            needleA.angle -= 0.1; // -0.15 seems to be a good enough "rate"
-                        }
-                    } else if (needleA.angle < 0) {
-                        for (var i = (-1)*needleA.angle; i <= 180; i++) {
-                            needleA.angle -= 0.1;
-                        }
-                    }*/
-            //}
 
         }
 

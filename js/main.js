@@ -146,7 +146,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var frameScreen;
         var labelScreen = "LCD Screen";
         var screenMessage = "Hello Mozilla"; // THIS IS A PLACEHOLDER FOR NOW!
-     
+        var LCDScreenBox;
+
         //===================================================
         channel.onSubscribers(function (joined) {
             /*console.log(joined +" joined");
@@ -168,6 +169,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
         } //end preload
 
     //==============================================================================================================================
@@ -312,6 +314,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             minusButtonD = game.add.button(440, 546, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
             plusButtonD = game.add.button(493, 546, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
+            screenInputButton = game.add.button(782, 65, 'screenInputButton', actionInputOnClick);
+
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(0x282828, 1);
@@ -439,18 +443,31 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.lineStyle(1.5, 0x282828, 1);
-            batteryLevelBox.drawRect(309, 90, 102, 20);
+            batteryLevelBox.drawRect(309, 91, 102, 18);
 
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
-            batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+            batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
 
         /* LCD Screen */
-
+            LCDScreenBox = game.add.graphics(0,0);
+            LCDScreenBox.beginFill(0xD8D8D8, 1);
+            LCDScreenBox.lineStyle(1.5, 0x282828, 1);
+            LCDScreenBox.drawRect(682, 88, 138, 24);
 
         } // end create 
 
     /* Button-click functions */
+    var screenMessageDisplay = "Screen Message";
+        function actionInputOnClick () {
+            var screenMessageDisplayOld = screenMessageDisplayNew;
+            screenMessage = prompt("What would you like to display on the screen?");
+            //this.screenMessageDisplay = null;
+            //game.world.kill(screenMessageDisplay);
+            var screenMessageDisplayNew = game.add.text(685, 93, screenMessage, labelStyle3);
+            game.world.remove(screenMessageDisplayOld);
+        }
+
         function actionStartOnClick () {
             // start all motors at their current settings
             dashboardStatus = 1;
@@ -459,8 +476,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
-
-
         function actionForwardOnClickA () {
             directionA = 1;
             console.log("forward");
@@ -816,24 +831,42 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //=============================================================================
             /* Battery Level Sensor */
             if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-                if (batteryLevel <= 1) { //upper boundary limit
+                if (batteryLevel <= 0.15) { // for almost-dead battery!
                     if(batteryLevel > 0) { //lower boundary limit
                         batteryLevel = batteryLevel - 0.01;
                         batteryLevelFill.destroy();
                         batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    }
+                }
+                else if (batteryLevel <= 1) { //upper boundary limit
+                    if(batteryLevel > 0.1) { //lower boundary limit
+                        batteryLevel = batteryLevel - 0.01;
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18);
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
                     }
                 }
             }
             if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-                if (batteryLevel < 1) { //upper boundary limit
-                    if(batteryLevel >= 0) { //lower boundary limit
+                if (batteryLevel < 0.15) { // for almost-dead battery!
+                    if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
+                        batteryLevel = batteryLevel + 0.01;
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    }
+                }
+                else if (batteryLevel < 1) { //upper boundary limit
+                    if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
                         batteryLevel = batteryLevel + 0.01;
                         batteryLevelFill.destroy();
                         batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18);
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
                     }
                 }
             }

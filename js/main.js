@@ -578,20 +578,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 }
                 statusSensor4.drawCircle(267, 88, 5);
             }
-            //=============================================================================
-
-            /* Slider bar display and cursor click-and-drag input
-
-            
-            //var cursorLabel;
-            ////cursorx = game.input.x;
-            cursory = game.input.y;
-
-            //lightOff.x = game.input.x;
-            //lightOff.y = game.input.y;
-            //cursorLabel = cursorx + ", " + cursory;
-            //cursorLabel = game.add.text(10,10, cursorLabel, labelStyle);
-
 
             //=============================================================================
             /* Convert degrees value (between 0 and 360) in message from gigabot to a degrees (between 0 and 180, and -180 and 0) value Phaser can use for rotation */ 

@@ -457,6 +457,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
+            batteryLevelBox.beginFill(0xD8D8D8, 1);
             batteryLevelBox.lineStyle(1.5, 0x282828, 1);
             batteryLevelBox.drawRect(309, 91, 102, 18);
 
@@ -473,18 +474,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         } // end create 
 
     /* Button-click functions */
-    //var screenMessageDisplay = "Screen Message";
-        //console.log(screenMessage.messageDisplay);
         function actionInputOnClick () {
-            //var screenMessageDisplayOld = screenMessageDisplayNew;
-            //screenMessage.messageDisplay = messageDisplay;
-            screenMessage.messageDisplay.destroy();
+            game.world.remove(screenMessage.messageDisplay);
             messageDisplay = prompt("What would you like to display on the screen?");
-            //this.screenMessageDisplay = null;
-            //game.world.kill(screenMessageDisplay);
             screenMessage.messageDisplay = game.add.text(685, 93, messageDisplay, labelStyle3);
-            
-            //game.world.remove(screenMessageDisplayOld);
         }
 
         function actionStartOnClick () {

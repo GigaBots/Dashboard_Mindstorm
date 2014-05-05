@@ -62,6 +62,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var startButton, stopButton;
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
+        var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
         var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup;
         var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup;
         var fCover, fCout, fCdown, fCup, rCover, rCout, rCdown, rCup;
@@ -154,6 +155,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
         }
 
+    //==============================================================================================================================
         function create() {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = false;    
@@ -229,14 +231,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
-            forwardButtonA = game.add.button(30, 216, 'forwardButton', actionForwardOnClick, this, fAover, fAout, fAdown, fAup);
-            reverseButtonA = game.add.button(30, 274, 'reverseButton', actionReverseOnClick, this, rAover, rAout, rAdown, rAup);
-            forwardButtonB = game.add.button(440, 216, 'forwardButton', actionForwardOnClick, this, fBover, fBout, fBdown, fBup);
-            reverseButtonB = game.add.button(440, 274, 'reverseButton', actionReverseOnClick, this, rBover, rBout, rBdown, rBup);
-            forwardButtonC = game.add.button(30, 426, 'forwardButton', actionForwardOnClick, this, fCover, fCout, fCdown, fCup);
-            reverseButtonC = game.add.button(30, 484, 'reverseButton', actionReverseOnClick, this, rCover, rCout, rCdown, rCup);
-            forwardButtonD = game.add.button(440, 426, 'forwardButton', actionForwardOnClick, this, fDover, fDout, fDdown, fDup);
-            reverseButtonD = game.add.button(440, 484, 'reverseButton', actionReverseOnClick, this, rDover, rDout, rDdown, rDup);
+            forwardButtonA = game.add.button(30, 216, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
+            reverseButtonA = game.add.button(30, 274, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
+            forwardButtonB = game.add.button(440, 216, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
+            reverseButtonB = game.add.button(440, 274, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
+            forwardButtonC = game.add.button(30, 426, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
+            reverseButtonC = game.add.button(30, 484, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
+            forwardButtonD = game.add.button(440, 426, 'forwardButton', actionForwardOnClickD, this, fDover, fDout, fDdown, fDup);
+            reverseButtonD = game.add.button(440, 484, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
 
             minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
             plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
@@ -311,24 +313,50 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             // stop all motors at their current settings
         }
 
-        //NEED TO DISTINGUISH EACH OF THE 4 MOTORS!
-        function actionForwardOnClick () {
+
+        function actionForwardOnClickA () {
+            directionA = 1;
             console.log("forward");
             // forward motor
             //forwardButtonA.overFrame = 0, forwardButtonA.outFrame = 0, forwardButtonA.downFrame = 0, forwardButtonA.downFrame = 0;
             //rAout = 0;
             //console.log ("ForwardOnClick: fAout = " + fAout + " & rAout = " +rAout);
         }
-        function actionReverseOnClick () {
+        function actionReverseOnClickA () {
+            directionA = -1;
             console.log("reverse");
             // reverse motor
             //fAout = 2;
             //rAout = 2;
             //console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
-
+        }
+        function actionForwardOnClickB () {
+            directionB = 1;
+            console.log("forward");
+        }
+        function actionReverseOnClickB () {
+            directionB = -1;
+            console.log("reverse");
+        }
+        function actionForwardOnClickC () {
+            directionC = 1;
+            console.log("forward");
+        }
+        function actionReverseOnClickC () {
+            directionC = -1;
+            console.log("reverse");
+        }
+        function actionForwardOnClickD () {
+            directionC = 1;
+            console.log("forward");
+        }
+        function actionReverseOnClickD () {
+            directionD = -1;
+            console.log("reverse");
+        }
+        
         //=============================================================================
         /* Plus and Minus Buttons For Increase and Decreasing Motor Speeds (an alternative to clicking and dragging) */
-        }
         function actionDecreaseOnClickA() {
             if (powerA >= 0.1) {
                 powerA = powerA - 0.10;
@@ -436,6 +464,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             console.log(powerD.toFixed(2));
         }
         
+    //==============================================================================================================================
         function update() {
             /* motor A status */
             var msg = { Astatus : 0 }
@@ -592,16 +621,32 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             var multiplier = 50; // THIS NUMBER IS JUST A PLACE HOLDER, AND IT LIKELY BE DIFFERENT FOR LARGE AND MEDIUM MOTORS
             if (powerA > 0) {
-                needleA.angle += multiplier * powerA;
+                if (directionA == 1) {
+                    needleA.angle += multiplier * powerA;
+                } else {
+                    needleA.angle -= multiplier * powerA;
+                }
             }
             if (powerB > 0) {
-                needleB.angle += multiplier * powerB;
+                if (directionB == 1) {
+                    needleB.angle += multiplier * powerB;
+                } else {
+                    needleB.angle -= multiplier * powerB;
+                }
             }
             if (powerC > 0) {
-                needleC.angle += multiplier * powerC;
+                if (directionC == 1) {
+                    needleC.angle += multiplier * powerC;
+                } else {
+                    needleC.angle -= multiplier * powerC;
+                }
             }
             if (powerD > 0) {
-                needleD.angle += multiplier * powerD;
+                if (directionD == 1) {
+                    needleD.angle += multiplier * powerD;
+                } else {
+                    needleD.angle -= multiplier * powerD;
+                }
             }
 
 

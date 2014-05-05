@@ -57,8 +57,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var labelSensors = ["1","2","3","4"];
         var labelMotorA = "Motor A", labelMotorB = "Motor B", labelMotorC = "Motor C", labelMotorD = "Motor D";
 
-        var statusMotorA, statusMotorB, statusMotorC, statusMotorD;
-        var statusSensor1,statusSensor2, statusSensor3, statusSensor4;
+        var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
+        var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
         var dashboardStatus = 0; // 1 = 'start', 0 = 'stop'
         var startButton, stopButton;
@@ -141,7 +141,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var labelBattery = "Battery Level";
         var batteryLevel = 1; //initialize the level at 100% (or, 1);
         var batteryLevelBox, batteryLevelFill;
-     
+
+        /* LCD Screen */
+        var frameScreen;
+        var labelScreen = "LCD Screen";
+        var screenMessage = "Hello Mozilla"; // THIS IS A PLACEHOLDER FOR NOW!
+        var LCDScreenBox;
+
         //===================================================
         channel.onSubscribers(function (joined) {
             /*console.log(joined +" joined");
@@ -153,6 +159,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
     //==============================================================================================================================
         function preload() {
+            game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
             game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
             game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
@@ -162,12 +169,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
         } //end preload
 
     //==============================================================================================================================
         function create() {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.game.stage.disableVisibilityChange = false;    
+            this.game.stage.disableVisibilityChange = true;    
 
         /* Background */
             game.stage.backgroundColor = '#C0C0C0';
@@ -215,32 +223,36 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             frameIR = game.add.graphics(0,0);
             frameIR.lineStyle(1, 0x282828, 1);
-            frameIR.drawRect(462, 130, 200, 48);
+            frameIR.drawRect(462, 130, 179, 48);
+
+            frameUltrasonic = game.add.graphics(0,0);
+            frameUltrasonic.lineStyle(1, 0x282828, 1);
+            frameUltrasonic.drawRect(651, 130, 179, 48);
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, 0x282828, 1);
             frameColor.drawRect(430, 60, 232, 60);
 
-            frameUltrasonic = game.add.graphics(0,0);
-            frameUltrasonic.lineStyle(1, 0x282828, 1);
-            frameUltrasonic.drawRect(672, 60, 158, 118);
-
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, 0x282828, 1);
             frameBattery.drawRect(300, 60, 120, 60);
 
+            frameScreen = game.add.graphics(0,0);
+            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.drawRect(672, 60, 158, 60);
+
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
-            labelA = game.add.text(33, 102, labelMotors[0], labelStyle);
-            labelB = game.add.text(63, 102, labelMotors[1], labelStyle);
-            labelC = game.add.text(93, 102, labelMotors[2], labelStyle);
-            labelD = game.add.text(123, 102, labelMotors[3], labelStyle);
+            labelA = game.add.text(34, 102, labelMotors[0], labelStyle);
+            labelB = game.add.text(64, 102, labelMotors[1], labelStyle);
+            labelC = game.add.text(94, 102, labelMotors[2], labelStyle);
+            labelD = game.add.text(124, 102, labelMotors[3], labelStyle);
 
             labelSensorPorts = game.add.text(193,65, labelSensorPorts, labelStyle3); //label at top of box indicating status of motor ports
-            label1 = game.add.text(173, 102, labelSensors[0], labelStyle);
-            label2 = game.add.text(203, 102, labelSensors[1], labelStyle);
-            label3 = game.add.text(233, 102, labelSensors[2], labelStyle);
-            label4 = game.add.text(263, 102, labelSensors[3], labelStyle);
+            label1 = game.add.text(175, 102, labelSensors[0], labelStyle);
+            label2 = game.add.text(205, 102, labelSensors[1], labelStyle);
+            label3 = game.add.text(235, 102, labelSensors[2], labelStyle);
+            label4 = game.add.text(265, 102, labelSensors[3], labelStyle);
 
             labelMotorA = game.add.text(30, 194, labelMotorA, labelStyle2);
             labelMotorB = game.add.text(440, 194, labelMotorB, labelStyle2);
@@ -257,6 +269,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             labelIRDist = game.add.text(472, 157, labelIRDist, labelStyle);
             labelIRUnits = game.add.text(580, 157, labelIRUnits, labelStyle);
 
+            labelUltrasonic = game.add.text(661, 135, labelUltrasonic, labelStyle3);
+            labelUltrasonicDist = game.add.text(661, 157, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(769, 157, labelUltrasonicUnits, labelStyle);
+
             labelColor = game.add.text(440, 65, labelColor, labelStyle3);
             labelColorR = game.add.text(440, 95, labelColorR, labelStyle);
             labelColorG = game.add.text(505, 95, labelColorG, labelStyle);
@@ -264,11 +280,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //labelColorValue = game.add.text(580, 67, labelColorValue, labelStyle);
             labelColorName = game.add.text(551, 67, labelColorName, labelStyle);
 
-            labelUltrasonic = game.add.text(682, 65, labelUltrasonic, labelStyle3);
-            labelUltrasonicDist = game.add.text(682, 87, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(790, 87, labelUltrasonicUnits, labelStyle);
-
             labelBattery = game.add.text(310, 65, labelBattery, labelStyle3);
+            labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
 
         /* Buttons */
             //Add button for starting all motors at their current settings
@@ -300,6 +313,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             plusButtonC = game.add.button(83, 546, 'plusButton', actionIncreaseOnClickC, this, 1, 0, 2, 0);
             minusButtonD = game.add.button(440, 546, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
             plusButtonD = game.add.button(493, 546, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
+
+            screenInputButton = game.add.button(782, 65, 'screenInputButton', actionInputOnClick);
 
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
@@ -337,6 +352,37 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 var powerLabelC = game.add.text(211, powerLabelY2, powerLabel, labelStyle)
                 var powerLabelD = game.add.text(621, powerLabelY2, powerLabel, labelStyle);
             }
+
+        /* Status Lights */
+            statusLightA = game.add.sprite(33, 86, 'statusLight');
+            statusLightA.animations.add('unplugged', [0], 1);
+            statusLightA.animations.add('pluggedIn', [1], 1);
+            statusLightA.animations.add('stalled', [2], 1);
+            statusLightB = game.add.sprite(63, 86, 'statusLight');
+            statusLightB.animations.add('unplugged', [0], 1);
+            statusLightB.animations.add('pluggedIn', [1], 1);
+            statusLightB.animations.add('stalled', [2], 1);
+            statusLightC = game.add.sprite(93, 86, 'statusLight');
+            statusLightC.animations.add('unplugged', [0], 1);
+            statusLightC.animations.add('pluggedIn', [1], 1);
+            statusLightC.animations.add('stalled', [2], 1);
+            statusLightD = game.add.sprite(123, 86, 'statusLight');
+            statusLightD.animations.add('unplugged', [0], 1);
+            statusLightD.animations.add('pluggedIn', [1], 1);
+            statusLightD.animations.add('stalled', [2], 1);
+
+            statusLight1 = game.add.sprite(173, 86, 'statusLight');
+            statusLight1.animations.add('unplugged', [0], 1);
+            statusLight1.animations.add('pluggedIn', [1], 1);
+            statusLight2 = game.add.sprite(203, 86, 'statusLight');
+            statusLight2.animations.add('unplugged', [0], 1);
+            statusLight2.animations.add('pluggedIn', [1], 1);
+            statusLight3 = game.add.sprite(233, 86, 'statusLight');
+            statusLight3.animations.add('unplugged', [0], 1);
+            statusLight3.animations.add('pluggedIn', [1], 1);
+            statusLight4 = game.add.sprite(263, 86, 'statusLight');
+            statusLight4.animations.add('unplugged', [0], 1);
+            statusLight4.animations.add('pluggedIn', [1], 1);
 
         /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
@@ -384,6 +430,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* IR Sensor */
             IRDist = game.add.text(533, 155, IRDist.toFixed(2), labelStyle3);
 
+        /* Ultrasonic Sensor */
+            ultrasonicDist = game.add.text(722, 155, ultrasonicDist.toFixed(1), labelStyle3);
+
         /* Color Sensor */
             colorR = game.add.text(470, 93, Math.round(colorR), labelStyle3);
             colorG = game.add.text(546, 93, Math.round(colorG), labelStyle3);
@@ -391,21 +440,34 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //colorValue = game.add.text(619, 65, Math.round(colorValue), labelStyle3);
             colorName = game.add.text(590, 65, colorName, labelStyle3);
 
-        /* Ultrasonic Sensor */
-            ultrasonicDist = game.add.text(743, 85, ultrasonicDist.toFixed(1), labelStyle3);
-
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.lineStyle(1.5, 0x282828, 1);
-            batteryLevelBox.drawRect(309, 90, 102, 20);
+            batteryLevelBox.drawRect(309, 91, 102, 18);
 
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
-            batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+            batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+
+        /* LCD Screen */
+            LCDScreenBox = game.add.graphics(0,0);
+            LCDScreenBox.beginFill(0xD8D8D8, 1);
+            LCDScreenBox.lineStyle(1.5, 0x282828, 1);
+            LCDScreenBox.drawRect(682, 88, 138, 24);
 
         } // end create 
 
     /* Button-click functions */
+    var screenMessageDisplay = "Screen Message";
+        function actionInputOnClick () {
+            var screenMessageDisplayOld = screenMessageDisplayNew;
+            screenMessage = prompt("What would you like to display on the screen?");
+            //this.screenMessageDisplay = null;
+            //game.world.kill(screenMessageDisplay);
+            var screenMessageDisplayNew = game.add.text(685, 93, screenMessage, labelStyle3);
+            game.world.remove(screenMessageDisplayOld);
+        }
+
         function actionStartOnClick () {
             // start all motors at their current settings
             dashboardStatus = 1;
@@ -414,8 +476,6 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
-
-
         function actionForwardOnClickA () {
             directionA = 1;
             console.log("forward");
@@ -575,17 +635,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
             if (motorA.status == msg.Astatus) {
             } else {
-                statusMotorA = game.add.graphics(0,0);
                 motorA.status = msg.Astatus;
                 if (motorA.status == 1) {
-                    statusMotorA.beginFill(0x33FF33, 1); //green
+                    statusLightA.animations.play('pluggedIn');
                 } else if (motorA.status == 2) {
-                    statusMotorA.beginFill(0xFF0000, 1); //red
+                    statusLightA.animations.play('stalled'); 
                 } else if (motorA.status == 0) { //default
-                    statusMotorA.lineStyle(1, 0x282828, 1);
-                    statusMotorA.beginFill(0x909090, 1); //dark grey
+                    statusLightA.animations.play('unplugged');
                 }
-                statusMotorA.drawCircle(37, 91, 5);
             }
             /* motor B status */
             var msg = { Bstatus : 0 }
@@ -594,17 +651,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
             if (motorB.status == msg.Bstatus) {
             } else {
-                statusMotorB = game.add.graphics(0,0);
                 motorB.status = msg.Bstatus;
                 if (motorB.status == 1) {
-                    statusMotorB.beginFill(0x33FF33, 1); //green
+                    statusLightB.animations.play('pluggedIn');
                 } else if (motorB.status == 2) {
-                    statusMotorB.beginFill(0xFF0000, 1); //red
+                    statusLightB.animations.play('stalled'); 
                 } else if (motorB.status == 0) { //default
-                    statusMotorB.lineStyle(1, 0x282828, 1);
-                    statusMotorB.beginFill(0x909090, 1); //dark grey
+                    statusLightB.animations.play('unplugged');
                 }
-                statusMotorB.drawCircle(67, 91, 5);
             }
             /* motor C status */
             var msg = { Cstatus : 0 }
@@ -613,17 +667,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
             if (motorC.status == msg.Cstatus) {
             } else {
-                statusMotorC = game.add.graphics(0,0);
                 motorC.status = msg.Cstatus;
                 if (motorC.status == 1) {
-                    statusMotorC.beginFill(0x33FF33, 1); //green
+                    statusLightC.animations.play('pluggedIn');
                 } else if (motorC.status == 2) {
-                    statusMotorC.beginFill(0xFF0000, 1); //red
+                    statusLightC.animations.play('stalled'); 
                 } else if (motorC.status == 0) { //default
-                    statusMotorC.lineStyle(1, 0x282828, 1);
-                    statusMotorC.beginFill(0x909090, 1); //dark grey
+                    statusLightC.animations.play('unplugged');
                 }
-                statusMotorC.drawCircle(97, 91, 5);
             }
             /* motor D status */
             var msg = { Dstatus : 0 }
@@ -632,17 +683,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
             if (motorD.status == msg.Dstatus) {
             } else {
-                statusMotorD = game.add.graphics(0,0);
                 motorD.status = msg.Dstatus;
                 if (motorD.status == 1) {
-                    statusMotorD.beginFill(0x33FF33, 1); //green
+                    statusLightD.animations.play('pluggedIn');
                 } else if (motorD.status == 2) {
-                    statusMotorD.beginFill(0xFF0000, 1); //red
+                    statusLightD.animations.play('stalled'); 
                 } else if (motorD.status == 0) { //default
-                    statusMotorD.lineStyle(1, 0x282828, 1);
-                    statusMotorD.beginFill(0x909090, 1); //dark grey
+                    statusLightD.animations.play('unplugged');
                 }
-                statusMotorD.drawCircle(127, 91, 5);
             }
             //=============================================================================
             /* sensor 1 status */
@@ -651,15 +699,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
             if (sensor1.status == msg.status1) {
             } else {
-                statusSensor1 = game.add.graphics(0,0);
                 sensor1.status = msg.status1;
                 if (sensor1.status == 1) {
-                    statusSensor1.beginFill(0x33FF33, 1); //green
+                    statusLight1.animations.play('pluggedIn');
                 } else if (sensor1.status == 0) { //default
-                    statusSensor1.lineStyle(1, 0x282828, 1);
-                    statusSensor1.beginFill(0x909090, 1); //dark grey
+                    statusLight1.animations.play('unplugged');
                 }
-                statusSensor1.drawCircle(177, 91, 5);
             }
             /* sensor 2 status */
             var msg = { status2 : 0 }
@@ -667,15 +712,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
             if (sensor2.status == msg.status2) {
             } else {
-                statusSensor2 = game.add.graphics(0,0);
                 sensor2.status = msg.status2;
                 if (sensor2.status == 1) {
-                    statusSensor2.beginFill(0x33FF33, 1); //green
+                    statusLight2.animations.play('pluggedIn');
                 } else if (sensor2.status == 0) { //default
-                    statusSensor2.lineStyle(1, 0x282828, 1);
-                    statusSensor2.beginFill(0x909090, 1); //dark grey
+                    statusLight2.animations.play('unplugged');
                 }
-                statusSensor2.drawCircle(207, 91, 5);
             }
             /* sensor 3 status */
             var msg = { status3 : 0 }
@@ -683,15 +725,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
             if (sensor3.status == msg.status3) {
             } else {
-                statusSensor3 = game.add.graphics(0,0);
                 sensor3.status = msg.status3;
                 if (sensor3.status == 1) {
-                    statusSensor3.beginFill(0x33FF33, 1); //green
+                    statusLight3.animations.play('pluggedIn');
                 } else if (sensor3.status == 0) { //default
-                    statusSensor3.lineStyle(1, 0x282828, 1);
-                    statusSensor3.beginFill(0x909090, 1); //dark grey
+                    statusLight3.animations.play('unplugged');
                 }
-                statusSensor3.drawCircle(237, 91, 5);
             }
             /* sensor 4 status */
             var msg = { status4 : 0 }
@@ -699,15 +738,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
             if (sensor4.status == msg.status4) {
             } else {
-                statusSensor4 = game.add.graphics(0,0);
                 sensor4.status = msg.status4;
                 if (sensor4.status == 1) {
-                    statusSensor4.beginFill(0x33FF33, 1); //green
+                    statusLight4.animations.play('pluggedIn');
                 } else if (sensor4.status == 0) { //default
-                    statusSensor4.lineStyle(1, 0x282828, 1);
-                    statusSensor4.beginFill(0x909090, 1); //dark grey
+                    statusLight4.animations.play('unplugged');
                 }
-                statusSensor4.drawCircle(267, 91, 5);
             }
 
             //=============================================================================
@@ -785,37 +821,58 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
 
             //=============================================================================
+            /* Ultrasonic Sensor */
+
+
+            //=============================================================================
             /* Color Sensor */
 
 
             //=============================================================================
-            /* Ultrasonic Sensor */
-
-            //=============================================================================
             /* Battery Level Sensor */
             if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-                if (batteryLevel <= 1) { //upper boundary limit
+                if (batteryLevel <= 0.15) { // for almost-dead battery!
                     if(batteryLevel > 0) { //lower boundary limit
                         batteryLevel = batteryLevel - 0.01;
                         batteryLevelFill.destroy();
                         batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    }
+                }
+                else if (batteryLevel <= 1) { //upper boundary limit
+                    if(batteryLevel > 0.1) { //lower boundary limit
+                        batteryLevel = batteryLevel - 0.01;
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18);
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
                     }
                 }
             }
             if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-                if (batteryLevel < 1) { //upper boundary limit
-                    if(batteryLevel >= 0) { //lower boundary limit
+                if (batteryLevel < 0.15) { // for almost-dead battery!
+                    if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
+                        batteryLevel = batteryLevel + 0.01;
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    }
+                }
+                else if (batteryLevel < 1) { //upper boundary limit
+                    if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
                         batteryLevel = batteryLevel + 0.01;
                         batteryLevelFill.destroy();
                         batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18);
+                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
                     }
                 }
             }
             
+            //=============================================================================
+            /* LCD Screen */
 
         } // end update
 

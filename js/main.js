@@ -42,11 +42,15 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //destroy: destroy
         });
 
+        var bbLogo, botLogo;
+        var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
-        var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
+        //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
+        var titleStyle = { font: "32px Lucida Console, Arial",fill: "#282828"}
         var labelStyle = { font: "12px Arial", fill: "#000000" }
         var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
-        var labelStyle3 = { font: "16px Arial", fill: "#000000" }        
+        var labelStyle3 = { font: "16px Arial", fill: "#000000" }  
+        var labelStyle4 = { font: "14px Arial", fill: "#808080" }        
 
         var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
@@ -143,10 +147,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var batteryLevelBox, batteryLevelFill;
 
         /* LCD Screen */
-        var frameScreen;
+        var frameScreen, LCDScreenBox;
         var labelScreen = "LCD Screen";
-        var screenMessage = "Hello Mozilla"; // THIS IS A PLACEHOLDER FOR NOW!
-        var LCDScreenBox;
+        var screenMessage = {
+            messageDisplay : "Hello GigaBot!" // this is a placeholder
+        }
+        //var screenMessage; // we want this to be a screenMessage object, which has property screenMessage.messageDisplay equal to the user input text
+        //var messageDisplay;
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -170,6 +177,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
+            game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
+            game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
         } //end preload
 
     //==============================================================================================================================
@@ -178,9 +187,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             this.game.stage.disableVisibilityChange = true;    
 
         /* Background */
-            game.stage.backgroundColor = '#C0C0C0';
+            game.stage.backgroundColor = '#C8C8C8';
             var titleBox = game.add.graphics(0,0);
-            titleBox.beginFill(0xEE9A00,1);
+            //titleBox.beginFill(0xCD8500,0.75); // slightly translucent medium-dark orange
+            titleBox.beginFill(0xFFFFFF,1);
             titleBox.drawRect(0,0,960,50);
 
             backgroundBox = game.add.graphics(0,0);
@@ -188,8 +198,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             backgroundBox.drawRect(0,0,960,1064);
 
         /* Title */
-            dashboardName = game.add.text(300, 10, dashboardName, titleStyle);
-            
+            dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
+            bbLogo = game.add.sprite(701, 1, 'bbLogoSm');
+            botLogo = game.add.sprite(0,0, 'robotOrangeSm');
+            poweredBy = game.add.text(606, 19, poweredBy, labelStyle4);
+
         /* Frames */
             frameMotorPorts = game.add.graphics(0,0);
             frameMotorPorts.lineStyle(1, 0x282828, 1);
@@ -282,6 +295,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             labelBattery = game.add.text(310, 65, labelBattery, labelStyle3);
             labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
+
+
 
         /* Buttons */
             //Add button for starting all motors at their current settings
@@ -458,14 +473,18 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         } // end create 
 
     /* Button-click functions */
-    var screenMessageDisplay = "Screen Message";
+    //var screenMessageDisplay = "Screen Message";
+        //console.log(screenMessage.messageDisplay);
         function actionInputOnClick () {
-            var screenMessageDisplayOld = screenMessageDisplayNew;
-            screenMessage = prompt("What would you like to display on the screen?");
+            //var screenMessageDisplayOld = screenMessageDisplayNew;
+            //screenMessage.messageDisplay = messageDisplay;
+            screenMessage.messageDisplay.destroy();
+            messageDisplay = prompt("What would you like to display on the screen?");
             //this.screenMessageDisplay = null;
             //game.world.kill(screenMessageDisplay);
-            var screenMessageDisplayNew = game.add.text(685, 93, screenMessage, labelStyle3);
-            game.world.remove(screenMessageDisplayOld);
+            screenMessage.messageDisplay = game.add.text(685, 93, messageDisplay, labelStyle3);
+            
+            //game.world.remove(screenMessageDisplayOld);
         }
 
         function actionStartOnClick () {

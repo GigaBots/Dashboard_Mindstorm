@@ -180,7 +180,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* Background */
             game.stage.backgroundColor = '#C0C0C0';
             var titleBox = game.add.graphics(0,0);
-            titleBox.beginFill(0xFF3333,1);
+            titleBox.beginFill(0xEE9A00,1);
             titleBox.drawRect(0,0,960,50);
 
             backgroundBox = game.add.graphics(0,0);

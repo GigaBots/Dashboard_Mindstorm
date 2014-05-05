@@ -148,6 +148,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
+            //game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
+            //game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.image('minusButton','assets/buttons/gigabot_dashboard_button_minus.png', 44, 44);
             game.load.image('plusButton','assets/buttons/gigabot_dashboard_button_plus.png', 44, 44);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
@@ -247,6 +249,16 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClick);
             minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClick);
             plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClick);
+/*
+            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
+            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
+            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
+            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
+            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
+            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
+            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClick, this, 1, 0, 2, 0);
+            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClick, this, 1, 0, 2, 0);
+*/
 
             /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);

@@ -20,11 +20,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                             beginGame(client, c);
                         }
                         else {
-                            console.log("Shit, what happened? " + err);
+                            console.log("Something bad happened. " + err);
                         }
                     });
                 } else {
-                    console.log("EPIC FAIL.");
+                    console.log("Something went wrong. ");
                 }
             });
         } else {
@@ -37,7 +37,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             preload: preload,
             create: create,
             update: update,
-            render: render,
+            //render: render,
             //paused: paused,
             //destroy: destroy
         });
@@ -62,8 +62,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var startButton, stopButton;
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
-        var fAover, fAout, fAdown, fAup;
-        var rAover, rAout, rAdown, rAup;
+        var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup;
+        var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup;
+        var fCover, fCout, fCdown, fCup, rCover, rCout, rCdown, rCup;
+        var fDover, fDout, fDdown, fDup, rDover, rDout, rDdown, rDup;
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
@@ -178,60 +180,127 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             frameSensorPorts = game.add.graphics(0,0);
             frameSensorPorts.lineStyle(1, 0x282828, 1);
             //frameSensorPorts.beginFill(0xFFFFFF,1);
-            frameSensorPorts.drawRect(155, 60, 130, 60);
+            frameSensorPorts.drawRect(160, 60, 130, 60);
 
             frameMotorA = game.add.graphics(0,0);
             frameMotorA.lineStyle(1, 0x282828, 1);
-            //frameMotorPorts.beginFill(0xFFFFFF,1);
-            frameMotorA.drawRect(20, 188, 400, 200);
+            frameMotorA.drawRect(430, 188, 400, 200);
+
+            frameMotorB = game.add.graphics(0,0);
+            frameMotorB.lineStyle(1, 0x282828, 1);
+            frameMotorB.drawRect(20, 188, 400, 200);
+
+            frameMotorC = game.add.graphics(0,0);
+            frameMotorC.lineStyle(1, 0x282828, 1);
+            frameMotorC.drawRect(20, 398, 400, 200);
+
+            frameMotorD = game.add.graphics(0,0);
+            frameMotorD.lineStyle(1, 0x282828, 1);
+            frameMotorD.drawRect(430, 398, 400, 200);
 
             /* Labels */
-            labelMotorPorts = game.add.text(60,64, labelMotorPorts, labelStyle); //label at top of box indicating status of motor ports
+            labelMotorPorts = game.add.text(62,64, labelMotorPorts, labelStyle); //label at top of box indicating status of motor ports
             labelA = game.add.text(33, 100, labelMotors[0], labelStyle);
             labelB = game.add.text(63, 100, labelMotors[1], labelStyle);
             labelC = game.add.text(93, 100, labelMotors[2], labelStyle);
             labelD = game.add.text(123, 100, labelMotors[3], labelStyle);
 
-            labelSensorPorts = game.add.text(195,64, labelSensorPorts, labelStyle); //label at top of box indicating status of motor ports
-            label1 = game.add.text(168, 100, labelSensors[0], labelStyle);
-            label2 = game.add.text(198, 100, labelSensors[1], labelStyle);
-            label3 = game.add.text(228, 100, labelSensors[2], labelStyle);
-            label4 = game.add.text(258, 100, labelSensors[3], labelStyle);
+            labelSensorPorts = game.add.text(200,64, labelSensorPorts, labelStyle); //label at top of box indicating status of motor ports
+            label1 = game.add.text(173, 100, labelSensors[0], labelStyle);
+            label2 = game.add.text(203, 100, labelSensors[1], labelStyle);
+            label3 = game.add.text(233, 100, labelSensors[2], labelStyle);
+            label4 = game.add.text(263, 100, labelSensors[3], labelStyle);
 
             labelMotorA = game.add.text(30, 193, labelMotorA, labelStyle2);
-            //NEED LABELS FOR OTHER 3 MOTORS
+            labelMotorB = game.add.text(440, 193, labelMotorB, labelStyle2);
+            labelMotorC = game.add.text(30, 403, labelMotorC, labelStyle2);
+            labelMotorD = game.add.text(440, 403, labelMotorD, labelStyle2);
 
             /* Buttons */
             //Add button for starting all motors at their current settings
             startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2, 0);
-            stopButton = game.add.button(120, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2, 0);
+            stopButton = game.add.button(125, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2, 0);
             //Add forward and reverse buttons for each motor
             fAover = 1, fAout = 0, fAdown = 2, fAup = 0;
             rAover = 1, rAout = 0, rAdown = 2, rAup = 0;
+            fBover = 1, fBout = 0, fBdown = 2, fBup = 0;
+            rBover = 1, rBout = 0, rBdown = 2, rBup = 0;
+            fCover = 1, fCout = 0, fCdown = 2, fCup = 0;
+            rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
+            fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
+            rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
             forwardButtonA = game.add.button(30, 216, 'forwardButton', actionForwardOnClick, this, fAover, fAout, fAdown, fAup);
-            reverseButtonB = game.add.button(30, 274, 'reverseButton', actionReverseOnClick, this, rAover, rAout, rAdown, rAup);
-            //NEED FORWARD AND REVERSE BUTTONS FOR THE OTHER 3 MOTORS
+            reverseButtonA = game.add.button(30, 274, 'reverseButton', actionReverseOnClick, this, rAover, rAout, rAdown, rAup);
+            forwardButtonB = game.add.button(440, 216, 'forwardButton', actionForwardOnClick, this, fBover, fBout, fBdown, fBup);
+            reverseButtonB = game.add.button(440, 274, 'reverseButton', actionReverseOnClick, this, rBover, rBout, rBdown, rBup);
+            forwardButtonC = game.add.button(30, 426, 'forwardButton', actionForwardOnClick, this, fCover, fCout, fCdown, fCup);
+            reverseButtonC = game.add.button(30, 484, 'reverseButton', actionReverseOnClick, this, rCover, rCout, rCdown, rCup);
+            forwardButtonD = game.add.button(440, 426, 'forwardButton', actionForwardOnClick, this, fDover, fDout, fDdown, fDup);
+            reverseButtonD = game.add.button(440, 484, 'reverseButton', actionReverseOnClick, this, rDover, rDout, rDdown, rDup);
+
+
             minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClick);
             plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClick);
-            //NEED PLUS AND MINUS BUTTONS FOR OTHER 3 MOTORS
+            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClick);
+            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClick);
+            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClick);
+            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClick);
+            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClick);
+            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClick);
 
             /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(0x282828, 1);
             sliderTrackA.drawRect(175, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.sprite(145, 350, 'sliderBar');
-            //NEED SLIDERS FOR THE OTHER 3 MOTORS
+
+            sliderTrackB = game.add.graphics(0,0);
+            sliderTrackB.beginFill(0x282828, 1);
+            sliderTrackB.drawRect(585, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarB = game.add.sprite(555, 350, 'sliderBar');
+                        
+            sliderTrackC = game.add.graphics(0,0);
+            sliderTrackC.beginFill(0x282828, 1);
+            sliderTrackC.drawRect(175, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarC = game.add.sprite(145, 560, 'sliderBar');
+
+            sliderTrackD = game.add.graphics(0,0);
+            sliderTrackD.beginFill(0x282828, 1);
+            sliderTrackD.drawRect(585, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarD = game.add.sprite(555, 560, 'sliderBar');
 
             /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
-            dialA.lineStyle(1, 0x282828, 1);
+            dialA.lineStyle(2, 0x282828, 1);
             dialA.drawCircle(328, 282, 80);
-            //NEED DIALS FOR THE OTHER 3 MOTORS
+
+            dialB = game.add.graphics(0,0);
+            dialB.beginFill(0xD8D8D8, 1);
+            dialB.lineStyle(2, 0x282828, 1);
+            dialB.drawCircle(738, 282, 80);
+
+            dialC = game.add.graphics(0,0);
+            dialC.beginFill(0xD8D8D8, 1);
+            dialC.lineStyle(2, 0x282828, 1);
+            dialC.drawCircle(328, 492, 80);
+
+            dialD = game.add.graphics(0,0);
+            dialD.beginFill(0xD8D8D8, 1);
+            dialD.lineStyle(2, 0x282828, 1);
+            dialD.drawCircle(738, 492, 80);
 
             needleA = game.add.sprite(328, 282, 'dialNeedle');
             needleA.anchor.setTo(0.5, 0.9625);
-            //NEED NEEDLES FOR THE OTHER 3 MOTORS
+
+            needleB = game.add.sprite(738, 282, 'dialNeedle');
+            needleB.anchor.setTo(0.5, 0.9625);
+
+            needleC = game.add.sprite(328, 492, 'dialNeedle');
+            needleC.anchor.setTo(0.5, 0.9625);
+
+            needleD = game.add.sprite(738, 492, 'dialNeedle');
+            needleD.anchor.setTo(0.5, 0.9625);
         
         }  
 
@@ -245,23 +314,25 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         //NEED TO DISTINGUISH EACH OF THE 4 MOTORS!
         function actionForwardOnClick () {
+            console.log("forward");
             // forward motor
-            forwardButtonA.overFrame = 0, forwardButtonA.outFrame = 0, forwardButtonA.downFrame = 0, forwardButtonA.downFrame = 0;
-            rAout = 0;
-            console.log ("ForwardOnClick: fAout = " + fAout + " & rAout = " +rAout);
+            //forwardButtonA.overFrame = 0, forwardButtonA.outFrame = 0, forwardButtonA.downFrame = 0, forwardButtonA.downFrame = 0;
+            //rAout = 0;
+            //console.log ("ForwardOnClick: fAout = " + fAout + " & rAout = " +rAout);
         }
         function actionReverseOnClick () {
+            console.log("reverse");
             // reverse motor
-            fAout = 2;
-            rAout = 2;
-            console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
+            //fAout = 2;
+            //rAout = 2;
+            //console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
 
         }
         function actionDecreaseOnClick() {
-
+            console.log("decrease");
         }
         function actionIncreaseOnClick() {
-
+            console.log("increase");
         }
 
         /* Click-and-drag functions */
@@ -380,7 +451,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                     statusSensor1.lineStyle(1, 0x282828, 1);
                     statusSensor1.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor1.drawCircle(172, 88, 5);
+                statusSensor1.drawCircle(177, 88, 5);
             }
             /* sensor 2 status */
             var msg = { status2 : 0 }
@@ -396,7 +467,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                     statusSensor2.lineStyle(1, 0x282828, 1);
                     statusSensor2.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor2.drawCircle(202, 88, 5);
+                statusSensor2.drawCircle(207, 88, 5);
             }
             /* sensor 3 status */
             var msg = { status3 : 0 }
@@ -412,7 +483,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                     statusSensor3.lineStyle(1, 0x282828, 1);
                     statusSensor3.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor3.drawCircle(232, 88, 5);
+                statusSensor3.drawCircle(237, 88, 5);
             }
             /* sensor 4 status */
             var msg = { status4 : 0 }
@@ -428,9 +499,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                     statusSensor4.lineStyle(1, 0x282828, 1);
                     statusSensor4.beginFill(0x909090, 1); //dark grey
                 }
-                statusSensor4.drawCircle(262, 88, 5);
+                statusSensor4.drawCircle(267, 88, 5);
             }
             //=============================================================================
+
+            /* Slider bar display and cursor click-and-drag input
 
             
             //var cursorLabel;
@@ -442,30 +515,40 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //cursorLabel = cursorx + ", " + cursory;
             //cursorLabel = game.add.text(10,10, cursorLabel, labelStyle);
 
+
+            //=============================================================================
             /* Convert degrees value (between 0 and 360) in message from gigabot to a degrees (between 0 and 180, and -180 and 0) value Phaser can use for rotation */ 
-            var msgDegrees, phaserDegrees;
+/*            var msgDegrees, phaserDegrees;
             if (msgDegrees >= 0) {
                 if (msgDegrees <= 180) {
                     phaserDegrees = msgDegrees;
                 } else { // so if msgDegrees > 180
                     phaserDegrees = 360 + msgDegrees; // so -180 < phaserDegrees < 0
                 }
-            }
+            }*/
 
             /* Press up to increase degrees, and down to decrease degrees */
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                //placeholder numbers below (just for looks, since these are all taking the same input for now):
                 needleA.angle += 5;
+                needleB.angle += 6;
+                needleC.angle += 7;
+                needleD.angle += 8;
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
+                //placeholder numbers below (just for looks, since these all are taking the same input for now):
                 needleA.angle -= 5;
+                needleB.angle -= 6;
+                needleC.angle -= 7;
+                needleD.angle -= 8;
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
-
+                console.log("left");
             } 
             else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-
+                console.log("right");
             }
-            else {
+            //else {
                 //NEED TO FIX THESE ANIMATIONS IF WE WANT THEM
                 /* add a little animating so that the needle slowly returns to its previous position */
                 // rotation goes from 0' to 180' to -180' to 0' */
@@ -492,21 +575,13 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                             needleA.angle -= 0.1;
                         }
                     }*/
-            }
+            //}
 
-            /* Press W to increase power, and S to decrease power */
-            //NOTE: this works, but we should prob figure out a different way to do it, as it just deletes the statusBar rectangle and adds a new one each time...
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-
-            }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)){
-
-            }
         }
 
-        function render() {
+        //function render() {
             //console.log("render");
-        }
+        //}
 
         /*function paused() {
             console.log("paused");

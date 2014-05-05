@@ -45,7 +45,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var dashboardName = "GigaBots Dashboard";
         var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
         var labelStyle = { font: "12px Arial", fill: "#000000" }
-        var labelStyle2 = { font: "18px Arial", fill: "#000000" }        
+        var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
 
         var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
@@ -193,10 +193,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             label3 = game.add.text(233, 100, labelSensors[2], labelStyle);
             label4 = game.add.text(263, 100, labelSensors[3], labelStyle);
 
-            labelMotorA = game.add.text(30, 193, labelMotorA, labelStyle2);
-            labelMotorB = game.add.text(440, 193, labelMotorB, labelStyle2);
-            labelMotorC = game.add.text(30, 403, labelMotorC, labelStyle2);
-            labelMotorD = game.add.text(440, 403, labelMotorD, labelStyle2);
+            labelMotorA = game.add.text(30, 194, labelMotorA, labelStyle2);
+            labelMotorB = game.add.text(440, 194, labelMotorB, labelStyle2);
+            labelMotorC = game.add.text(30, 404, labelMotorC, labelStyle2);
+            labelMotorD = game.add.text(440, 404, labelMotorD, labelStyle2);
 
             /* Buttons */
             //Add button for starting all motors at their current settings
@@ -211,55 +211,55 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
-            forwardButtonA = game.add.button(30, 216, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
-            reverseButtonA = game.add.button(30, 274, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
-            forwardButtonB = game.add.button(440, 216, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
-            reverseButtonB = game.add.button(440, 274, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
-            forwardButtonC = game.add.button(30, 426, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
-            reverseButtonC = game.add.button(30, 484, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
-            forwardButtonD = game.add.button(440, 426, 'forwardButton', actionForwardOnClickD, this, fDover, fDout, fDdown, fDup);
-            reverseButtonD = game.add.button(440, 484, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
+            forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
+            reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
+            forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
+            reverseButtonB = game.add.button(440, 278, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
+            forwardButtonC = game.add.button(30, 430, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
+            reverseButtonC = game.add.button(30, 488, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
+            forwardButtonD = game.add.button(440, 430, 'forwardButton', actionForwardOnClickD, this, fDover, fDout, fDdown, fDup);
+            reverseButtonD = game.add.button(440, 488, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
 
-            minusButtonA = game.add.button(30, 332, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
-            plusButtonA = game.add.button(83, 332, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
-            minusButtonB = game.add.button(440, 332, 'minusButton', actionDecreaseOnClickB, this, 1, 0, 2, 0);
-            plusButtonB = game.add.button(493, 332, 'plusButton', actionIncreaseOnClickB, this, 1, 0, 2, 0);
-            minusButtonC = game.add.button(30, 542, 'minusButton', actionDecreaseOnClickC, this, 1, 0, 2, 0);
-            plusButtonC = game.add.button(83, 542, 'plusButton', actionIncreaseOnClickC, this, 1, 0, 2, 0);
-            minusButtonD = game.add.button(440, 542, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
-            plusButtonD = game.add.button(493, 542, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
+            minusButtonA = game.add.button(30, 336, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
+            plusButtonA = game.add.button(83, 336, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
+            minusButtonB = game.add.button(440, 336, 'minusButton', actionDecreaseOnClickB, this, 1, 0, 2, 0);
+            plusButtonB = game.add.button(493, 336, 'plusButton', actionIncreaseOnClickB, this, 1, 0, 2, 0);
+            minusButtonC = game.add.button(30, 546, 'minusButton', actionDecreaseOnClickC, this, 1, 0, 2, 0);
+            plusButtonC = game.add.button(83, 546, 'plusButton', actionIncreaseOnClickC, this, 1, 0, 2, 0);
+            minusButtonD = game.add.button(440, 546, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
+            plusButtonD = game.add.button(493, 546, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
             /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(0x282828, 1);
-            sliderTrackA.drawRect(175, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarA = game.add.button(145, 356, 'sliderBar', actionDragOnClickA);
+            sliderTrackA.drawRect(173, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarA = game.add.button(143, 356, 'sliderBar', actionDragOnClickA);
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(0x282828, 1);
-            sliderTrackB.drawRect(585, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarB = game.add.button(555, 356, 'sliderBar', actionDragOnClickB);
+            sliderTrackB.drawRect(583, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarB = game.add.button(553, 356, 'sliderBar', actionDragOnClickB);
                         
             sliderTrackC = game.add.graphics(0,0);
             sliderTrackC.beginFill(0x282828, 1);
-            sliderTrackC.drawRect(175, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarC = game.add.button(145, 566, 'sliderBar', actionDragOnClickC);
+            sliderTrackC.drawRect(173, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarC = game.add.button(143, 566, 'sliderBar', actionDragOnClickC);
 
             sliderTrackD = game.add.graphics(0,0);
             sliderTrackD.beginFill(0x282828, 1);
-            sliderTrackD.drawRect(585, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarD = game.add.button(555, 566, 'sliderBar', actionDragOnClickD);
+            sliderTrackD.drawRect(583, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
+            sliderBarD = game.add.button(553, 566, 'sliderBar', actionDragOnClickD);
 
             // Add some labels to the sliders
-            var sliderLabel = game.add.text(160, 370, "Power", labelStyle);
-            sliderLabel = game.add.text(570, 370, "Power", labelStyle);
-            sliderLabel = game.add.text(160, 580, "Power", labelStyle);
-            sliderLabel = game.add.text(570, 580, "Power", labelStyle);
+            var sliderLabel = game.add.text(158, 370, "Power", labelStyle);
+            sliderLabel = game.add.text(568, 370, "Power", labelStyle);
+            sliderLabel = game.add.text(158, 580, "Power", labelStyle);
+            sliderLabel = game.add.text(568, 580, "Power", labelStyle);
             for (var i = 0; i <= 10; i++) {
                 var powerLabel = powerRange[i] + " %";
                 //console.log(powerRange[i]);
-                var powerLabelY1 = 354 - 16 * i;
-                var powerLabelY2 = 564 - 16 * i;
+                var powerLabelY1 = 355 - 16 * i;
+                var powerLabelY2 = 565 - 16 * i;
                 var powerLabelA = game.add.text(211, powerLabelY1, powerLabel, labelStyle)
                 var powerLabelB = game.add.text(621, powerLabelY1, powerLabel, labelStyle)
                 var powerLabelC = game.add.text(211, powerLabelY2, powerLabel, labelStyle)

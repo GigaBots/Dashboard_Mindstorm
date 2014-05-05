@@ -59,6 +59,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD;
         var statusSensor1,statusSensor2, statusSensor3, statusSensor4;
 
+        var dashboardStatus = 0; // 1 = 'start', 0 = 'stop'
         var startButton, stopButton;
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
@@ -111,31 +112,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             status : 2, //0 = unplugged, 1 = plugged-in // 2 for initial setting
         }
 
-        var lightOn;
-        var lightOff;
-        var status;
-        var box;
-        var statusBar = {
-             //width : 10,
-             //height : 0
-        }
-        var power = 0;
-        var width = 8;
-        var height = 0;
-
-        var x = 0;
-        var y = 10;        
-
-        
-
-        var cursorx;
-        var cursory;
-        var cursorLabel;
-
-        //keep track of when players join (open the browser window) and leave (close the browser window):
-        //function onSubscribers(joinFunction(joined);, leaveFunction(left);){}
-        //here, joined and left are both id's (each is a GUID), of a player joining and leaving, respectively
-        
+     
+        //===================================================
         channel.onSubscribers(function (joined) {
             /*console.log(joined +" joined");
             spawn(joined);*/
@@ -144,6 +122,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //kill(left);
         });
 
+    //==============================================================================================================================
         function preload() {
             game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
             game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
@@ -308,9 +287,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* Button-click functions */
         function actionStartOnClick () {
             // start all motors at their current settings
+            dashboardStatus = 1;
         }
         function actionStopOnClick () {
             // stop all motors at their current settings
+            dashboardStatus = 0;
         }
 
 
@@ -619,33 +600,35 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 }
             }*/
 
-            var multiplier = 50; // THIS NUMBER IS JUST A PLACE HOLDER, AND IT LIKELY BE DIFFERENT FOR LARGE AND MEDIUM MOTORS
-            if (powerA > 0) {
-                if (directionA == 1) {
-                    needleA.angle += multiplier * powerA;
-                } else {
-                    needleA.angle -= multiplier * powerA;
+            if (dashboardStatus == 1) {
+                var multiplier = 50; // THIS NUMBER IS JUST A PLACE HOLDER, AND IT LIKELY BE DIFFERENT FOR LARGE AND MEDIUM MOTORS
+                if (powerA > 0) {
+                    if (directionA == 1) {
+                        needleA.angle += multiplier * powerA;
+                    } else {
+                        needleA.angle -= multiplier * powerA;
+                    }
                 }
-            }
-            if (powerB > 0) {
-                if (directionB == 1) {
-                    needleB.angle += multiplier * powerB;
-                } else {
-                    needleB.angle -= multiplier * powerB;
+                if (powerB > 0) {
+                    if (directionB == 1) {
+                        needleB.angle += multiplier * powerB;
+                    } else {
+                        needleB.angle -= multiplier * powerB;
+                    }
                 }
-            }
-            if (powerC > 0) {
-                if (directionC == 1) {
-                    needleC.angle += multiplier * powerC;
-                } else {
-                    needleC.angle -= multiplier * powerC;
+                if (powerC > 0) {
+                    if (directionC == 1) {
+                        needleC.angle += multiplier * powerC;
+                    } else {
+                        needleC.angle -= multiplier * powerC;
+                    }
                 }
-            }
-            if (powerD > 0) {
-                if (directionD == 1) {
-                    needleD.angle += multiplier * powerD;
-                } else {
-                    needleD.angle -= multiplier * powerD;
+                if (powerD > 0) {
+                    if (directionD == 1) {
+                        needleD.angle += multiplier * powerD;
+                    } else {
+                        needleD.angle -= multiplier * powerD;
+                    }
                 }
             }
 

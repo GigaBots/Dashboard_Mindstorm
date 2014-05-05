@@ -141,6 +141,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var labelBattery = "Battery Level";
         var batteryLevel = 1; //initialize the level at 100% (or, 1);
         var batteryLevelBox, batteryLevelFill;
+
+        /* LCD Screen */
+        var frameScreen;
+        var labelScreen = "LCD Screen";
+        var screenMessage = "Hello Mozilla"; // THIS IS A PLACEHOLDER FOR NOW!
      
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -168,7 +173,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
     //==============================================================================================================================
         function create() {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.game.stage.disableVisibilityChange = false;    
+            this.game.stage.disableVisibilityChange = true;    
 
         /* Background */
             game.stage.backgroundColor = '#C0C0C0';
@@ -216,19 +221,23 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
             frameIR = game.add.graphics(0,0);
             frameIR.lineStyle(1, 0x282828, 1);
-            frameIR.drawRect(462, 130, 200, 48);
+            frameIR.drawRect(462, 130, 179, 48);
+
+            frameUltrasonic = game.add.graphics(0,0);
+            frameUltrasonic.lineStyle(1, 0x282828, 1);
+            frameUltrasonic.drawRect(651, 130, 179, 48);
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, 0x282828, 1);
             frameColor.drawRect(430, 60, 232, 60);
 
-            frameUltrasonic = game.add.graphics(0,0);
-            frameUltrasonic.lineStyle(1, 0x282828, 1);
-            frameUltrasonic.drawRect(672, 60, 158, 118);
-
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, 0x282828, 1);
             frameBattery.drawRect(300, 60, 120, 60);
+
+            frameScreen = game.add.graphics(0,0);
+            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.drawRect(672, 60, 158, 60);
 
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
@@ -258,6 +267,10 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             labelIRDist = game.add.text(472, 157, labelIRDist, labelStyle);
             labelIRUnits = game.add.text(580, 157, labelIRUnits, labelStyle);
 
+            labelUltrasonic = game.add.text(661, 135, labelUltrasonic, labelStyle3);
+            labelUltrasonicDist = game.add.text(661, 157, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(769, 157, labelUltrasonicUnits, labelStyle);
+
             labelColor = game.add.text(440, 65, labelColor, labelStyle3);
             labelColorR = game.add.text(440, 95, labelColorR, labelStyle);
             labelColorG = game.add.text(505, 95, labelColorG, labelStyle);
@@ -265,11 +278,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //labelColorValue = game.add.text(580, 67, labelColorValue, labelStyle);
             labelColorName = game.add.text(551, 67, labelColorName, labelStyle);
 
-            labelUltrasonic = game.add.text(682, 65, labelUltrasonic, labelStyle3);
-            labelUltrasonicDist = game.add.text(682, 87, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(790, 87, labelUltrasonicUnits, labelStyle);
-
             labelBattery = game.add.text(310, 65, labelBattery, labelStyle3);
+            labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
 
         /* Buttons */
             //Add button for starting all motors at their current settings
@@ -416,15 +426,15 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         /* IR Sensor */
             IRDist = game.add.text(533, 155, IRDist.toFixed(2), labelStyle3);
 
+        /* Ultrasonic Sensor */
+            ultrasonicDist = game.add.text(722, 155, ultrasonicDist.toFixed(1), labelStyle3);
+
         /* Color Sensor */
             colorR = game.add.text(470, 93, Math.round(colorR), labelStyle3);
             colorG = game.add.text(546, 93, Math.round(colorG), labelStyle3);
             colorB = game.add.text(619, 93, Math.round(colorB), labelStyle3);
             //colorValue = game.add.text(619, 65, Math.round(colorValue), labelStyle3);
             colorName = game.add.text(590, 65, colorName, labelStyle3);
-
-        /* Ultrasonic Sensor */
-            ultrasonicDist = game.add.text(743, 85, ultrasonicDist.toFixed(1), labelStyle3);
 
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
@@ -434,6 +444,9 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
             batteryLevelFill.drawRect(310, 91, Math.round(batteryLevel*100), 18); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+
+        /* LCD Screen */
+
 
         } // end create 
 
@@ -793,11 +806,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
 
             //=============================================================================
-            /* Color Sensor */
+            /* Ultrasonic Sensor */
 
 
             //=============================================================================
-            /* Ultrasonic Sensor */
+            /* Color Sensor */
+
 
             //=============================================================================
             /* Battery Level Sensor */
@@ -824,6 +838,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 }
             }
             
+            //=============================================================================
+            /* LCD Screen */
 
         } // end update
 

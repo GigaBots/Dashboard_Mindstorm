@@ -57,8 +57,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var labelSensors = ["1","2","3","4"];
         var labelMotorA = "Motor A", labelMotorB = "Motor B", labelMotorC = "Motor C", labelMotorD = "Motor D";
 
-        var statusMotorA, statusMotorB, statusMotorC, statusMotorD;
-        var statusSensor1,statusSensor2, statusSensor3, statusSensor4;
+        var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
+        var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
         var dashboardStatus = 0; // 1 = 'start', 0 = 'stop'
         var startButton, stopButton;
@@ -153,6 +153,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
     //==============================================================================================================================
         function preload() {
+            game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
             game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
             game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
@@ -231,16 +232,16 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
 
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
-            labelA = game.add.text(33, 102, labelMotors[0], labelStyle);
-            labelB = game.add.text(63, 102, labelMotors[1], labelStyle);
-            labelC = game.add.text(93, 102, labelMotors[2], labelStyle);
-            labelD = game.add.text(123, 102, labelMotors[3], labelStyle);
+            labelA = game.add.text(34, 102, labelMotors[0], labelStyle);
+            labelB = game.add.text(64, 102, labelMotors[1], labelStyle);
+            labelC = game.add.text(94, 102, labelMotors[2], labelStyle);
+            labelD = game.add.text(124, 102, labelMotors[3], labelStyle);
 
             labelSensorPorts = game.add.text(193,65, labelSensorPorts, labelStyle3); //label at top of box indicating status of motor ports
-            label1 = game.add.text(173, 102, labelSensors[0], labelStyle);
-            label2 = game.add.text(203, 102, labelSensors[1], labelStyle);
-            label3 = game.add.text(233, 102, labelSensors[2], labelStyle);
-            label4 = game.add.text(263, 102, labelSensors[3], labelStyle);
+            label1 = game.add.text(175, 102, labelSensors[0], labelStyle);
+            label2 = game.add.text(205, 102, labelSensors[1], labelStyle);
+            label3 = game.add.text(235, 102, labelSensors[2], labelStyle);
+            label4 = game.add.text(265, 102, labelSensors[3], labelStyle);
 
             labelMotorA = game.add.text(30, 194, labelMotorA, labelStyle2);
             labelMotorB = game.add.text(440, 194, labelMotorB, labelStyle2);
@@ -337,6 +338,37 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
                 var powerLabelC = game.add.text(211, powerLabelY2, powerLabel, labelStyle)
                 var powerLabelD = game.add.text(621, powerLabelY2, powerLabel, labelStyle);
             }
+
+        /* Status Lights */
+            statusLightA = game.add.sprite(33, 86, 'statusLight');
+            statusLightA.animations.add('unplugged', [0], 1);
+            statusLightA.animations.add('pluggedIn', [1], 1);
+            statusLightA.animations.add('stalled', [2], 1);
+            statusLightB = game.add.sprite(63, 86, 'statusLight');
+            statusLightB.animations.add('unplugged', [0], 1);
+            statusLightB.animations.add('pluggedIn', [1], 1);
+            statusLightB.animations.add('stalled', [2], 1);
+            statusLightC = game.add.sprite(93, 86, 'statusLight');
+            statusLightC.animations.add('unplugged', [0], 1);
+            statusLightC.animations.add('pluggedIn', [1], 1);
+            statusLightC.animations.add('stalled', [2], 1);
+            statusLightD = game.add.sprite(123, 86, 'statusLight');
+            statusLightD.animations.add('unplugged', [0], 1);
+            statusLightD.animations.add('pluggedIn', [1], 1);
+            statusLightD.animations.add('stalled', [2], 1);
+
+            statusLight1 = game.add.sprite(173, 86, 'statusLight');
+            statusLight1.animations.add('unplugged', [0], 1);
+            statusLight1.animations.add('pluggedIn', [1], 1);
+            statusLight2 = game.add.sprite(203, 86, 'statusLight');
+            statusLight2.animations.add('unplugged', [0], 1);
+            statusLight2.animations.add('pluggedIn', [1], 1);
+            statusLight3 = game.add.sprite(233, 86, 'statusLight');
+            statusLight3.animations.add('unplugged', [0], 1);
+            statusLight3.animations.add('pluggedIn', [1], 1);
+            statusLight4 = game.add.sprite(263, 86, 'statusLight');
+            statusLight4.animations.add('unplugged', [0], 1);
+            statusLight4.animations.add('pluggedIn', [1], 1);
 
         /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
@@ -575,17 +607,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
             if (motorA.status == msg.Astatus) {
             } else {
-                statusMotorA = game.add.graphics(0,0);
                 motorA.status = msg.Astatus;
                 if (motorA.status == 1) {
-                    statusMotorA.beginFill(0x33FF33, 1); //green
+                    statusLightA.animations.play('pluggedIn');
                 } else if (motorA.status == 2) {
-                    statusMotorA.beginFill(0xFF0000, 1); //red
+                    statusLightA.animations.play('stalled'); 
                 } else if (motorA.status == 0) { //default
-                    statusMotorA.lineStyle(1, 0x282828, 1);
-                    statusMotorA.beginFill(0x909090, 1); //dark grey
+                    statusLightA.animations.play('unplugged');
                 }
-                statusMotorA.drawCircle(37, 91, 5);
             }
             /* motor B status */
             var msg = { Bstatus : 0 }
@@ -594,17 +623,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
             if (motorB.status == msg.Bstatus) {
             } else {
-                statusMotorB = game.add.graphics(0,0);
                 motorB.status = msg.Bstatus;
                 if (motorB.status == 1) {
-                    statusMotorB.beginFill(0x33FF33, 1); //green
+                    statusLightB.animations.play('pluggedIn');
                 } else if (motorB.status == 2) {
-                    statusMotorB.beginFill(0xFF0000, 1); //red
+                    statusLightB.animations.play('stalled'); 
                 } else if (motorB.status == 0) { //default
-                    statusMotorB.lineStyle(1, 0x282828, 1);
-                    statusMotorB.beginFill(0x909090, 1); //dark grey
+                    statusLightB.animations.play('unplugged');
                 }
-                statusMotorB.drawCircle(67, 91, 5);
             }
             /* motor C status */
             var msg = { Cstatus : 0 }
@@ -613,17 +639,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
             if (motorC.status == msg.Cstatus) {
             } else {
-                statusMotorC = game.add.graphics(0,0);
                 motorC.status = msg.Cstatus;
                 if (motorC.status == 1) {
-                    statusMotorC.beginFill(0x33FF33, 1); //green
+                    statusLightC.animations.play('pluggedIn');
                 } else if (motorC.status == 2) {
-                    statusMotorC.beginFill(0xFF0000, 1); //red
+                    statusLightC.animations.play('stalled'); 
                 } else if (motorC.status == 0) { //default
-                    statusMotorC.lineStyle(1, 0x282828, 1);
-                    statusMotorC.beginFill(0x909090, 1); //dark grey
+                    statusLightC.animations.play('unplugged');
                 }
-                statusMotorC.drawCircle(97, 91, 5);
             }
             /* motor D status */
             var msg = { Dstatus : 0 }
@@ -632,17 +655,14 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
             if (motorD.status == msg.Dstatus) {
             } else {
-                statusMotorD = game.add.graphics(0,0);
                 motorD.status = msg.Dstatus;
                 if (motorD.status == 1) {
-                    statusMotorD.beginFill(0x33FF33, 1); //green
+                    statusLightD.animations.play('pluggedIn');
                 } else if (motorD.status == 2) {
-                    statusMotorD.beginFill(0xFF0000, 1); //red
+                    statusLightD.animations.play('stalled'); 
                 } else if (motorD.status == 0) { //default
-                    statusMotorD.lineStyle(1, 0x282828, 1);
-                    statusMotorD.beginFill(0x909090, 1); //dark grey
+                    statusLightD.animations.play('unplugged');
                 }
-                statusMotorD.drawCircle(127, 91, 5);
             }
             //=============================================================================
             /* sensor 1 status */
@@ -651,15 +671,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
             if (sensor1.status == msg.status1) {
             } else {
-                statusSensor1 = game.add.graphics(0,0);
                 sensor1.status = msg.status1;
                 if (sensor1.status == 1) {
-                    statusSensor1.beginFill(0x33FF33, 1); //green
+                    statusLight1.animations.play('pluggedIn');
                 } else if (sensor1.status == 0) { //default
-                    statusSensor1.lineStyle(1, 0x282828, 1);
-                    statusSensor1.beginFill(0x909090, 1); //dark grey
+                    statusLight1.animations.play('unplugged');
                 }
-                statusSensor1.drawCircle(177, 91, 5);
             }
             /* sensor 2 status */
             var msg = { status2 : 0 }
@@ -667,15 +684,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
             if (sensor2.status == msg.status2) {
             } else {
-                statusSensor2 = game.add.graphics(0,0);
                 sensor2.status = msg.status2;
                 if (sensor2.status == 1) {
-                    statusSensor2.beginFill(0x33FF33, 1); //green
+                    statusLight2.animations.play('pluggedIn');
                 } else if (sensor2.status == 0) { //default
-                    statusSensor2.lineStyle(1, 0x282828, 1);
-                    statusSensor2.beginFill(0x909090, 1); //dark grey
+                    statusLight2.animations.play('unplugged');
                 }
-                statusSensor2.drawCircle(207, 91, 5);
             }
             /* sensor 3 status */
             var msg = { status3 : 0 }
@@ -683,15 +697,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
             if (sensor3.status == msg.status3) {
             } else {
-                statusSensor3 = game.add.graphics(0,0);
                 sensor3.status = msg.status3;
                 if (sensor3.status == 1) {
-                    statusSensor3.beginFill(0x33FF33, 1); //green
+                    statusLight3.animations.play('pluggedIn');
                 } else if (sensor3.status == 0) { //default
-                    statusSensor3.lineStyle(1, 0x282828, 1);
-                    statusSensor3.beginFill(0x909090, 1); //dark grey
+                    statusLight3.animations.play('unplugged');
                 }
-                statusSensor3.drawCircle(237, 91, 5);
             }
             /* sensor 4 status */
             var msg = { status4 : 0 }
@@ -699,15 +710,12 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
             if (sensor4.status == msg.status4) {
             } else {
-                statusSensor4 = game.add.graphics(0,0);
                 sensor4.status = msg.status4;
                 if (sensor4.status == 1) {
-                    statusSensor4.beginFill(0x33FF33, 1); //green
+                    statusLight4.animations.play('pluggedIn');
                 } else if (sensor4.status == 0) { //default
-                    statusSensor4.lineStyle(1, 0x282828, 1);
-                    statusSensor4.beginFill(0x909090, 1); //dark grey
+                    statusLight4.animations.play('unplugged');
                 }
-                statusSensor4.drawCircle(267, 91, 5);
             }
 
             //=============================================================================

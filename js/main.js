@@ -74,6 +74,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var powerA = 0, powerB = 0, powerC = 0, powerD = 0;
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD;
+        var powerRange = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
         var dialA, dialB, dialC, dialD;
         var needleA, needleB, needleC, needleD;
@@ -249,6 +250,22 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             sliderTrackD.drawRect(585, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarD = game.add.button(555, 566, 'sliderBar', actionDragOnClickD);
 
+            // Add some labels to the sliders
+            var sliderLabel = game.add.text(160, 370, "Power", labelStyle);
+            sliderLabel = game.add.text(570, 370, "Power", labelStyle);
+            sliderLabel = game.add.text(160, 580, "Power", labelStyle);
+            sliderLabel = game.add.text(570, 580, "Power", labelStyle);
+            for (var i = 0; i <= 10; i++) {
+                var powerLabel = powerRange[i] + " %";
+                //console.log(powerRange[i]);
+                var powerLabelY1 = 354 - 16 * i;
+                var powerLabelY2 = 564 - 16 * i;
+                var powerLabelA = game.add.text(211, powerLabelY1, powerLabel, labelStyle)
+                var powerLabelB = game.add.text(621, powerLabelY1, powerLabel, labelStyle)
+                var powerLabelC = game.add.text(211, powerLabelY2, powerLabel, labelStyle)
+                var powerLabelD = game.add.text(621, powerLabelY2, powerLabel, labelStyle);
+            }
+
             /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
@@ -282,6 +299,11 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             needleD = game.add.sprite(738, 492, 'dialNeedle');
             needleD.anchor.setTo(0.5, 0.9625);
         
+            var dialLabel = game.add.text(304, 370, "Rotation", labelStyle);
+            dialLabel = game.add.text(714, 370, "Rotation", labelStyle);
+            dialLabel = game.add.text(304, 580, "Rotation", labelStyle);
+            dialLabel = game.add.text(714, 580, "Rotation", labelStyle);
+
         }  
 
         /* Button-click functions */

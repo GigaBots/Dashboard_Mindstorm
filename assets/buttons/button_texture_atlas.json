@@ -1,0 +1,36 @@
+{"frames": [
+
+{
+	"filename": "out",
+	"frame": {"x":0,"y":142,"w":97,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":49},
+	"sourceSize": {"w":97,"h":49}
+},
+{
+	"filename": "over",
+	"frame": {"x":0,"y":49,"w":97,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":49},
+	"sourceSize": {"w":97,"h":49}
+},
+{
+	"filename": "down",
+	"frame": {"x":0,"y":0,"w":97,"h":49},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":97,"h":49},
+	"sourceSize": {"w":97,"h":49}
+}],
+/*"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "gigabot_dashboard_button_start_texture_atlas.png",
+	"format": "RGBA8888",
+	"size": {"w":293,"h":51},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:94df81041404a206a4e9cd597a1e3495$"
+}*/
+}

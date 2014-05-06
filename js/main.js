@@ -163,8 +163,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var screenMessage = {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
-        //var screenMessage; // we want this to be a screenMessage object, which has property screenMessage.messageDisplay equal to the user input text
-        //var messageDisplay;
+
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -174,24 +173,35 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log(left +" left");
             //kill(left);
         });
-
+        
         channel.channelData.onValue(function (key, val) {
-            //console.log("Add:" + key +"->"+JSON.stringify(val) );
-
+            console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'touchSensor') {
                 setTouchSensor(val);
             }
+            else if ( key === 'power') {
+                setBatterySensor(val);
+            }
+            else if ( key === 'distance') {
+                setUltrasonicSensor(val);
+            }
 
         }, function (key, val) {
-            //console.log("Update:" + key +"->"+JSON.stringify(val));
+            console.log("Update:" + key +"->"+JSON.stringify(val));
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'touchSensor') {
-                setTouchSensor( val);
+                setTouchSensor(val);
+            }
+            else if ( key === 'power') {
+                setBatterySensor(val);
+            }
+            else if ( key === 'distance') {
+                setUltrasonicSensor(val);
             }
 
         }, function (key) {
@@ -223,10 +233,41 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("touchSensor " + JSON.stringify(val));
             if( val.touched ) {
                 touchIndicator.animations.play('pressed');
+                game.world.remove(touch.touchCountDisplay);
+                touchCount++;
+                touchCountDisplay = touchCount;
+                touch.touchCountDisplay = game.add.text(410, 155, touchCountDisplay, labelStyle3);
             }
             else {
                 touchIndicator.animations.play('up');
             }
+        }
+
+        function setBatterySensor( val ) {
+            batteryLevel = (9 - val.voltage) / (9 - 5); //9 volt battery, and the robot dies around 5V
+            if (batteryLevel <= 0.15) { // for almost-dead battery!
+                if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
+                    batteryLevelFill.destroy();
+                    batteryLevelFill = game.add.graphics(0,0);
+                    batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                }
+            }
+            else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
+                if(batteryLevel > 0.1) { //lower boundary limit
+                    batteryLevelFill.destroy();
+                    batteryLevelFill = game.add.graphics(0,0);
+                    batteryLevelFill.beginFill(0x808080, 1); // make fill grey
+                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                }
+            }
+        }
+
+        function setUltrasonicSensor( val ) {
+            ultrasonicDist = val.distance;
+            game.world.remove(ultrasonic.ultrasonicDistDisplay);
+            ultrasonicDistDisplay = ultrasonicDist;
+            ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
 
@@ -242,7 +283,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
-            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
         } //end preload
@@ -375,6 +416,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
+            var bar = "bar";
             forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
             reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
             forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
@@ -539,7 +581,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
-        function actionForwardOnClickA () {
+        
+        function actionForwardOnClickA (foo) {
+            console.log("foo = " + foo);
             moveMotor("a", "f", powerA * 1000);
         }
         function actionReverseOnClickA () {
@@ -562,7 +606,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("forward");
         }
         function actionReverseOnClickD () {
-            moveMotor("d", "r",powerD * 1000);
+            moveMotor("d", "r", powerD * 1000);
         }
 
         function moveMotor( motor, direction, duration ) {
@@ -855,18 +899,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Touch Sensor */
-
-            if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
-                game.world.remove(touch.touchCountDisplay);
-                touchCount++;
-                touchCountDisplay = touchCount;
-                touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
-                touchIndicator.animations.play('pressed');
-                // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
-                // This is at the rate that the Update function runs: about 20 times per second
-            } else {
-                touchIndicator.animations.play('up');
-            }
+            //added this stuff (other than keyboard input) to the setTouchSensor function
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
+            //     game.world.remove(touch.touchCountDisplay);
+            //     touchCount++;
+            //     touchCountDisplay = touchCount;
+            //     touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
+            //     touchIndicator.animations.play('pressed');
+            //     // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
+            //     // This is at the rate that the Update function runs: about 20 times per second
+            // } else {
+            //     touchIndicator.animations.play('up');
+            // }
 
             //=============================================================================
             /* IR Sensor */
@@ -887,7 +931,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //=============================================================================
             /* Ultrasonic Sensor */
 
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            /*if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 game.world.remove(ultrasonic.ultrasonicDistDisplay);
                 ultrasonicDist = ultrasonicDist + 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
                 ultrasonicDistDisplay = ultrasonicDist;
@@ -898,7 +942,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 ultrasonicDist = ultrasonicDist - 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
                 ultrasonicDistDisplay = ultrasonicDist;
                 ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }
+            }*/
 
             //=============================================================================
             /* Color Sensor */
@@ -987,46 +1031,47 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Battery Level Sensor */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-                if (batteryLevel <= 0.15) { // for almost-dead battery!
-                    if(batteryLevel > 0) { //lower boundary limit
-                        batteryLevel = batteryLevel - 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-                else if (batteryLevel <= 1) { //upper boundary limit
-                    if(batteryLevel > 0.1) { //lower boundary limit
-                        batteryLevel = batteryLevel - 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-                if (batteryLevel < 0.15) { // for almost-dead battery!
-                    if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
-                        batteryLevel = batteryLevel + 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-                else if (batteryLevel < 1) { //upper boundary limit
-                    if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
-                        batteryLevel = batteryLevel + 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-            }
+
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            //     if (batteryLevel <= 0.15) { // for almost-dead battery!
+            //         if(batteryLevel > 0) { //lower boundary limit
+            //             batteryLevel = batteryLevel - 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            //     else if (batteryLevel <= 1) { //upper boundary limit
+            //         if(batteryLevel > 0.1) { //lower boundary limit
+            //             batteryLevel = batteryLevel - 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0x808080, 1);
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            // }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+            //     if (batteryLevel < 0.15) { // for almost-dead battery!
+            //         if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
+            //             batteryLevel = batteryLevel + 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            //     else if (batteryLevel < 1) { //upper boundary limit
+            //         if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
+            //             batteryLevel = batteryLevel + 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0x808080, 1);
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            // }
             
             //=============================================================================
             /* LCD Screen */

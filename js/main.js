@@ -214,19 +214,44 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a') {
                 motorA.status =1;
                 needleA.angle = val.position;
-                // = val.
+                if( !val.stalled ) {
+                    statusLightA.animations.play('pluggedIn');
+                } else {
+                    motorA.status =2;
+                    statusLightA.animations.play('stalled');
+                }
+                // is there a way to handle simply whether or not there is a motor plugged into a port?
+                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged'); when there is not a motor plugged into port A, for example
             }
             else if (key === 'b') {
                 motorB.status =1;
                 needleB.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightB.animations.play('pluggedIn');
+                } else {
+                    motorB.status =2;
+                    statusLightB.animations.play('stalled');
+                }
             }
             else if( key === 'c') {
                 motorC.status =1;
                 needleC.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightC.animations.play('pluggedIn');
+                } else {
+                    motorC.status =2;
+                    statusLightC.animations.play('stalled');
+                }
             }
             else if( key === 'd')  {
                 motorD.status =1;
                 needleD.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightD.animations.play('pluggedIn');
+                } else {
+                    motorD.status =2;
+                    statusLightD.animations.play('stalled');
+                }
             }
         }
 
@@ -738,21 +763,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
             /* motor A status */
-            var msg = { Astatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
-            if (motorA.status == msg.Astatus) {
-            } else {
-                motorA.status = msg.Astatus;
-                if (motorA.status == 1) {
-                    statusLightA.animations.play('pluggedIn');
-                } else if (motorA.status == 2) {
-                    statusLightA.animations.play('stalled'); 
-                } else if (motorA.status == 0) { //default
-                    statusLightA.animations.play('unplugged');
-                }
-            }
+            // var msg = { Astatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
+            // if (motorA.status == msg.Astatus) {
+            // } else {
+            //     motorA.status = msg.Astatus;
+            //     if (motorA.status == 1) {
+            //         statusLightA.animations.play('pluggedIn');
+            //     } else if (motorA.status == 2) {
+            //         statusLightA.animations.play('stalled'); 
+            //     } else if (motorA.status == 0) { //default
+            //         statusLightA.animations.play('unplugged');
+            //     }
+            // }
             /* motor B status */
             var msg = { Bstatus : 0 }
             if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }

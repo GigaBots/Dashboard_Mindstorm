@@ -116,6 +116,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Touch sensor */
         var press = 0; // 0 = not pressed, 1 = pressed
         var touchCount = 0; //count total presses
+        var touch = {
+         touchCountDisplay : 0 //display number of total presses
+        }
         var frameTouch;
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
@@ -123,17 +126,30 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* IR sensor */
         var frameIR;
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
-        var IRDist = 25; // THIS IS A PLACEHOLDER FOR NOW!
+        var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
+        var IR = {
+            IRDistDisplay : 0
+        }
 
         /* Color sensor */
         var frameColor;
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
-        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "Yellow"; //THESE ARE PLACEHOLDERS FOR NOW
- 
+        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
+        var color = {
+            colorRDisplay : 0,
+            colorGDisplay : 0,
+            colorBDisplay : 0,
+            colorValueDisplay : 0,
+            colorNameDisplay : 0
+        }
+
         /* Ultrasonic sensor */
         var frameUltrasonic;
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
-        var ultrasonicDist = 250; // THIS IS A PLACEHOLDER FOR NOW!
+        var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
+        var ultrasonic = {
+            ultrasonicDistDisplay : 0
+        }
 
         /* Battery level sensor */
         var frameBattery;
@@ -326,8 +342,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelTouched = game.add.text(241, 157, labelTouched, labelStyle);
             labelTouchCount = game.add.text(325, 157, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
 
-            //touchCount = game.add.text(410, 155, touchCount, labelStyle3);
-
             labelIR = game.add.text(472, 135, labelIR, labelStyle3);
             labelIRDist = game.add.text(472, 157, labelIRDist, labelStyle);
             labelIRUnits = game.add.text(580, 157, labelIRUnits, labelStyle);
@@ -491,19 +505,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator = game.add.sprite(295, 153, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
-
-        /* IR Sensor */
-            IRDist = game.add.text(533, 155, IRDist.toFixed(2), labelStyle3);
-
-        /* Ultrasonic Sensor */
-            ultrasonicDist = game.add.text(722, 155, ultrasonicDist.toFixed(1), labelStyle3);
-
-        /* Color Sensor */
-            colorR = game.add.text(470, 93, Math.round(colorR), labelStyle3);
-            colorG = game.add.text(546, 93, Math.round(colorG), labelStyle3);
-            colorB = game.add.text(619, 93, Math.round(colorB), labelStyle3);
-            //colorValue = game.add.text(619, 65, Math.round(colorValue), labelStyle3);
-            colorName = game.add.text(590, 65, colorName, labelStyle3);
 
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
@@ -688,6 +689,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
         function update() {
+            // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
+            // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
+
             /* motor A status */
             var msg = { Astatus : 0 }
             if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
@@ -817,10 +821,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
 
-            if (dashboardStatus == 1) {
-                var multiplier = 50; // THIS NUMBER IS JUST A PLACE HOLDER, AND IT LIKELY BE DIFFERENT FOR LARGE AND MEDIUM MOTORS
+            if (dashboardStatus == 1) { // i.e., dashboard has started
+                var multiplier = 50; // THIS NUMBER IS JUST A PLACEHOLDER
                 if (powerA > 0) {
-                    if (directionA == 1) {
+                    if (directionA == 1) { // i.e. direction is forward
                         needleA.angle += multiplier * powerA;
                     } else {
                         needleA.angle -= multiplier * powerA;
@@ -851,41 +855,121 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Touch Sensor */
-            var touchCountDisplay;
-  
-/*            if(!game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-                touchCountDisplay = game.add.text(410, 155, touchCount, labelStyle3);
-            } else if(game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {
-                //touchCountDisplay.destroy();
-                //touchCount++;
-            }*/
+
             if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
-                touchCountDisplay = game.add.text(410, 155, touchCount, labelStyle3);
-                touchCountDisplay.destroy();
+                game.world.remove(touch.touchCountDisplay);
+                touchCount++;
+                touchCountDisplay = touchCount;
+                touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
                 touchIndicator.animations.play('pressed');
                 // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
-                touchCount++;
-                console.log(touchCount);
-                touchCountDisplay = game.add.text(410, 155, touchCount, labelStyle3);
-
+                // This is at the rate that the Update function runs: about 20 times per second
             } else {
                 touchIndicator.animations.play('up');
-                //touchCountDisplay.destroy()
-                //touchCountDisplay = game.add.text(410, 155, touchCount, labelStyle3);
-
             }
-
 
             //=============================================================================
             /* IR Sensor */
 
+            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                game.world.remove(IR.IRDistDisplay);
+                IRDist = IRDist + 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                IRDistDisplay = IRDist;
+                IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+                game.world.remove(IR.IRDistDisplay);
+                IRDist = IRDist - 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                IRDistDisplay = IRDist;
+                IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            }
 
             //=============================================================================
             /* Ultrasonic Sensor */
 
+            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                game.world.remove(ultrasonic.ultrasonicDistDisplay);
+                ultrasonicDist = ultrasonicDist + 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                ultrasonicDistDisplay = ultrasonicDist;
+                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+                game.world.remove(ultrasonic.ultrasonicDistDisplay);
+                ultrasonicDist = ultrasonicDist - 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                ultrasonicDistDisplay = ultrasonicDist;
+                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            }
 
             //=============================================================================
             /* Color Sensor */
+
+            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                game.world.remove(color.colorRDisplay);
+                game.world.remove(color.colorGDisplay);
+                game.world.remove(color.colorBDisplay);
+                //game.world.remove(color.colorValueDisplay);
+                colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                //colorValue = colorValue + 0.01;
+                colorRDisplay = colorR;
+                colorGDisplay = colorG;
+                colorBDisplay = colorB;
+                //colorValueDisplay = colorValue;
+                color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
+                color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
+                color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
+                //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            }
+            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+                game.world.remove(color.colorRDisplay);
+                game.world.remove(color.colorGDisplay);
+                game.world.remove(color.colorBDisplay);
+                //game.world.remove(color.colorValueDisplay);
+                colorRDisplay = colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorGDisplay = colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorBDisplay = colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                //colorValueDisplay = colorValue = colorValue + 0.01;
+                color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
+                color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
+                color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
+                //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            }
+
+            // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY...
+            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Yellow"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "White"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Black"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Blue"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Red"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Green"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Orange"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Purple"
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            }
 
 
             //=============================================================================

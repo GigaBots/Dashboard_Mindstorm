@@ -239,7 +239,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setBatterySensor( val ) {
-            batteryLevel = val.voltage / 9;
+            batteryLevel = (9 - val.voltage) / (9 - 5); //9 volt battery, and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();

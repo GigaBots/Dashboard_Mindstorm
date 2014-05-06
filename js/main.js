@@ -69,8 +69,8 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
-        var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup;
-        var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup;
+        var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup; // "f" = forward "A" = motor A, "out" = default when mouse is not over it, "down" is when we're clicked on top of the button and clicking
+        var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup; // "over" = when we're hovering over the button
         var fCover, fCout, fCdown, fCup, rCover, rCout, rCdown, rCup;
         var fDover, fDout, fDdown, fDup, rDover, rDout, rDdown, rDup;
 

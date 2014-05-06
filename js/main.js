@@ -223,6 +223,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("touchSensor " + JSON.stringify(val));
             if( val.touched ) {
                 touchIndicator.animations.play('pressed');
+                game.world.remove(touch.touchCountDisplay);
+                touchCount++;
+                touchCountDisplay = touchCount;
+                touch.touchCountDisplay = game.add.text(410, 155, touchCountDisplay, labelStyle3);
             }
             else {
                 touchIndicator.animations.play('up');
@@ -242,7 +246,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
-            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
         } //end preload
@@ -855,18 +859,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Touch Sensor */
-
-            if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
-                game.world.remove(touch.touchCountDisplay);
-                touchCount++;
-                touchCountDisplay = touchCount;
-                touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
-                touchIndicator.animations.play('pressed');
-                // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
-                // This is at the rate that the Update function runs: about 20 times per second
-            } else {
-                touchIndicator.animations.play('up');
-            }
+            //added this stuff (other than keyboard input) to the setTouchSensor function
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
+            //     game.world.remove(touch.touchCountDisplay);
+            //     touchCount++;
+            //     touchCountDisplay = touchCount;
+            //     touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
+            //     touchIndicator.animations.play('pressed');
+            //     // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
+            //     // This is at the rate that the Update function runs: about 20 times per second
+            // } else {
+            //     touchIndicator.animations.play('up');
+            // }
 
             //=============================================================================
             /* IR Sensor */

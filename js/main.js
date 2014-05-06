@@ -214,6 +214,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a') {
                 motorA.status =1;
                 needleA.angle = val.position;
+                // = val.
             }
             else if (key === 'b') {
                 motorB.status =1;

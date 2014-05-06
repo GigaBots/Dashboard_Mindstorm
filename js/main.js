@@ -174,24 +174,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log(left +" left");
             //kill(left);
         });
-
+        
         channel.channelData.onValue(function (key, val) {
-            //console.log("Add:" + key +"->"+JSON.stringify(val) );
-
+            console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'touchSensor') {
                 setTouchSensor(val);
             }
+            else if ( key === 'power') {
+                setBatterySensor(val)
+            }
 
         }, function (key, val) {
-            //console.log("Update:" + key +"->"+JSON.stringify(val));
+            console.log("Update:" + key +"->"+JSON.stringify(val));
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'touchSensor') {
                 setTouchSensor( val);
+            }
+            else if ( key === 'power') {
+                setBatterySensor(val)
             }
 
         }, function (key) {
@@ -230,6 +235,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else {
                 touchIndicator.animations.play('up');
+            }
+        }
+
+        function setBatterySensor( val ) {
+            batteryLevel = val.voltage / 9;
+            if (batteryLevel <= 0.15) { // for almost-dead battery!
+                if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
+                    batteryLevelFill.destroy();
+                    batteryLevelFill = game.add.graphics(0,0);
+                    batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                }
+            }
+            else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
+                if(batteryLevel > 0.1) { //lower boundary limit
+                    batteryLevelFill.destroy();
+                    batteryLevelFill = game.add.graphics(0,0);
+                    batteryLevelFill.beginFill(0x808080, 1); // make fill grey
+                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                }
             }
         }
 
@@ -566,7 +591,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("forward");
         }
         function actionReverseOnClickD () {
-            moveMotor("d", "r",powerD * 1000);
+            moveMotor("d", "r", powerD * 1000);
         }
 
         function moveMotor( motor, direction, duration ) {
@@ -978,46 +1003,47 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Battery Level Sensor */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-                if (batteryLevel <= 0.15) { // for almost-dead battery!
-                    if(batteryLevel > 0) { //lower boundary limit
-                        batteryLevel = batteryLevel - 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-                else if (batteryLevel <= 1) { //upper boundary limit
-                    if(batteryLevel > 0.1) { //lower boundary limit
-                        batteryLevel = batteryLevel - 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-                if (batteryLevel < 0.15) { // for almost-dead battery!
-                    if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
-                        batteryLevel = batteryLevel + 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-                else if (batteryLevel < 1) { //upper boundary limit
-                    if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
-                        batteryLevel = batteryLevel + 0.01;
-                        batteryLevelFill.destroy();
-                        batteryLevelFill = game.add.graphics(0,0);
-                        batteryLevelFill.beginFill(0x808080, 1);
-                        batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-                    }
-                }
-            }
+
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            //     if (batteryLevel <= 0.15) { // for almost-dead battery!
+            //         if(batteryLevel > 0) { //lower boundary limit
+            //             batteryLevel = batteryLevel - 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            //     else if (batteryLevel <= 1) { //upper boundary limit
+            //         if(batteryLevel > 0.1) { //lower boundary limit
+            //             batteryLevel = batteryLevel - 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0x808080, 1);
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            // }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+            //     if (batteryLevel < 0.15) { // for almost-dead battery!
+            //         if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
+            //             batteryLevel = batteryLevel + 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            //     else if (batteryLevel < 1) { //upper boundary limit
+            //         if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
+            //             batteryLevel = batteryLevel + 0.01;
+            //             batteryLevelFill.destroy();
+            //             batteryLevelFill = game.add.graphics(0,0);
+            //             batteryLevelFill.beginFill(0x808080, 1);
+            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+            //         }
+            //     }
+            // }
             
             //=============================================================================
             /* LCD Screen */

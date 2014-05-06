@@ -163,8 +163,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var screenMessage = {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
-        //var screenMessage; // we want this to be a screenMessage object, which has property screenMessage.messageDisplay equal to the user input text
-        //var messageDisplay;
+
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -184,7 +183,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 setTouchSensor(val);
             }
             else if ( key === 'power') {
-                setBatterySensor(val)
+                setBatterySensor(val);
+            }
+            else if ( key === 'distance') {
+                setUltrasonicSensor(val);
             }
 
         }, function (key, val) {
@@ -193,10 +195,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 setMotorInfo(key, val);
             }
             else if ( key === 'touchSensor') {
-                setTouchSensor( val);
+                setTouchSensor(val);
             }
             else if ( key === 'power') {
-                setBatterySensor(val)
+                setBatterySensor(val);
+            }
+            else if ( key === 'distance') {
+                setUltrasonicSensor(val);
             }
 
         }, function (key) {
@@ -256,6 +261,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
                 }
             }
+        }
+
+        function setUltrasonicSensor( val ) {
+            ultrasonicDist = val.distance;
+            game.world.remove(ultrasonic.ultrasonicDistDisplay);
+            ultrasonicDistDisplay = ultrasonicDist;
+            ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
 
@@ -404,6 +416,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
+            var bar = "bar";
             forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
             reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
             forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
@@ -568,7 +581,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
-        function actionForwardOnClickA () {
+        
+        function actionForwardOnClickA (foo) {
+            console.log("foo = " + foo);
             moveMotor("a", "f", powerA * 1000);
         }
         function actionReverseOnClickA () {
@@ -916,7 +931,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //=============================================================================
             /* Ultrasonic Sensor */
 
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            /*if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 game.world.remove(ultrasonic.ultrasonicDistDisplay);
                 ultrasonicDist = ultrasonicDist + 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
                 ultrasonicDistDisplay = ultrasonicDist;
@@ -927,7 +942,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 ultrasonicDist = ultrasonicDist - 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
                 ultrasonicDistDisplay = ultrasonicDist;
                 ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }
+            }*/
 
             //=============================================================================
             /* Color Sensor */
@@ -955,9 +970,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.colorGDisplay);
                 game.world.remove(color.colorBDisplay);
                 //game.world.remove(color.colorValueDisplay);
-                colorRDisplay = colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorGDisplay = colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorBDisplay = colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
                 //colorValueDisplay = colorValue = colorValue + 0.01;
                 color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
                 color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);

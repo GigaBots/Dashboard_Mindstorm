@@ -7,28 +7,23 @@ require.config({
     }
 });
 
-require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
+require(['BrowserBigBangClient'], function (bigbang) {
 
-    var client = new bbw.BrowserBigBangClient();
+    var client = new bigbang.client.BrowserBigBangClient();
 
-    client.login("tbp.app.bigbang.io", 8888, "test", "test", "98a9b82f-e847-4965-b1b2-e00c5135796d", function (result) {
-        if (result.authenticated) {
-            client.connect(result.hosts['websocket'], result.clientKey, function (connectResult) {
-                if (connectResult.success) {
-                    client.subscribe("channel1", function (err, c) {
-                        if (!err) {
-                            beginGame(client, c);
-                        }
-                        else {
-                            console.log("Something bad happened. " + err);
-                        }
-                    });
-                } else {
-                    console.log("Something went wrong. ");
-                }
-            });
-        } else {
-            console.log("Login failed. " + result.message);
+    client.connectAnonymous("devapplication.dev:8888", function(result) {
+        if( result.success) {
+           client.subscribe("bot", function( err, c) {
+              if(!err) {
+                  beginGame(client,c);
+              }
+              else {
+                  console.log("Subscribe failure. " + err);
+              }
+           });
+        }
+        else {
+            console.log("CONNECT FAILURE.");
         }
     });
 
@@ -163,6 +158,61 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             //console.log(left +" left");
             //kill(left);
         });
+
+        channel.channelData.onValue(function (key, val) {
+            //console.log("Add:" + key +"->"+JSON.stringify(val) );
+
+            if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                setMotorInfo(key, val);
+            }
+            else if ( key === 'touchSensor') {
+                setTouchSensor(val);
+            }
+
+        }, function (key, val) {
+            //console.log("Update:" + key +"->"+JSON.stringify(val));
+            if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                setMotorInfo(key, val);
+            }
+            else if ( key === 'touchSensor') {
+                setTouchSensor( val);
+            }
+
+        }, function (key) {
+            //console.log("Delete:" + key);
+        });
+
+
+        //quick and dirty for now
+        function setMotorInfo( key, val ) {
+            if( key === 'a') {
+                motorA.status =1;
+                needleA.angle = val.position;
+            }
+            else if (key === 'b') {
+                motorB.status =1;
+                needleB.angle = val.position;
+            }
+            else if( key === 'c') {
+                motorC.status =1;
+                needleC.angle = val.position;
+            }
+            else if( key === 'd')  {
+                motorD.status =1;
+                needleD.angle = val.position;
+            }
+        }
+
+        function setTouchSensor( val ) {
+            console.log("touchSensor " + JSON.stringify(val));
+            if( val.touched ) {
+                touchIndicator.animations.play('pressed');
+            }
+            else {
+                touchIndicator.animations.play('up');
+            }
+        }
+
 
     //==============================================================================================================================
         function preload() {
@@ -489,45 +539,43 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             dashboardStatus = 0;
         }
         function actionForwardOnClickA () {
-            directionA = 1;
-            console.log("forward");
-            // forward motor
-            //forwardButtonA.overFrame = 0, forwardButtonA.outFrame = 0, forwardButtonA.downFrame = 0, forwardButtonA.downFrame = 0;
-            //rAout = 0;
-            //console.log ("ForwardOnClick: fAout = " + fAout + " & rAout = " +rAout);
+            moveMotor("a", "f", powerA * 1000);
         }
         function actionReverseOnClickA () {
-            directionA = -1;
-            console.log("reverse");
-            // reverse motor
-            //fAout = 2;
-            //rAout = 2;
-            //console.log ("ReverseOnClick: fAout = " + fAout + " & rAout = " +rAout);
+            moveMotor("a", "r", powerA * 1000);
         }
         function actionForwardOnClickB () {
-            directionB = 1;
-            console.log("forward");
+            moveMotor( "b", "f", powerB * 1000);
         }
         function actionReverseOnClickB () {
-            directionB = -1;
-            console.log("reverse");
+            moveMotor( "b", "r", powerB * 1000);
         }
         function actionForwardOnClickC () {
-            directionC = 1;
-            console.log("forward");
+            moveMotor( "c", "f",powerC * 1000);
         }
         function actionReverseOnClickC () {
-            directionC = -1;
-            console.log("reverse");
+            moveMotor( "c", "r",powerC * 1000);
         }
         function actionForwardOnClickD () {
-            directionC = 1;
+            moveMotor( "d", "f", powerD * 1000);
             console.log("forward");
         }
         function actionReverseOnClickD () {
-            directionD = -1;
-            console.log("reverse");
+            moveMotor("d", "r",powerD * 1000);
         }
+
+        function moveMotor( motor, direction, duration ) {
+            var data = {};
+            data.type = "motor";
+            data.port = motor;
+            data.dir = direction;
+            data.duration = duration;
+            console.log( "sending " + JSON.stringify(data));
+            channel.publish( data );
+        }
+
+
+
         
         //=============================================================================
         /* Plus and Minus Buttons For Increase and Decreasing Motor Speeds (an alternative to clicking and dragging) */

@@ -44,7 +44,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var titleStyle = { font: "32px Lucida Console, Arial",fill: "#282828"}
         var labelStyle = { font: "12px Arial", fill: "#000000" }
         var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
-        var labelStyle3 = { font: "16px Arial", fill: "#000000" }  
+        var labelStyle3 = { font: "16px Arial", fill: "#000000"}
         var labelStyle4 = { font: "14px Arial", fill: "#808080" }        
 
         var backgound, backgroundBox;
@@ -678,9 +678,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionDragOnClickD() {
             //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
             sliderBarD.y = 566 - Math.round( (566 - game.input.y) / 16 ) * 16; // round to nearest 10% power
-            if (sliderBarD.y < 406) { //set max power boundary limit
+            if (sliderBarD.y < 406) { //set min power boundary limit
                 sliderBarD.y = 406;
-            } else if (sliderBarD.y > 566) { //set min power boundary limit
+            } else if (sliderBarD.y > 566) { //set max power boundary limit
                 sliderBarD.y = 566;
             }
             powerD = (0.10 * (566 - sliderBarD.y) / 16);
@@ -902,23 +902,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Color Sensor */
-
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 game.world.remove(color.colorRDisplay);
                 game.world.remove(color.colorGDisplay);
                 game.world.remove(color.colorBDisplay);
                 //game.world.remove(color.colorValueDisplay);
-                colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                //colorValue = colorValue + 0.01;
-                colorRDisplay = colorR;
-                colorGDisplay = colorG;
-                colorBDisplay = colorB;
-                //colorValueDisplay = colorValue;
-                color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
-                color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
-                color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
+                if (colorR <= 255) {    
+                    colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    //colorValue = colorValue + 0.01;
+                    colorRDisplay = colorR;
+                    colorGDisplay = colorG;
+                    colorBDisplay = colorB;
+                    //colorValueDisplay = colorValue;
+                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+                }
+                else {
+                    color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
+                    color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
+                    color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
+                }
                 //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
             }
             if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
@@ -926,21 +932,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.colorGDisplay);
                 game.world.remove(color.colorBDisplay);
                 //game.world.remove(color.colorValueDisplay);
-                colorRDisplay = colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorGDisplay = colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                colorBDisplay = colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                //colorValueDisplay = colorValue = colorValue + 0.01;
-                color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
-                color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
-                color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
-                //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+                if (colorR >= 0) {
+                    colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+                    //colorValueDisplay = colorValue = colorValue + 0.01;
+                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+                    //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+                }
+                else {
+                    color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
+                    color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
+                    color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
+                }
             }
 
             // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY...
             if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Yellow"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
             } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "White"

@@ -164,6 +164,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
 
+        var bar = "bar";
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -214,12 +215,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a') {
                 motorA.status =1;
                 needleA.angle = val.position;
-                if( !val.stalled ) {
-                    statusLightA.animations.play('pluggedIn');
-                } else {
-                    motorA.status =2;
-                    statusLightA.animations.play('stalled');
+                if ( val.moving ) {
+                    motorA.status =1;
+                    statusLightB.animations.play('pluggedIn');
                 }
+                else if ( val.stalled ) {
+                    motorA.status =2;
+                    statusLightB.animations.play('stalled');
+                } 
+                else {
+                    motorA.status =0;
+                    statusLightB.animations.play('unplugged');
+                } 
                 // is there a way to handle simply whether or not there is a motor plugged into a port?
                     //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged'); when there is not a motor plugged into port A, for example
             }
@@ -442,7 +449,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
-            var bar = "bar";
+            
             forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
             reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
             forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);

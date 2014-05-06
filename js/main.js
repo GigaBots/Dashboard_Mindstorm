@@ -11,7 +11,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     var client = new bigbang.client.BrowserBigBangClient();
 
-    client.connectAnonymous("devapplication.dev:8888", function(result) {
+    client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
            client.subscribe("bot", function( err, c) {
               if(!err) {

@@ -192,7 +192,7 @@ require(['BigBangClient', 'BrowserBigBangClient'], function (bb, bbw) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
-            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 39, 18);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
         } //end preload

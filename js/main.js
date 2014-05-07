@@ -28,8 +28,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(960, 1068, Phaser.AUTO, null, {
-            preload: preload,
+        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+            preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
             //render: render,
@@ -59,8 +59,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
         var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
-        var dashboardStatus = 0; // 1 = 'start', 0 = 'stop'
-        var startButton, stopButton;
+        var dashboardStatus = 0; // 1 = 'running/resumed', 0 = 'stopped/paused'
+        var resumeButton, pauseButton;
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
@@ -164,6 +164,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
 
+        var bar = "bar";
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -214,18 +215,50 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a') {
                 motorA.status =1;
                 needleA.angle = val.position;
+                if ( val.moving ) {
+                    motorA.status =1;
+                    statusLightB.animations.play('pluggedIn');
+                }
+                else if ( val.stalled ) {
+                    motorA.status =2;
+                    statusLightB.animations.play('stalled');
+                } 
+                else {
+                    motorA.status =0;
+                    statusLightB.animations.play('unplugged');
+                } 
+                // is there a way to handle simply whether or not there is a motor plugged into a port?
+                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged'); when there is not a motor plugged into port A, for example
             }
             else if (key === 'b') {
                 motorB.status =1;
                 needleB.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightB.animations.play('pluggedIn');
+                } else {
+                    motorB.status =2;
+                    statusLightB.animations.play('stalled');
+                }
             }
             else if( key === 'c') {
                 motorC.status =1;
                 needleC.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightC.animations.play('pluggedIn');
+                } else {
+                    motorC.status =2;
+                    statusLightC.animations.play('stalled');
+                }
             }
             else if( key === 'd')  {
                 motorD.status =1;
                 needleD.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightD.animations.play('pluggedIn');
+                } else {
+                    motorD.status =2;
+                    statusLightD.animations.play('stalled');
+                }
             }
         }
 
@@ -274,8 +307,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
-            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
-            game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
+            //game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
+            game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
+            game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
+            //game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
@@ -361,6 +396,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameColor.lineStyle(1, 0x282828, 1);
             frameColor.drawRect(672, 60, 158, 60);
 
+            var frameMotorGanging = game.add.graphics(0,0);
+            frameMotorGanging.lineStyle(1, 0x282828, 1);
+            frameMotorGanging.drawRect(840, 60, 160, 120);
+
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
             labelA = game.add.text(34, 102, labelMotors[0], labelStyle);
@@ -404,9 +443,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Buttons */
-            //Add button for starting all motors at their current settings
-            startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2, 0);
-            stopButton = game.add.button(125, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2, 0);
+            //Add button for resuming all motors at their current settings, after having paused them
+            resumeButton = game.add.button(20, 130, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
+            pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
             //Add forward and reverse buttons for each motor
             fAover = 1, fAout = 0, fAdown = 2, fAup = 0;
             rAover = 1, rAout = 0, rAdown = 2, rAup = 0;
@@ -416,15 +455,41 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
-            var bar = "bar";
+
             forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
             reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
             forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
             reverseButtonB = game.add.button(440, 278, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
             forwardButtonC = game.add.button(30, 430, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
             reverseButtonC = game.add.button(30, 488, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
-            forwardButtonD = game.add.button(440, 430, 'forwardButton', actionForwardOnClickD, this, fDover, fDout, fDdown, fDup);
+            forwardButtonD = game.add.button(440, 430, 'forwardButton', null, null, fDover, fDout, fDdown, fDup);
             reverseButtonD = game.add.button(440, 488, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
+
+            //this is a placeholder:
+            // var forwardSpriteD = game.add.sprite(830, 430, 'botLogo');
+            // forwardSpriteD.inputEnabled = true;
+            // forwardSpriteD.events.onInpuDown.add(fDAction,this);
+            // function fDAction () {
+            //     console.log ("fDAction");
+            // }
+
+            
+            forwardButtonD.events.onInputDown.add(onActionDownD, this);
+
+            function onActionDownD() {
+                console.log("onActionDownD"); //this really does an action on click, not on release
+                moveMotor( "d", "f", powerD);
+
+            }
+            
+            forwardButtonD.events.onInputUp.add(onActionUpD, this);
+
+            function onActionUpD() {
+                console.log("onActionUpD");
+                moveMotor("d","f", 0); // the duration should be 0, in order to stop the motor
+
+            }
+
 
             minusButtonA = game.add.button(30, 336, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
             plusButtonA = game.add.button(83, 336, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
@@ -573,17 +638,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay = game.add.text(685, 93, messageDisplay, labelStyle3);
         }
 
-        function actionStartOnClick () {
-            // start all motors at their current settings
+        function actionResumeOnClick () {
+            // resume all motors at their current settings
             dashboardStatus = 1;
         }
-        function actionStopOnClick () {
+        function actionPauseOnClick () {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
         
-        function actionForwardOnClickA (foo) {
-            console.log("foo = " + foo);
+        function actionForwardOnClickA () {
             moveMotor("a", "f", powerA * 1000);
         }
         function actionReverseOnClickA () {
@@ -601,10 +665,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionReverseOnClickC () {
             moveMotor( "c", "r",powerC * 1000);
         }
-        function actionForwardOnClickD () {
+
+/*        function actionForwardOnClickD () {         //this is actually an action on release, not on click
             moveMotor( "d", "f", powerD * 1000);
             console.log("forward");
-        }
+        }*/
         function actionReverseOnClickD () {
             moveMotor("d", "r", powerD * 1000);
         }
@@ -737,21 +802,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
             /* motor A status */
-            var msg = { Astatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
-            if (motorA.status == msg.Astatus) {
-            } else {
-                motorA.status = msg.Astatus;
-                if (motorA.status == 1) {
-                    statusLightA.animations.play('pluggedIn');
-                } else if (motorA.status == 2) {
-                    statusLightA.animations.play('stalled'); 
-                } else if (motorA.status == 0) { //default
-                    statusLightA.animations.play('unplugged');
-                }
-            }
+            // var msg = { Astatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
+            // if (motorA.status == msg.Astatus) {
+            // } else {
+            //     motorA.status = msg.Astatus;
+            //     if (motorA.status == 1) {
+            //         statusLightA.animations.play('pluggedIn');
+            //     } else if (motorA.status == 2) {
+            //         statusLightA.animations.play('stalled'); 
+            //     } else if (motorA.status == 0) { //default
+            //         statusLightA.animations.play('unplugged');
+            //     }
+            // }
             /* motor B status */
             var msg = { Bstatus : 0 }
             if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }

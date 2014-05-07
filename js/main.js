@@ -63,6 +63,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var resumeButton, pauseButton;
         var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
         var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
+
+        /* Ganging motors together */        
+        var checkboxA1, checkboxA2, checkboxB1, checkboxB2, checkboxC1, checkboxC2, checkboxD1, checkboxD2; // 'checkbox' + 'motor letter' + 'gang number'
+        var checkboxStatusA1 =0, checkboxStatusA2 =0, checkboxStatusB1 =0, checkboxStatusB2 =0, checkboxStatusC1 =0, checkboxStatusC2 =0, checkboxStatusD1 =0, checkboxStatusD2 =0; // initialize all checkboxes to be unchecked
+        var labelMotorGang1 = "Motor Gang 1", labelMotorGang2 = "Motor Gang 2";
+        var labelMotorGangA1 = "Motor A", labelMotorGangA2 = "Motor A", labelMotorGangB1 = "Motor B", labelMotorGangB2  = "Motor B", labelMotorGangC1 = "Motor C", labelMotorGangC2 = "Motor C", labelMotorGangD1 = "Motor D", labelMotorGangD2 = "Motor D";
+
+        //var powerGang1 = 0, powerGang2 = 0;
+        //var 
+
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
         var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup; // "f" = forward "A" = motor A, "out" = default when mouse is not over it, "down" is when we're clicked on top of the button and clicking
         var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup; // "over" = when we're hovering over the button
@@ -163,8 +173,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var screenMessage = {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
-
-        var bar = "bar";
 
         //===================================================
         channel.onSubscribers(function (joined) {
@@ -307,12 +315,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
-            //game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
             game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
             game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
-            //game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
+            game.load.spritesheet('checkbox','assets/buttons/gigabot_dashboard_checkbox_spritesheet.png', 21, 21);
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
@@ -396,9 +403,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameColor.lineStyle(1, 0x282828, 1);
             frameColor.drawRect(672, 60, 158, 60);
 
+
             var frameMotorGanging = game.add.graphics(0,0);
             frameMotorGanging.lineStyle(1, 0x282828, 1);
-            frameMotorGanging.drawRect(840, 60, 160, 120);
+            frameMotorGanging.drawRect(840, 60, 240, 160);
+
+
 
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
@@ -441,12 +451,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
 
 
+            labelMotorGang1 = game.add.text(850, 65, labelMotorGang1, labelStyle3);
+            labelMotorGang2 = game.add.text(970, 65, labelMotorGang2, labelStyle3);
+            labelMotorGangA1 = game.add.text(880, 92, labelMotorGangA1, labelStyle);
+            labelMotorGangA2 = game.add.text(1000, 92, labelMotorGangA2, labelStyle);
+            labelMotorGangB1 = game.add.text(880, 122, labelMotorGangB1, labelStyle);
+            labelMotorGangB2 = game.add.text(1000, 122, labelMotorGangB2, labelStyle);
+            labelMotorGangC1 = game.add.text(880, 152, labelMotorGangC1, labelStyle);
+            labelMotorGangC2 = game.add.text(1000, 152, labelMotorGangC2, labelStyle);
+            labelMotorGangD1 = game.add.text(880, 182, labelMotorGangD1, labelStyle);
+            labelMotorGangD2 = game.add.text(1000, 182, labelMotorGangD2, labelStyle);
+
 
         /* Buttons */
             //Add button for resuming all motors at their current settings, after having paused them
             resumeButton = game.add.button(20, 130, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
             pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
-            //Add forward and reverse buttons for each motor
+            //Add forward and reverse buttons for each motor, we'll probably change this later
             fAover = 1, fAout = 0, fAdown = 2, fAup = 0;
             rAover = 1, rAout = 0, rAdown = 2, rAup = 0;
             fBover = 1, fBout = 0, fBdown = 2, fBup = 0;
@@ -456,39 +477,224 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
 
-            forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
-            reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
-            forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
-            reverseButtonB = game.add.button(440, 278, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
-            forwardButtonC = game.add.button(30, 430, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
-            reverseButtonC = game.add.button(30, 488, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
+
+            forwardButtonA = game.add.button(30, 220, 'forwardButton', null, null, fAover, fAout, fAdown, fAup);
+            reverseButtonA = game.add.button(30, 278, 'reverseButton', null, null, this, rAover, rAout, rAdown, rAup);
+            forwardButtonB = game.add.button(440, 220, 'forwardButton', null, null, fBover, fBout, fBdown, fBup);
+            reverseButtonB = game.add.button(440, 278, 'reverseButton', null, null, rBover, rBout, rBdown, rBup);
+            forwardButtonC = game.add.button(30, 430, 'forwardButton', null, null, fCover, fCout, fCdown, fCup);
+            reverseButtonC = game.add.button(30, 488, 'reverseButton', null, null, rCover, rCout, rCdown, rCup);
             forwardButtonD = game.add.button(440, 430, 'forwardButton', null, null, fDover, fDout, fDdown, fDup);
-            reverseButtonD = game.add.button(440, 488, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
+            reverseButtonD = game.add.button(440, 488, 'reverseButton', null, null, rDover, rDout, rDdown, rDup);
 
-            //this is a placeholder:
-            // var forwardSpriteD = game.add.sprite(830, 430, 'botLogo');
-            // forwardSpriteD.inputEnabled = true;
-            // forwardSpriteD.events.onInpuDown.add(fDAction,this);
-            // function fDAction () {
-            //     console.log ("fDAction");
-            // }
+
+            forwardButtonA.events.onInputDown.add(onActionDownForwardA, this); // on click
+            function onActionDownForwardA() {
+                console.log("onActionDownForwardA"); 
+                moveMotor( "a", "f", powerA);
+            }
+            forwardButtonA.events.onInputUp.add(onActionUpForwardA, this); // on release
+            function onActionUpForwardA() {
+                console.log("onActionUpForwardA");
+                stopMotor("a"); 
+            }
+            reverseButtonA.events.onInputDown.add(onActionDownReverseA, this); //on click
+            function onActionDownReverseA() {
+                console.log("onActionDownReverseA"); 
+                moveMotor( "a", "r", powerA);
+            }
+            reverseButtonA.events.onInputUp.add(onActionUpReverseA, this); //on release
+            function onActionUpReverseA() {
+                console.log("onActionUpReverseA");
+                stopMotor("a"); 
+            }
 
             
-            forwardButtonD.events.onInputDown.add(onActionDownD, this);
 
-            function onActionDownD() {
-                console.log("onActionDownD"); //this really does an action on click, not on release
+            forwardButtonB.events.onInputDown.add(onActionDownForwardB, this);
+            function onActionDownForwardB() {
+                console.log("onActionDownForwardB"); 
+                moveMotor( "b", "f", powerB);
+            }
+            forwardButtonB.events.onInputUp.add(onActionUpForwardB, this);
+            function onActionUpForwardB() {
+                console.log("onActionUpForwardB");
+                stopMotor("b"); 
+            }
+            reverseButtonB.events.onInputDown.add(onActionDownReverseB, this);
+            function onActionDownReverseB() {
+                console.log("onActionDownReverseB"); 
+                moveMotor( "b", "r", powerB);
+            }
+            reverseButtonB.events.onInputUp.add(onActionUpReverseB, this);
+            function onActionUpReverseB() {
+                console.log("onActionUpReverseB");
+                stopMotor("b"); 
+            }
+
+            
+
+            forwardButtonC.events.onInputDown.add(onActionDownForwardC, this);
+            function onActionDownForwardC() {
+                console.log("onActionDownForwardC"); 
+                moveMotor( "c", "f", powerC);
+            }
+            forwardButtonC.events.onInputUp.add(onActionUpForwardC, this);
+            function onActionUpForwardC() {
+                console.log("onActionUpForwardC");
+                stopMotor("c"); 
+            }
+            reverseButtonC.events.onInputDown.add(onActionDownReverseB, this);
+            function onActionDownReverseC() {
+                console.log("onActionDownReverseC"); 
+                moveMotor( "c", "r", powerC);
+            }
+            reverseButtonC.events.onInputUp.add(onActionUpReverseC, this);
+            function onActionUpReverseC() {
+                console.log("onActionUpReverseC");
+                stopMotor("c"); 
+            }
+
+
+            
+            forwardButtonD.events.onInputDown.add(onActionDownForwardD, this);
+            function onActionDownForwardD() {
+                console.log("onActionDownForwardD"); 
                 moveMotor( "d", "f", powerD);
-
             }
+            forwardButtonD.events.onInputUp.add(onActionUpForwardD, this);
+            function onActionUpForwardD() {
+                console.log("onActionUpForwardD");
+                stopMotor("d"); 
+            }
+            reverseButtonD.events.onInputDown.add(onActionDownReverseD, this);
+            function onActionDownReverseD() {
+                console.log("onActionDownReverseD"); 
+                moveMotor( "d", "r", powerD);
+            }
+            reverseButtonD.events.onInputUp.add(onActionUpReverseD, this);
+            function onActionUpReverseD() {
+                console.log("onActionUpReverseD");
+                stopMotor("d"); 
+            }
+
             
-            forwardButtonD.events.onInputUp.add(onActionUpD, this);
+            /* Adding motor-ganging functionality */
+            checkboxA1 = game.add.button(850, 90, 'checkbox', actionCheckboxA1, this);
+            checkboxA2 = game.add.button(970, 90, 'checkbox', actionCheckboxA2, this);
+            checkboxB1 = game.add.button(850, 120, 'checkbox', actionCheckboxB1, this);
+            checkboxB2 = game.add.button(970, 120, 'checkbox', actionCheckboxB2, this);
+            checkboxC1 = game.add.button(850, 150, 'checkbox', actionCheckboxC1, this);
+            checkboxC2 = game.add.button(970, 150, 'checkbox', actionCheckboxC2, this);
+            checkboxD1 = game.add.button(850, 180, 'checkbox', actionCheckboxD1, this);
+            checkboxD2 = game.add.button(970, 180, 'checkbox', actionCheckboxD2, this);
 
-            function onActionUpD() {
-                console.log("onActionUpD");
-                moveMotor("d","f", 0); // the duration should be 0, in order to stop the motor
-
+            function actionCheckboxA1 () {
+                if ( checkboxStatusA1 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatusA1 = 1; // so check it now
+                    checkboxA1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    if ( checkboxStatusA2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusA2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxA2.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else { // the checkbox is CHECKED
+                    checkboxStatusA1 = 0; // so uncheck it now
+                    checkboxA1.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                }
             }
+            function actionCheckboxA2 () {
+                if ( checkboxStatusA2 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatusA2 = 1; // so check it now
+                    checkboxA2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    if ( checkboxStatusA1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusA1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxA1.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else { // the checkbox is CHECKED
+                    checkboxStatusA2 = 0; // so uncheck it now
+                    checkboxA2.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                }
+            }
+            function actionCheckboxB1 () {
+                if ( checkboxStatusB1 === 0 ) {
+                    checkboxStatusB1 = 1; 
+                    checkboxB1.setFrames(1,1,1,0);
+                    if ( checkboxStatusB2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusB2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxB2.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else {
+                    checkboxStatusB1 = 0; 
+                    checkboxB1.setFrames(0,0,1,0);
+                }
+            }
+            function actionCheckboxB2 () {
+                if ( checkboxStatusB2 === 0 ) { 
+                    checkboxStatusB2 = 1; 
+                    checkboxB2.setFrames(1,1,1,0);
+                    if ( checkboxStatusB1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusB1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxB1.setFrames(0,0,1,0) // show other box as unchecked
+                    } 
+                } else {
+                    checkboxStatusB2 = 0;
+                    checkboxB2.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxC1 () {
+                if ( checkboxStatusC1 === 0 ) { 
+                    checkboxStatusC1 = 1; 
+                    checkboxC1.setFrames(1,1,1,0); 
+                    if ( checkboxStatusC2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusC2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxC2.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else {
+                    checkboxStatusC1 = 0; 
+                    checkboxC1.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxC2 () {
+                if ( checkboxStatusC2 === 0 ) { 
+                    checkboxStatusC2 = 1;
+                    checkboxC2.setFrames(1,1,1,0); 
+                    if ( checkboxStatusC1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusC1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxC1.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else {
+                    checkboxStatusC2 = 0;
+                    checkboxC2.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxD1 () {
+                if ( checkboxStatusD1 === 0 ) {
+                    checkboxStatusD1 = 1; 
+                    checkboxD1.setFrames(1,1,1,0);
+                    if ( checkboxStatusD2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusD2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxD2.setFrames(0,0,1,0) // show other box as unchecked
+                    } 
+                } else { 
+                    checkboxStatusD1 = 0; 
+                    checkboxD1.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxD2 () {
+                if ( checkboxStatusD2 === 0 ) { 
+                    checkboxStatusD2 = 1; 
+                    checkboxD2.setFrames(1,1,1,0);
+                    if ( checkboxStatusD1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatusD1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkboxD1.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                } else { 
+                    checkboxStatusD2 = 0; 
+                    checkboxD2.setFrames(0,0,1,0); 
+                }
+            }
+
+            
 
 
             minusButtonA = game.add.button(30, 336, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
@@ -670,16 +876,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             moveMotor( "d", "f", powerD * 1000);
             console.log("forward");
         }*/
-        function actionReverseOnClickD () {
+/*        function actionReverseOnClickD () {
             moveMotor("d", "r", powerD * 1000);
-        }
+        }*/
 
-        function moveMotor( motor, direction, duration ) {
+        function moveMotor( motor, direction, speed ) {
             var data = {};
-            data.type = "motor";
+            data.type = "motorStart";
             data.port = motor;
             data.dir = direction;
-            data.duration = duration;
+            data.speed = speed; // this will work when we swap out 'speed' (0 to 700 deg/s scale) in place of 'power' (0 to 1 scale)
+            data.speed = 200; // this is just a placeholder! (200 degrees/second)
+            console.log( "sending " + JSON.stringify(data));
+            channel.publish( data );
+        }
+
+        function stopMotor( motor ) {
+            var data = {};
+            data.type = "motorStop";
+            data.port = motor;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
         }
@@ -931,7 +1146,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             if (dashboardStatus == 1) { // i.e., dashboard has started
-                var multiplier = 50; // THIS NUMBER IS JUST A PLACEHOLDER
+                var multiplier = 35; // THIS NUMBER IS JUST A PLACEHOLDER
                 if (powerA > 0) {
                     if (directionA == 1) { // i.e. direction is forward
                         needleA.angle += multiplier * powerA;
@@ -963,21 +1178,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
             //=============================================================================
-            /* Touch Sensor */
-            //added this stuff (other than keyboard input) to the setTouchSensor function
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
-            //     game.world.remove(touch.touchCountDisplay);
-            //     touchCount++;
-            //     touchCountDisplay = touchCount;
-            //     touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
-            //     touchIndicator.animations.play('pressed');
-            //     // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
-            //     // This is at the rate that the Update function runs: about 20 times per second
-            // } else {
-            //     touchIndicator.animations.play('up');
-            // }
-
-            //=============================================================================
             /* IR Sensor */
 
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
@@ -992,22 +1192,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 IRDistDisplay = IRDist;
                 IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
             }
-
-            //=============================================================================
-            /* Ultrasonic Sensor */
-
-            /*if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                game.world.remove(ultrasonic.ultrasonicDistDisplay);
-                ultrasonicDist = ultrasonicDist + 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                ultrasonicDistDisplay = ultrasonicDist;
-                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-                game.world.remove(ultrasonic.ultrasonicDistDisplay);
-                ultrasonicDist = ultrasonicDist - 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                ultrasonicDistDisplay = ultrasonicDist;
-                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }*/
 
             //=============================================================================
             /* Color Sensor */
@@ -1058,7 +1242,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
 
-            // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY...
+            // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
             if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Yellow"
@@ -1095,50 +1279,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
             //=============================================================================
-            /* Battery Level Sensor */
 
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-            //     if (batteryLevel <= 0.15) { // for almost-dead battery!
-            //         if(batteryLevel > 0) { //lower boundary limit
-            //             batteryLevel = batteryLevel - 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            //     else if (batteryLevel <= 1) { //upper boundary limit
-            //         if(batteryLevel > 0.1) { //lower boundary limit
-            //             batteryLevel = batteryLevel - 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0x808080, 1);
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            // }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-            //     if (batteryLevel < 0.15) { // for almost-dead battery!
-            //         if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
-            //             batteryLevel = batteryLevel + 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            //     else if (batteryLevel < 1) { //upper boundary limit
-            //         if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
-            //             batteryLevel = batteryLevel + 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0x808080, 1);
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            // }
-            
-            //=============================================================================
+
             /* LCD Screen */
 
         } // end update

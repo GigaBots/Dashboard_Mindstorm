@@ -477,8 +477,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
             rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
 
-            forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
-            reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
+
+            forwardButtonA = game.add.button(30, 220, 'forwardButton', null, null, fAover, fAout, fAdown, fAup);
+            reverseButtonA = game.add.button(30, 278, 'reverseButton', null, null, this, rAover, rAout, rAdown, rAup);
             forwardButtonB = game.add.button(440, 220, 'forwardButton', null, null, fBover, fBout, fBdown, fBup);
             reverseButtonB = game.add.button(440, 278, 'reverseButton', null, null, rBover, rBout, rBdown, rBup);
             forwardButtonC = game.add.button(30, 430, 'forwardButton', null, null, fCover, fCout, fCdown, fCup);
@@ -487,75 +488,98 @@ require(['BrowserBigBangClient'], function (bigbang) {
             reverseButtonD = game.add.button(440, 488, 'reverseButton', null, null, rDover, rDout, rDdown, rDup);
 
 
+            forwardButtonA.events.onInputDown.add(onActionDownForwardA, this); // on click
+            function onActionDownForwardA() {
+                console.log("onActionDownForwardA"); 
+                moveMotor( "a", "f", powerA);
+            }
+            forwardButtonA.events.onInputUp.add(onActionUpForwardA, this); // on release
+            function onActionUpForwardA() {
+                console.log("onActionUpForwardA");
+                stopMotor("a"); 
+            }
+            reverseButtonA.events.onInputDown.add(onActionDownReverseA, this); //on click
+            function onActionDownReverseA() {
+                console.log("onActionDownReverseA"); 
+                moveMotor( "a", "r", powerA);
+            }
+            reverseButtonA.events.onInputUp.add(onActionUpReverseA, this); //on release
+            function onActionUpReverseA() {
+                console.log("onActionUpReverseA");
+                stopMotor("a"); 
+            }
+
+            
+
             forwardButtonB.events.onInputDown.add(onActionDownForwardB, this);
             function onActionDownForwardB() {
-                console.log("onActionDownForwardB"); //this really does an action on click, not on release
+                console.log("onActionDownForwardB"); 
                 moveMotor( "b", "f", powerB);
             }
             forwardButtonB.events.onInputUp.add(onActionUpForwardB, this);
-
             function onActionUpForwardB() {
                 console.log("onActionUpForwardB");
-                stopMotor("b"); // the duration should be 0, in order to stop the motor
+                stopMotor("b"); 
             }
             reverseButtonB.events.onInputDown.add(onActionDownReverseB, this);
             function onActionDownReverseB() {
-                console.log("onActionDownReverseB"); //this really does an action on click, not on release
+                console.log("onActionDownReverseB"); 
                 moveMotor( "b", "r", powerB);
             }
             reverseButtonB.events.onInputUp.add(onActionUpReverseB, this);
             function onActionUpReverseB() {
                 console.log("onActionUpReverseB");
-                stopMotor("b"); // the duration should be 0, in order to stop the motor
+                stopMotor("b"); 
             }
 
-            //=================
+            
 
             forwardButtonC.events.onInputDown.add(onActionDownForwardC, this);
             function onActionDownForwardC() {
-                console.log("onActionDownForwardC"); //this really does an action on click, not on release
+                console.log("onActionDownForwardC"); 
                 moveMotor( "c", "f", powerC);
             }
             forwardButtonC.events.onInputUp.add(onActionUpForwardC, this);
             function onActionUpForwardC() {
                 console.log("onActionUpForwardC");
-                stopMotor("c"); // the duration should be 0, in order to stop the motor
+                stopMotor("c"); 
             }
             reverseButtonC.events.onInputDown.add(onActionDownReverseB, this);
             function onActionDownReverseC() {
-                console.log("onActionDownReverseC"); //this really does an action on click, not on release
+                console.log("onActionDownReverseC"); 
                 moveMotor( "c", "r", powerC);
             }
             reverseButtonC.events.onInputUp.add(onActionUpReverseC, this);
             function onActionUpReverseC() {
                 console.log("onActionUpReverseC");
-                stopMotor("c"); // the duration should be 0, in order to stop the motor
+                stopMotor("c"); 
             }
 
 
-            //=====================
+            
             forwardButtonD.events.onInputDown.add(onActionDownForwardD, this);
             function onActionDownForwardD() {
-                console.log("onActionDownForwardD"); //this really does an action on click, not on release
+                console.log("onActionDownForwardD"); 
                 moveMotor( "d", "f", powerD);
             }
             forwardButtonD.events.onInputUp.add(onActionUpForwardD, this);
             function onActionUpForwardD() {
                 console.log("onActionUpForwardD");
-                stopMotor("d"); // the duration should be 0, in order to stop the motor
+                stopMotor("d"); 
             }
             reverseButtonD.events.onInputDown.add(onActionDownReverseD, this);
             function onActionDownReverseD() {
-                console.log("onActionDownReverseD"); //this really does an action on click, not on release
+                console.log("onActionDownReverseD"); 
                 moveMotor( "d", "r", powerD);
             }
             reverseButtonD.events.onInputUp.add(onActionUpReverseD, this);
             function onActionUpReverseD() {
                 console.log("onActionUpReverseD");
-                stopMotor("d"); // the duration should be 0, in order to stop the motor
+                stopMotor("d"); 
             }
 
             
+            /* Adding motor-ganging functionality */
             checkboxA1 = game.add.button(850, 90, 'checkbox', actionCheckboxA1, this);
             checkboxA2 = game.add.button(970, 90, 'checkbox', actionCheckboxA2, this);
             checkboxB1 = game.add.button(850, 120, 'checkbox', actionCheckboxB1, this);
@@ -856,14 +880,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             moveMotor("d", "r", powerD * 1000);
         }*/
 
-        var speed = 100;
         function moveMotor( motor, direction, speed ) {
             var data = {};
             data.type = "motorStart";
             data.port = motor;
             data.dir = direction;
-            //data.speed = 200;
-            data.speed = speed*700;
+            data.speed = speed; // this will work when we swap out 'speed' (0 to 700 deg/s scale) in place of 'power' (0 to 1 scale)
+            data.speed = 200; // this is just a placeholder! (200 degrees/second)
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
         }

@@ -84,7 +84,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } 
         var checkbox;
         var checkboxStatus;
-        var checkboxStatusA1 =0, checkboxStatusA2 =0, checkboxStatusB1 =0, checkboxStatusB2 =0, checkboxStatusC1 =0, checkboxStatusC2 =0, checkboxStatusD1 =0, checkboxStatusD2 =0; // initialize all checkboxes to be unchecked
 
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
         var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup; // "f" = forward "A" = motor A, "out" = default when mouse is not over it, "down" is when we're clicked on top of the button and clicking
@@ -102,9 +101,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dialA, dialB, dialC, dialD;
         var needleA, needleB, needleC, needleD;
 
+        // WE WANT TO STOP USING POWER (0-1 SCALE) AND START USING SPEED (0-700 SCALE, IN UNITS OF DEG/SEC)
+        
+        /* // this might be the cleaner way to use a motor object, where the ports are a, b, c, & d
+        var motor = { 
+            port : '',
+            status : '',
+            speed : '',
+            position : '',
+            direction : ''
+        }
+        */
+
         var motorA = {
             status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
-            speed : '', // rpm
+            speed : '', // degrees/second
             position : '' //degrees
         }
         var motorB = {
@@ -542,7 +553,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             
 
-            rButton.b.events.onInputDown.add(onActionDownForwardB, this);
+            fButton.b.events.onInputDown.add(onActionDownForwardB, this);
             function onActionDownForwardB() {
                 console.log("onActionDownForwardB"); 
                 moveMotor( "b", "f", powerB);
@@ -565,53 +576,62 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             
 
-            // forwardButtonC.events.onInputDown.add(onActionDownForwardC, this);
-            // function onActionDownForwardC() {
-            //     console.log("onActionDownForwardC"); 
-            //     moveMotor( "c", "f", powerC);
-            // }
-            // forwardButtonC.events.onInputUp.add(onActionUpForwardC, this);
-            // function onActionUpForwardC() {
-            //     console.log("onActionUpForwardC");
-            //     stopMotor("c"); 
-            // }
-            // reverseButtonC.events.onInputDown.add(onActionDownReverseB, this);
-            // function onActionDownReverseC() {
-            //     console.log("onActionDownReverseC"); 
-            //     moveMotor( "c", "r", powerC);
-            // }
-            // reverseButtonC.events.onInputUp.add(onActionUpReverseC, this);
-            // function onActionUpReverseC() {
-            //     console.log("onActionUpReverseC");
-            //     stopMotor("c"); 
-            // }
+            fButton.c.events.onInputDown.add(onActionDownForwardC, this);
+            function onActionDownForwardC() {
+                console.log("onActionDownForwardC"); 
+                moveMotor( "c", "f", powerC);
+            }
+            fButton.c.events.onInputUp.add(onActionUpForwardC, this);
+            function onActionUpForwardC() {
+                console.log("onActionUpForwardC");
+                stopMotor("c"); 
+            }
+            rButton.c.events.onInputDown.add(onActionDownReverseC, this);
+            function onActionDownReverseC() {
+                console.log("onActionDownReverseC"); 
+                moveMotor( "c", "r", powerC);
+            }
+            rButton.c.events.onInputUp.add(onActionUpReverseC, this);
+            function onActionUpReverseC() {
+                console.log("onActionUpReverseC");
+                stopMotor("c"); 
+            }
 
 
             
-            // forwardButtonD.events.onInputDown.add(onActionDownForwardD, this);
-            // function onActionDownForwardD() {
-            //     console.log("onActionDownForwardD"); 
-            //     moveMotor( "d", "f", powerD);
-            // }
-            // forwardButtonD.events.onInputUp.add(onActionUpForwardD, this);
-            // function onActionUpForwardD() {
-            //     console.log("onActionUpForwardD");
-            //     stopMotor("d"); 
-            // }
-            // reverseButtonD.events.onInputDown.add(onActionDownReverseD, this);
-            // function onActionDownReverseD() {
-            //     console.log("onActionDownReverseD"); 
-            //     moveMotor( "d", "r", powerD);
-            // }
-            // reverseButtonD.events.onInputUp.add(onActionUpReverseD, this);
-            // function onActionUpReverseD() {
-            //     console.log("onActionUpReverseD");
-            //     stopMotor("d"); 
-            // }
+            fButton.d.events.onInputDown.add(onActionDownForwardD, this);
+            function onActionDownForwardD() {
+                console.log("onActionDownForwardD"); 
+                moveMotor( "d", "f", powerD);
+            }
+            fButton.d.events.onInputUp.add(onActionUpForwardD, this);
+            function onActionUpForwardD() {
+                console.log("onActionUpForwardD");
+                stopMotor("d"); 
+            }
+            rButton.d.events.onInputDown.add(onActionDownReverseD, this);
+            function onActionDownReverseD() {
+                console.log("onActionDownReverseD"); 
+                moveMotor( "d", "r", powerD);
+            }
+            rButton.d.events.onInputUp.add(onActionUpReverseD, this);
+            function onActionUpReverseD() {
+                console.log("onActionUpReverseD");
+                stopMotor("d"); 
+            }
+
+
+            /* Button States */
+            // To change the states of buttons (i.e., their appearance when up, down, over, and out), we can set and update the states using:
+            // see Phaser API file 'Button.js' at ll. 586-637
+
 
             
+
             /* Adding motor-ganging functionality */
             checkbox = {
+                //a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckbox, this),
+
                 a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckboxA1, this),
                 a2 : game.add.button(motorGangPos.x+120, motorGangPos.y+30, 'checkbox', actionCheckboxA2, this),
                 b1 : game.add.button(motorGangPos.x, motorGangPos.y+60, 'checkbox', actionCheckboxB1, this),
@@ -621,108 +641,116 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d1 : game.add.button(motorGangPos.x, motorGangPos.y+120, 'checkbox', actionCheckboxD1, this),
                 d2 : game.add.button(motorGangPos.x+120, motorGangPos.y+120, 'checkbox', actionCheckboxD2, this)
             }
+            checkboxStatus = { a1 : 0, a2 : 0, b1 : 3, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked
+
+            /*function actionCheckbox () {
+                //console.log(checkboxStatus.this);
+                //console.log(motorPortGang);
+            }*/
 
             function actionCheckboxA1 () {
-                if ( checkboxStatusA1 === 0 ) { //the checkbox is UNCHECKED
-                    checkboxStatusA1 = 1; // so check it now
+                if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatus.a1 = 1; // so check it now
                     checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    if ( checkboxStatusA2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
-                        checkboxStatusA2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                    if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatus.a2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a2.setFrames(0,0,1,0) // show other box as unchecked
                     }
-                } else { // the checkbox is CHECKED
-                    checkboxStatusA1 = 0; // so uncheck it now
+                }
+                else { // the checkbox is CHECKED
+                    checkboxStatus.a1 = 0; // so uncheck it now
                     checkbox.a1.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
                 }
             }
             function actionCheckboxA2 () {
-                if ( checkboxStatusA2 === 0 ) { //the checkbox is UNCHECKED
-                    checkboxStatusA2 = 1; // so check it now
+                if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatus.a2 = 1; // so check it now
                     checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    if ( checkboxStatusA1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
-                        checkboxStatusA1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                    if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatus.a1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a1.setFrames(0,0,1,0) // show other box as unchecked
                     }
-                } else { // the checkbox is CHECKED
-                    checkboxStatusA2 = 0; // so uncheck it now
+                }
+                else { // the checkbox is CHECKED
+                    checkboxStatus.a2 = 0; // so uncheck it now
                     checkbox.a2.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
                 }
             }
             function actionCheckboxB1 () {
-                if ( checkboxStatusB1 === 0 ) {
-                    checkboxStatusB1 = 1; 
+                if ( checkboxStatus.b1 === 0 ) {
+                    checkboxStatus.b1 = 1; 
                     checkbox.b1.setFrames(1,1,1,0);
-                    if ( checkboxStatusB2 === 1 ) { 
-                        checkboxStatusB2 = 0; 
+                    if ( checkboxStatus.b2 === 1 ) { 
+                        checkboxStatus.b2 = 0; 
                         checkbox.b2.setFrames(0,0,1,0) 
                     }
                 } else {
-                    checkboxStatusB1 = 0; 
+                    checkboxStatus.b1 = 0; 
                     checkbox.b1.setFrames(0,0,1,0);
                 }
             }
             function actionCheckboxB2 () {
-                if ( checkboxStatusB2 === 0 ) { 
-                    checkboxStatusB2 = 1; 
+                if ( checkboxStatus.b2 === 0 ) { 
+                    checkboxStatus.b2 = 1; 
                     checkbox.b2.setFrames(1,1,1,0);
-                    if ( checkboxStatusB1 === 1 ) {
-                        checkboxStatusB1 = 0; 
+                    if ( checkboxStatus.b1 === 1 ) {
+                        checkboxStatus.b1 = 0; 
                         checkbox.b1.setFrames(0,0,1,0) 
                     } 
                 } else {
-                    checkboxStatusB2 = 0;
+                    checkboxStatus.b2 = 0;
                     checkbox.b2.setFrames(0,0,1,0); 
                 }
             }
             function actionCheckboxC1 () {
-                if ( checkboxStatusC1 === 0 ) {
-                    checkboxStatusC1 = 1; 
+                if ( checkboxStatus.c1 === 0 ) {
+                    checkboxStatus.c1 = 1; 
                     checkbox.c1.setFrames(1,1,1,0);
-                    if ( checkboxStatusC2 === 1 ) { 
-                        checkboxStatusC2 = 0; 
+                    if ( checkboxStatus.c2 === 1 ) { 
+                        checkboxStatus.c2 = 0; 
                         checkbox.c2.setFrames(0,0,1,0) 
                     }
                 } else {
-                    checkboxStatusC1 = 0; 
+                    checkboxStatus.c1 = 0; 
                     checkbox.c1.setFrames(0,0,1,0);
                 }
             }
             function actionCheckboxC2 () {
-                if ( checkboxStatusC2 === 0 ) { 
-                    checkboxStatusC2 = 1; 
+                if ( checkboxStatus.c2 === 0 ) { 
+                    checkboxStatus.c2 = 1; 
                     checkbox.c2.setFrames(1,1,1,0);
-                    if ( checkboxStatusC1 === 1 ) { 
-                        checkboxStatusC1 = 0; 
+                    if ( checkboxStatus.c1 === 1 ) { 
+                        checkboxStatus.c1 = 0; 
                         checkbox.c1.setFrames(0,0,1,0) 
                     } 
                 } else {
-                    checkboxStatusC2 = 0;
+                    checkboxStatus.c2 = 0;
                     checkbox.c2.setFrames(0,0,1,0); 
                 }
             }
             function actionCheckboxD1 () {
-                if ( checkboxStatusD1 === 0 ) {
-                    checkboxStatusD1 = 1; 
+                if ( checkboxStatus.d1 === 0 ) {
+                    checkboxStatus.d1 = 1; 
                     checkbox.d1.setFrames(1,1,1,0);
-                    if ( checkboxStatusD2 === 1 ) { 
-                        checkboxStatusD2 = 0; 
+                    if ( checkboxStatus.d2 === 1 ) { 
+                        checkboxStatus.d2 = 0; 
                         checkbox.d2.setFrames(0,0,1,0) 
                     } 
                 } else { 
-                    checkboxStatusD1 = 0; 
+                    checkboxStatus.d1 = 0; 
                     checkbox.d1.setFrames(0,0,1,0); 
                 }
             }
             function actionCheckboxD2 () {
-                if ( checkboxStatusD2 === 0 ) { 
-                    checkboxStatusD2 = 1; 
+                if ( checkboxStatus.d2 === 0 ) { 
+                    checkboxStatus.d2 = 1; 
                     checkbox.d2.setFrames(1,1,1,0);
-                    if ( checkboxStatusD1 === 1 ) { 
-                        checkboxStatusD1 = 0; 
+                    if ( checkboxStatus.d1 === 1 ) { 
+                        checkboxStatus.d1 = 0; 
                         checkbox.d1.setFrames(0,0,1,0) 
                     }
                 } else { 
-                    checkboxStatusD2 = 0; 
+                    checkboxStatus.d2 = 0; 
                     checkbox.d2.setFrames(0,0,1,0); 
                 }
             }
@@ -1066,106 +1094,106 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     }
             // }
             /* motor B status */
-            var msg = { Bstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
-            if (motorB.status == msg.Bstatus) {
-            } else {
-                motorB.status = msg.Bstatus;
-                if (motorB.status == 1) {
-                    statusLightB.animations.play('pluggedIn');
-                } else if (motorB.status == 2) {
-                    statusLightB.animations.play('stalled'); 
-                } else if (motorB.status == 0) { //default
-                    statusLightB.animations.play('unplugged');
-                }
-            }
-            /* motor C status */
-            var msg = { Cstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
-            if (motorC.status == msg.Cstatus) {
-            } else {
-                motorC.status = msg.Cstatus;
-                if (motorC.status == 1) {
-                    statusLightC.animations.play('pluggedIn');
-                } else if (motorC.status == 2) {
-                    statusLightC.animations.play('stalled'); 
-                } else if (motorC.status == 0) { //default
-                    statusLightC.animations.play('unplugged');
-                }
-            }
-            /* motor D status */
-            var msg = { Dstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
-            if (motorD.status == msg.Dstatus) {
-            } else {
-                motorD.status = msg.Dstatus;
-                if (motorD.status == 1) {
-                    statusLightD.animations.play('pluggedIn');
-                } else if (motorD.status == 2) {
-                    statusLightD.animations.play('stalled'); 
-                } else if (motorD.status == 0) { //default
-                    statusLightD.animations.play('unplugged');
-                }
-            }
-            //=============================================================================
-            /* sensor 1 status */
-            var msg = { status1 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
-            if (sensor1.status == msg.status1) {
-            } else {
-                sensor1.status = msg.status1;
-                if (sensor1.status == 1) {
-                    statusLight1.animations.play('pluggedIn');
-                } else if (sensor1.status == 0) { //default
-                    statusLight1.animations.play('unplugged');
-                }
-            }
-            /* sensor 2 status */
-            var msg = { status2 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
-            if (sensor2.status == msg.status2) {
-            } else {
-                sensor2.status = msg.status2;
-                if (sensor2.status == 1) {
-                    statusLight2.animations.play('pluggedIn');
-                } else if (sensor2.status == 0) { //default
-                    statusLight2.animations.play('unplugged');
-                }
-            }
-            /* sensor 3 status */
-            var msg = { status3 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
-            if (sensor3.status == msg.status3) {
-            } else {
-                sensor3.status = msg.status3;
-                if (sensor3.status == 1) {
-                    statusLight3.animations.play('pluggedIn');
-                } else if (sensor3.status == 0) { //default
-                    statusLight3.animations.play('unplugged');
-                }
-            }
-            /* sensor 4 status */
-            var msg = { status4 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
-            if (sensor4.status == msg.status4) {
-            } else {
-                sensor4.status = msg.status4;
-                if (sensor4.status == 1) {
-                    statusLight4.animations.play('pluggedIn');
-                } else if (sensor4.status == 0) { //default
-                    statusLight4.animations.play('unplugged');
-                }
-            }
+            // var msg = { Bstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
+            // if (motorB.status == msg.Bstatus) {
+            // } else {
+            //     motorB.status = msg.Bstatus;
+            //     if (motorB.status == 1) {
+            //         statusLightB.animations.play('pluggedIn');
+            //     } else if (motorB.status == 2) {
+            //         statusLightB.animations.play('stalled'); 
+            //     } else if (motorB.status == 0) { //default
+            //         statusLightB.animations.play('unplugged');
+            //     }
+            // }
+            // /* motor C status */
+            // var msg = { Cstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
+            // if (motorC.status == msg.Cstatus) {
+            // } else {
+            //     motorC.status = msg.Cstatus;
+            //     if (motorC.status == 1) {
+            //         statusLightC.animations.play('pluggedIn');
+            //     } else if (motorC.status == 2) {
+            //         statusLightC.animations.play('stalled'); 
+            //     } else if (motorC.status == 0) { //default
+            //         statusLightC.animations.play('unplugged');
+            //     }
+            // }
+            // /* motor D status */
+            // var msg = { Dstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
+            // if (motorD.status == msg.Dstatus) {
+            // } else {
+            //     motorD.status = msg.Dstatus;
+            //     if (motorD.status == 1) {
+            //         statusLightD.animations.play('pluggedIn');
+            //     } else if (motorD.status == 2) {
+            //         statusLightD.animations.play('stalled'); 
+            //     } else if (motorD.status == 0) { //default
+            //         statusLightD.animations.play('unplugged');
+            //     }
+            // }
+            // //=============================================================================
+            // /* sensor 1 status */
+            // var msg = { status1 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
+            // if (sensor1.status == msg.status1) {
+            // } else {
+            //     sensor1.status = msg.status1;
+            //     if (sensor1.status == 1) {
+            //         statusLight1.animations.play('pluggedIn');
+            //     } else if (sensor1.status == 0) { //default
+            //         statusLight1.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 2 status */
+            // var msg = { status2 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
+            // if (sensor2.status == msg.status2) {
+            // } else {
+            //     sensor2.status = msg.status2;
+            //     if (sensor2.status == 1) {
+            //         statusLight2.animations.play('pluggedIn');
+            //     } else if (sensor2.status == 0) { //default
+            //         statusLight2.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 3 status */
+            // var msg = { status3 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
+            // if (sensor3.status == msg.status3) {
+            // } else {
+            //     sensor3.status = msg.status3;
+            //     if (sensor3.status == 1) {
+            //         statusLight3.animations.play('pluggedIn');
+            //     } else if (sensor3.status == 0) { //default
+            //         statusLight3.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 4 status */
+            // var msg = { status4 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
+            // if (sensor4.status == msg.status4) {
+            // } else {
+            //     sensor4.status = msg.status4;
+            //     if (sensor4.status == 1) {
+            //         statusLight4.animations.play('pluggedIn');
+            //     } else if (sensor4.status == 0) { //default
+            //         statusLight4.animations.play('unplugged');
+            //     }
+            // }
 
             //=============================================================================
             /* Convert degrees value (between 0 and 360) in message from gigabot to a degrees (between 0 and 180, and -180 and 0) value Phaser can use for rotation */ 

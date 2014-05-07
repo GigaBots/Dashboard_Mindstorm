@@ -1228,89 +1228,88 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //=============================================================================
             /* Color Sensor */
-<<<<<<< HEAD
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                game.world.remove(color.colorRDisplay);
-                game.world.remove(color.colorGDisplay);
-                game.world.remove(color.colorBDisplay);
-                //game.world.remove(color.colorValueDisplay);
-                if (colorR <= 255) {    
-                    colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    //colorValue = colorValue + 0.01;
-                    colorRDisplay = colorR;
-                    colorGDisplay = colorG;
-                    colorBDisplay = colorB;
-                    //colorValueDisplay = colorValue;
-                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-                }
-                else {
-                    color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
-                }
-                //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-                game.world.remove(color.colorRDisplay);
-                game.world.remove(color.colorGDisplay);
-                game.world.remove(color.colorBDisplay);
-                //game.world.remove(color.colorValueDisplay);
-                if (colorR >= 0) {
-                    colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    //colorValueDisplay = colorValue = colorValue + 0.01;
-                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-                    //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-                }
-                else {
-                    color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
-                }
-            }
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+//                 game.world.remove(color.colorRDisplay);
+//                 game.world.remove(color.colorGDisplay);
+//                 game.world.remove(color.colorBDisplay);
+//                 //game.world.remove(color.colorValueDisplay);
+//                 if (colorR <= 255) {    
+//                     colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     //colorValue = colorValue + 0.01;
+//                     colorRDisplay = colorR;
+//                     colorGDisplay = colorG;
+//                     colorBDisplay = colorB;
+//                     //colorValueDisplay = colorValue;
+//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+//                 }
+//                 else {
+//                     color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
+//                 }
+//                 //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+//             }
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+//                 game.world.remove(color.colorRDisplay);
+//                 game.world.remove(color.colorGDisplay);
+//                 game.world.remove(color.colorBDisplay);
+//                 //game.world.remove(color.colorValueDisplay);
+//                 if (colorR >= 0) {
+//                     colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     //colorValueDisplay = colorValue = colorValue + 0.01;
+//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+//                     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+//                 }
+//                 else {
+//                     color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
+//                 }
+//             }
 
-            // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Yellow"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "White"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Black"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Blue"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Red"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Green"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Orange"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Purple"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            }
-=======
+//             // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Yellow"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "White"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Black"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Blue"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Red"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Green"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Orange"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Purple"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             }
+// =======
 
             // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             //     game.world.remove(color.colorRDisplay);
@@ -1379,7 +1378,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     colorNameDisplay = colorName = "Purple"
             //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
             // }
->>>>>>> John
 
 
             //=============================================================================

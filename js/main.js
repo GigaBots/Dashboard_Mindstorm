@@ -240,8 +240,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setMotorInfo( key, val ) {
             if( key === 'a') {
                 motorA.status =1;
-                needleA.angle = val.position;
-                if ( val.moving ) {
+                needleA.angle = val.position; // THE ERROR WE GET HERE IS BECAUSE THE NEEDLE VARIABLES DON'T GET THEIR SPRITES UNTIL LATER
+                if ( val.moving ) { // WE SHOULD ADDRESS THIS ERROR AFTER WE GET OTHER THINGS WORKING AND THEN START USING A NEEDLE OBJECT, WE MIGHT HAVE TO DO SOME REARRANGING
                     motorA.status =1;
                     statusLightB.animations.play('pluggedIn');
                 }
@@ -473,7 +473,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* Ganging motors together */
             labelMotorGang = {
                 g1 : game.add.text(motorGangPos.x, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 1
-                g2 : game.add.text(motorGangPos.x+120, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 2
+                g2 : game.add.text(motorGangPos.x+120, motorGangPos.y, "Motor Gang 2", labelStyle3), // gang 2
                 a1 : game.add.text(motorGangPos.x+30, motorGangPos.y+27, "Motor A", labelStyle), // motor A in gang 1
                 a2 : game.add.text(motorGangPos.x+150, motorGangPos.y+27, "Motor A", labelStyle), //motor A in gang 2
                 b1 : game.add.text(motorGangPos.x+30, motorGangPos.y+57, "Motor B", labelStyle), 
@@ -486,12 +486,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Buttons */
-            //Add button for resuming all motors at their current settings, after having paused them
+            // Add button for resuming all motors at their current settings, after having paused them
             resumeButton = game.add.button(20, 130, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
             pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
-
+            // Forward button object and reverse button object
             fButton = {
-                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),//, fButtonSet, this),
+                //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonSet, this),
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, this),
                 b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
                 c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
                 d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
@@ -504,19 +505,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
             
-           // function fButtonSet (newDirectionButton) {
-           //      this.directionButton = newDirectionButton;
+            function fButtonCallback (btn) {
+                this.downButton = btn;
+                console.log("hey");
+                console.log(this.downButton);
+                //console.log ("button: " + JSON.stringify(btn));
+                //btn.events.onInputDown.add(fButtonDownAction, this);
+                //fButtonDownAction(btn);
+            }
 
-           //      this.directionButton.events.onInputOver.add(this.directionButton.onInputOverHandler, this);
-           //      this.directionButton.events.onInputOut.add(this.directionButton.onInputOutHandler, this);
-           //      this.directionButton.events.onInputDown.add(this.directionButton.onInputDownHandler, this);
-           //      this.directionButton.events.onInputUp.add(this.directionButton.onInputUpHandler, this);
-           //      console.log("finished 1");
-           //      console.log(this.directionButton);
-           //      onInputDownHandler = function () {
-           //          console.log("here");
-           //      }
-           //  }
+           /*function fButtonSet (newDirectionButton) {
+                this.directionButton = newDirectionButton;
+
+                this.directionButton.events.onInputOver.add(this.directionButton.onInputOverHandler, this);
+                this.directionButton.events.onInputOut.add(this.directionButton.onInputOutHandler, this);
+                this.directionButton.events.onInputDown.add(this.directionButton.onInputDownHandler, this);
+                this.directionButton.events.onInputUp.add(this.directionButton.onInputUpHandler, this);
+                console.log("finished 1");
+                console.log(this.directionButton);
+                onInputDownHandler = function () {
+                    console.log("here");
+                }
+            }*/
+
+            function fButtonDownAction () {
+                console.log("onActionDownForward"); 
+                moveMotor( "a", "f", powerA);
+            }
+            function onActionUpForwardA() {
+                console.log("onActionUpForwardA");
+                stopMotor("a"); 
+            }
+
 /*
             this.events.onInputOver.add(this.onInputOverHandler, this);
             this.events.onInputOut.add(this.onInputOutHandler, this);
@@ -544,7 +564,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // function rOnActionUp() {}
 
 
-
+/*
             fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
             function onActionDownForwardA() {
                 console.log("onActionDownForwardA"); 
@@ -554,7 +574,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function onActionUpForwardA() {
                 console.log("onActionUpForwardA");
                 stopMotor("a"); 
-            }
+            }*/
             rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
             function onActionDownReverseA() {
                 console.log("onActionDownReverseA"); 

@@ -564,7 +564,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function fButtonDownAction () {
                 console.log("onActionDownForward"); 
                 moveMotor( this.port, "f", this.speed );
-                th
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");

@@ -533,17 +533,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             speed = {
-<<<<<<< HEAD
                 a : 314, // these are placeholders for now
                 b : 159,
                 c : 265,
                 d : 359
-=======
-                a : 100, // these are placeholders for now
-                b : 200,
-                c : 100,
-                d : 200
->>>>>>> master
+
             }
             fButton.a.events.onInputDown.add(fButtonDownAction, "a");
             fButton.a.events.onInputUp.add(fButtonUpAction, "a");
@@ -552,11 +546,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log(this);
                 //console.log(this.charAt(0));
                 console.log("onActionDownForward"); 
-<<<<<<< HEAD
-                moveMotor( this, "f", this );
-=======
+
                 moveMotor( this, "f", speed.this );
->>>>>>> master
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");

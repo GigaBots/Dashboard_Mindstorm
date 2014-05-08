@@ -28,8 +28,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(960, 1068, Phaser.AUTO, null, {
-            preload: preload,
+        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+            preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
             //render: render,
@@ -46,11 +46,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
         var labelStyle3 = { font: "16px Arial", fill: "#000000"}
         var labelStyle4 = { font: "14px Arial", fill: "#808080" }        
+        var frameLineColor = 0x282828;
 
         var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
         var frameSensorPorts, labelSensorPorts = "Sensors";
-        var frameMotorA, frameMotorB, frameMotorC, frameMotorD;
+        var frameMotor;
+        var frameMotorPos = {
+            x : 20, // x-coordinate of upper left motor frame
+            y : 188 // y-coordinate of upper left motor frame
+        }
+
+        var frameMotorGanging;
         
         var labelMotors = ["A","B","C","D"];
         var labelSensors = ["1","2","3","4"];
@@ -59,15 +66,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
         var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
-        var dashboardStatus = 0; // 1 = 'start', 0 = 'stop'
-        var startButton, stopButton;
-        var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
-        var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
+        var dashboardStatus = 1; // 1 = 'running/resumed', 0 = 'stopped/paused'
+        var resumeButton, pauseButton;
+
+        var fButtonPos = {
+            x : 30, // x-coordinate of upper left forward button
+            y : 220 // y-coordinate of upper left forward button
+        }
+        var fButton;
+        var rButtonPos = {
+            x : 30, // x-coordinate of upper left reverse button
+            y : 278 // y-coordinate of upper left reverse button
+        }
+        var rButton;
+
+
+        /* Ganging motors together */
+        var labelMotorGang;
+        var motorGangPos = {
+            x : 850,
+            y : 65
+        } 
+        var checkbox;
+        var checkboxStatus;
+
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
-        var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup; // "f" = forward "A" = motor A, "out" = default when mouse is not over it, "down" is when we're clicked on top of the button and clicking
-        var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup; // "over" = when we're hovering over the button
-        var fCover, fCout, fCdown, fCup, rCover, rCout, rCdown, rCup;
-        var fDover, fDout, fDdown, fDup, rDover, rDout, rDdown, rDup;
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
@@ -79,9 +102,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dialA, dialB, dialC, dialD;
         var needleA, needleB, needleC, needleD;
 
+        // WE WANT TO STOP USING POWER (0-1 SCALE) AND START USING SPEED (0-700 SCALE, IN UNITS OF DEG/SEC)
+        
+        /* // this might be the cleaner way to use a motor object, where the ports are a, b, c, & d
+        var motor = { 
+            port : '',
+            status : '',
+            speed : '',
+            position : '',
+            direction : ''
+        }
+        */
+
         var motorA = {
             status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
-            speed : '', // rpm
+            speed : '', // degrees/second
             position : '' //degrees
         }
         var motorB = {
@@ -164,16 +199,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
         }
 
-
         //===================================================
-        channel.onSubscribers(function (joined) {
-            /*console.log(joined +" joined");
-            spawn(joined);*/
-        },function(left){
-            //console.log(left +" left");
-            //kill(left);
-        });
-        
+
         channel.channelData.onValue(function (key, val) {
             console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -214,18 +241,50 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a') {
                 motorA.status =1;
                 needleA.angle = val.position;
+                if ( val.moving ) {
+                    motorA.status =1;
+                    statusLightB.animations.play('pluggedIn');
+                }
+                else if ( val.stalled ) {
+                    motorA.status =2;
+                    statusLightB.animations.play('stalled');
+                } 
+                else {
+                    motorA.status =0;
+                    statusLightB.animations.play('unplugged');
+                } 
+                // is there a way to handle simply whether or not there is a motor plugged into a port?
+                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged') when there is not a motor plugged into port A, for example
             }
             else if (key === 'b') {
                 motorB.status =1;
                 needleB.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightB.animations.play('pluggedIn');
+                } else {
+                    motorB.status =2;
+                    statusLightB.animations.play('stalled');
+                }
             }
             else if( key === 'c') {
                 motorC.status =1;
                 needleC.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightC.animations.play('pluggedIn');
+                } else {
+                    motorC.status =2;
+                    statusLightC.animations.play('stalled');
+                }
             }
             else if( key === 'd')  {
                 motorD.status =1;
                 needleD.angle = val.position;
+                if( !val.stalled ) {
+                    statusLightD.animations.play('pluggedIn');
+                } else {
+                    motorD.status =2;
+                    statusLightD.animations.play('stalled');
+                }
             }
         }
 
@@ -244,7 +303,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setBatterySensor( val ) {
-            batteryLevel = (9 - val.voltage) / (9 - 5); //9 volt battery, and the robot dies around 5V
+            batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -274,10 +333,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
-            game.load.spritesheet('startButton','assets/buttons/gigabot_dashboard_button_start_spritesheet.png', 97, 49);
-            game.load.spritesheet('stopButton','assets/buttons/gigabot_dashboard_button_stop_spritesheet.png', 97, 49);
+            game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
+            game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
+            game.load.spritesheet('checkbox','assets/buttons/gigabot_dashboard_checkbox_spritesheet.png', 21, 21);
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
@@ -301,7 +361,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBox.drawRect(0,0,960,50);
 
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.lineStyle(1,0x282828,1);
+            backgroundBox.lineStyle(1,frameLineColor,1);
             backgroundBox.drawRect(0,0,960,1064);
 
         /* Title */
@@ -312,54 +372,63 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Frames */
             frameMotorPorts = game.add.graphics(0,0);
-            frameMotorPorts.lineStyle(1, 0x282828, 1);
-            //frameMotorPorts.beginFill(0xFFFFFF,1);
+            frameMotorPorts.lineStyle(1, frameLineColor, 1);
             frameMotorPorts.drawRect(20, 60, 130, 60);
 
             frameSensorPorts = game.add.graphics(0,0);
-            frameSensorPorts.lineStyle(1, 0x282828, 1);
-            //frameSensorPorts.beginFill(0xFFFFFF,1);
+            frameSensorPorts.lineStyle(1, frameLineColor, 1);
             frameSensorPorts.drawRect(160, 60, 130, 60);
 
-            frameMotorA = game.add.graphics(0,0);
-            frameMotorA.lineStyle(1, 0x282828, 1);
-            frameMotorA.drawRect(430, 188, 400, 200);
+            frameMotor = {
+                a : game.add.graphics(0,0),
+                b : game.add.graphics(0,0),
+                c : game.add.graphics(0,0),
+                d : game.add.graphics(0,0),
+            }
 
-            frameMotorB = game.add.graphics(0,0);
-            frameMotorB.lineStyle(1, 0x282828, 1);
-            frameMotorB.drawRect(20, 188, 400, 200);
+            frameMotor.a.lineStyle(1, frameLineColor, 1);
+            frameMotor.a.drawRect(frameMotorPos.x, frameMotorPos.y, 400, 200);
 
-            frameMotorC = game.add.graphics(0,0);
-            frameMotorC.lineStyle(1, 0x282828, 1);
-            frameMotorC.drawRect(20, 398, 400, 200);
+            frameMotor.b.lineStyle(1, frameLineColor, 1);
+            frameMotor.b.drawRect(frameMotorPos.x+410, frameMotorPos.y, 400, 200);
 
-            frameMotorD = game.add.graphics(0,0);
-            frameMotorD.lineStyle(1, 0x282828, 1);
-            frameMotorD.drawRect(430, 398, 400, 200);
+            frameMotor.c.lineStyle(1, frameLineColor, 1);
+            frameMotor.c.drawRect(frameMotorPos.x, frameMotorPos.y+210, 400, 200);
+
+            frameMotor.d.lineStyle(1, frameLineColor, 1);
+            frameMotor.d.drawRect(frameMotorPos.x+410, frameMotorPos.y+210, 400, 200);
+
 
             frameTouch = game.add.graphics(0,0);
-            frameTouch.lineStyle(1, 0x282828, 1);
+            frameTouch.lineStyle(1, frameLineColor, 1);
             frameTouch.drawRect(231, 130, 221, 48);
 
             frameIR = game.add.graphics(0,0);
-            frameIR.lineStyle(1, 0x282828, 1);
+            frameIR.lineStyle(1, frameLineColor, 1);
             frameIR.drawRect(462, 130, 179, 48);
 
             frameUltrasonic = game.add.graphics(0,0);
-            frameUltrasonic.lineStyle(1, 0x282828, 1);
+            frameUltrasonic.lineStyle(1, frameLineColor, 1);
             frameUltrasonic.drawRect(651, 130, 179, 48);
 
             frameColor = game.add.graphics(0,0);
-            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.lineStyle(1, frameLineColor, 1);
             frameColor.drawRect(430, 60, 232, 60);
 
             frameBattery = game.add.graphics(0,0);
-            frameBattery.lineStyle(1, 0x282828, 1);
+            frameBattery.lineStyle(1, frameLineColor, 1);
             frameBattery.drawRect(300, 60, 120, 60);
 
             frameScreen = game.add.graphics(0,0);
-            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.lineStyle(1, frameLineColor, 1);
             frameColor.drawRect(672, 60, 158, 60);
+
+
+            frameMotorGanging = game.add.graphics(0,0);
+            frameMotorGanging.lineStyle(1, frameLineColor, 1);
+            frameMotorGanging.drawRect(840, 60, 240, 160);
+
+
 
         /* Labels */
             labelMotorPorts = game.add.text(58,65, labelMotorPorts, labelStyle3); //label at top of box indicating status of motor ports
@@ -401,30 +470,308 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelBattery = game.add.text(310, 65, labelBattery, labelStyle3);
             labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
 
+            /* Ganging motors together */
+            labelMotorGang = {
+                g1 : game.add.text(motorGangPos.x, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 1
+                g2 : game.add.text(motorGangPos.x+120, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 2
+                a1 : game.add.text(motorGangPos.x+30, motorGangPos.y+27, "Motor A", labelStyle), // motor A in gang 1
+                a2 : game.add.text(motorGangPos.x+150, motorGangPos.y+27, "Motor A", labelStyle), //motor A in gang 2
+                b1 : game.add.text(motorGangPos.x+30, motorGangPos.y+57, "Motor B", labelStyle), 
+                b2 : game.add.text(motorGangPos.x+150, motorGangPos.y+57, "Motor B", labelStyle), 
+                c1 : game.add.text(motorGangPos.x+30, motorGangPos.y+87, "Motor C", labelStyle), 
+                c2 : game.add.text(motorGangPos.x+150, motorGangPos.y+87, "Motor C", labelStyle), 
+                d1 : game.add.text(motorGangPos.x+30, motorGangPos.y+117, "Motor D", labelStyle), 
+                d2 : game.add.text(motorGangPos.x+150, motorGangPos.y+117, "Motor D", labelStyle) 
+            }
 
 
         /* Buttons */
-            //Add button for starting all motors at their current settings
-            startButton = game.add.button(20, 130, 'startButton', actionStartOnClick, this, 1, 0, 2, 0);
-            stopButton = game.add.button(125, 130, 'stopButton', actionStopOnClick, this, 1, 0, 2, 0);
-            //Add forward and reverse buttons for each motor
-            fAover = 1, fAout = 0, fAdown = 2, fAup = 0;
-            rAover = 1, rAout = 0, rAdown = 2, rAup = 0;
-            fBover = 1, fBout = 0, fBdown = 2, fBup = 0;
-            rBover = 1, rBout = 0, rBdown = 2, rBup = 0;
-            fCover = 1, fCout = 0, fCdown = 2, fCup = 0;
-            rCover = 1, rCout = 0, rCdown = 2, rCup = 0;
-            fDover = 1, fDout = 0, fDdown = 2, fDup = 0;
-            rDover = 1, rDout = 0, rDdown = 2, rDup = 0;
-            var bar = "bar";
-            forwardButtonA = game.add.button(30, 220, 'forwardButton', actionForwardOnClickA, this, fAover, fAout, fAdown, fAup);
-            reverseButtonA = game.add.button(30, 278, 'reverseButton', actionReverseOnClickA, this, rAover, rAout, rAdown, rAup);
-            forwardButtonB = game.add.button(440, 220, 'forwardButton', actionForwardOnClickB, this, fBover, fBout, fBdown, fBup);
-            reverseButtonB = game.add.button(440, 278, 'reverseButton', actionReverseOnClickB, this, rBover, rBout, rBdown, rBup);
-            forwardButtonC = game.add.button(30, 430, 'forwardButton', actionForwardOnClickC, this, fCover, fCout, fCdown, fCup);
-            reverseButtonC = game.add.button(30, 488, 'reverseButton', actionReverseOnClickC, this, rCover, rCout, rCdown, rCup);
-            forwardButtonD = game.add.button(440, 430, 'forwardButton', actionForwardOnClickD, this, fDover, fDout, fDdown, fDup);
-            reverseButtonD = game.add.button(440, 488, 'reverseButton', actionReverseOnClickD, this, rDover, rDout, rDdown, rDup);
+            //Add button for resuming all motors at their current settings, after having paused them
+            resumeButton = game.add.button(20, 130, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
+            pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+
+            fButton = {
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),//, fButtonSet, this),
+                b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
+                c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
+                d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
+            }
+            rButton = {
+                a : game.add.button(rButtonPos.x, rButtonPos.y, 'reverseButton'),
+                b : game.add.button(rButtonPos.x+410, rButtonPos.y, 'reverseButton'),
+                c : game.add.button(rButtonPos.x, rButtonPos.y+210, 'reverseButton'),
+                d : game.add.button(rButtonPos.x+410, rButtonPos.y+210, 'reverseButton')
+            }
+
+            
+           // function fButtonSet (newDirectionButton) {
+           //      this.directionButton = newDirectionButton;
+
+           //      this.directionButton.events.onInputOver.add(this.directionButton.onInputOverHandler, this);
+           //      this.directionButton.events.onInputOut.add(this.directionButton.onInputOutHandler, this);
+           //      this.directionButton.events.onInputDown.add(this.directionButton.onInputDownHandler, this);
+           //      this.directionButton.events.onInputUp.add(this.directionButton.onInputUpHandler, this);
+           //      console.log("finished 1");
+           //      console.log(this.directionButton);
+           //      onInputDownHandler = function () {
+           //          console.log("here");
+           //      }
+           //  }
+/*
+            this.events.onInputOver.add(this.onInputOverHandler, this);
+            this.events.onInputOut.add(this.onInputOutHandler, this);
+            this.events.onInputDown.add(this.onInputDownHandler, this);
+            this.events.onInputUp.add(this.onInputUpHandler, this);
+*/
+            //fButton.this.events.onInputOver.add(fOnActionOver, this);
+            // .events.onInputOut.add(fOnActionOut  , this);
+            // .events.onInputDown.add(fOnActionDown   , this);
+            // .events.onInputUp.add(fOnActionUp   , this);
+
+            // .events.onInputOver.add(rOnActionOver   , this);
+            // .events.onInputOut.add(rOnActionOut  , this);
+            // .events.onInputDown.add(rOnActionDown   , this);
+            // .events.onInputUp.add(rOnActionUp   , this);
+
+            // function fOnActionOver() {}
+            // function fOnActionOut() {}
+            // function fOnActionDown() {}
+            // function fOnActionUp() {}
+
+            // function rOnActionOver() {}
+            // function rOnActionOut() {}
+            // function rOnActionDown() {}
+            // function rOnActionUp() {}
+
+
+
+            fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
+            function onActionDownForwardA() {
+                console.log("onActionDownForwardA"); 
+                moveMotor( "a", "f", powerA);
+            }
+            fButton.a.events.onInputUp.add(onActionUpForwardA, this); // on release
+            function onActionUpForwardA() {
+                console.log("onActionUpForwardA");
+                stopMotor("a"); 
+            }
+            rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
+            function onActionDownReverseA() {
+                console.log("onActionDownReverseA"); 
+                moveMotor( "a", "r", powerA);
+            }
+            rButton.a.events.onInputUp.add(onActionUpReverseA, this); //on release
+            function onActionUpReverseA() {
+                console.log("onActionUpReverseA");
+                stopMotor("a"); 
+            }
+
+            
+
+            fButton.b.events.onInputDown.add(onActionDownForwardB, this);
+            function onActionDownForwardB() {
+                console.log("onActionDownForwardB"); 
+                moveMotor( "b", "f", powerB);
+            }
+            fButton.b.events.onInputUp.add(onActionUpForwardB, this);
+            function onActionUpForwardB() {
+                console.log("onActionUpForwardB");
+                stopMotor("b"); 
+            }
+            rButton.b.events.onInputDown.add(onActionDownReverseB, this);
+            function onActionDownReverseB() {
+                console.log("onActionDownReverseB"); 
+                moveMotor( "b", "r", powerB);
+            }
+            rButton.b.events.onInputUp.add(onActionUpReverseB, this);
+            function onActionUpReverseB() {
+                console.log("onActionUpReverseB");
+                stopMotor("b"); 
+            }
+
+            
+
+            fButton.c.events.onInputDown.add(onActionDownForwardC, this);
+            function onActionDownForwardC() {
+                console.log("onActionDownForwardC"); 
+                moveMotor( "c", "f", powerC);
+            }
+            fButton.c.events.onInputUp.add(onActionUpForwardC, this);
+            function onActionUpForwardC() {
+                console.log("onActionUpForwardC");
+                stopMotor("c"); 
+            }
+            rButton.c.events.onInputDown.add(onActionDownReverseC, this);
+            function onActionDownReverseC() {
+                console.log("onActionDownReverseC"); 
+                moveMotor( "c", "r", powerC);
+            }
+            rButton.c.events.onInputUp.add(onActionUpReverseC, this);
+            function onActionUpReverseC() {
+                console.log("onActionUpReverseC");
+                stopMotor("c"); 
+            }
+
+
+            
+            fButton.d.events.onInputDown.add(onActionDownForwardD, this);
+            function onActionDownForwardD() {
+                console.log("onActionDownForwardD"); 
+                moveMotor( "d", "f", powerD);
+            }
+            fButton.d.events.onInputUp.add(onActionUpForwardD, this);
+            function onActionUpForwardD() {
+                console.log("onActionUpForwardD");
+                stopMotor("d"); 
+            }
+            rButton.d.events.onInputDown.add(onActionDownReverseD, this);
+            function onActionDownReverseD() {
+                console.log("onActionDownReverseD"); 
+                moveMotor( "d", "r", powerD);
+            }
+            rButton.d.events.onInputUp.add(onActionUpReverseD, this);
+            function onActionUpReverseD() {
+                console.log("onActionUpReverseD");
+                stopMotor("d"); 
+            }
+
+
+            /* Button States */
+            // To change the states of buttons (i.e., their appearance when up, down, over, and out), we can set and update the states using:
+            // see Phaser API file 'Button.js' at ll. 586-637
+
+
+            
+
+            /* Adding motor-ganging functionality */
+            checkbox = {
+                //a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckbox, this),
+
+                a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckboxA1, this),
+                a2 : game.add.button(motorGangPos.x+120, motorGangPos.y+30, 'checkbox', actionCheckboxA2, this),
+                b1 : game.add.button(motorGangPos.x, motorGangPos.y+60, 'checkbox', actionCheckboxB1, this),
+                b2 : game.add.button(motorGangPos.x+120, motorGangPos.y+60, 'checkbox', actionCheckboxB2, this),
+                c1 : game.add.button(motorGangPos.x, motorGangPos.y+90, 'checkbox', actionCheckboxC1, this),
+                c2 : game.add.button(motorGangPos.x+120, motorGangPos.y+90, 'checkbox', actionCheckboxC2, this),
+                d1 : game.add.button(motorGangPos.x, motorGangPos.y+120, 'checkbox', actionCheckboxD1, this),
+                d2 : game.add.button(motorGangPos.x+120, motorGangPos.y+120, 'checkbox', actionCheckboxD2, this)
+            }
+            checkboxStatus = { a1 : 0, a2 : 0, b1 : 3, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked
+
+            /*function actionCheckbox () {
+                //console.log(checkboxStatus.this);
+                //console.log(motorPortGang);
+            }*/
+
+            function actionCheckboxA1 () {
+                if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatus.a1 = 1; // so check it now
+                    checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatus.a2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkbox.a2.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                }
+                else { // the checkbox is CHECKED
+                    checkboxStatus.a1 = 0; // so uncheck it now
+                    checkbox.a1.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                }
+            }
+            function actionCheckboxA2 () {
+                if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
+                    checkboxStatus.a2 = 1; // so check it now
+                    checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        checkboxStatus.a1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
+                        checkbox.a1.setFrames(0,0,1,0) // show other box as unchecked
+                    }
+                }
+                else { // the checkbox is CHECKED
+                    checkboxStatus.a2 = 0; // so uncheck it now
+                    checkbox.a2.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                }
+            }
+            function actionCheckboxB1 () {
+                if ( checkboxStatus.b1 === 0 ) {
+                    checkboxStatus.b1 = 1; 
+                    checkbox.b1.setFrames(1,1,1,0);
+                    if ( checkboxStatus.b2 === 1 ) { 
+                        checkboxStatus.b2 = 0; 
+                        checkbox.b2.setFrames(0,0,1,0) 
+                    }
+                } else {
+                    checkboxStatus.b1 = 0; 
+                    checkbox.b1.setFrames(0,0,1,0);
+                }
+            }
+            function actionCheckboxB2 () {
+                if ( checkboxStatus.b2 === 0 ) { 
+                    checkboxStatus.b2 = 1; 
+                    checkbox.b2.setFrames(1,1,1,0);
+                    if ( checkboxStatus.b1 === 1 ) {
+                        checkboxStatus.b1 = 0; 
+                        checkbox.b1.setFrames(0,0,1,0) 
+                    } 
+                } else {
+                    checkboxStatus.b2 = 0;
+                    checkbox.b2.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxC1 () {
+                if ( checkboxStatus.c1 === 0 ) {
+                    checkboxStatus.c1 = 1; 
+                    checkbox.c1.setFrames(1,1,1,0);
+                    if ( checkboxStatus.c2 === 1 ) { 
+                        checkboxStatus.c2 = 0; 
+                        checkbox.c2.setFrames(0,0,1,0) 
+                    }
+                } else {
+                    checkboxStatus.c1 = 0; 
+                    checkbox.c1.setFrames(0,0,1,0);
+                }
+            }
+            function actionCheckboxC2 () {
+                if ( checkboxStatus.c2 === 0 ) { 
+                    checkboxStatus.c2 = 1; 
+                    checkbox.c2.setFrames(1,1,1,0);
+                    if ( checkboxStatus.c1 === 1 ) { 
+                        checkboxStatus.c1 = 0; 
+                        checkbox.c1.setFrames(0,0,1,0) 
+                    } 
+                } else {
+                    checkboxStatus.c2 = 0;
+                    checkbox.c2.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxD1 () {
+                if ( checkboxStatus.d1 === 0 ) {
+                    checkboxStatus.d1 = 1; 
+                    checkbox.d1.setFrames(1,1,1,0);
+                    if ( checkboxStatus.d2 === 1 ) { 
+                        checkboxStatus.d2 = 0; 
+                        checkbox.d2.setFrames(0,0,1,0) 
+                    } 
+                } else { 
+                    checkboxStatus.d1 = 0; 
+                    checkbox.d1.setFrames(0,0,1,0); 
+                }
+            }
+            function actionCheckboxD2 () {
+                if ( checkboxStatus.d2 === 0 ) { 
+                    checkboxStatus.d2 = 1; 
+                    checkbox.d2.setFrames(1,1,1,0);
+                    if ( checkboxStatus.d1 === 1 ) { 
+                        checkboxStatus.d1 = 0; 
+                        checkbox.d1.setFrames(0,0,1,0) 
+                    }
+                } else { 
+                    checkboxStatus.d2 = 0; 
+                    checkbox.d2.setFrames(0,0,1,0); 
+                }
+            }
+
+            
+
 
             minusButtonA = game.add.button(30, 336, 'minusButton', actionDecreaseOnClickA, this, 1, 0, 2, 0);
             plusButtonA = game.add.button(83, 336, 'plusButton', actionIncreaseOnClickA, this, 1, 0, 2, 0);
@@ -439,22 +786,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
-            sliderTrackA.beginFill(0x282828, 1);
+            sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(173, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(143, 356, 'sliderBar', actionDragOnClickA);
 
             sliderTrackB = game.add.graphics(0,0);
-            sliderTrackB.beginFill(0x282828, 1);
+            sliderTrackB.beginFill(frameLineColor, 1);
             sliderTrackB.drawRect(583, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarB = game.add.button(553, 356, 'sliderBar', actionDragOnClickB);
                         
             sliderTrackC = game.add.graphics(0,0);
-            sliderTrackC.beginFill(0x282828, 1);
+            sliderTrackC.beginFill(frameLineColor, 1);
             sliderTrackC.drawRect(173, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarC = game.add.button(143, 566, 'sliderBar', actionDragOnClickC);
 
             sliderTrackD = game.add.graphics(0,0);
-            sliderTrackD.beginFill(0x282828, 1);
+            sliderTrackD.beginFill(frameLineColor, 1);
             sliderTrackD.drawRect(583, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarD = game.add.button(553, 566, 'sliderBar', actionDragOnClickD);
 
@@ -508,22 +855,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
-            dialA.lineStyle(2, 0x282828, 1);
+            dialA.lineStyle(2, frameLineColor, 1);
             dialA.drawCircle(328, 282, 80);
 
             dialB = game.add.graphics(0,0);
             dialB.beginFill(0xD8D8D8, 1);
-            dialB.lineStyle(2, 0x282828, 1);
+            dialB.lineStyle(2, frameLineColor, 1);
             dialB.drawCircle(738, 282, 80);
 
             dialC = game.add.graphics(0,0);
             dialC.beginFill(0xD8D8D8, 1);
-            dialC.lineStyle(2, 0x282828, 1);
+            dialC.lineStyle(2, frameLineColor, 1);
             dialC.drawCircle(328, 492, 80);
 
             dialD = game.add.graphics(0,0);
             dialD.beginFill(0xD8D8D8, 1);
-            dialD.lineStyle(2, 0x282828, 1);
+            dialD.lineStyle(2, frameLineColor, 1);
             dialD.drawCircle(738, 492, 80);
 
             needleA = game.add.sprite(328, 282, 'dialNeedle');
@@ -551,7 +898,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.beginFill(0xD8D8D8, 1);
-            batteryLevelBox.lineStyle(1.5, 0x282828, 1);
+            batteryLevelBox.lineStyle(1.5, frameLineColor, 1);
             batteryLevelBox.drawRect(309, 91, 102, 18);
 
             batteryLevelFill = game.add.graphics(0,0);
@@ -561,7 +908,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
             LCDScreenBox.beginFill(0xD8D8D8, 1);
-            LCDScreenBox.lineStyle(1.5, 0x282828, 1);
+            LCDScreenBox.lineStyle(1.5, frameLineColor, 1);
             LCDScreenBox.drawRect(682, 88, 138, 24);
 
         } // end create 
@@ -573,17 +920,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay = game.add.text(685, 93, messageDisplay, labelStyle3);
         }
 
-        function actionStartOnClick () {
-            // start all motors at their current settings
+        function actionResumeOnClick () {
+            // resume all motors at their current settings
             dashboardStatus = 1;
         }
-        function actionStopOnClick () {
+        function actionPauseOnClick () {
             // stop all motors at their current settings
             dashboardStatus = 0;
         }
         
-        function actionForwardOnClickA (foo) {
-            console.log("foo = " + foo);
+        function actionForwardOnClickA () {
             moveMotor("a", "f", powerA * 1000);
         }
         function actionReverseOnClickA () {
@@ -601,20 +947,30 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionReverseOnClickC () {
             moveMotor( "c", "r",powerC * 1000);
         }
-        function actionForwardOnClickD () {
+
+/*        function actionForwardOnClickD () {         //this is actually an action on release, not on click
             moveMotor( "d", "f", powerD * 1000);
             console.log("forward");
-        }
-        function actionReverseOnClickD () {
+        }*/
+/*        function actionReverseOnClickD () {
             moveMotor("d", "r", powerD * 1000);
-        }
+        }*/
 
-        function moveMotor( motor, direction, duration ) {
+        function moveMotor( motor, direction, speed ) {
             var data = {};
-            data.type = "motor";
+            data.type = "motorStart";
             data.port = motor;
             data.dir = direction;
-            data.duration = duration;
+            data.speed = speed; // this will work when we swap out 'speed' (0 to 700 deg/s scale) in place of 'power' (0 to 1 scale)
+            data.speed = 200; // this is just a placeholder! (200 degrees/second)
+            console.log( "sending " + JSON.stringify(data));
+            channel.publish( data );
+        }
+
+        function stopMotor( motor ) {
+            var data = {};
+            data.type = "motorStop";
+            data.port = motor;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
         }
@@ -737,122 +1093,122 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
             /* motor A status */
-            var msg = { Astatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
-            if (motorA.status == msg.Astatus) {
-            } else {
-                motorA.status = msg.Astatus;
-                if (motorA.status == 1) {
-                    statusLightA.animations.play('pluggedIn');
-                } else if (motorA.status == 2) {
-                    statusLightA.animations.play('stalled'); 
-                } else if (motorA.status == 0) { //default
-                    statusLightA.animations.play('unplugged');
-                }
-            }
+            // var msg = { Astatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
+            // if (motorA.status == msg.Astatus) {
+            // } else {
+            //     motorA.status = msg.Astatus;
+            //     if (motorA.status == 1) {
+            //         statusLightA.animations.play('pluggedIn');
+            //     } else if (motorA.status == 2) {
+            //         statusLightA.animations.play('stalled'); 
+            //     } else if (motorA.status == 0) { //default
+            //         statusLightA.animations.play('unplugged');
+            //     }
+            // }
             /* motor B status */
-            var msg = { Bstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
-            if (motorB.status == msg.Bstatus) {
-            } else {
-                motorB.status = msg.Bstatus;
-                if (motorB.status == 1) {
-                    statusLightB.animations.play('pluggedIn');
-                } else if (motorB.status == 2) {
-                    statusLightB.animations.play('stalled'); 
-                } else if (motorB.status == 0) { //default
-                    statusLightB.animations.play('unplugged');
-                }
-            }
-            /* motor C status */
-            var msg = { Cstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
-            if (motorC.status == msg.Cstatus) {
-            } else {
-                motorC.status = msg.Cstatus;
-                if (motorC.status == 1) {
-                    statusLightC.animations.play('pluggedIn');
-                } else if (motorC.status == 2) {
-                    statusLightC.animations.play('stalled'); 
-                } else if (motorC.status == 0) { //default
-                    statusLightC.animations.play('unplugged');
-                }
-            }
-            /* motor D status */
-            var msg = { Dstatus : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
-            if (motorD.status == msg.Dstatus) {
-            } else {
-                motorD.status = msg.Dstatus;
-                if (motorD.status == 1) {
-                    statusLightD.animations.play('pluggedIn');
-                } else if (motorD.status == 2) {
-                    statusLightD.animations.play('stalled'); 
-                } else if (motorD.status == 0) { //default
-                    statusLightD.animations.play('unplugged');
-                }
-            }
-            //=============================================================================
-            /* sensor 1 status */
-            var msg = { status1 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
-            if (sensor1.status == msg.status1) {
-            } else {
-                sensor1.status = msg.status1;
-                if (sensor1.status == 1) {
-                    statusLight1.animations.play('pluggedIn');
-                } else if (sensor1.status == 0) { //default
-                    statusLight1.animations.play('unplugged');
-                }
-            }
-            /* sensor 2 status */
-            var msg = { status2 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
-            if (sensor2.status == msg.status2) {
-            } else {
-                sensor2.status = msg.status2;
-                if (sensor2.status == 1) {
-                    statusLight2.animations.play('pluggedIn');
-                } else if (sensor2.status == 0) { //default
-                    statusLight2.animations.play('unplugged');
-                }
-            }
-            /* sensor 3 status */
-            var msg = { status3 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
-            if (sensor3.status == msg.status3) {
-            } else {
-                sensor3.status = msg.status3;
-                if (sensor3.status == 1) {
-                    statusLight3.animations.play('pluggedIn');
-                } else if (sensor3.status == 0) { //default
-                    statusLight3.animations.play('unplugged');
-                }
-            }
-            /* sensor 4 status */
-            var msg = { status4 : 0 }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
-            else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
-            if (sensor4.status == msg.status4) {
-            } else {
-                sensor4.status = msg.status4;
-                if (sensor4.status == 1) {
-                    statusLight4.animations.play('pluggedIn');
-                } else if (sensor4.status == 0) { //default
-                    statusLight4.animations.play('unplugged');
-                }
-            }
+            // var msg = { Bstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
+            // if (motorB.status == msg.Bstatus) {
+            // } else {
+            //     motorB.status = msg.Bstatus;
+            //     if (motorB.status == 1) {
+            //         statusLightB.animations.play('pluggedIn');
+            //     } else if (motorB.status == 2) {
+            //         statusLightB.animations.play('stalled'); 
+            //     } else if (motorB.status == 0) { //default
+            //         statusLightB.animations.play('unplugged');
+            //     }
+            // }
+            // /* motor C status */
+            // var msg = { Cstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
+            // if (motorC.status == msg.Cstatus) {
+            // } else {
+            //     motorC.status = msg.Cstatus;
+            //     if (motorC.status == 1) {
+            //         statusLightC.animations.play('pluggedIn');
+            //     } else if (motorC.status == 2) {
+            //         statusLightC.animations.play('stalled'); 
+            //     } else if (motorC.status == 0) { //default
+            //         statusLightC.animations.play('unplugged');
+            //     }
+            // }
+            // /* motor D status */
+            // var msg = { Dstatus : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
+            // if (motorD.status == msg.Dstatus) {
+            // } else {
+            //     motorD.status = msg.Dstatus;
+            //     if (motorD.status == 1) {
+            //         statusLightD.animations.play('pluggedIn');
+            //     } else if (motorD.status == 2) {
+            //         statusLightD.animations.play('stalled'); 
+            //     } else if (motorD.status == 0) { //default
+            //         statusLightD.animations.play('unplugged');
+            //     }
+            // }
+            // //=============================================================================
+            // /* sensor 1 status */
+            // var msg = { status1 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
+            // if (sensor1.status == msg.status1) {
+            // } else {
+            //     sensor1.status = msg.status1;
+            //     if (sensor1.status == 1) {
+            //         statusLight1.animations.play('pluggedIn');
+            //     } else if (sensor1.status == 0) { //default
+            //         statusLight1.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 2 status */
+            // var msg = { status2 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
+            // if (sensor2.status == msg.status2) {
+            // } else {
+            //     sensor2.status = msg.status2;
+            //     if (sensor2.status == 1) {
+            //         statusLight2.animations.play('pluggedIn');
+            //     } else if (sensor2.status == 0) { //default
+            //         statusLight2.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 3 status */
+            // var msg = { status3 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
+            // if (sensor3.status == msg.status3) {
+            // } else {
+            //     sensor3.status = msg.status3;
+            //     if (sensor3.status == 1) {
+            //         statusLight3.animations.play('pluggedIn');
+            //     } else if (sensor3.status == 0) { //default
+            //         statusLight3.animations.play('unplugged');
+            //     }
+            // }
+            // /* sensor 4 status */
+            // var msg = { status4 : 0 }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
+            // else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
+            // if (sensor4.status == msg.status4) {
+            // } else {
+            //     sensor4.status = msg.status4;
+            //     if (sensor4.status == 1) {
+            //         statusLight4.animations.play('pluggedIn');
+            //     } else if (sensor4.status == 0) { //default
+            //         statusLight4.animations.play('unplugged');
+            //     }
+            // }
 
             //=============================================================================
             /* Convert degrees value (between 0 and 360) in message from gigabot to a degrees (between 0 and 180, and -180 and 0) value Phaser can use for rotation */ 
@@ -865,215 +1221,211 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
 
-            if (dashboardStatus == 1) { // i.e., dashboard has started
-                var multiplier = 50; // THIS NUMBER IS JUST A PLACEHOLDER
-                if (powerA > 0) {
-                    if (directionA == 1) { // i.e. direction is forward
-                        needleA.angle += multiplier * powerA;
-                    } else {
-                        needleA.angle -= multiplier * powerA;
-                    }
-                }
-                if (powerB > 0) {
-                    if (directionB == 1) {
-                        needleB.angle += multiplier * powerB;
-                    } else {
-                        needleB.angle -= multiplier * powerB;
-                    }
-                }
-                if (powerC > 0) {
-                    if (directionC == 1) {
-                        needleC.angle += multiplier * powerC;
-                    } else {
-                        needleC.angle -= multiplier * powerC;
-                    }
-                }
-                if (powerD > 0) {
-                    if (directionD == 1) {
-                        needleD.angle += multiplier * powerD;
-                    } else {
-                        needleD.angle -= multiplier * powerD;
-                    }
-                }
-            }
-
-            //=============================================================================
-            /* Touch Sensor */
-            //added this stuff (other than keyboard input) to the setTouchSensor function
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)) {       
-            //     game.world.remove(touch.touchCountDisplay);
-            //     touchCount++;
-            //     touchCountDisplay = touchCount;
-            //     touch.touchCountDisplay =  game.add.text(410, 155, touchCountDisplay, labelStyle3);
-            //     touchIndicator.animations.play('pressed');
-            //     // THE TOUCH COUNT COUNTS THE FRACTIONS OF A SECOND THE BUTTON IS HELD DOWN, NOT HOW MANY TIMES IT'S BEEN PRESSED
-            //     // This is at the rate that the Update function runs: about 20 times per second
-            // } else {
-            //     touchIndicator.animations.play('up');
+            // if (dashboardStatus == 1) { // i.e., dashboard has started
+            //     var multiplier = 35; // THIS NUMBER IS JUST A PLACEHOLDER
+            //     if (powerA > 0) {
+            //         if (directionA == 1) { // i.e. direction is forward
+            //             needleA.angle += multiplier * powerA;
+            //         } else {
+            //             needleA.angle -= multiplier * powerA;
+            //         }
+            //     }
+            //     if (powerB > 0) {
+            //         if (directionB == 1) {
+            //             needleB.angle += multiplier * powerB;
+            //         } else {
+            //             needleB.angle -= multiplier * powerB;
+            //         }
+            //     }
+            //     if (powerC > 0) {
+            //         if (directionC == 1) {
+            //             needleC.angle += multiplier * powerC;
+            //         } else {
+            //             needleC.angle -= multiplier * powerC;
+            //         }
+            //     }
+            //     if (powerD > 0) {
+            //         if (directionD == 1) {
+            //             needleD.angle += multiplier * powerD;
+            //         } else {
+            //             needleD.angle -= multiplier * powerD;
+            //         }
+            //     }
             // }
 
             //=============================================================================
             /* IR Sensor */
 
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                game.world.remove(IR.IRDistDisplay);
-                IRDist = IRDist + 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                IRDistDisplay = IRDist;
-                IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-                game.world.remove(IR.IRDistDisplay);
-                IRDist = IRDist - 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                IRDistDisplay = IRDist;
-                IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
-            }
-
-            //=============================================================================
-            /* Ultrasonic Sensor */
-
-            /*if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                game.world.remove(ultrasonic.ultrasonicDistDisplay);
-                ultrasonicDist = ultrasonicDist + 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                ultrasonicDistDisplay = ultrasonicDist;
-                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-                game.world.remove(ultrasonic.ultrasonicDistDisplay);
-                ultrasonicDist = ultrasonicDist - 0.1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                ultrasonicDistDisplay = ultrasonicDist;
-                ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
-            }*/
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            //     game.world.remove(IR.IRDistDisplay);
+            //     IRDist = IRDist + 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     IRDistDisplay = IRDist;
+            //     IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            // }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+            //     game.world.remove(IR.IRDistDisplay);
+            //     IRDist = IRDist - 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     IRDistDisplay = IRDist;
+            //     IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            // }
 
             //=============================================================================
             /* Color Sensor */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                game.world.remove(color.colorRDisplay);
-                game.world.remove(color.colorGDisplay);
-                game.world.remove(color.colorBDisplay);
-                //game.world.remove(color.colorValueDisplay);
-                if (colorR <= 255) {    
-                    colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    //colorValue = colorValue + 0.01;
-                    colorRDisplay = colorR;
-                    colorGDisplay = colorG;
-                    colorBDisplay = colorB;
-                    //colorValueDisplay = colorValue;
-                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-                }
-                else {
-                    color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
-                }
-                //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-            }
-            if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-                game.world.remove(color.colorRDisplay);
-                game.world.remove(color.colorGDisplay);
-                game.world.remove(color.colorBDisplay);
-                //game.world.remove(color.colorValueDisplay);
-                if (colorR >= 0) {
-                    colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-                    //colorValueDisplay = colorValue = colorValue + 0.01;
-                    color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-                    //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-                }
-                else {
-                    color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
-                    color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
-                    color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
-                }
-            }
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+//                 game.world.remove(color.colorRDisplay);
+//                 game.world.remove(color.colorGDisplay);
+//                 game.world.remove(color.colorBDisplay);
+//                 //game.world.remove(color.colorValueDisplay);
+//                 if (colorR <= 255) {    
+//                     colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     //colorValue = colorValue + 0.01;
+//                     colorRDisplay = colorR;
+//                     colorGDisplay = colorG;
+//                     colorBDisplay = colorB;
+//                     //colorValueDisplay = colorValue;
+//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+//                 }
+//                 else {
+//                     color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
+//                 }
+//                 //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+//             }
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+//                 game.world.remove(color.colorRDisplay);
+//                 game.world.remove(color.colorGDisplay);
+//                 game.world.remove(color.colorBDisplay);
+//                 //game.world.remove(color.colorValueDisplay);
+//                 if (colorR >= 0) {
+//                     colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+//                     //colorValueDisplay = colorValue = colorValue + 0.01;
+//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+//                     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+//                 }
+//                 else {
+//                     color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
+//                     color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
+//                     color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
+//                 }
+//             }
 
-            // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY...
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Yellow"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "White"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Black"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Blue"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Red"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Green"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Orange"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Purple"
-                color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-            }
+//             // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
+//             if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Yellow"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "White"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Black"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Blue"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Red"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Green"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Orange"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
+//                 game.world.remove(color.colorNameDisplay);
+//                 colorNameDisplay = colorName = "Purple"
+//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+//             }
+// =======
+
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            //     game.world.remove(color.colorRDisplay);
+            //     game.world.remove(color.colorGDisplay);
+            //     game.world.remove(color.colorBDisplay);
+            //     //game.world.remove(color.colorValueDisplay);
+            //     colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     //colorValue = colorValue + 0.01;
+            //     colorRDisplay = colorR;
+            //     colorGDisplay = colorG;
+            //     colorBDisplay = colorB;
+            //     //colorValueDisplay = colorValue;
+            //     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
+            //     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
+            //     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
+            //     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            // }
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+            //     game.world.remove(color.colorRDisplay);
+            //     game.world.remove(color.colorGDisplay);
+            //     game.world.remove(color.colorBDisplay);
+            //     //game.world.remove(color.colorValueDisplay);
+            //     colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //     //colorValueDisplay = colorValue = colorValue + 0.01;
+            //     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
+            //     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
+            //     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
+            //     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            // }
+
+            // // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Yellow"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "White"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Black"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Blue"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Red"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Green"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Orange"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
+            //     game.world.remove(color.colorNameDisplay);
+            //     colorNameDisplay = colorName = "Purple"
+            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            // }
 
 
             //=============================================================================
-            /* Battery Level Sensor */
 
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-            //     if (batteryLevel <= 0.15) { // for almost-dead battery!
-            //         if(batteryLevel > 0) { //lower boundary limit
-            //             batteryLevel = batteryLevel - 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            //     else if (batteryLevel <= 1) { //upper boundary limit
-            //         if(batteryLevel > 0.1) { //lower boundary limit
-            //             batteryLevel = batteryLevel - 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0x808080, 1);
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            // }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-            //     if (batteryLevel < 0.15) { // for almost-dead battery!
-            //         if(batteryLevel >= -0.001) { //lower boundary limit, with a little safety padding
-            //             batteryLevel = batteryLevel + 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            //     else if (batteryLevel < 1) { //upper boundary limit
-            //         if(batteryLevel >= -0.001) { //lower boundary limit, with al little safety padding
-            //             batteryLevel = batteryLevel + 0.01;
-            //             batteryLevelFill.destroy();
-            //             batteryLevelFill = game.add.graphics(0,0);
-            //             batteryLevelFill.beginFill(0x808080, 1);
-            //             batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
-            //         }
-            //     }
-            // }
-            
-            //=============================================================================
+
             /* LCD Screen */
 
         } // end update

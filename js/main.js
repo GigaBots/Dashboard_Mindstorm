@@ -46,11 +46,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
         var labelStyle3 = { font: "16px Arial", fill: "#000000"}
         var labelStyle4 = { font: "14px Arial", fill: "#808080" }        
+        var frameLineColor = 0x282828;
 
         var backgound, backgroundBox;
         var frameMotorPorts, labelMotorPorts = "Motors";
         var frameSensorPorts, labelSensorPorts = "Sensors";
-        var frameMotorA, frameMotorB, frameMotorC, frameMotorD;
+        var frameMotor;
+        var frameMotorPos = {
+            x : 20, // x-coordinate of upper left motor frame
+            y : 188 // y-coordinate of upper left motor frame
+        }
+
+        var frameMotorGanging;
         
         var labelMotors = ["A","B","C","D"];
         var labelSensors = ["1","2","3","4"];
@@ -59,10 +66,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
         var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
-        var dashboardStatus = 0; // 1 = 'running/resumed', 0 = 'stopped/paused'
+        var dashboardStatus = 1; // 1 = 'running/resumed', 0 = 'stopped/paused'
         var resumeButton, pauseButton;
-        var forwardButtonA, forwardButtonB, forwardButtonC, forwardButtonD;
-        var reverseButtonA, reverseButtonB, reverseButtonC, reverseButtonD;
 
         var fButtonPos = {
             x : 30, // x-coordinate of upper left forward button
@@ -86,10 +91,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var checkboxStatus;
 
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
-        var fAover, fAout, fAdown, fAup, rAover, rAout, rAdown, rAup; // "f" = forward "A" = motor A, "out" = default when mouse is not over it, "down" is when we're clicked on top of the button and clicking
-        var fBover, fBout, fBdown, fBup, rBover, rBout, rBdown, rBup; // "over" = when we're hovering over the button
-        var fCover, fCout, fCdown, fCup, rCover, rCout, rCdown, rCup;
-        var fDover, fDout, fDdown, fDup, rDover, rDout, rDdown, rDup;
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
@@ -199,14 +200,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         //===================================================
-        channel.onSubscribers(function (joined) {
-            /*console.log(joined +" joined");
-            spawn(joined);*/
-        },function(left){
-            //console.log(left +" left");
-            //kill(left);
-        });
-        
+
         channel.channelData.onValue(function (key, val) {
             console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -260,7 +254,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     statusLightB.animations.play('unplugged');
                 } 
                 // is there a way to handle simply whether or not there is a motor plugged into a port?
-                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged'); when there is not a motor plugged into port A, for example
+                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged') when there is not a motor plugged into port A, for example
             }
             else if (key === 'b') {
                 motorB.status =1;
@@ -309,7 +303,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setBatterySensor( val ) {
-            batteryLevel = (9 - val.voltage) / (9 - 5); //9 volt battery, and the robot dies around 5V
+            batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -367,7 +361,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBox.drawRect(0,0,960,50);
 
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.lineStyle(1,0x282828,1);
+            backgroundBox.lineStyle(1,frameLineColor,1);
             backgroundBox.drawRect(0,0,960,1064);
 
         /* Title */
@@ -378,58 +372,60 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Frames */
             frameMotorPorts = game.add.graphics(0,0);
-            frameMotorPorts.lineStyle(1, 0x282828, 1);
-            //frameMotorPorts.beginFill(0xFFFFFF,1);
+            frameMotorPorts.lineStyle(1, frameLineColor, 1);
             frameMotorPorts.drawRect(20, 60, 130, 60);
 
             frameSensorPorts = game.add.graphics(0,0);
-            frameSensorPorts.lineStyle(1, 0x282828, 1);
-            //frameSensorPorts.beginFill(0xFFFFFF,1);
+            frameSensorPorts.lineStyle(1, frameLineColor, 1);
             frameSensorPorts.drawRect(160, 60, 130, 60);
 
-            frameMotorA = game.add.graphics(0,0);
-            frameMotorA.lineStyle(1, 0x282828, 1);
-            frameMotorA.drawRect(430, 188, 400, 200);
+            frameMotor = {
+                a : game.add.graphics(0,0),
+                b : game.add.graphics(0,0),
+                c : game.add.graphics(0,0),
+                d : game.add.graphics(0,0),
+            }
 
-            frameMotorB = game.add.graphics(0,0);
-            frameMotorB.lineStyle(1, 0x282828, 1);
-            frameMotorB.drawRect(20, 188, 400, 200);
+            frameMotor.a.lineStyle(1, frameLineColor, 1);
+            frameMotor.a.drawRect(frameMotorPos.x, frameMotorPos.y, 400, 200);
 
-            frameMotorC = game.add.graphics(0,0);
-            frameMotorC.lineStyle(1, 0x282828, 1);
-            frameMotorC.drawRect(20, 398, 400, 200);
+            frameMotor.b.lineStyle(1, frameLineColor, 1);
+            frameMotor.b.drawRect(frameMotorPos.x+410, frameMotorPos.y, 400, 200);
 
-            frameMotorD = game.add.graphics(0,0);
-            frameMotorD.lineStyle(1, 0x282828, 1);
-            frameMotorD.drawRect(430, 398, 400, 200);
+            frameMotor.c.lineStyle(1, frameLineColor, 1);
+            frameMotor.c.drawRect(frameMotorPos.x, frameMotorPos.y+210, 400, 200);
+
+            frameMotor.d.lineStyle(1, frameLineColor, 1);
+            frameMotor.d.drawRect(frameMotorPos.x+410, frameMotorPos.y+210, 400, 200);
+
 
             frameTouch = game.add.graphics(0,0);
-            frameTouch.lineStyle(1, 0x282828, 1);
+            frameTouch.lineStyle(1, frameLineColor, 1);
             frameTouch.drawRect(231, 130, 221, 48);
 
             frameIR = game.add.graphics(0,0);
-            frameIR.lineStyle(1, 0x282828, 1);
+            frameIR.lineStyle(1, frameLineColor, 1);
             frameIR.drawRect(462, 130, 179, 48);
 
             frameUltrasonic = game.add.graphics(0,0);
-            frameUltrasonic.lineStyle(1, 0x282828, 1);
+            frameUltrasonic.lineStyle(1, frameLineColor, 1);
             frameUltrasonic.drawRect(651, 130, 179, 48);
 
             frameColor = game.add.graphics(0,0);
-            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.lineStyle(1, frameLineColor, 1);
             frameColor.drawRect(430, 60, 232, 60);
 
             frameBattery = game.add.graphics(0,0);
-            frameBattery.lineStyle(1, 0x282828, 1);
+            frameBattery.lineStyle(1, frameLineColor, 1);
             frameBattery.drawRect(300, 60, 120, 60);
 
             frameScreen = game.add.graphics(0,0);
-            frameColor.lineStyle(1, 0x282828, 1);
+            frameColor.lineStyle(1, frameLineColor, 1);
             frameColor.drawRect(672, 60, 158, 60);
 
 
-            var frameMotorGanging = game.add.graphics(0,0);
-            frameMotorGanging.lineStyle(1, 0x282828, 1);
+            frameMotorGanging = game.add.graphics(0,0);
+            frameMotorGanging.lineStyle(1, frameLineColor, 1);
             frameMotorGanging.drawRect(840, 60, 240, 160);
 
 
@@ -495,7 +491,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
 
             fButton = {
-                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),//, fButtonSet, this),
                 b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
                 c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
                 d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
@@ -507,7 +503,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d : game.add.button(rButtonPos.x+410, rButtonPos.y+210, 'reverseButton')
             }
 
+            
+           // function fButtonSet (newDirectionButton) {
+           //      this.directionButton = newDirectionButton;
 
+           //      this.directionButton.events.onInputOver.add(this.directionButton.onInputOverHandler, this);
+           //      this.directionButton.events.onInputOut.add(this.directionButton.onInputOutHandler, this);
+           //      this.directionButton.events.onInputDown.add(this.directionButton.onInputDownHandler, this);
+           //      this.directionButton.events.onInputUp.add(this.directionButton.onInputUpHandler, this);
+           //      console.log("finished 1");
+           //      console.log(this.directionButton);
+           //      onInputDownHandler = function () {
+           //          console.log("here");
+           //      }
+           //  }
+/*
+            this.events.onInputOver.add(this.onInputOverHandler, this);
+            this.events.onInputOut.add(this.onInputOutHandler, this);
+            this.events.onInputDown.add(this.onInputDownHandler, this);
+            this.events.onInputUp.add(this.onInputUpHandler, this);
+*/
             //fButton.this.events.onInputOver.add(fOnActionOver, this);
             // .events.onInputOut.add(fOnActionOut  , this);
             // .events.onInputDown.add(fOnActionDown   , this);
@@ -518,7 +533,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // .events.onInputDown.add(rOnActionDown   , this);
             // .events.onInputUp.add(rOnActionUp   , this);
 
-
+            // function fOnActionOver() {}
             // function fOnActionOut() {}
             // function fOnActionDown() {}
             // function fOnActionUp() {}
@@ -771,22 +786,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
-            sliderTrackA.beginFill(0x282828, 1);
+            sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(173, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(143, 356, 'sliderBar', actionDragOnClickA);
 
             sliderTrackB = game.add.graphics(0,0);
-            sliderTrackB.beginFill(0x282828, 1);
+            sliderTrackB.beginFill(frameLineColor, 1);
             sliderTrackB.drawRect(583, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarB = game.add.button(553, 356, 'sliderBar', actionDragOnClickB);
                         
             sliderTrackC = game.add.graphics(0,0);
-            sliderTrackC.beginFill(0x282828, 1);
+            sliderTrackC.beginFill(frameLineColor, 1);
             sliderTrackC.drawRect(173, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarC = game.add.button(143, 566, 'sliderBar', actionDragOnClickC);
 
             sliderTrackD = game.add.graphics(0,0);
-            sliderTrackD.beginFill(0x282828, 1);
+            sliderTrackD.beginFill(frameLineColor, 1);
             sliderTrackD.drawRect(583, 412, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarD = game.add.button(553, 566, 'sliderBar', actionDragOnClickD);
 
@@ -840,22 +855,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Rotational position dials and needles for motors */
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
-            dialA.lineStyle(2, 0x282828, 1);
+            dialA.lineStyle(2, frameLineColor, 1);
             dialA.drawCircle(328, 282, 80);
 
             dialB = game.add.graphics(0,0);
             dialB.beginFill(0xD8D8D8, 1);
-            dialB.lineStyle(2, 0x282828, 1);
+            dialB.lineStyle(2, frameLineColor, 1);
             dialB.drawCircle(738, 282, 80);
 
             dialC = game.add.graphics(0,0);
             dialC.beginFill(0xD8D8D8, 1);
-            dialC.lineStyle(2, 0x282828, 1);
+            dialC.lineStyle(2, frameLineColor, 1);
             dialC.drawCircle(328, 492, 80);
 
             dialD = game.add.graphics(0,0);
             dialD.beginFill(0xD8D8D8, 1);
-            dialD.lineStyle(2, 0x282828, 1);
+            dialD.lineStyle(2, frameLineColor, 1);
             dialD.drawCircle(738, 492, 80);
 
             needleA = game.add.sprite(328, 282, 'dialNeedle');
@@ -883,7 +898,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Battery Level Sensor */
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.beginFill(0xD8D8D8, 1);
-            batteryLevelBox.lineStyle(1.5, 0x282828, 1);
+            batteryLevelBox.lineStyle(1.5, frameLineColor, 1);
             batteryLevelBox.drawRect(309, 91, 102, 18);
 
             batteryLevelFill = game.add.graphics(0,0);
@@ -893,7 +908,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
             LCDScreenBox.beginFill(0xD8D8D8, 1);
-            LCDScreenBox.lineStyle(1.5, 0x282828, 1);
+            LCDScreenBox.lineStyle(1.5, frameLineColor, 1);
             LCDScreenBox.drawRect(682, 88, 138, 24);
 
         } // end create 

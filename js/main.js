@@ -478,14 +478,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelMotorGang = {
                 g1 : game.add.text(motorGangPos.x, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 1
                 g2 : game.add.text(motorGangPos.x+120, motorGangPos.y, "Motor Gang 2", labelStyle3), // gang 2
-                a1 : game.add.text(motorGangPos.x+30, motorGangPos.y+27, "Motor A", labelStyle), // motor A in gang 1
-                a2 : game.add.text(motorGangPos.x+150, motorGangPos.y+27, "Motor A", labelStyle), //motor A in gang 2
-                b1 : game.add.text(motorGangPos.x+30, motorGangPos.y+57, "Motor B", labelStyle), 
-                b2 : game.add.text(motorGangPos.x+150, motorGangPos.y+57, "Motor B", labelStyle), 
-                c1 : game.add.text(motorGangPos.x+30, motorGangPos.y+87, "Motor C", labelStyle), 
-                c2 : game.add.text(motorGangPos.x+150, motorGangPos.y+87, "Motor C", labelStyle), 
-                d1 : game.add.text(motorGangPos.x+30, motorGangPos.y+117, "Motor D", labelStyle), 
-                d2 : game.add.text(motorGangPos.x+150, motorGangPos.y+117, "Motor D", labelStyle) 
+                a1 : game.add.text(motorGangPos.x+30, motorGangPos.y+30, "Motor A", labelStyle), // motor A in gang 1
+                a2 : game.add.text(motorGangPos.x+150, motorGangPos.y+30, "Motor A", labelStyle), //motor A in gang 2
+                b1 : game.add.text(motorGangPos.x+30, motorGangPos.y+60, "Motor B", labelStyle), 
+                b2 : game.add.text(motorGangPos.x+150, motorGangPos.y+60, "Motor B", labelStyle), 
+                c1 : game.add.text(motorGangPos.x+30, motorGangPos.y+90, "Motor C", labelStyle), 
+                c2 : game.add.text(motorGangPos.x+150, motorGangPos.y+90, "Motor C", labelStyle), 
+                d1 : game.add.text(motorGangPos.x+30, motorGangPos.y+120, "Motor D", labelStyle), 
+                d2 : game.add.text(motorGangPos.x+150, motorGangPos.y+120, "Motor D", labelStyle) 
             }
 
 
@@ -533,18 +533,30 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             speed = {
+<<<<<<< HEAD
                 a : 314, // these are placeholders for now
                 b : 159,
                 c : 265,
                 d : 359
+=======
+                a : 100, // these are placeholders for now
+                b : 200,
+                c : 100,
+                d : 200
+>>>>>>> master
             }
             fButton.a.events.onInputDown.add(fButtonDownAction, "a");
             fButton.a.events.onInputUp.add(fButtonUpAction, "a");
 
             function fButtonDownAction () {
+                console.log(this);
                 //console.log(this.charAt(0));
                 console.log("onActionDownForward"); 
+<<<<<<< HEAD
                 moveMotor( this, "f", this );
+=======
+                moveMotor( this, "f", speed.this );
+>>>>>>> master
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");
@@ -679,16 +691,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Adding motor-ganging functionality */
             checkbox = {
-                //a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckbox, this),
+                //a1 : game.add.button(motorGangPos.x, motorGangPos.y+27, 'checkbox', actionCheckbox, this),
 
-                a1 : game.add.button(motorGangPos.x, motorGangPos.y+30, 'checkbox', actionCheckboxA1, this),
-                a2 : game.add.button(motorGangPos.x+120, motorGangPos.y+30, 'checkbox', actionCheckboxA2, this),
-                b1 : game.add.button(motorGangPos.x, motorGangPos.y+60, 'checkbox', actionCheckboxB1, this),
-                b2 : game.add.button(motorGangPos.x+120, motorGangPos.y+60, 'checkbox', actionCheckboxB2, this),
-                c1 : game.add.button(motorGangPos.x, motorGangPos.y+90, 'checkbox', actionCheckboxC1, this),
-                c2 : game.add.button(motorGangPos.x+120, motorGangPos.y+90, 'checkbox', actionCheckboxC2, this),
-                d1 : game.add.button(motorGangPos.x, motorGangPos.y+120, 'checkbox', actionCheckboxD1, this),
-                d2 : game.add.button(motorGangPos.x+120, motorGangPos.y+120, 'checkbox', actionCheckboxD2, this)
+                a1 : game.add.button(motorGangPos.x, motorGangPos.y+27, 'checkbox', actionCheckboxA1, this),
+                a2 : game.add.button(motorGangPos.x+120, motorGangPos.y+27, 'checkbox', actionCheckboxA2, this),
+                b1 : game.add.button(motorGangPos.x, motorGangPos.y+57, 'checkbox', actionCheckboxB1, this),
+                b2 : game.add.button(motorGangPos.x+120, motorGangPos.y+57, 'checkbox', actionCheckboxB2, this),
+                c1 : game.add.button(motorGangPos.x, motorGangPos.y+87, 'checkbox', actionCheckboxC1, this),
+                c2 : game.add.button(motorGangPos.x+120, motorGangPos.y+87, 'checkbox', actionCheckboxC2, this),
+                d1 : game.add.button(motorGangPos.x, motorGangPos.y+117, 'checkbox', actionCheckboxD1, this),
+                d2 : game.add.button(motorGangPos.x+120, motorGangPos.y+117, 'checkbox', actionCheckboxD2, this)
             }
             checkboxStatus = { a1 : 0, a2 : 0, b1 : 3, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked
 

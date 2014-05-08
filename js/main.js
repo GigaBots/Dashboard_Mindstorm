@@ -119,10 +119,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
         */
 
         var motorA = {
+            port: 'a',
+            status : 1,
+            speed : 11,
+            position : '',
+        }
+
+
+/*        var motorA = {
             status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
             speed : '', // degrees/second
             position : '' //degrees
-        }
+        }*/
         var motorB = {
             status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
             speed : '', // rpm
@@ -497,8 +505,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fButton = {
                 //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonSet, this),
                 //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, this),
-                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, "a"),
-                //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),
+                //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, "a"),
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),
                 b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
                 c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
                 d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
@@ -512,11 +520,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //fButton.a.name = "a", fButton.b.name = "b", fButton.c.name = "c", fButton.d.name = "d";
             
-            function fButtonCallback () {
+/*            function fButtonCallback () {
+                // NOW THIS FUNCTION IS CALLED ON CLICK RATHER THAN ON RELEASE (MODIFIED LINE 3556 IN THE NON-MINIFIED PHASER FRAMEWORK FILE)
 
                 moveMotor(this, "f", speed.this);
 
-            }
+            }*/
 
            /*function fButtonSet (newDirectionButton) {
                 this.directionButton = newDirectionButton;
@@ -532,26 +541,43 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
 
-            speed = {
+/*            speed = {
                 a : 314, // these are placeholders for now
                 b : 159,
                 c : 265,
                 d : 359
+            }*/
 
-            }
-            fButton.a.events.onInputDown.add(fButtonDownAction, "a");
-            fButton.a.events.onInputUp.add(fButtonUpAction, "a");
+            /* adding forward button events */
+            fButton.a.events.onInputDown.add(fButtonDownAction, motorA); // motorA object declared around line 121
+            fButton.a.events.onInputUp.add(fButtonUpAction, motorA);
+            // would need to add these for b,c,& d
 
+            /* adding reverse button events */
+            rButton.a.events.onInputDown.add(rButtonDownAction, motorA);
+            rButton.a.events.onInputUp.add(rButtonUpAction, motorA);
+            // would need to add these for b,c,& d
+
+
+            // THESE 4 FUNCTIONS CAN BE USED FOR ANY NUMBER OF MOTORS
+            /* forward button actions */
             function fButtonDownAction () {
-                console.log(this);
-                //console.log(this.charAt(0));
                 console.log("onActionDownForward"); 
-
-                moveMotor( this, "f", speed.this );
+                moveMotor( this.port, "f", this.speed );
+                th
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");
-                stopMotor(this); 
+                stopMotor( this.port ); 
+            }
+            /* reverse buttons actions*/
+            function rButtonDownAction () {
+                console.log("onActionDownReverse"); 
+                moveMotor( this.port, "f", this.speed );
+            }
+            function rButtonUpAction() {
+                console.log("onActionUpReverse");
+                stopMotor( this.port ); 
             }
 
 /*
@@ -592,7 +618,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log("onActionUpForwardA");
                 stopMotor("a"); 
             }*/
-            rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
+/*            rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
             function onActionDownReverseA() {
                 console.log("onActionDownReverseA"); 
                 moveMotor( "a", "r", powerA);
@@ -601,7 +627,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function onActionUpReverseA() {
                 console.log("onActionUpReverseA");
                 stopMotor("a"); 
-            }
+            }*/
 
             
 

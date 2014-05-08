@@ -94,13 +94,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD;
-        var powerA = 0, powerB = 0, powerC = 0, powerD = 0;
+        var powerA = 100, powerB = 0, powerC = 0, powerD = 0;
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD;
         var powerRange = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
 
         var dialA, dialB, dialC, dialD;
         var needleA, needleB, needleC, needleD;
+
+
+
+        var speed;
 
         // WE WANT TO STOP USING POWER (0-1 SCALE) AND START USING SPEED (0-700 SCALE, IN UNITS OF DEG/SEC)
         
@@ -492,7 +496,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // Forward button object and reverse button object
             fButton = {
                 //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonSet, this),
-                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, this),
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),//, fButtonCallback, "a"),
                 b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
                 c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
                 d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
@@ -504,11 +508,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d : game.add.button(rButtonPos.x+410, rButtonPos.y+210, 'reverseButton')
             }
 
+            //fButton.a.name = "a", fButton.b.name = "b", fButton.c.name = "c", fButton.d.name = "d";
             
-            function fButtonCallback (btn) {
-                this.downButton = btn;
-                console.log("hey");
-                console.log(this.downButton);
+            function fButtonCallback () {
+                //this.downButton = btn;
+                //console.log("hey");
+                //console.log(this.downButton);
+                moveMotor(this, "f", powerA);
+                // var buttonID = "fButton." + this;
+                // console.log(buttonID);
+                // console.log(this);
+
+                // fButton.name = btn.name;
+                // fButton.name.events.onInputDown.add(fButtonDownAction, this);
+                // fButton.name.events.onInputUp.add(fButtonUpAction, this);
+
+                //console.log(fButton);                
+
                 //console.log ("button: " + JSON.stringify(btn));
                 //btn.events.onInputDown.add(fButtonDownAction, this);
                 //fButtonDownAction(btn);
@@ -528,13 +544,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
 
-            function fButtonDownAction () {
-                console.log("onActionDownForward"); 
-                moveMotor( "a", "f", powerA);
+            speed = {
+                a : 100
             }
-            function onActionUpForwardA() {
-                console.log("onActionUpForwardA");
-                stopMotor("a"); 
+            var a ="a";
+            fButton.a.events.onInputDown.add(fButtonDownAction, a);
+            fButton.a.events.onInputUp.add(fButtonUpAction, "a");
+
+            function fButtonDownAction () {
+                //console.log(this.charAt(0));
+                console.log("onActionDownForward"); 
+                moveMotor( this, "f", powerA );
+            }
+            function fButtonUpAction() {
+                console.log("onActionUpForward");
+                stopMotor(this); 
             }
 
 /*
@@ -982,7 +1006,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.port = motor;
             data.dir = direction;
             data.speed = speed; // this will work when we swap out 'speed' (0 to 700 deg/s scale) in place of 'power' (0 to 1 scale)
-            data.speed = 200; // this is just a placeholder! (200 degrees/second)
+            //data.speed = 200; // this is just a placeholder! (200 degrees/second)
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
         }

@@ -496,7 +496,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // Forward button object and reverse button object
             fButton = {
                 //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonSet, this),
-                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),//, fButtonCallback, "a"),
+                //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, this),
+                a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton', fButtonCallback, "a"),
+                //a : game.add.button(fButtonPos.x, fButtonPos.y, 'forwardButton'),
                 b : game.add.button(fButtonPos.x+410, fButtonPos.y, 'forwardButton'),
                 c : game.add.button(fButtonPos.x, fButtonPos.y+210, 'forwardButton'),
                 d : game.add.button(fButtonPos.x+410, fButtonPos.y+210, 'forwardButton')
@@ -511,23 +513,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //fButton.a.name = "a", fButton.b.name = "b", fButton.c.name = "c", fButton.d.name = "d";
             
             function fButtonCallback () {
-                //this.downButton = btn;
-                //console.log("hey");
-                //console.log(this.downButton);
-                moveMotor(this, "f", powerA);
-                // var buttonID = "fButton." + this;
-                // console.log(buttonID);
-                // console.log(this);
 
-                // fButton.name = btn.name;
-                // fButton.name.events.onInputDown.add(fButtonDownAction, this);
-                // fButton.name.events.onInputUp.add(fButtonUpAction, this);
+                moveMotor(this, "f", speed.this);
 
-                //console.log(fButton);                
-
-                //console.log ("button: " + JSON.stringify(btn));
-                //btn.events.onInputDown.add(fButtonDownAction, this);
-                //fButtonDownAction(btn);
             }
 
            /*function fButtonSet (newDirectionButton) {
@@ -545,16 +533,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             speed = {
-                a : 100
+                a : 314, // these are placeholders for now
+                b : 159,
+                c : 265,
+                d : 359
             }
-            var a ="a";
-            fButton.a.events.onInputDown.add(fButtonDownAction, a);
+            fButton.a.events.onInputDown.add(fButtonDownAction, "a");
             fButton.a.events.onInputUp.add(fButtonUpAction, "a");
 
             function fButtonDownAction () {
                 //console.log(this.charAt(0));
                 console.log("onActionDownForward"); 
-                moveMotor( this, "f", powerA );
+                moveMotor( this, "f", this );
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");

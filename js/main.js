@@ -125,24 +125,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
             status : 1,
             speed : 11,
             position : 0,
+            gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
         }
         var motorB = {
             port: 'b',
             status : 1,
             speed : 22,
-            position : '',
+            position : 0,
+            gang: 0,
         }
         var motorC = {
             port: 'c',
             status : 1,
             speed : 33,
-            position : '',
+            position : 0,
+            gang: 0
         }
         var motorD = {
             port: 'd',
             status : 1,
             speed : 44,
             position : 0,
+            gang: 0
         }
 
 
@@ -714,7 +718,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gang : game.add.button(1050, 65, 'dragButton', actionDragGang, this)
             }
             function actionDragGang () {
-                console.log("Drag gang");
+                console.log(motorA);
+                console.log(motorB);
+                console.log(motorC);
+                console.log(motorD);
                 dragButton.gang.x = game.input.x;
                 dragButton.gang.y = game.input.y;
                 // motorGangPos.x = dragButton.gang.x - 200;
@@ -771,6 +778,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a1 = 1; // so check it now
                     checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    motorA.gang = 1; // join motor a with gang 1
                     if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
                         checkboxStatus.a2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a2.setFrames(0,0,1,0) // show other box as unchecked
@@ -779,12 +787,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a1 = 0; // so uncheck it now
                     checkbox.a1.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                    motorA.gang = 0; // ungang motor a
                 }
             }
             function actionCheckboxA2 () {
                 if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a2 = 1; // so check it now
                     checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
+                    motorA.gang = 2; // join motor a with gang 2
                     if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
                         checkboxStatus.a1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a1.setFrames(0,0,1,0) // show other box as unchecked
@@ -793,12 +803,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a2 = 0; // so uncheck it now
                     checkbox.a2.setFrames(0,0,1,0); // over frame and out frame should now both show the box unchecked
+                    motorA.gang = 0; // ungang motor a
                 }
             }
             function actionCheckboxB1 () {
                 if ( checkboxStatus.b1 === 0 ) {
                     checkboxStatus.b1 = 1; 
                     checkbox.b1.setFrames(1,1,1,0);
+                    motorB.gang = 1;
                     if ( checkboxStatus.b2 === 1 ) { 
                         checkboxStatus.b2 = 0; 
                         checkbox.b2.setFrames(0,0,1,0) 
@@ -806,12 +818,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.b1 = 0; 
                     checkbox.b1.setFrames(0,0,1,0);
+                    motorB.gang = 0;
                 }
             }
             function actionCheckboxB2 () {
                 if ( checkboxStatus.b2 === 0 ) { 
                     checkboxStatus.b2 = 1; 
                     checkbox.b2.setFrames(1,1,1,0);
+                    motorB.gang = 2;
                     if ( checkboxStatus.b1 === 1 ) {
                         checkboxStatus.b1 = 0; 
                         checkbox.b1.setFrames(0,0,1,0) 
@@ -819,12 +833,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.b2 = 0;
                     checkbox.b2.setFrames(0,0,1,0); 
+                    motorB.gang = 0;
                 }
             }
             function actionCheckboxC1 () {
                 if ( checkboxStatus.c1 === 0 ) {
                     checkboxStatus.c1 = 1; 
                     checkbox.c1.setFrames(1,1,1,0);
+                    motorC.gang = 1;
                     if ( checkboxStatus.c2 === 1 ) { 
                         checkboxStatus.c2 = 0; 
                         checkbox.c2.setFrames(0,0,1,0) 
@@ -832,12 +848,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.c1 = 0; 
                     checkbox.c1.setFrames(0,0,1,0);
+                    motorC.gang = 0;
                 }
             }
             function actionCheckboxC2 () {
                 if ( checkboxStatus.c2 === 0 ) { 
                     checkboxStatus.c2 = 1; 
                     checkbox.c2.setFrames(1,1,1,0);
+                    motorC.gang = 2;
                     if ( checkboxStatus.c1 === 1 ) { 
                         checkboxStatus.c1 = 0; 
                         checkbox.c1.setFrames(0,0,1,0) 
@@ -845,12 +863,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.c2 = 0;
                     checkbox.c2.setFrames(0,0,1,0); 
+                    motorC.gang = 0;
                 }
             }
             function actionCheckboxD1 () {
                 if ( checkboxStatus.d1 === 0 ) {
                     checkboxStatus.d1 = 1; 
                     checkbox.d1.setFrames(1,1,1,0);
+                    motorD.gang = 1;
                     if ( checkboxStatus.d2 === 1 ) { 
                         checkboxStatus.d2 = 0; 
                         checkbox.d2.setFrames(0,0,1,0) 
@@ -858,12 +878,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else { 
                     checkboxStatus.d1 = 0; 
                     checkbox.d1.setFrames(0,0,1,0); 
+                    motorD.gang = 0;
                 }
             }
             function actionCheckboxD2 () {
                 if ( checkboxStatus.d2 === 0 ) { 
                     checkboxStatus.d2 = 1; 
                     checkbox.d2.setFrames(1,1,1,0);
+                    motorD.gang = 2;
                     if ( checkboxStatus.d1 === 1 ) { 
                         checkboxStatus.d1 = 0; 
                         checkbox.d1.setFrames(0,0,1,0) 
@@ -871,6 +893,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else { 
                     checkboxStatus.d2 = 0; 
                     checkbox.d2.setFrames(0,0,1,0); 
+                    motorD.gang = 0;
                 }
             }
 

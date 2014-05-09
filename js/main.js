@@ -571,7 +571,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // NOW THIS FUNCTION IS CALLED ON CLICK RATHER THAN ON RELEASE (MODIFIED LINE 3556 IN THE NON-MINIFIED PHASER FRAMEWORK FILE)
 
                 moveMotor(this, "f", speed.this);
-
+            
             }*/
 
            /*function fButtonSet (newDirectionButton) {
@@ -593,6 +593,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 b : 159,
                 c : 265,
                 d : 359
+
             }*/
 
             /* adding forward button events */
@@ -948,7 +949,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(173, 202, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarA = game.add.button(143, 356, 'sliderBar', actionDragOnClickA);
+            sliderBarA = game.add.button(143, 356, 'sliderBar');
+            sliderBarA.events.onInputDown.add(actionDragOnClickA);
+            sliderBarA.events.onInputUp.add(actionDragOnClickA);
+            // fButton.a.events.onInputDown.add(fButtonDownAction, motorA);
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
@@ -1199,7 +1203,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Click-and-drag functions (an alternative to the plus and minus buttons) */
         function actionDragOnClickA() {
             //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-            sliderBarA.y = 356 - Math.round( (356 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+            sliderBarA.inputEnabled=true;
+            sliderBarA.input.enableDrag(false);
+            sliderBarA.input.allowHorizontalDrag=false;
+            console.log('hi');
+            sliderBarA.y = 356 - Math.round( (356 - game.input.mousePointer.y) / 16 ) * 16; // round to nearest 10% power
             if (sliderBarA.y < 196) { //set max power boundary limit
                 sliderBarA.y = 196;
             } else if (sliderBarA.y > 356) { //set min power boundary limit

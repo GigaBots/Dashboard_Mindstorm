@@ -90,6 +90,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var checkbox;
         var checkboxStatus;
 
+        var dragButton;
+
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1; // forward = 1, reverse = -1
 
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD;
@@ -376,6 +378,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
+            game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
         } //end preload
 
     //==============================================================================================================================
@@ -503,15 +506,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* Ganging motors together */
             labelMotorGang = {
                 g1 : game.add.text(motorGangPos.x, motorGangPos.y, "Motor Gang 1", labelStyle3), // gang 1
-                g2 : game.add.text(motorGangPos.x+120, motorGangPos.y, "Motor Gang 2", labelStyle3), // gang 2
+                g2 : game.add.text(motorGangPos.x+100, motorGangPos.y, "Motor Gang 2", labelStyle3), // gang 2
                 a1 : game.add.text(motorGangPos.x+30, motorGangPos.y+30, "Motor A", labelStyle), // motor A in gang 1
-                a2 : game.add.text(motorGangPos.x+150, motorGangPos.y+30, "Motor A", labelStyle), //motor A in gang 2
+                a2 : game.add.text(motorGangPos.x+130, motorGangPos.y+30, "Motor A", labelStyle), //motor A in gang 2
                 b1 : game.add.text(motorGangPos.x+30, motorGangPos.y+60, "Motor B", labelStyle), 
-                b2 : game.add.text(motorGangPos.x+150, motorGangPos.y+60, "Motor B", labelStyle), 
+                b2 : game.add.text(motorGangPos.x+130, motorGangPos.y+60, "Motor B", labelStyle), 
                 c1 : game.add.text(motorGangPos.x+30, motorGangPos.y+90, "Motor C", labelStyle), 
-                c2 : game.add.text(motorGangPos.x+150, motorGangPos.y+90, "Motor C", labelStyle), 
+                c2 : game.add.text(motorGangPos.x+130, motorGangPos.y+90, "Motor C", labelStyle), 
                 d1 : game.add.text(motorGangPos.x+30, motorGangPos.y+120, "Motor D", labelStyle), 
-                d2 : game.add.text(motorGangPos.x+150, motorGangPos.y+120, "Motor D", labelStyle) 
+                d2 : game.add.text(motorGangPos.x+130, motorGangPos.y+120, "Motor D", labelStyle) 
             }
 
 
@@ -706,20 +709,56 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // see Phaser API file 'Button.js' at ll. 586-637
 
 
-            
+            /* Move entire motor ganging box using a button for clicking and dragging */
+            dragButton = {
+                gang : game.add.button(1050, 65, 'dragButton', actionDragGang, this)
+            }
+            function actionDragGang () {
+                console.log("Drag gang");
+                dragButton.gang.x = game.input.x;
+                dragButton.gang.y = game.input.y;
+                // motorGangPos.x = dragButton.gang.x - 200;
+                // motorGangPos.y = dragButton.y;
+                /* update frame position */
+                frameMotorGanging.destroy();
+                frameMotorGanging = game.add.graphics(0,0);
+                frameMotorGanging.lineStyle(1, frameLineColor, 1);
+                frameMotorGanging.drawRect(dragButton.gang.x-210, dragButton.gang.y-5, 240, 160);
+                /* update checkbox positions */
+                checkbox.a1.x = dragButton.gang.x-200, checkbox.a1.y = dragButton.gang.y+27;
+                checkbox.a2.x = dragButton.gang.x-100, checkbox.a2.y = dragButton.gang.y+27;
+                checkbox.b1.x = dragButton.gang.x-200, checkbox.b1.y = dragButton.gang.y+57;
+                checkbox.b2.x = dragButton.gang.x-100, checkbox.b2.y = dragButton.gang.y+57;
+                checkbox.c1.x = dragButton.gang.x-200, checkbox.c1.y = dragButton.gang.y+87;
+                checkbox.c2.x = dragButton.gang.x-100, checkbox.c2.y = dragButton.gang.y+87;
+                checkbox.d1.x = dragButton.gang.x-200, checkbox.d1.y = dragButton.gang.y+117;
+                checkbox.d2.x = dragButton.gang.x-100, checkbox.d2.y = dragButton.gang.y+117;
+                /* update label positions */
+                labelMotorGang.a1.x = dragButton.gang.x-170, labelMotorGang.a1.y = dragButton.gang.y+30;
+                labelMotorGang.a2.x = dragButton.gang.x-70, labelMotorGang.a2.y = dragButton.gang.y+30;
+                labelMotorGang.b1.x = dragButton.gang.x-170, labelMotorGang.b1.y = dragButton.gang.y+60;
+                labelMotorGang.b2.x = dragButton.gang.x-70, labelMotorGang.b2.y = dragButton.gang.y+60;
+                labelMotorGang.c1.x = dragButton.gang.x-170, labelMotorGang.c1.y = dragButton.gang.y+90;
+                labelMotorGang.c2.x = dragButton.gang.x-70, labelMotorGang.c2.y = dragButton.gang.y+90;
+                labelMotorGang.d1.x = dragButton.gang.x-170, labelMotorGang.d1.y = dragButton.gang.y+120;
+                labelMotorGang.d2.x = dragButton.gang.x-70, labelMotorGang.d2.y = dragButton.gang.y+120;
+                labelMotorGang.g1.x = dragButton.gang.x-200, labelMotorGang.g1.y = dragButton.gang.y;
+                labelMotorGang.g2.x = dragButton.gang.x-100, labelMotorGang.g2.y = dragButton.gang.y;
+            }
+
 
             /* Adding motor-ganging functionality */
             checkbox = {
                 //a1 : game.add.button(motorGangPos.x, motorGangPos.y+27, 'checkbox', actionCheckbox, this),
 
                 a1 : game.add.button(motorGangPos.x, motorGangPos.y+27, 'checkbox', actionCheckboxA1, this),
-                a2 : game.add.button(motorGangPos.x+120, motorGangPos.y+27, 'checkbox', actionCheckboxA2, this),
+                a2 : game.add.button(motorGangPos.x+100, motorGangPos.y+27, 'checkbox', actionCheckboxA2, this),
                 b1 : game.add.button(motorGangPos.x, motorGangPos.y+57, 'checkbox', actionCheckboxB1, this),
-                b2 : game.add.button(motorGangPos.x+120, motorGangPos.y+57, 'checkbox', actionCheckboxB2, this),
+                b2 : game.add.button(motorGangPos.x+100, motorGangPos.y+57, 'checkbox', actionCheckboxB2, this),
                 c1 : game.add.button(motorGangPos.x, motorGangPos.y+87, 'checkbox', actionCheckboxC1, this),
-                c2 : game.add.button(motorGangPos.x+120, motorGangPos.y+87, 'checkbox', actionCheckboxC2, this),
+                c2 : game.add.button(motorGangPos.x+100, motorGangPos.y+87, 'checkbox', actionCheckboxC2, this),
                 d1 : game.add.button(motorGangPos.x, motorGangPos.y+117, 'checkbox', actionCheckboxD1, this),
-                d2 : game.add.button(motorGangPos.x+120, motorGangPos.y+117, 'checkbox', actionCheckboxD2, this)
+                d2 : game.add.button(motorGangPos.x+100, motorGangPos.y+117, 'checkbox', actionCheckboxD2, this)
             }
             checkboxStatus = { a1 : 0, a2 : 0, b1 : 3, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked
 

@@ -206,11 +206,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
          touchCountDisplay : 0 //display number of total presses
         }
         var frameTouch;
+        var positionTouch = { x : 231, y : 130 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
 
         /* IR sensor */
         var frameIR;
+        var positionIR = { x : 462, y : 130 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
         var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var IR = {
@@ -219,6 +221,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Color sensor */
         var frameColor;
+        var positionColor = { x : 430, y : 60 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
         var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
@@ -231,6 +234,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Ultrasonic sensor */
         var frameUltrasonic;
+        var positionUltrasonic = { x : 651, y : 130 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
         var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var ultrasonic = {
@@ -239,13 +243,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Battery level sensor */
         var frameBattery;
-        var batteryPos = { x : 300, y : 60 }
+        var positionBattery = { x : 300, y : 60 }
         var labelBattery = "Battery Level";
         var batteryLevel = 1; //initialize the level at 100% (or, 1);
         var batteryLevelBox, batteryLevelFill;
 
         /* LCD Screen */
         var frameScreen, LCDScreenBox;
+        var positionScreen = { x : 672, y : 60 }
         var labelScreen = "LCD Screen";
         var screenMessage = {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
@@ -347,7 +352,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
                 touchCountDisplay = touchCount;
-                touch.touchCountDisplay = game.add.text(410, 155, touchCountDisplay, labelStyle3);
+                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+25, touchCountDisplay, labelStyle3);
             }
             else {
                 touchIndicator.animations.play('up');
@@ -361,7 +366,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16);
                 }
             }
             else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
@@ -369,7 +374,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0x808080, 1); // make fill grey
-                    batteryLevelFill.drawRect(310, 92, Math.round(batteryLevel*100), 16);
+                    batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16);
                 }
             }
         }
@@ -378,7 +383,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(722, 155, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+171, positionUltrasonic.y+25, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
 
@@ -454,27 +459,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameTouch = game.add.graphics(0,0);
             frameTouch.lineStyle(1, frameLineColor, 1);
-            frameTouch.drawRect(231, 130, 221, 48);
+            frameTouch.drawRect(positionTouch.x, positionTouch.y, 221, 48);
 
             frameIR = game.add.graphics(0,0);
             frameIR.lineStyle(1, frameLineColor, 1);
-            frameIR.drawRect(462, 130, 179, 48);
+            frameIR.drawRect(positionIR.x, positionIR.y, 179, 48);
 
             frameUltrasonic = game.add.graphics(0,0);
             frameUltrasonic.lineStyle(1, frameLineColor, 1);
-            frameUltrasonic.drawRect(651, 130, 179, 48);
+            frameUltrasonic.drawRect(positionUltrasonic.x, positionUltrasonic.y, 179, 48);
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.drawRect(430, 60, 232, 60);
+            frameColor.drawRect(positionColor.x, positionColor.y, 232, 60);
 
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, frameLineColor, 1);
-            frameBattery.drawRect(batteryPos.x, batteryPos.y, 120, 60);
+            frameBattery.drawRect(positionBattery.x, positionBattery.y, 120, 60);
 
             frameScreen = game.add.graphics(0,0);
             frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.drawRect(672, 60, 158, 60);
+            frameColor.drawRect(positionScreen.x, positionScreen.y, 158, 60);
 
 
             frameMotorGanging = game.add.graphics(0,0);
@@ -504,10 +509,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+42, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+42, labelSensors.h, labelStyle);
 
-            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+6, labelMotor.A, labelStyle2);
-            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+6, labelMotor.B, labelStyle2);
-            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+6, labelMotor.C, labelStyle2);
-            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+6, labelMotor.D, labelStyle2);
+            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+6, labelMotor.a, labelStyle2);
+            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+6, labelMotor.b, labelStyle2);
+            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+6, labelMotor.c, labelStyle2);
+            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+6, labelMotor.d, labelStyle2);
 
             labelTouch = game.add.text(241, 135, labelTouch, labelStyle3);
             labelTouched = game.add.text(241, 157, labelTouched, labelStyle);
@@ -521,16 +526,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelUltrasonicDist = game.add.text(661, 157, labelUltrasonicDist, labelStyle);
             labelUltrasonicUnits = game.add.text(769, 157, labelUltrasonicUnits, labelStyle);
 
-            labelColor = game.add.text(440, 65, labelColor, labelStyle3);
-            labelColorR = game.add.text(440, 95, labelColorR, labelStyle);
-            labelColorG = game.add.text(505, 95, labelColorG, labelStyle);
-            labelColorB = game.add.text(585, 95, labelColorB, labelStyle);
-            //labelColorValue = game.add.text(580, 67, labelColorValue, labelStyle);
-            labelColorName = game.add.text(551, 67, labelColorName, labelStyle);
+            labelColor = game.add.text(positionColor.x+10, positionColor.y+5, labelColor, labelStyle3);
+            labelColorR = game.add.text(positionColor.x+10, positionColor.y+35, labelColorR, labelStyle);
+            labelColorG = game.add.text(positionColor.x+75, positionColor.y+35, labelColorG, labelStyle);
+            labelColorB = game.add.text(positionColor.x+155, positionColor.y+35, labelColorB, labelStyle);
+            //labelColorValue = game.add.text(positionColor.x+150, positionColor.x+7, labelColorValue, labelStyle);
+            labelColorName = game.add.text(positionColor.x+121, positionColor.y+7, labelColorName, labelStyle);
 
-            labelBattery = game.add.text(batteryPos.x+10, batteryPos.y+5, labelBattery, labelStyle3);
+            labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+5, labelBattery, labelStyle3);
             
-            labelScreen = game.add.text(682, 65, labelScreen, labelStyle3);
+            labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+5, labelScreen, labelStyle3);
 
             /* Ganging motors together */
             labelMotorGang = {
@@ -973,8 +978,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             minusButtonD = game.add.button(positionMotorD.x+10, positionMotorD.y+148, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
             plusButtonD = game.add.button(positionMotorD.x+63, positionMotorD.y+148, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
+
             /* LCD Screen Message */
-            screenInputButton = game.add.button(782, 65, 'screenInputButton', actionInputOnClick);
+            screenInputButton = game.add.button(positionScreen.x+110, positionScreen.y+5, 'screenInputButton', actionInputOnClick);
 
 
         /* Click and drag motor speed setting & display */
@@ -987,8 +993,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
 
-            
-
+            ////////////
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
             sliderTrackB.drawRect(positionMotorB.x+153, positionMotorB.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
@@ -1130,17 +1135,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.beginFill(0xD8D8D8, 1);
             batteryLevelBox.lineStyle(1.5, frameLineColor, 1);
-            batteryLevelBox.drawRect(batteryPos.x+9, batteryPos.y+31, 102, 18);
+            batteryLevelBox.drawRect(positionBattery.x+9, positionBattery.y+31, 102, 18);
 
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
-            batteryLevelFill.drawRect(batteryPos.x+10, batteryPos.y+32, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+            batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
 
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
             LCDScreenBox.beginFill(0xD8D8D8, 1);
             LCDScreenBox.lineStyle(1.5, frameLineColor, 1);
-            LCDScreenBox.drawRect(682, 88, 138, 24);
+            LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+28, 138, 24);
 
         } // end create 
 
@@ -1148,7 +1153,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionInputOnClick () {
             game.world.remove(screenMessage.messageDisplay);
             messageDisplay = prompt("What would you like to display on the screen?");
-            screenMessage.messageDisplay = game.add.text(685, 93, messageDisplay, labelStyle3);
+            screenMessage.messageDisplay = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay, labelStyle3);
         }
 
         function actionResumeOnClick () {
@@ -1499,167 +1504,100 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     game.world.remove(IR.IRDistDisplay);
             //     IRDist = IRDist + 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
             //     IRDistDisplay = IRDist;
-            //     IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            //     IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+25, IRDistDisplay.toFixed(2), labelStyle3);
             // }
             // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             //     game.world.remove(IR.IRDistDisplay);
             //     IRDist = IRDist - 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
             //     IRDistDisplay = IRDist;
-            //     IR.IRDistDisplay = game.add.text(533, 155, IRDistDisplay.toFixed(2), labelStyle3);
+            //     IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+25, IRDistDisplay.toFixed(2), labelStyle3);
             // }
 
             //=============================================================================
             /* Color Sensor */
-//             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-//                 game.world.remove(color.colorRDisplay);
-//                 game.world.remove(color.colorGDisplay);
-//                 game.world.remove(color.colorBDisplay);
-//                 //game.world.remove(color.colorValueDisplay);
-//                 if (colorR <= 255) {    
-//                     colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     //colorValue = colorValue + 0.01;
-//                     colorRDisplay = colorR;
-//                     colorGDisplay = colorG;
-//                     colorBDisplay = colorB;
-//                     //colorValueDisplay = colorValue;
-//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-//                 }
-//                 else {
-//                     color.colorRDisplay = game.add.text(470, 93, "255", {font: "16px Arial", fill: "red"});
-//                     color.colorGDisplay = game.add.text(546, 93, "255", {font: "16px Arial", fill: "green"});
-//                     color.colorBDisplay = game.add.text(619, 93, "255", {font: "16px Arial", fill: "blue"});
-//                 }
-//                 //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-//             }
-//             if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-//                 game.world.remove(color.colorRDisplay);
-//                 game.world.remove(color.colorGDisplay);
-//                 game.world.remove(color.colorBDisplay);
-//                 //game.world.remove(color.colorValueDisplay);
-//                 if (colorR >= 0) {
-//                     colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-//                     //colorValueDisplay = colorValue = colorValue + 0.01;
-//                     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-//                     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-//                     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-//                     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
-//                 }
-//                 else {
-//                     color.colorRDisplay = game.add.text(470, 93, "0", {font: "16px Arial", fill: "red"});
-//                     color.colorGDisplay = game.add.text(546, 93, "0", {font: "16px Arial", fill: "green"});
-//                     color.colorBDisplay = game.add.text(619, 93, "0", {font: "16px Arial", fill: "blue"});
-//                 }
-//             }
-
-//             // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
-//             if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Yellow"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "White"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Black"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Blue"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Red"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Green"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Orange"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-//                 game.world.remove(color.colorNameDisplay);
-//                 colorNameDisplay = colorName = "Purple"
-//                 color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
-//             }
-// =======
-
             // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             //     game.world.remove(color.colorRDisplay);
             //     game.world.remove(color.colorGDisplay);
             //     game.world.remove(color.colorBDisplay);
             //     //game.world.remove(color.colorValueDisplay);
-            //     colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     //colorValue = colorValue + 0.01;
-            //     colorRDisplay = colorR;
-            //     colorGDisplay = colorG;
-            //     colorBDisplay = colorB;
-            //     //colorValueDisplay = colorValue;
-            //     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
-            //     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
-            //     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
-            //     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            //     if (colorR <= 255) {    
+            //         colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         //colorValue = colorValue + 0.01;
+            //         colorRDisplay = colorR;
+            //         colorGDisplay = colorG;
+            //         colorBDisplay = colorB;
+            //         //colorValueDisplay = colorValue;
+            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+            //     }
+            //     else {
+            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, "255", {font: "16px Arial", fill: "red"});
+            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, "255", {font: "16px Arial", fill: "green"});
+            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, "255", {font: "16px Arial", fill: "blue"});
+            //     }
+            //     //color.colorValueDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorValueDisplay), labelStyle3);
             // }
             // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
             //     game.world.remove(color.colorRDisplay);
             //     game.world.remove(color.colorGDisplay);
             //     game.world.remove(color.colorBDisplay);
             //     //game.world.remove(color.colorValueDisplay);
-            //     colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     //colorValueDisplay = colorValue = colorValue + 0.01;
-            //     color.colorRDisplay = game.add.text(470, 93, Math.round(colorRDisplay), labelStyle3);
-            //     color.colorGDisplay = game.add.text(546, 93, Math.round(colorGDisplay), labelStyle3);
-            //     color.colorBDisplay = game.add.text(619, 93, Math.round(colorBDisplay), labelStyle3);
-            //     //color.colorValueDisplay = game.add.text(619, 93, Math.round(colorValueDisplay), labelStyle3);
+            //     if (colorR >= 0) {
+            //         colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
+            //         //colorValueDisplay = colorValue = colorValue + 0.01;
+            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
+            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
+            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
+            //         //color.colorValueDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorValueDisplay), labelStyle3);
+            //     }
+            //     else {
+            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, "0", {font: "16px Arial", fill: "red"});
+            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, "0", {font: "16px Arial", fill: "green"});
+            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, "0", {font: "16px Arial", fill: "blue"});
+            //     }
             // }
 
+            // //=======
             // // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
             // if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Yellow"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "White"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Black"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Blue"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Red"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Green"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Orange"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
             //     game.world.remove(color.colorNameDisplay);
             //     colorNameDisplay = colorName = "Purple"
-            //     color.colorNameDisplay = game.add.text(590, 65, colorNameDisplay, labelStyle3);
+            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
             // }
+
 
 
             //=============================================================================

@@ -579,7 +579,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // NOW THIS FUNCTION IS CALLED ON CLICK RATHER THAN ON RELEASE (MODIFIED LINE 3556 IN THE NON-MINIFIED PHASER FRAMEWORK FILE)
 
                 moveMotor(this, "f", speed.this);
-
+            
             }*/
 
            /*function fButtonSet (newDirectionButton) {
@@ -601,6 +601,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 b : 159,
                 c : 265,
                 d : 359
+
             }*/
 
             /* adding forward button events */
@@ -980,7 +981,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(positionMotorA.x+153, positionMotorA.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar', actionDragOnClickA);
+            sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar');
+            sliderBarA.inputEnabled=true;
+            sliderBarA.input.enableDrag(false);
+            sliderBarA.input.allowHorizontalDrag=false;
+            sliderBarA.events.onInputUp.add(actionDragOnClickA);
+
+            
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
@@ -1238,16 +1245,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Click-and-drag functions (an alternative to the plus and minus buttons) */
         function actionDragOnClickA() {
             //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-            sliderBarA.y = positionMotorA.y+168 - Math.round( (positionMotorA.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
+
+            sliderBarA.y = positionMotorA.y+168 - Math.round( (positionMotorA.y+168 - game.input.mousePointer.y) / 16 ) * 16; // round to nearest 10% power
             if (sliderBarA.y < positionMotorA.y+8) { //set max power boundary limit
                 sliderBarA.y = positionMotorA.y+8;
             } else if (sliderBarA.y > positionMotorA.y+168) { //set min power boundary limit
                 sliderBarA.y = positionMotorA.y+168;
+
             }
             powerA = (0.10 * (positionMotorA.y+168 - sliderBarA.y) / 16);
             console.log(powerA.toFixed(2)); //this makes powerA a string with 2 decimal places
         }
-/////////////////////////////////
         function actionDragOnClickB() {
             //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             sliderBarB.y = positionMotorB.y+168 - Math.round( (positionMotorB.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
@@ -1259,7 +1267,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             powerB = (0.10 * (positionMotorB.y+168 - sliderBarB.y) / 16);
             console.log(powerB.toFixed(2));
         }
-
         function actionDragOnClickC() {
             //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
             sliderBarC.y = positionMotorC.y+168 - Math.round( (positionMotorC.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
@@ -1271,7 +1278,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             powerC = (0.10 * (positionMotorC.y+168 - sliderBarC.y) / 16);
             console.log(powerC.toFixed(2));
         }
-
         function actionDragOnClickD() {
             //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
             sliderBarD.y = positionMotorD.y+168 - Math.round( (positionMotorD.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power

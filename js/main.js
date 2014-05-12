@@ -73,10 +73,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
        
         /* Individual motor controls and feedback */
         var frameMotor;
-        var positionMotorA = { x : 15, y : 193 }
-        var positionMotorB = { x : 425, y : 193 }
-        var positionMotorC = { x : 15, y : 403 }
-        var positionMotorD = { x : 425, y : 403 }
+        var positionMotorA = { x : 15, y : 223 }
+        var positionMotorB = { x : 425, y : 223 }
+        var positionMotorC = { x : 15, y : 453 }
+        var positionMotorD = { x : 425, y : 453 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor D", d : "Motor D"}
 
         // forward and reverse
@@ -423,9 +423,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Title */
             dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
-            bbLogo = game.add.sprite(701, 1, 'bbLogoSm');
+            bbLogo = game.add.sprite(816, 1, 'bbLogoSm');
             botLogo = game.add.sprite(0,0, 'robotOrangeSm');
-            poweredBy = game.add.text(606, 19, poweredBy, labelStyle4);
+            poweredBy = game.add.text(722, 19, poweredBy, labelStyle4);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);
@@ -559,7 +559,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Buttons */
             // Add button for resuming all motors at their current settings, after having paused them
             resumeButton = game.add.button(15, 65, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
-            pauseButton = game.add.button(120, 65, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+            pauseButton = game.add.button(111, 65, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
             // Forward button object and reverse button object
             fButton = {
                 //a : game.add.button(positionMotorA.x+10, positionMotorA.y+32, 'forwardButton', fButtonSet, this),
@@ -1090,22 +1090,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
             dialA.lineStyle(2, frameLineColor, 1);
-            dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 80);
+            dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 30);
 
             dialB = game.add.graphics(0,0);
             dialB.beginFill(0xD8D8D8, 1);
             dialB.lineStyle(2, frameLineColor, 1);
-            dialB.drawCircle(positionMotorB.x+308, positionMotorB.y+94, 80);
+            dialB.drawCircle(positionMotorB.x+308, positionMotorB.y+94, 30);
 
             dialC = game.add.graphics(0,0);
             dialC.beginFill(0xD8D8D8, 1);
             dialC.lineStyle(2, frameLineColor, 1);
-            dialC.drawCircle(positionMotorC.x+308, positionMotorC.y+94, 80);
+            dialC.drawCircle(positionMotorC.x+308, positionMotorC.y+94, 30);
 
             dialD = game.add.graphics(0,0);
             dialD.beginFill(0xD8D8D8, 1);
             dialD.lineStyle(2, frameLineColor, 1);
-            dialD.drawCircle(positionMotorD.x+308, positionMotorD.y+94, 80);
+            dialD.drawCircle(positionMotorD.x+308, positionMotorD.y+94, 30);
 
             needleA = game.add.sprite(positionMotorA.x+308, positionMotorA.y+94, 'dialNeedle');
             needleA.anchor.setTo(0.5, 0.9625);

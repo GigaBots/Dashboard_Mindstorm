@@ -55,9 +55,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Motor and sensor statuses */
         var frameMotorStatus, labelMotorStatus = "Motors";
-        var positionMotorStatus = { x : 20, y : 60 }
+        var positionMotorStatus = { x : 541, y : 65 }
         var frameSensorStatus, labelSensorStatus = "Sensors";
-        var positionSensorStatus = { x : 160, y : 60}
+        var positionSensorStatus = { x : 681, y : 65}
         
         var labelMotorStatus;
 
@@ -73,10 +73,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
        
         /* Individual motor controls and feedback */
         var frameMotor;
-        var positionMotorA = { x : 20, y : 188 }
-        var positionMotorB = { x : 430, y : 188 }
-        var positionMotorC = { x : 20, y : 398 }
-        var positionMotorD = { x : 430, y : 398 }
+        var positionMotorA = { x : 15, y : 223 }
+        var positionMotorB = { x : 425, y : 223 }
+        var positionMotorC = { x : 15, y : 453 }
+        var positionMotorD = { x : 425, y : 453 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor D", d : "Motor D"}
 
         // forward and reverse
@@ -104,9 +104,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
-        var positionMotorGang = { x : 840, y : 60 }
-        var positionMotorGang1 = { x : 840, y: 230 } 
-        var positionMotorGang2 = { x : 840, y: 440 } 
+        var positionMotorGang = { x : 970, y : 65 }
+        var positionMotorGang1 = { x : 970, y: 235 } 
+        var positionMotorGang2 = { x : 970, y: 445 } 
         var checkbox;
         var checkboxStatus;
         var fGangButton, rGangButton;
@@ -185,7 +185,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // }
 
         /* Sensors */
-
         var sensor1 = {
             status : 0, //0 = unplugged, 1 = plugged-in // 2 for initial setting
         }
@@ -206,13 +205,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
          touchCountDisplay : 0 //display number of total presses
         }
         var frameTouch;
-        var positionTouch = { x : 231, y : 130 }
+        var positionTouch = { x : 600, y : 620 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
 
         /* IR sensor */
         var frameIR;
-        var positionIR = { x : 462, y : 130 }
+        var positionIR = { x : 577, y : 135 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
         var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var IR = {
@@ -221,7 +220,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Color sensor */
         var frameColor;
-        var positionColor = { x : 430, y : 60 }
+        var positionColor = { x : 400, y : 620 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
         var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
@@ -234,7 +233,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Ultrasonic sensor */
         var frameUltrasonic;
-        var positionUltrasonic = { x : 651, y : 130 }
+        var positionUltrasonic = { x : 766, y : 135 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
         var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var ultrasonic = {
@@ -243,14 +242,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Battery level sensor */
         var frameBattery;
-        var positionBattery = { x : 300, y : 60 }
+        var positionBattery = { x : 821, y : 65 }
         var labelBattery = "Battery Level";
         var batteryLevel = 1; //initialize the level at 100% (or, 1);
-        var batteryLevelBox, batteryLevelFill;
+        var batteryLevelBox, batteryLevelFill, batteryShape;
 
         /* LCD Screen */
         var frameScreen, LCDScreenBox;
-        var positionScreen = { x : 672, y : 60 }
+        var positionScreen = { x : 15, y : 123 }
         var labelScreen = "LCD Screen";
         var screenMessage = {
             messageDisplay : "Hello GigaBot!" // this is a placeholder
@@ -366,7 +365,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
-                    batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                    batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
                 }
             }
             else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
@@ -374,7 +373,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0x808080, 1); // make fill grey
-                    batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                    batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
                 }
             }
         }
@@ -424,9 +423,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Title */
             dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
-            bbLogo = game.add.sprite(701, 1, 'bbLogoSm');
+            bbLogo = game.add.sprite(816, 1, 'bbLogoSm');
             botLogo = game.add.sprite(0,0, 'robotOrangeSm');
-            poweredBy = game.add.text(606, 19, poweredBy, labelStyle4);
+            poweredBy = game.add.text(722, 19, poweredBy, labelStyle4);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);
@@ -475,11 +474,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, frameLineColor, 1);
-            frameBattery.drawRect(positionBattery.x, positionBattery.y, 120, 60);
+            frameBattery.drawRect(positionBattery.x, positionBattery.y, 124, 60);
 
             frameScreen = game.add.graphics(0,0);
-            frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.drawRect(positionScreen.x, positionScreen.y, 158, 60);
+            frameScreen.lineStyle(1, frameLineColor, 1);
+            frameScreen.drawRect(positionScreen.x, positionScreen.y, 158, 60);
 
 
             frameMotorGanging = game.add.graphics(0,0);
@@ -497,13 +496,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Labels */
-            labelMotorStatus = game.add.text(58,65, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            labelMotorStatus = game.add.text(positionMotorStatus.x+39, positionMotorStatus.y+5, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
             labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+42, labelMotors.a, labelStyle);
             labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+42, labelMotors.b, labelStyle);
             labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+42, labelMotors.c, labelStyle);
             labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+42, labelMotors.d, labelStyle);
 
-            labelSensorStatus = game.add.text(193,65, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            labelSensorStatus = game.add.text(positionSensorStatus.x+34, positionSensorStatus.y+5, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
             label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+42, labelSensors.e, labelStyle);
             label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+42, labelSensors.f, labelStyle);
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+42, labelSensors.g, labelStyle);
@@ -514,17 +513,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+6, labelMotor.c, labelStyle2);
             labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+6, labelMotor.d, labelStyle2);
 
-            labelTouch = game.add.text(241, 135, labelTouch, labelStyle3);
-            labelTouched = game.add.text(241, 157, labelTouched, labelStyle);
-            labelTouchCount = game.add.text(325, 157, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+5, labelTouch, labelStyle3);
+            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
 
-            labelIR = game.add.text(472, 135, labelIR, labelStyle3);
-            labelIRDist = game.add.text(472, 157, labelIRDist, labelStyle);
-            labelIRUnits = game.add.text(580, 157, labelIRUnits, labelStyle);
+            labelIR = game.add.text(positionIR.x+10, positionIR.y+5, labelIR, labelStyle3);
+            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27, labelIRDist, labelStyle);
+            labelIRUnits = game.add.text(positionIR.x+118, positionIR.y+27, labelIRUnits, labelStyle);
 
-            labelUltrasonic = game.add.text(661, 135, labelUltrasonic, labelStyle3);
-            labelUltrasonicDist = game.add.text(661, 157, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(769, 157, labelUltrasonicUnits, labelStyle);
+            labelUltrasonic = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+5, labelUltrasonic, labelStyle3);
+            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+27, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+27, labelUltrasonicUnits, labelStyle);
 
             labelColor = game.add.text(positionColor.x+10, positionColor.y+5, labelColor, labelStyle3);
             labelColorR = game.add.text(positionColor.x+10, positionColor.y+35, labelColorR, labelStyle);
@@ -559,8 +558,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Buttons */
             // Add button for resuming all motors at their current settings, after having paused them
-            resumeButton = game.add.button(20, 130, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
-            pauseButton = game.add.button(125, 130, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+            resumeButton = game.add.button(15, 65, 'resumeButton', actionResumeOnClick, this, 1, 0, 2, 0);
+            pauseButton = game.add.button(111, 65, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
             // Forward button object and reverse button object
             fButton = {
                 //a : game.add.button(positionMotorA.x+10, positionMotorA.y+32, 'forwardButton', fButtonSet, this),
@@ -1057,33 +1056,33 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         /* Status Lights */
-            statusLightA = game.add.sprite(33, 86, 'statusLight');
+            statusLightA = game.add.sprite(positionMotorStatus.x+13, positionMotorStatus.y+26, 'statusLight');
             statusLightA.animations.add('unplugged', [0], 1);
             statusLightA.animations.add('pluggedIn', [1], 1);
             statusLightA.animations.add('stalled', [2], 1);
-            statusLightB = game.add.sprite(63, 86, 'statusLight');
+            statusLightB = game.add.sprite(positionMotorStatus.x+43, positionMotorStatus.y+26, 'statusLight');
             statusLightB.animations.add('unplugged', [0], 1);
             statusLightB.animations.add('pluggedIn', [1], 1);
             statusLightB.animations.add('stalled', [2], 1);
-            statusLightC = game.add.sprite(93, 86, 'statusLight');
+            statusLightC = game.add.sprite(positionMotorStatus.x+73, positionMotorStatus.y+26, 'statusLight');
             statusLightC.animations.add('unplugged', [0], 1);
             statusLightC.animations.add('pluggedIn', [1], 1);
             statusLightC.animations.add('stalled', [2], 1);
-            statusLightD = game.add.sprite(123, 86, 'statusLight');
+            statusLightD = game.add.sprite(positionMotorStatus.x+103, positionMotorStatus.y+26, 'statusLight');
             statusLightD.animations.add('unplugged', [0], 1);
             statusLightD.animations.add('pluggedIn', [1], 1);
             statusLightD.animations.add('stalled', [2], 1);
 
-            statusLight1 = game.add.sprite(173, 86, 'statusLight');
+            statusLight1 = game.add.sprite(positionSensorStatus.x+13, positionSensorStatus.y+26, 'statusLight');
             statusLight1.animations.add('unplugged', [0], 1);
             statusLight1.animations.add('pluggedIn', [1], 1);
-            statusLight2 = game.add.sprite(203, 86, 'statusLight');
+            statusLight2 = game.add.sprite(positionSensorStatus.x+43, positionSensorStatus.y+26, 'statusLight');
             statusLight2.animations.add('unplugged', [0], 1);
             statusLight2.animations.add('pluggedIn', [1], 1);
-            statusLight3 = game.add.sprite(233, 86, 'statusLight');
+            statusLight3 = game.add.sprite(positionSensorStatus.x+73, positionSensorStatus.y+26, 'statusLight');
             statusLight3.animations.add('unplugged', [0], 1);
             statusLight3.animations.add('pluggedIn', [1], 1);
-            statusLight4 = game.add.sprite(263, 86, 'statusLight');
+            statusLight4 = game.add.sprite(positionSensorStatus.x+103, positionSensorStatus.y+26, 'statusLight');
             statusLight4.animations.add('unplugged', [0], 1);
             statusLight4.animations.add('pluggedIn', [1], 1);
 
@@ -1091,22 +1090,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dialA = game.add.graphics(0,0);
             dialA.beginFill(0xD8D8D8, 1);
             dialA.lineStyle(2, frameLineColor, 1);
-            dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 80);
+            dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 30);
 
             dialB = game.add.graphics(0,0);
             dialB.beginFill(0xD8D8D8, 1);
             dialB.lineStyle(2, frameLineColor, 1);
-            dialB.drawCircle(positionMotorB.x+308, positionMotorB.y+94, 80);
+            dialB.drawCircle(positionMotorB.x+308, positionMotorB.y+94, 30);
 
             dialC = game.add.graphics(0,0);
             dialC.beginFill(0xD8D8D8, 1);
             dialC.lineStyle(2, frameLineColor, 1);
-            dialC.drawCircle(positionMotorC.x+308, positionMotorC.y+94, 80);
+            dialC.drawCircle(positionMotorC.x+308, positionMotorC.y+94, 30);
 
             dialD = game.add.graphics(0,0);
             dialD.beginFill(0xD8D8D8, 1);
             dialD.lineStyle(2, frameLineColor, 1);
-            dialD.drawCircle(positionMotorD.x+308, positionMotorD.y+94, 80);
+            dialD.drawCircle(positionMotorD.x+308, positionMotorD.y+94, 30);
 
             needleA = game.add.sprite(positionMotorA.x+308, positionMotorA.y+94, 'dialNeedle');
             needleA.anchor.setTo(0.5, 0.9625);
@@ -1127,7 +1126,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelDial.d = game.add.text(positionMotorD.x+284, positionMotorD.y+182, "Rotation", labelStyle);
         
         /* Touch Sensor */
-            touchIndicator = game.add.sprite(295, 153, 'touchIndicator');
+            touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+23, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
 
@@ -1135,11 +1134,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             batteryLevelBox = game.add.graphics(0,0);
             batteryLevelBox.beginFill(0xD8D8D8, 1);
             batteryLevelBox.lineStyle(1.5, frameLineColor, 1);
-            batteryLevelBox.drawRect(positionBattery.x+9, positionBattery.y+31, 102, 18);
+            batteryLevelBox.drawRect(positionBattery.x+10, positionBattery.y+31, 102, 18);
+
+            batteryLevelShape = game.add.graphics(0,0);
+            batteryLevelShape.beginFill(frameLineColor, 1);
+            batteryLevelShape.drawRect(positionBattery.x+112, positionBattery.y+36, 4, 8);
 
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
-            batteryLevelFill.drawRect(positionBattery.x+10, positionBattery.y+32, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
+            batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
 
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);

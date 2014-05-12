@@ -205,13 +205,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
          touchCountDisplay : 0 //display number of total presses
         }
         var frameTouch;
-        var positionTouch = { x : 600, y : 620 }
+        var positionTouch = { x : 541, y : 135 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
 
         /* IR sensor */
         var frameIR;
-        var positionIR = { x : 577, y : 135 }
+        var positionIR = { x : 217, y : 65 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
         var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var IR = {
@@ -220,7 +220,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Color sensor */
         var frameColor;
-        var positionColor = { x : 400, y : 620 }
+        var positionColor = { x : 299, y : 123 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
         var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
@@ -233,7 +233,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Ultrasonic sensor */
         var frameUltrasonic;
-        var positionUltrasonic = { x : 766, y : 135 }
+        var positionUltrasonic = { x : 379, y : 65 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
         var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var ultrasonic = {
@@ -462,11 +462,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameIR = game.add.graphics(0,0);
             frameIR.lineStyle(1, frameLineColor, 1);
-            frameIR.drawRect(positionIR.x, positionIR.y, 179, 48);
+            frameIR.drawRect(positionIR.x, positionIR.y, 152, 48);
 
             frameUltrasonic = game.add.graphics(0,0);
             frameUltrasonic.lineStyle(1, frameLineColor, 1);
-            frameUltrasonic.drawRect(positionUltrasonic.x, positionUltrasonic.y, 179, 48);
+            frameUltrasonic.drawRect(positionUltrasonic.x, positionUltrasonic.y, 152, 48);
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, frameLineColor, 1);
@@ -1152,22 +1152,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end create 
 
-    /* Button-click functions */
-        function actionInputOnClick () {
-            game.world.remove(screenMessage.messageDisplay);
-            messageDisplay = prompt("What would you like to display on the screen?");
-            screenMessage.messageDisplay = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay, labelStyle3);
-        }
 
-        function actionResumeOnClick () {
-            // resume all motors at their current settings
-            dashboardStatus = 1;
-        }
-        function actionPauseOnClick () {
-            // stop all motors at their current settings
-            dashboardStatus = 0;
-        }
-
+    /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( motor, direction, speed ) {
             var data = {};
             data.type = "motorStart";
@@ -1188,6 +1174,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
 
+    /* Button-click functions */
+        function actionInputOnClick () {
+            game.world.remove(screenMessage.messageDisplay);
+            messageDisplay = prompt("What would you like to display on the screen?");
+            screenMessage.messageDisplay = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay, labelStyle3);
+        }
+
+        function actionResumeOnClick () {
+            // resume all motors at their current settings
+            dashboardStatus = 1;
+        }
+        function actionPauseOnClick () {
+            // stop all motors at their current settings
+            dashboardStatus = 0;
+        }
 
         
         //=============================================================================

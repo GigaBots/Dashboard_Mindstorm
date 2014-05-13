@@ -77,7 +77,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionMotorB = { x : 425, y : 223 }
         var positionMotorC = { x : 15, y : 453 }
         var positionMotorD = { x : 425, y : 453 }
-        var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor D", d : "Motor D"}
+        var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
         // forward and reverse
         var fButton;
@@ -100,6 +100,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dialA, dialB, dialC, dialD;
         var labelDial = { a : "Rotation", b : "Rotation", c : "Rotation", d : "Rotation" }
         var needleA, needleB, needleC, needleD;
+
+
+        var frameDials;
+        var positionDials = { x : 658, y : 135 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
@@ -205,7 +209,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
          touchCountDisplay : 0 //display number of total presses
         }
         var frameTouch;
-        var positionTouch = { x : 541, y : 135 }
+        var positionTouch = { x : 427, y : 135 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
 
@@ -220,8 +224,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Color sensor */
         var frameColor;
-        var positionColor = { x : 299, y : 123 }
-        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "Color: ", labelColorName = "Color: ";
+        var positionColor = { x : 217, y : 135 }
+        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ";
         var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
             colorRDisplay : 0,
@@ -398,7 +402,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
+            //
             game.load.image('dialNeedle','assets/gigabot_dashboard_dial_needle.png', 5, 80);
+            game.load.image('needle','assets/gigabot_dashboard_needle_sm.png', 5, 30);
+            game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face_wt.png', 60, 60);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
@@ -410,6 +417,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = true;    
 
+            game.world.setBounds(0, 0, 1600, 1200);
         /* Background */
             game.stage.backgroundColor = '#C8C8C8';
             var titleBox = game.add.graphics(0,0);
@@ -470,7 +478,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.drawRect(positionColor.x, positionColor.y, 232, 60);
+            frameColor.drawRect(positionColor.x, positionColor.y, 200, 48);
 
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, frameLineColor, 1);
@@ -478,7 +486,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameScreen = game.add.graphics(0,0);
             frameScreen.lineStyle(1, frameLineColor, 1);
-            frameScreen.drawRect(positionScreen.x, positionScreen.y, 158, 60);
+            frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 60);
 
 
             frameMotorGanging = game.add.graphics(0,0);
@@ -492,6 +500,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameMotorGang2 = game.add.graphics(0,0);
             frameMotorGang2.lineStyle(1, frameLineColor, 1);
             frameMotorGang2.drawRect(positionMotorGang2.x, positionMotorGang2.y, 250, 200);
+
+            frameDials = game.add.graphics(0,0);
+            frameDials.lineStyle(1, frameLineColor, 1);
+            frameDials.drawRect(positionDials.x, positionDials.y, 287, 65);
 
 
 
@@ -526,11 +538,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+27, labelUltrasonicUnits, labelStyle);
 
             labelColor = game.add.text(positionColor.x+10, positionColor.y+5, labelColor, labelStyle3);
-            labelColorR = game.add.text(positionColor.x+10, positionColor.y+35, labelColorR, labelStyle);
-            labelColorG = game.add.text(positionColor.x+75, positionColor.y+35, labelColorG, labelStyle);
-            labelColorB = game.add.text(positionColor.x+155, positionColor.y+35, labelColorB, labelStyle);
-            //labelColorValue = game.add.text(positionColor.x+150, positionColor.x+7, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+121, positionColor.y+7, labelColorName, labelStyle);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27, labelColorValue, labelStyle);
+            labelColorName = game.add.text(positionColor.x+90, positionColor.y+27, labelColorName, labelStyle);
 
             labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+5, labelBattery, labelStyle3);
             
@@ -987,8 +996,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(positionMotorA.x+153, positionMotorA.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar');
+<<<<<<< HEAD
             sliderBarA.inputEnabled=true;
             sliderBarA.input.enableDrag();
+=======
+            sliderBarA.input.enableDrag(false);
+>>>>>>> John
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
 
@@ -1099,10 +1112,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             statusLight4.animations.add('pluggedIn', [1], 1);
 
         /* Rotational position dials and needles for motors */
-            dialA = game.add.graphics(0,0);
-            dialA.beginFill(0xD8D8D8, 1);
-            dialA.lineStyle(2, frameLineColor, 1);
-            dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 30);
+            //dialA = game.add.graphics(0,0);
+            //dialA.beginFill(0xD8D8D8, 1);
+            //dialA.lineStyle(2, frameLineColor, 1);
+            //dialA.drawCircle(positionMotorA.x+308, positionMotorA.y+94, 30);
+
+            dialA = game.add.sprite(658, 135, 'dialFace');
 
             dialB = game.add.graphics(0,0);
             dialB.beginFill(0xD8D8D8, 1);
@@ -1119,11 +1134,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dialD.lineStyle(2, frameLineColor, 1);
             dialD.drawCircle(positionMotorD.x+308, positionMotorD.y+94, 30);
 
-            needleA = game.add.sprite(positionMotorA.x+308, positionMotorA.y+94, 'dialNeedle');
-            needleA.anchor.setTo(0.5, 0.9625);
+            needleA = game.add.sprite(689, 165, 'needle');
+            needleA.anchor.setTo(0.48, 0.93);
+            
+
+            //needleA = game.add.sprite(positionMotorA.x+308, positionMotorA.y+94, 'needle');
+            //needleA.anchor.setTo(0.49, 0.49);
 
             needleB = game.add.sprite(positionMotorB.x+308, positionMotorB.y+94, 'dialNeedle');
             needleB.anchor.setTo(0.5, 0.9625);
+            needleB.scale.setTo(0.4, 0.4);
 
             needleC = game.add.sprite(positionMotorC.x+308, positionMotorC.y+94, 'dialNeedle');
             needleC.anchor.setTo(0.5, 0.9625);
@@ -1351,6 +1371,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function update() {
             // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
+
+            // game.camera.y = game.input.y;
+            // game.camera.x = game.input.x;
+/*            if (game.input.mousePointer.y >= 600) {
+                game.camera.y += 15;
+            }
+            if (game.input.mousePointer.y < 500) {
+                game.camera.y -= 15;
+            }
+            if (game.input.mousePointer.x >= 900) {
+                game.camera.x += 15;
+            }
+            if (game.input.mousePointer.x < 900) {
+                game.camera.x -= 15;
+            }*/
+
+            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                needleA.angle = needleA.angle + 10;
+                needleB.angle = needleB.angle + 10;
+                needleC.angle = needleC.angle + 10;
+                needleD.angle = needleD.angle + 10;
+            }
 
             /* motor A status */
             // var msg = { Astatus : 0 }

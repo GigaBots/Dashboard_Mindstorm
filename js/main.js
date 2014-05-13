@@ -998,10 +998,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar');
             sliderBarA.inputEnabled=true;
             sliderBarA.input.enableDrag();
-<<<<<<< HEAD
-            sliderBarA.input.enableDrag(false);
-=======
->>>>>>> FETCH_HEAD
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
 

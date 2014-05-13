@@ -996,16 +996,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA.beginFill(frameLineColor, 1);
             sliderTrackA.drawRect(positionMotorA.x+153, positionMotorA.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar');
-<<<<<<< HEAD
             sliderBarA.inputEnabled=true;
             sliderBarA.input.enableDrag();
-=======
             sliderBarA.input.enableDrag(false);
->>>>>>> John
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
 
-            ////////////
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
             sliderTrackB.drawRect(positionMotorB.x+153, positionMotorB.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference

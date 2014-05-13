@@ -37,6 +37,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         });
 
+        // can I get the contenteditable element text?
+
+
         var bbLogo, botLogo;
         var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
@@ -127,7 +130,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             direction : ''
         }
         */
-
+        var print;
         var motorA = {
             port: 'a',
             status : 1,
@@ -1378,10 +1381,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             if (game.input.mousePointer.x >= 900) {
                 game.camera.x += 15;
+
             }
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
+            
+            print = document.getElementById("thisId");
+            var printNum=parseInt(print.innerHTML);
+            //console.log(printNum)
+            needleA.angle = needleA.angle + printNum;
+            console.log(print.innerHTML);
 
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 needleA.angle = needleA.angle + 10;

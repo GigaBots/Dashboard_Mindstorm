@@ -988,7 +988,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA.drawRect(positionMotorA.x+153, positionMotorA.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(positionMotorA.x+123, positionMotorA.y+168, 'sliderBar');
             sliderBarA.inputEnabled=true;
-            sliderBarA.input.enableDrag(false);
+            sliderBarA.input.enableDrag();
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
 

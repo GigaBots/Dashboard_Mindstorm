@@ -89,7 +89,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
-        var powerA = 100, powerB = 0, powerC = 0, powerD = 0, powerG1 = 0, powerG2 = 0; //NEED TO REMOVE POWER AND REPLACE WITH SPEED
+        var powerA = 0, powerB = 0, powerC = 0, powerD = 0, powerG1 = 0, powerG2 = 0; //NEED TO REMOVE POWER AND REPLACE WITH SPEED
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
         var powerRange = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; // REMOVE THIS SOON

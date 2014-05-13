@@ -996,17 +996,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
             sliderTrackB.drawRect(positionMotorB.x+153, positionMotorB.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarB = game.add.button(positionMotorB.x+123, positionMotorB.y+168, 'sliderBar', actionDragOnClickB);
+            sliderBarB = game.add.button(positionMotorB.x+123, positionMotorB.y+168, 'sliderBar');
+            sliderBarB.inputEnabled=true;
+            sliderBarB.input.enableDrag();
+            sliderBarB.input.allowHorizontalDrag=false;
+            sliderBarB.events.onInputUp.add(actionDragOnClickB);
                         
             sliderTrackC = game.add.graphics(0,0);
             sliderTrackC.beginFill(frameLineColor, 1);
             sliderTrackC.drawRect(positionMotorC.x+153, positionMotorC.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarC = game.add.button(positionMotorC.x+123, positionMotorC.y+168, 'sliderBar', actionDragOnClickC);
+            sliderBarC = game.add.button(positionMotorC.x+123, positionMotorC.y+168, 'sliderBar');
+            sliderBarC.inputEnabled=true;
+            sliderBarC.input.enableDrag();
+            sliderBarC.input.allowHorizontalDrag=false;
+            sliderBarC.events.onInputUp.add(actionDragOnClickC);
 
             sliderTrackD = game.add.graphics(0,0);
             sliderTrackD.beginFill(frameLineColor, 1);
             sliderTrackD.drawRect(positionMotorD.x+153, positionMotorD.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarD = game.add.button(positionMotorD.x+123, positionMotorD.y+168, 'sliderBar', actionDragOnClickD);
+            sliderBarD = game.add.button(positionMotorD.x+123, positionMotorD.y+168, 'sliderBar');
+            sliderBarD.inputEnabled=true;
+            sliderBarD.input.enableDrag();
+            sliderBarD.input.allowHorizontalDrag=false;
+            sliderBarD.events.onInputUp.add(actionDragOnClickD);
 
             sliderTrackG1 = game.add.graphics(0,0);
             sliderTrackG1.beginFill(frameLineColor, 1);
@@ -1255,7 +1267,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionDragOnClickA() {
             //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
 
-            sliderBarA.y = positionMotorA.y+168 - Math.round( (positionMotorA.y+168 - game.input.mousePointer.y) / 16 ) * 16; // round to nearest 10% power
+            sliderBarA.y = positionMotorA.y+168 - Math.round( (positionMotorA.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
             if (sliderBarA.y < positionMotorA.y+8) { //set max power boundary limit
                 sliderBarA.y = positionMotorA.y+8;
             } else if (sliderBarA.y > positionMotorA.y+168) { //set min power boundary limit

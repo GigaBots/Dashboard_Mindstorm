@@ -388,7 +388,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
         function preload() {
-            game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 12, 12);
+            game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
             game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
             game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
@@ -1056,33 +1056,33 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         /* Status Lights */
-            statusLightA = game.add.sprite(positionMotorStatus.x+13, positionMotorStatus.y+26, 'statusLight');
+            statusLightA = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+26, 'statusLight');
             statusLightA.animations.add('unplugged', [0], 1);
             statusLightA.animations.add('pluggedIn', [1], 1);
             statusLightA.animations.add('stalled', [2], 1);
-            statusLightB = game.add.sprite(positionMotorStatus.x+43, positionMotorStatus.y+26, 'statusLight');
+            statusLightB = game.add.sprite(positionMotorStatus.x+42, positionMotorStatus.y+26, 'statusLight');
             statusLightB.animations.add('unplugged', [0], 1);
             statusLightB.animations.add('pluggedIn', [1], 1);
             statusLightB.animations.add('stalled', [2], 1);
-            statusLightC = game.add.sprite(positionMotorStatus.x+73, positionMotorStatus.y+26, 'statusLight');
+            statusLightC = game.add.sprite(positionMotorStatus.x+72, positionMotorStatus.y+26, 'statusLight');
             statusLightC.animations.add('unplugged', [0], 1);
             statusLightC.animations.add('pluggedIn', [1], 1);
             statusLightC.animations.add('stalled', [2], 1);
-            statusLightD = game.add.sprite(positionMotorStatus.x+103, positionMotorStatus.y+26, 'statusLight');
+            statusLightD = game.add.sprite(positionMotorStatus.x+102, positionMotorStatus.y+26, 'statusLight');
             statusLightD.animations.add('unplugged', [0], 1);
             statusLightD.animations.add('pluggedIn', [1], 1);
             statusLightD.animations.add('stalled', [2], 1);
 
-            statusLight1 = game.add.sprite(positionSensorStatus.x+13, positionSensorStatus.y+26, 'statusLight');
+            statusLight1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+26, 'statusLight');
             statusLight1.animations.add('unplugged', [0], 1);
             statusLight1.animations.add('pluggedIn', [1], 1);
-            statusLight2 = game.add.sprite(positionSensorStatus.x+43, positionSensorStatus.y+26, 'statusLight');
+            statusLight2 = game.add.sprite(positionSensorStatus.x+42, positionSensorStatus.y+26, 'statusLight');
             statusLight2.animations.add('unplugged', [0], 1);
             statusLight2.animations.add('pluggedIn', [1], 1);
-            statusLight3 = game.add.sprite(positionSensorStatus.x+73, positionSensorStatus.y+26, 'statusLight');
+            statusLight3 = game.add.sprite(positionSensorStatus.x+72, positionSensorStatus.y+26, 'statusLight');
             statusLight3.animations.add('unplugged', [0], 1);
             statusLight3.animations.add('pluggedIn', [1], 1);
-            statusLight4 = game.add.sprite(positionSensorStatus.x+103, positionSensorStatus.y+26, 'statusLight');
+            statusLight4 = game.add.sprite(positionSensorStatus.x+102, positionSensorStatus.y+26, 'statusLight');
             statusLight4.animations.add('unplugged', [0], 1);
             statusLight4.animations.add('pluggedIn', [1], 1);
 

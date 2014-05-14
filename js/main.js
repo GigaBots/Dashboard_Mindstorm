@@ -40,13 +40,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var bbLogo, botLogo;
         var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
-        //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#F8F8F8"}
-        var titleStyle = { font: "32px Lucida Console, Arial",fill: "#313131"}
-        var labelStyle = { font: "12px Arial", fill: "#000000" }
-        var labelStyle2 = { font: "20px Arial", fill: "#000000" }        
-        var labelStyle3 = { font: "16px Arial", fill: "#000000"}
-        var labelStyle4 = { font: "14px Arial", fill: "#808080" }        
-        var frameLineColor = 0x313131;
+        //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#313131"}
+        var labelStyle = { font: "12px Arial", fill: "#a3a3a3" }
+        var labelStyle2 = { font: "20px Arial", fill: "#a3a3a3" }        
+        var labelStyle3 = { font: "16px Arial", fill: "#a3a3a3"}
+        var labelStyle4 = { font: "14px Arial", fill: "#a3a3a3" } 
+        var messageStyle = { font: "14px Lucida Console, Arial", fill: "#313131"}   
+        var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox;
 
         var dragButton;
@@ -425,8 +425,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBox.drawRect(0,0,960,50);
 
             backgroundBox = game.add.graphics(0,0);
+            backgroundBox.beginFill(0x313233,1);
             backgroundBox.lineStyle(1,frameLineColor,1);
-            backgroundBox.drawRect(0,0,960,1064);
+            backgroundBox.drawRect(0,50,960,1064);
 
         /* Title */
             //dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
@@ -1184,7 +1185,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionInputOnClick () {
             game.world.remove(screenMessage.messageDisplay);
             messageDisplay = prompt("What would you like to display on the screen?");
-            screenMessage.messageDisplay = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay, labelStyle3);
+            screenMessage.messageDisplay = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay, messageStyle);
         }
 
         function actionResumeOnClick () {

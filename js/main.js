@@ -158,12 +158,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gang: 0
         }
         var gang1 = {
-            speed : 55
-
+            speed : 55,
+            a : false, //initially motor A is not in any gang
+            b : false,
+            c : false,
+            d : false
         }
         var gang2 = {
-            speed : 66
-
+            speed : 66,
+            a : false, //initially motor A is not in any gang
+            b : false,
+            c : false,
+            d : false
         }
 
 
@@ -628,11 +634,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* adding forward button events */
             fButton.a.events.onInputDown.add(fButtonDownAction, motorA); // motorA object declared around line 121
             fButton.a.events.onInputUp.add(fButtonUpAction, motorA);
-            fButton.b.events.onInputDown.add(fButtonDownAction, motorB); // motorA object declared around line 121
+            fButton.b.events.onInputDown.add(fButtonDownAction, motorB);
             fButton.b.events.onInputUp.add(fButtonUpAction, motorB);
-            fButton.c.events.onInputDown.add(fButtonDownAction, motorC); // motorA object declared around line 121
+            fButton.c.events.onInputDown.add(fButtonDownAction, motorC);
             fButton.c.events.onInputUp.add(fButtonUpAction, motorC);
-            fButton.d.events.onInputDown.add(fButtonDownAction, motorD); // motorA object declared around line 121
+            fButton.d.events.onInputDown.add(fButtonDownAction, motorD); 
             fButton.d.events.onInputUp.add(fButtonUpAction, motorD);
 
             /* adding reverse button events */
@@ -674,6 +680,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 stopMotor( this.port ); 
             }
 
+            // old motor forward/reverse button actions
 /*
             fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
             function onActionDownForwardA() {
@@ -770,8 +777,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // To change the states of buttons (i.e., their appearance when up, down, over, and out), we can set and update the states using:
             // see Phaser API file 'Button.js' at ll. 586-637
 
-
-
             // buttons for motor gangs:
             fGangButton = {
                 g1 : game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+32, 'forwardButton'),
@@ -781,26 +786,94 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 g1 : game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+90, 'reverseButton'),
                 g2 : game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+90, 'reverseButton')
             }
-            minusButtonG1 = game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
-            plusButtonG1 = game.add.button(positionMotorGang1.x+158, positionMotorGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
-            minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
-            plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
+            
+            fGangButton.g1.events.onInputDown.add(fGangButtonDownAction, gang1);
+            fGangButton.g1.events.onInputUp.add(fGangButtonUpAction, gang1);
+            fGangButton.g2.events.onInputDown.add(fGangButtonDownAction, gang2);
+            fGangButton.g2.events.onInputUp.add(fGangButtonUpAction, gang2);
+
+            rGangButton.g1.events.onInputDown.add(rGangButtonDownAction, gang1);
+            rGangButton.g1.events.onInputUp.add(rGangButtonUpAction, gang1);
+            rGangButton.g2.events.onInputDown.add(rGangButtonDownAction, gang2);
+            rGangButton.g2.events.onInputUp.add(rGangButtonUpAction, gang2);
 
             fGangButton.g1.setFrames(1,0,2,2);
             rGangButton.g1.setFrames(1,0,2,2);
             fGangButton.g2.setFrames(1,0,2,2);
             rGangButton.g2.setFrames(1,0,2,2);
 
-            /* Move entire motor ganging box using a button for clicking and dragging */
-            dragButton = {
-                // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this),
-                g1 : game.add.button(positionMotorGang1.x+339, positionMotorGang1.y+5, 'dragButton', actionDragG1, this),
-                g2 : game.add.button(positionMotorGang2.x+339, positionMotorGang2.y+5, 'dragButton', actionDragG2, this),
-                a : game.add.button(positionMotorA.x+239, positionMotorA.y+5, 'dragButton', actionDragA, this),
-                b : game.add.button(positionMotorB.x+239, positionMotorB.y+5, 'dragButton', actionDragB, this),
-                c : game.add.button(positionMotorC.x+239, positionMotorC.y+5, 'dragButton', actionDragC, this),
-                d : game.add.button(positionMotorD.x+239, positionMotorD.y+5, 'dragButton', actionDragD, this)
+            minusButtonG1 = game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
+            plusButtonG1 = game.add.button(positionMotorGang1.x+158, positionMotorGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
+            minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
+            plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
+
+            // Pretty quick and dirty here, hopefully this works though:
+            /* forward button actions */
+            function fGangButtonDownAction () {
+                console.log("onActionDownForwardGang"); 
+                if ( this.a === true) {
+                    moveMotor( "a", "f", this.speed );
+                }
+                if ( this.b === true) {
+                    moveMotor( "b", "f", this.speed );
+                }
+                if ( this.c === true) {
+                    moveMotor( "c", "f", this.speed );
+                }
+                if ( this.d === true) {
+                    moveMotor( "d", "f", this.speed );
+                }
             }
+            function fGangButtonUpAction() {
+                console.log("onActionUpForwardGang");
+                if ( this.a === true) {
+                    stopMotor("a");
+                }
+                if ( this.b === true) {
+                    stopMotor("b");
+                }
+                if ( this.c === true) {
+                    stopMotor("c");
+                }
+                if ( this.d === true) {
+                    stopMotor("d");
+                }
+            }
+            /* reverse buttons actions*/
+            function rGangButtonDownAction () {
+                console.log("onActionDownReverseGang"); 
+                if ( this.a === true) {
+                    moveMotor( "a", "r", this.speed );
+                }
+                if ( this.b === true) {
+                    moveMotor( "b", "r", this.speed );
+                }
+                if ( this.c === true) {
+                    moveMotor( "c", "r", this.speed );
+                }
+                if ( this.d === true) {
+                    moveMotor( "d", "r", this.speed );
+                }
+            }
+            function rGangButtonUpAction() {
+                console.log("onActionUpReverseGang");
+                if ( this.a === true) {
+                    stopMotor("a");
+                }
+                if ( this.b === true) {
+                    stopMotor("b");
+                }
+                if ( this.c === true) {
+                    stopMotor("c");
+                }
+                if ( this.d === true) {
+                    stopMotor("d");
+                }
+            }
+            /* Move entire motor ganging box using a button for clicking and dragging */
+            //dragButton = {
+                // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this)
+            //}
             // function actionDragGang () {
             //     // check that it's inside world bounds, so we won't lose the box!
             //     if (game.input.x + 25 < game.world.width) { //right
@@ -855,7 +928,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     labelMotorGang.g2.x = dragButton.gang.x-106, labelMotorGang.g2.y = dragButton.gang.y;
             // } // end actionDragGang
 
-
             /* Adding motor-ganging functionality */
             checkbox = {
                 //a1 : game.add.button(positionMotorGang.x, positionMotorGang.y+27, 'checkbox', actionCheckbox, this),
@@ -887,8 +959,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a1 = 1; // so check it now
                     checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    motorA.gang = 1; // join motor a with gang 1
+                    //motorA.gang = 1; // join motor a with gang 1
+                    gang1.a = true; // motor A is in gang 1
                     if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        gang2.a = false; // motor A is no longer in gang 2
                         checkboxStatus.a2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a2.setFrames(2,0,1,0) // show other box as unchecked
                     }
@@ -896,15 +970,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a1 = 0; // so uncheck it now
                     checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    motorA.gang = 0; // ungang motor a
+                    //motorA.gang = 0; // ungang motor a
+                    gang1.a = false; // motor A is not in gang 1
                 }
             }
             function actionCheckboxA2 () {
                 if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a2 = 1; // so check it now
                     checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    motorA.gang = 2; // join motor a with gang 2
+                    //motorA.gang = 2; // join motor a with gang 2
+                    gang2.a = true; // motor A is in gang 2
                     if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
+                        gang1.a = false; // motor A is no longer in gang 1
                         checkboxStatus.a1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
                         checkbox.a1.setFrames(2,0,1,0) // show other box as unchecked
                     }
@@ -912,97 +989,116 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a2 = 0; // so uncheck it now
                     checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    motorA.gang = 0; // ungang motor a
+                    //motorA.gang = 0; // ungang motor a
+                    gang2.a = false; // motor A is not in gang 2
                 }
-            }
+            } 
             function actionCheckboxB1 () {
                 if ( checkboxStatus.b1 === 0 ) {
                     checkboxStatus.b1 = 1; 
                     checkbox.b1.setFrames(1,1,1,0);
-                    motorB.gang = 1;
+                    //motorB.gang = 1;
+                    gang1.b = true;
                     if ( checkboxStatus.b2 === 1 ) { 
+                        gang2.b = false;
                         checkboxStatus.b2 = 0; 
                         checkbox.b2.setFrames(2,0,1,0);
                     }
                 } else {
                     checkboxStatus.b1 = 0; 
                     checkbox.b1.setFrames(2,0,1,0);
-                    motorB.gang = 0;
+                   // motorB.gang = 0;
+                   gang1.b = false;
                 }
             }
             function actionCheckboxB2 () {
                 if ( checkboxStatus.b2 === 0 ) { 
                     checkboxStatus.b2 = 1; 
                     checkbox.b2.setFrames(1,1,1,0);
-                    motorB.gang = 2;
+                    //motorB.gang = 2;
+                    gang2.b = true;
                     if ( checkboxStatus.b1 === 1 ) {
+                        gang2.b = true;
                         checkboxStatus.b1 = 0; 
                         checkbox.b1.setFrames(2,0,1,0);
                     } 
                 } else {
                     checkboxStatus.b2 = 0;
                     checkbox.b2.setFrames(2,0,1,0); 
-                    motorB.gang = 0;
+                    //motorB.gang = 0;
+                    gang2.b = false;
                 }
             }
             function actionCheckboxC1 () {
                 if ( checkboxStatus.c1 === 0 ) {
                     checkboxStatus.c1 = 1; 
                     checkbox.c1.setFrames(1,1,1,0);
-                    motorC.gang = 1;
+                    //motorC.gang = 1;
+                    gang1.c = true;
                     if ( checkboxStatus.c2 === 1 ) { 
+                        gang2.c = false;
                         checkboxStatus.c2 = 0; 
                         checkbox.c2.setFrames(2,0,1,0);
                     }
                 } else {
                     checkboxStatus.c1 = 0; 
                     checkbox.c1.setFrames(2,0,1,0);
-                    motorC.gang = 0;
+                    //motorC.gang = 0;
+                    gang1.c = false;
                 }
             }
             function actionCheckboxC2 () {
                 if ( checkboxStatus.c2 === 0 ) { 
                     checkboxStatus.c2 = 1; 
                     checkbox.c2.setFrames(1,1,1,0);
-                    motorC.gang = 2;
+                    //motorC.gang = 2;
+                    gang2.c = true;
                     if ( checkboxStatus.c1 === 1 ) { 
+                        gang1.c = false;
                         checkboxStatus.c1 = 0; 
                         checkbox.c1.setFrames(2,0,1,0);
                     } 
                 } else {
                     checkboxStatus.c2 = 0;
                     checkbox.c2.setFrames(2,0,1,0); 
-                    motorC.gang = 0;
+                    //motorC.gang = 0;
+                    gang2.c = false;
                 }
             }
             function actionCheckboxD1 () {
                 if ( checkboxStatus.d1 === 0 ) {
                     checkboxStatus.d1 = 1; 
                     checkbox.d1.setFrames(1,1,1,0);
-                    motorD.gang = 1;
+                    //motorD.gang = 1;
+                    gang1.d = true;
                     if ( checkboxStatus.d2 === 1 ) { 
+                        gang2.d = false;
                         checkboxStatus.d2 = 0; 
                         checkbox.d2.setFrames(2,0,1,0);
                     } 
                 } else { 
                     checkboxStatus.d1 = 0; 
                     checkbox.d1.setFrames(2,0,1,0); 
-                    motorD.gang = 0;
+                    //motorD.gang = 0;
+                    gang1.d = false;
                 }
             }
             function actionCheckboxD2 () {
                 if ( checkboxStatus.d2 === 0 ) { 
                     checkboxStatus.d2 = 1; 
                     checkbox.d2.setFrames(1,1,1,0);
-                    motorD.gang = 2;
-                    if ( checkboxStatus.d1 === 1 ) { 
+                    //motorD.gang = 2;
+                    gang2.d = true;
+                    if ( checkboxStatus.d1 === 1 ) {
+                        gang1.d = false; 
                         checkboxStatus.d1 = 0; 
                         checkbox.d1.setFrames(2,0,1,0);
                     }
                 } else { 
                     checkboxStatus.d2 = 0; 
                     checkbox.d2.setFrames(2,0,1,0); 
-                    motorD.gang = 0;
+                    //motorD.gang = 0;
+                    gang2.d = false;
                 }
             }
 
@@ -1161,7 +1257,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             needleD = game.add.sprite(positionDial.x+233, positionDial.y+49, 'needle');
             needleD.anchor.setTo(0.48, 0.93);
         
-        
+        /* Buttons to drag entire boxes (for motors and motor gangs) */
+            dragButton = {
+                g1 : game.add.button(positionMotorGang1.x+339, positionMotorGang1.y+5, 'dragButton', actionDragG1, this),
+                g2 : game.add.button(positionMotorGang2.x+339, positionMotorGang2.y+5, 'dragButton', actionDragG2, this),
+                a : game.add.button(positionMotorA.x+239, positionMotorA.y+5, 'dragButton', actionDragA, this),
+                b : game.add.button(positionMotorB.x+239, positionMotorB.y+5, 'dragButton', actionDragB, this),
+                c : game.add.button(positionMotorC.x+239, positionMotorC.y+5, 'dragButton', actionDragC, this),
+                d : game.add.button(positionMotorD.x+239, positionMotorD.y+5, 'dragButton', actionDragD, this)
+            }
+
+
         /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+23, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);

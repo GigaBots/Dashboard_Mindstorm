@@ -90,10 +90,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
-        var powerA = 0, powerB = 0, powerC = 0, powerD = 0, powerG1 = 0, powerG2 = 0; //NEED TO REMOVE POWER AND REPLACE WITH SPEED
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
-        var powerRange = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; // REMOVE THIS SOON
         var speed;
         var speedRange = [0, 100, 200, 300, 400, 500, 600, 700];
 
@@ -116,9 +114,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var checkboxStatus;
         var fGangButton, rGangButton;
 
-
-
-        
         /* // this might be the cleaner way to use a motor object, where the ports are a, b, c, & d
         var motor = { 
             port : '',
@@ -132,40 +127,40 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var motorA = {
             port: 'a',
             status : 1,
-            speed : 11,
+            speed : 0,
             position : 0,
             gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
         }
         var motorB = {
             port: 'b',
             status : 1,
-            speed : 22,
+            speed : 0,
             position : 0,
             gang: 0,
         }
         var motorC = {
             port: 'c',
             status : 1,
-            speed : 33,
+            speed : 0,
             position : 0,
             gang: 0
         }
         var motorD = {
             port: 'd',
             status : 1,
-            speed : 44,
+            speed : 0,
             position : 0,
             gang: 0
         }
         var gang1 = {
-            speed : 55,
+            speed : 0,
             a : false, //initially motor A is not in any gang
             b : false,
             c : false,
             d : false
         }
         var gang2 = {
-            speed : 66,
+            speed : 0,
             a : false, //initially motor A is not in any gang
             b : false,
             c : false,
@@ -685,7 +680,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
             function onActionDownForwardA() {
                 console.log("onActionDownForwardA"); 
-                moveMotor( "a", "f", powerA);
+                moveMotor( "a", "f", motorA.speed);
             }
             fButton.a.events.onInputUp.add(onActionUpForwardA, this); // on release
             function onActionUpForwardA() {
@@ -695,7 +690,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 /*            rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
             function onActionDownReverseA() {
                 console.log("onActionDownReverseA"); 
-                moveMotor( "a", "r", powerA);
+                moveMotor( "a", "r", motorA.speed);
             }
             rButton.a.events.onInputUp.add(onActionUpReverseA, this); //on release
             function onActionUpReverseA() {
@@ -708,7 +703,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 /*            fButton.b.events.onInputDown.add(onActionDownForwardB, this);
             function onActionDownForwardB() {
                 console.log("onActionDownForwardB"); 
-                moveMotor( "b", "f", powerB);
+                moveMotor( "b", "f", motorB.speed);
             }
             fButton.b.events.onInputUp.add(onActionUpForwardB, this);
             function onActionUpForwardB() {
@@ -718,7 +713,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.b.events.onInputDown.add(onActionDownReverseB, this);
             function onActionDownReverseB() {
                 console.log("onActionDownReverseB"); 
-                moveMotor( "b", "r", powerB);
+                moveMotor( "b", "r", motorB.speed);
             }
             rButton.b.events.onInputUp.add(onActionUpReverseB, this);
             function onActionUpReverseB() {
@@ -731,7 +726,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fButton.c.events.onInputDown.add(onActionDownForwardC, this);
             function onActionDownForwardC() {
                 console.log("onActionDownForwardC"); 
-                moveMotor( "c", "f", powerC);
+                moveMotor( "c", "f", motorC.speed);
             }
             fButton.c.events.onInputUp.add(onActionUpForwardC, this);
             function onActionUpForwardC() {
@@ -741,7 +736,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.c.events.onInputDown.add(onActionDownReverseC, this);
             function onActionDownReverseC() {
                 console.log("onActionDownReverseC"); 
-                moveMotor( "c", "r", powerC);
+                moveMotor( "c", "r", motorC.speed);
             }
             rButton.c.events.onInputUp.add(onActionUpReverseC, this);
             function onActionUpReverseC() {
@@ -754,7 +749,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fButton.d.events.onInputDown.add(onActionDownForwardD, this);
             function onActionDownForwardD() {
                 console.log("onActionDownForwardD"); 
-                moveMotor( "d", "f", powerD);
+                moveMotor( "d", "f", motorD.speed);
             }
             fButton.d.events.onInputUp.add(onActionUpForwardD, this);
             function onActionUpForwardD() {
@@ -764,7 +759,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.d.events.onInputDown.add(onActionDownReverseD, this);
             function onActionDownReverseD() {
                 console.log("onActionDownReverseD"); 
-                moveMotor( "d", "r", powerD);
+                moveMotor( "d", "r", motorD.speed);
             }
             rButton.d.events.onInputUp.add(onActionUpReverseD, this);
             function onActionUpReverseD() {
@@ -1123,8 +1118,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(frameLineColor, 1);
-            sliderTrackA.drawRect(positionMotorA.x+163, positionMotorA.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarA = game.add.button(positionMotorA.x+133, positionMotorA.y+168, 'sliderBar');
+            sliderTrackA.drawRect(positionMotorA.x+163, positionMotorA.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarA = game.add.button(positionMotorA.x+133, positionMotorA.y+165, 'sliderBar');
             sliderBarA.inputEnabled=true;
             sliderBarA.input.enableDrag();
             sliderBarA.input.allowHorizontalDrag=false;
@@ -1132,8 +1127,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
-            sliderTrackB.drawRect(positionMotorB.x+163, positionMotorB.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarB = game.add.button(positionMotorB.x+133, positionMotorB.y+168, 'sliderBar');
+            sliderTrackB.drawRect(positionMotorB.x+163, positionMotorB.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarB = game.add.button(positionMotorB.x+133, positionMotorB.y+165, 'sliderBar');
             sliderBarB.inputEnabled=true;
             sliderBarB.input.enableDrag();
             sliderBarB.input.allowHorizontalDrag=false;
@@ -1141,8 +1136,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         
             sliderTrackC = game.add.graphics(0,0);
             sliderTrackC.beginFill(frameLineColor, 1);
-            sliderTrackC.drawRect(positionMotorC.x+163, positionMotorC.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarC = game.add.button(positionMotorC.x+133, positionMotorC.y+168, 'sliderBar');
+            sliderTrackC.drawRect(positionMotorC.x+163, positionMotorC.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarC = game.add.button(positionMotorC.x+133, positionMotorC.y+165, 'sliderBar');
             sliderBarC.inputEnabled=true;
             sliderBarC.input.enableDrag();
             sliderBarC.input.allowHorizontalDrag=false;
@@ -1150,8 +1145,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackD = game.add.graphics(0,0);
             sliderTrackD.beginFill(frameLineColor, 1);
-            sliderTrackD.drawRect(positionMotorD.x+163, positionMotorD.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarD = game.add.button(positionMotorD.x+133, positionMotorD.y+168, 'sliderBar');
+            sliderTrackD.drawRect(positionMotorD.x+163, positionMotorD.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarD = game.add.button(positionMotorD.x+133, positionMotorD.y+165, 'sliderBar');
             sliderBarD.inputEnabled=true;
             sliderBarD.input.enableDrag();
             sliderBarD.input.allowHorizontalDrag=false;
@@ -1159,48 +1154,56 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackG1 = game.add.graphics(0,0);
             sliderTrackG1.beginFill(frameLineColor, 1);
-            sliderTrackG1.drawRect(positionMotorGang1.x+263, positionMotorGang1.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG1 = game.add.button(positionMotorGang1.x+233, positionMotorGang1.y+168, 'sliderBar2', actionDragOnClickG1);
+            sliderTrackG1.drawRect(positionMotorGang1.x+263, positionMotorGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarG1 = game.add.button(positionMotorGang1.x+233, positionMotorGang1.y+165, 'sliderBar2', actionDragOnClickG1);
+            sliderBarG1.inputEnabled=true;
+            sliderBarG1.input.enableDrag();
+            sliderBarG1.input.allowHorizontalDrag=false;
+            sliderBarG1.events.onInputUp.add(actionDragOnClickG1);
 
             sliderTrackG2 = game.add.graphics(0,0);
             sliderTrackG2.beginFill(frameLineColor, 1);
-            sliderTrackG2.drawRect(positionMotorGang2.x+263, positionMotorGang2.y+14, 2, 160); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG2 = game.add.button(positionMotorGang2.x+233, positionMotorGang2.y+168, 'sliderBar2', actionDragOnClickG2);
+            sliderTrackG2.drawRect(positionMotorGang2.x+263, positionMotorGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarG2 = game.add.button(positionMotorGang2.x+233, positionMotorGang2.y+165, 'sliderBar2', actionDragOnClickG2);
+            sliderBarG2.inputEnabled=true;
+            sliderBarG2.input.enableDrag();
+            sliderBarG2.input.allowHorizontalDrag=false;
+            sliderBarG2.events.onInputUp.add(actionDragOnClickG2);
 
             // Add some labels to the sliders
             sliderLabel = {
-                a : game.add.text(positionMotorA.x+148, positionMotorA.y+182, "Power", labelStyle),
-                b : game.add.text(positionMotorB.x+148, positionMotorB.y+182, "Power", labelStyle),
-                c : game.add.text(positionMotorC.x+148, positionMotorC.y+182, "Power", labelStyle),
-                d : game.add.text(positionMotorD.x+148, positionMotorD.y+182, "Power", labelStyle),
+                a : game.add.text(positionMotorA.x+129, positionMotorA.y+182, "Speed (\xB0/sec)", labelStyle),
+                b : game.add.text(positionMotorB.x+129, positionMotorB.y+182, "Speed (\xB0/sec)", labelStyle),
+                c : game.add.text(positionMotorC.x+129, positionMotorC.y+182, "Speed (\xB0/sec)", labelStyle),
+                d : game.add.text(positionMotorD.x+129, positionMotorD.y+182, "Speed (\xB0/sec)", labelStyle),
                 g1 : game.add.text(positionMotorGang1.x+229, positionMotorGang1.y+182, "Speed (\xB0/sec)" , labelStyle),
                 g2 : game.add.text(positionMotorGang2.x+229, positionMotorGang2.y+182, "Speed (\xB0/sec)", labelStyle)
             }
-            for (var i = 0; i <= 10; i++) {
-                var powerLabel = powerRange[i] + "";
+            for (var i = 0; i <= 7; i++) {
+                var speedLabel = speedRange[i] + "";
              
-                var powerLabelY = { 
-                    a : positionMotorA.y+167 - 16 * i,
-                    b : positionMotorB.y+167 - 16 * i,
-                    c : positionMotorC.y+167 - 16 * i,
-                    d : positionMotorD.y+167 - 16 * i,
+                var speedLabelY = { 
+                    a : positionMotorA.y+165 - 22 * i,
+                    b : positionMotorB.y+165 - 22 * i,
+                    c : positionMotorC.y+165 - 22 * i,
+                    d : positionMotorD.y+165 - 22 * i,
                 }
 
-                var powerLabelA = game.add.text(positionMotorA.x+210, powerLabelY.a, powerLabel, labelStyle)
-                var powerLabelB = game.add.text(positionMotorB.x+210, powerLabelY.b, powerLabel, labelStyle)
-                var powerLabelC = game.add.text(positionMotorC.x+210, powerLabelY.c, powerLabel, labelStyle)
-                var powerLabelD = game.add.text(positionMotorD.x+210, powerLabelY.d, powerLabel, labelStyle);
+                var speedLabelA = game.add.text(positionMotorA.x+210, speedLabelY.a, speedLabel, labelStyle)
+                var speedLabelB = game.add.text(positionMotorB.x+210, speedLabelY.b, speedLabel, labelStyle)
+                var speedLabelC = game.add.text(positionMotorC.x+210, speedLabelY.c, speedLabel, labelStyle)
+                var speedLabelD = game.add.text(positionMotorD.x+210, speedLabelY.d, speedLabel, labelStyle);
 
             }
 
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
-                var speedLabelG1Y = positionMotorGang1.y + 167 - 22 * i; //for gang 1
+                var speedLabelG1Y = positionMotorGang1.y + 165 - 22 * i; //for gang 1
                 var speedLabelG1 = game.add.text(positionMotorGang1.x+308, speedLabelG1Y, speedLabel, labelStyle)
             }
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
-                var speedLabelG2Y = positionMotorGang2.y + 167 - 22 * i; //for gang 2
+                var speedLabelG2Y = positionMotorGang2.y + 165 - 22 * i; //for gang 2
                 var speedLabelG2 = game.add.text(positionMotorGang2.x+308, speedLabelG2Y, speedLabel, labelStyle)
             }
 
@@ -1302,8 +1305,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.type = "motorStart";
             data.port = motor;
             data.dir = direction;
-            data.speed = speed; // this will work when we swap out 'speed' (0 to 700 deg/s scale) in place of 'power' (0 to 1 scale)
-            //data.speed = 200; // this is just a placeholder! (200 degrees/second)
+            data.speed = speed;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
         }
@@ -1355,137 +1357,191 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //=============================================================================
         /* Plus and Minus Buttons For Increase and Decreasing Motor Speeds (an alternative to clicking and dragging) */
         function actionDecreaseOnClickA() {
-            if (powerA >= 0.1) {
-                powerA = powerA - 0.10;
-                sliderBarA.y = sliderBarA.y + 16;
+            if (motorA.speed >= 50) {
+                motorA.speed = motorA.speed - 50;
+                sliderBarA.y = sliderBarA.y + 11;
+            } else {
+                motorA.speed = 0; // just set the speed to the minimum
+                sliderBarA.y = positionMotorA.y + 165; // and move sliderbar to that corresponding position
             }
-            console.log(powerA.toFixed(2)); //this makes powerA a string with 2 decimal places
+            console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
         }
         function actionIncreaseOnClickA() {
-            if (powerA <= 0.9) {
-                powerA = powerA + 0.10;
-                sliderBarA.y = sliderBarA.y - 16;
+            if (motorA.speed <= 650) {
+                motorA.speed = motorA.speed + 50;
+                sliderBarA.y = sliderBarA.y - 11;
+            } else {
+                motorA.speed = 700; // just set the speed to the maximum
+                sliderBarA.y = positionMotorA.y + 11; // and move sliderbar to that corresponding position
             }
-            console.log(powerA.toFixed(2));
+            console.log(motorA.speed.toFixed(2));
         }
         function actionDecreaseOnClickB() {
-            if (powerB >= 0.1) {
-                powerB = powerB - 0.10;
-                sliderBarB.y = sliderBarB.y + 16;
+            if (motorB.speed >= 50) {
+                motorB.speed = motorB.speed - 50;
+                sliderBarB.y = sliderBarB.y + 11;
+            } else {
+                motorB.speed = 0;
+                sliderBarB.y = positionMotorB.y + 165;
             }
-            console.log(powerB.toFixed(2));
+            console.log(motorB.speed.toFixed(2));
         }
         function actionIncreaseOnClickB() {
-            if (powerB <= 0.9) {
-                powerB = powerB + 0.10;
-                sliderBarB.y = sliderBarB.y - 16;
+            if (motorB.speed <= 650) {
+                motorB.speed = motorB.speed + 50;
+                sliderBarB.y = sliderBarB.y - 11;
+            } else {
+                motorB.speed = 700;
+                sliderBarB.y = positionMotorB.y + 11;
             }
-            console.log(powerB.toFixed(2));
+            console.log(motorB.speed.toFixed(2));
         }
         function actionDecreaseOnClickC() {
-            if (powerC >= 0.1) {
-                powerC = powerC - 0.10;
-                sliderBarC.y = sliderBarC.y + 16;
+            if (motorC.speed >= 50) {
+                motorC.speed = motorC.speed - 50;
+                sliderBarC.y = sliderBarC.y + 11;
+            } else {
+                motorC.speed = 0;
+                sliderBarC.y = positionMotorC.y + 165;
             }
-            console.log(powerC.toFixed(2));
+            console.log(motorC.speed.toFixed(2));
         }
         function actionIncreaseOnClickC() {
-            if (powerC <= 0.9) {
-                powerC = powerC + 0.10;
-                sliderBarC.y = sliderBarC.y - 16;
+            if (motorC.speed <= 650) {
+                motorC.speed = motorC.speed + 50;
+                sliderBarC.y = sliderBarC.y - 11;
+            } else {
+                motorC.speed = 700;
+                sliderBarC.y = positionMotorC.y + 11;
             }
-            console.log(powerC.toFixed(2));
+            console.log(motorC.speed.toFixed(2));
         }
         function actionDecreaseOnClickD() {
-            if (powerD >= 0.1) {
-                powerD = powerD - 0.10;
-                sliderBarD.y = sliderBarD.y + 16;
+            if (motorD.speed >= 50) {
+                motorD.speed = motorD.speed - 50;
+                sliderBarD.y = sliderBarD.y + 11;
+            } else {
+                motorD.speed = 0;
+                sliderBarD.y = positionMotorD.y + 165;
             }
-            console.log(powerD.toFixed(2));
+            console.log(motorD.speed.toFixed(2));
         }
         function actionIncreaseOnClickD() {
-            if (powerD <= 0.9) {
-                powerD = powerD + 0.10;
-                sliderBarD.y = sliderBarD.y - 16;
+            if (motorD.speed <= 650) {
+                motorD.speed = motorD.speed + 50;
+                sliderBarD.y = sliderBarD.y - 11;
+            } else {
+                motorD.speed = 700;
+                sliderBarD.y = positionMotorD.y + 11;
             }
-            console.log(powerD.toFixed(2));
+            console.log(motorD.speed.toFixed(2));
         }
 
         //=============================================================================
         /* Click-and-drag functions (an alternative to the plus and minus buttons) */
         function actionDragOnClickA() {
-            //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-
-            sliderBarA.y = positionMotorA.y+168 - Math.round( (positionMotorA.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
-            if (sliderBarA.y < positionMotorA.y+8) { //set max power boundary limit
-                sliderBarA.y = positionMotorA.y+8;
-            } else if (sliderBarA.y > positionMotorA.y+168) { //set min power boundary limit
-                sliderBarA.y = positionMotorA.y+168;
-
+            //we're sliding between positionMotorA.y + 11 px (0 deg/sec) and positionMotorA.y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            if (sliderBarA.y < positionMotorA.y+11) { //set max speed boundary limit
+                sliderBarA.y = positionMotorA.y+11;
+            } else if (sliderBarA.y > positionMotorA.y+165) { //set min speed boundary limit
+                sliderBarA.y = positionMotorA.y+165;
             }
-            powerA = (0.10 * (positionMotorA.y+168 - sliderBarA.y) / 16);
-            console.log(powerA.toFixed(2)); //this makes powerA a string with 2 decimal places
+            motorA.speed = 700 + (700/154) * (positionMotorA.y + 11 - sliderBarA.y);
+            console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
         }
         function actionDragOnClickB() {
-            //we're sliding between y = 356px (0%) and y = 196px (100%). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-            sliderBarB.y = positionMotorB.y+168 - Math.round( (positionMotorB.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
-            if (sliderBarB.y < positionMotorB.y+8) { //set max power boundary limit
-                sliderBarB.y = positionMotorB.y+8;
-            } else if (sliderBarB.y > positionMotorB.y+168) { //set min power boundary limit
-                sliderBarB.y = positionMotorB.y+168;
+            if (sliderBarB.y < positionMotorB.y+11) {
+                sliderBarB.y = positionMotorB.y+11;
+            } else if (sliderBarB.y > positionMotorB.y+165) {
+                sliderBarB.y = positionMotorB.y+165;
             }
-            powerB = (0.10 * (positionMotorB.y+168 - sliderBarB.y) / 16);
-            console.log(powerB.toFixed(2));
+            motorB.speed = 700 + (700/154) * (positionMotorB.y + 11 - sliderBarB.y);
+            console.log(motorB.speed.toFixed(2));
         }
         function actionDragOnClickC() {
-            //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
-            sliderBarC.y = positionMotorC.y+168 - Math.round( (positionMotorC.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
-            if (sliderBarC.y < positionMotorC.y+8) { //set max power boundary limit
-                sliderBarC.y = positionMotorC.y+8;
-            } else if (sliderBarC.y > positionMotorC.y+168) { //set min power boundary limit
-                sliderBarC.y = positionMotorC.y+168;
+            if (sliderBarC.y < positionMotorC.y+11) {
+                sliderBarC.y = positionMotorC.y+11;
+            } else if (sliderBarB.y > positionMotorC.y+165) {
+                sliderBarC.y = positionMotorC.y+165;
             }
-            powerC = (0.10 * (positionMotorC.y+168 - sliderBarC.y) / 16);
-            console.log(powerC.toFixed(2));
+            motorC.speed = 700 + (700/154) * (positionMotorC.y + 11 - sliderBarC.y);
+            console.log(motorC.speed.toFixed(2));
         }
         function actionDragOnClickD() {
-            //we're sliding between y = 566px (0%) and y = 406px (100%). These y coordinates are at the top of the slider bar, so the center goes from 562 to 412
-            sliderBarD.y = positionMotorD.y+168 - Math.round( (positionMotorD.y+168 - game.input.y) / 16 ) * 16; // round to nearest 10% power
-            if (sliderBarD.y < positionMotorD.y+8) { //set min power boundary limit
-                sliderBarD.y = positionMotorD.y+8;
-            } else if (sliderBarD.y > positionMotorD.y+168) { //set max power boundary limit
-                sliderBarD.y = positionMotorD.y+168;
+            if (sliderBarD.y < positionMotorD.y+11) {
+                sliderBarD.y = positionMotorD.y+11;
+            } else if (sliderBarD.y > positionMotorD.y+165) {
+                sliderBarD.y = positionMotorD.y+165;
             }
-            powerD = (0.10 * (positionMotorD.y+168 - sliderBarD.y) / 16);
-            console.log(powerD.toFixed(2));
+            motorD.speed = 700 + (700/154) * (positionMotorD.y + 11 - sliderBarD.y);
+            console.log(motorD.speed.toFixed(2));
         }
 
-
-        // WE SHOULD HOOK THESE UP ONCE WE'RE DONE WITH THE MOTOR ACTIONS THEMSELVES
+        //=============================================================================
+    /* Gang speed controls */
         function actionDecreaseOnClickG1() {
-            console.log("not hooked up yet");
-            //
+            if (gang1.speed >= 50) {
+                gang1.speed = gang1.speed - 50;
+                sliderBarG1.y = sliderBarG1.y + 11; 
+            } else {
+                gang1.speed = 0; // just set to min position
+                sliderBarG1.y = positionMotorGang1.y + 165; //and move sliderbar to that position
+            }
+            console.log(gang1.speed.toFixed(2));
         }
         function actionIncreaseOnClickG1() {
-            console.log("not hooked up yet");
-            //
+            if (gang1.speed <= 650) {
+                gang1.speed = gang1.speed + 50;
+                sliderBarG1.y = sliderBarG1.y - 11;
+            } else {
+                gang1.speed = 700; //just set to max speed
+                sliderBarG1.y = positionMotorGang1.y + 11; //and move sliderbar to that position
+            }
+            console.log(gang1.speed.toFixed(2));
         }
         function actionDecreaseOnClickG2() {
-            console.log("not hooked up yet");
-            //
-        }  
+            if (gang2.speed >= 50) {
+                gang2.speed = gang2.speed - 50;
+                sliderBarG2.y = sliderBarG2.y + 11;
+            } else {
+                gang2.speed = 0;
+                sliderBarG2.y = positionMotorGang2.y + 165;
+            }
+            console.log(gang2.speed.toFixed(2));
+        }
         function actionIncreaseOnClickG2() {
-            console.log("not hooked up yet");
-            //
+            if (gang2.speed <= 650) {
+                gang2.speed = gang2.speed + 50;
+                sliderBarG2.y = sliderBarG2.y - 11;
+            } else {
+                gang2.speed = 700;
+                sliderBarG2.y = positionMotorGang2.y + 11;
+            }
+            console.log(gang2.speed.toFixed(2));
         }
         function actionDragOnClickG1() {
-            console.log("not hooked up yet");
-            //
+            if (sliderBarG1.y < positionMotorGang1.y+11) {
+                sliderBarG1.y = positionMotorGang1.y+11;
+            } else if (sliderBarG1.y > positionMotorGang1.y+165) {
+                sliderBarG1.y = positionMotorGang1.y+165;
+            }
+            gang1.speed = 700 + (700/154) * (positionMotorGang1.y + 11 - sliderBarG1.y);
+            console.log(gang1.speed.toFixed(2));
         }
         function actionDragOnClickG2() {
-            console.log("not hooked up yet");
-            //
+            if (sliderBarG2.y < positionMotorGang2.y+11) {
+                sliderBarG2.y = positionMotorGang2.y+11;
+            } else if (sliderBarG2.y > positionMotorGang2.y+165) {
+                sliderBarG2.y = positionMotorGang2.y+165;
+            }
+            gang2.speed = 700 + (700/154) * (positionMotorGang2.y + 11 - sliderBarG2.y);
+            console.log(gang2.speed.toFixed(2));
         }
+
+
+
+        //=============================================================================
+    /* Draggable box functions */
         function actionDragG1() {
             console.log("not hooked up yet");
             //
@@ -1671,32 +1727,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             // if (dashboardStatus == 1) { // i.e., dashboard has started
             //     var multiplier = 35; // THIS NUMBER IS JUST A PLACEHOLDER
-            //     if (powerA > 0) {
+            //     if (motorA.speed > 0) {
             //         if (directionA == 1) { // i.e. direction is forward
-            //             needleA.angle += multiplier * powerA;
+            //             needleA.angle += multiplier * motorA.speed;
             //         } else {
-            //             needleA.angle -= multiplier * powerA;
+            //             needleA.angle -= multiplier * motorA.speed;
             //         }
             //     }
-            //     if (powerB > 0) {
+            //     if (motorB.speed > 0) {
             //         if (directionB == 1) {
-            //             needleB.angle += multiplier * powerB;
+            //             needleB.angle += multiplier * motorB.speed;
             //         } else {
-            //             needleB.angle -= multiplier * powerB;
+            //             needleB.angle -= multiplier * motorB.speed;
             //         }
             //     }
-            //     if (powerC > 0) {
+            //     if (motorC.speed > 0) {
             //         if (directionC == 1) {
-            //             needleC.angle += multiplier * powerC;
+            //             needleC.angle += multiplier * motorC.speed;
             //         } else {
-            //             needleC.angle -= multiplier * powerC;
+            //             needleC.angle -= multiplier * motorC.speed;
             //         }
             //     }
-            //     if (powerD > 0) {
+            //     if (motorD.speed > 0) {
             //         if (directionD == 1) {
-            //             needleD.angle += multiplier * powerD;
+            //             needleD.angle += multiplier * motorD.speed;
             //         } else {
-            //             needleD.angle -= multiplier * powerD;
+            //             needleD.angle -= multiplier * motorD.speed;
             //         }
             //     }
             // }

@@ -1390,13 +1390,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             // Create text editor for needleA above program
             print = document.getElementById("textEdit"); // get text in textEditor
-            printNum=parseInt(print.innerHTML); // translate text into numeric format if possible
+            printNum=parseFloat(print.value, 10); // translate text into numeric format if possible
             if (isNaN(printNum)) { // if it's NotaNumber
-                console.log("Not a number");
+                console.log("Not a number. Attempted parsed value: " + printNum);
             }
             else { // if it is a number
                 needleA.angle = needleA.angle + printNum;
-                console.log(print.innerHTML);
+                console.log("Success! Parsed printNum value: " + printNum);
             }
             // 
 

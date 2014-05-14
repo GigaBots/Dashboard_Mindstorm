@@ -28,7 +28,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+        var game = new Phaser.Game(960, 720, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -435,7 +435,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,645,960, 553);
+            backgroundBottom.drawRect(0,645,960, 75);
 
 
         /* Title */
@@ -498,9 +498,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameScreen.lineStyle(1, frameLineColor, 1);
             frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 92);
 
-            frameMotorGanging = game.add.graphics(0,0);
-            frameMotorGanging.lineStyle(1, frameLineColor, 1);
-            frameMotorGanging.drawRect(positionMotorGang.x, positionMotorGang.y, 250, 160);
+            // frameMotorGanging = game.add.graphics(0,0);
+            // frameMotorGanging.lineStyle(1, frameLineColor, 1);
+            // frameMotorGanging.drawRect(positionMotorGang.x, positionMotorGang.y, 250, 160);
 
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
@@ -554,8 +554,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Ganging motors together */
             labelMotorGang = {
-                g1 : game.add.text(positionMotorGang.x+10, positionMotorGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
-                g2 : game.add.text(positionMotorGang.x+115, positionMotorGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
+                // g1 : game.add.text(positionMotorGang.x+10, positionMotorGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
+                // g2 : game.add.text(positionMotorGang.x+115, positionMotorGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
                 a1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+35, "Motor A", labelStyle), // motor A in gang 1
                 a2 : game.add.text(positionMotorGang2.x+40, positionMotorGang2.y+35, "Motor A", labelStyle), //motor A in gang 2
                 b1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+70, "Motor B", labelStyle), 
@@ -647,7 +647,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             fButton.a.setFrames(1,0,2,2);
             rButton.a.setFrames(1,0,2,2);
-
+            fButton.b.setFrames(1,0,2,2);
+            rButton.b.setFrames(1,0,2,2);
+            fButton.c.setFrames(1,0,2,2);
+            rButton.c.setFrames(1,0,2,2);
+            fButton.d.setFrames(1,0,2,2);
+            rButton.d.setFrames(1,0,2,2);
 
             // THESE 4 FUNCTIONS SHOULD BE USABLE BY ANY NUMBER OF MOTORS
             /* forward button actions */
@@ -781,9 +786,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
             plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
 
+            fGangButton.g1.setFrames(1,0,2,2);
+            rGangButton.g1.setFrames(1,0,2,2);
+            fGangButton.g2.setFrames(1,0,2,2);
+            rGangButton.g2.setFrames(1,0,2,2);
+
             /* Move entire motor ganging box using a button for clicking and dragging */
             dragButton = {
-                gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this),
+                // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this),
                 g1 : game.add.button(positionMotorGang1.x+339, positionMotorGang1.y+5, 'dragButton', actionDragG1, this),
                 g2 : game.add.button(positionMotorGang2.x+339, positionMotorGang2.y+5, 'dragButton', actionDragG2, this),
                 a : game.add.button(positionMotorA.x+239, positionMotorA.y+5, 'dragButton', actionDragA, this),
@@ -791,59 +801,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 c : game.add.button(positionMotorC.x+239, positionMotorC.y+5, 'dragButton', actionDragC, this),
                 d : game.add.button(positionMotorD.x+239, positionMotorD.y+5, 'dragButton', actionDragD, this)
             }
-            function actionDragGang () {
-                // check that it's inside world bounds, so we won't lose the box!
-                if (game.input.x + 25 < game.world.width) { //right
-                    if (game.input.x > 220) { //left
-                        if (game.input.y + 155 < game.world.height) { //bottom
-                            if (game.input.y > 5) { // top
-                                dragButton.gang.x = game.input.x;
-                                dragButton.gang.y = game.input.y;
-                            } else {
-                                dragButton.gang.x = game.input.x;
-                                dragButton.gang.y = 5;
-                            }
-                        } else {
-                            dragButton.gang.x = game.input.x;
-                            dragButton.gang.y = game.world.height-155;
-                        } 
-                    } else {
-                        dragButton.gang.x = 220;
-                        dragButton.gang.y = game.input.y;
-                    }
-                } else {
-                    dragButton.gang.x = game.world.width-25;
-                    dragButton.gang.y = game.input.y;
-                }
+            // function actionDragGang () {
+            //     // check that it's inside world bounds, so we won't lose the box!
+            //     if (game.input.x + 25 < game.world.width) { //right
+            //         if (game.input.x > 220) { //left
+            //             if (game.input.y + 155 < game.world.height) { //bottom
+            //                 if (game.input.y > 5) { // top
+            //                     dragButton.gang.x = game.input.x;
+            //                     dragButton.gang.y = game.input.y;
+            //                 } else {
+            //                     dragButton.gang.x = game.input.x;
+            //                     dragButton.gang.y = 5;
+            //                 }
+            //             } else {
+            //                 dragButton.gang.x = game.input.x;
+            //                 dragButton.gang.y = game.world.height-155;
+            //             } 
+            //         } else {
+            //             dragButton.gang.x = 220;
+            //             dragButton.gang.y = game.input.y;
+            //         }
+            //     } else {
+            //         dragButton.gang.x = game.world.width-25;
+            //         dragButton.gang.y = game.input.y;
+            //     }
                     
-                // positionMotorGang.x = dragButton.gang.x - 200;
-                // positionMotorGang.y = dragButton.y;
-                /* update frame position */
-                frameMotorGanging.destroy();
-                frameMotorGanging = game.add.graphics(0,0);
-                frameMotorGanging.lineStyle(1, frameLineColor, 1);
-                frameMotorGanging.drawRect(dragButton.gang.x-220, dragButton.gang.y-5, 250, 160);
-                /* update checkbox positions */
-                checkbox.a1.x = dragButton.gang.x-211, checkbox.a1.y = dragButton.gang.y+27;
-                checkbox.a2.x = dragButton.gang.x-105, checkbox.a2.y = dragButton.gang.y+27;
-                checkbox.b1.x = dragButton.gang.x-211, checkbox.b1.y = dragButton.gang.y+57;
-                checkbox.b2.x = dragButton.gang.x-106, checkbox.b2.y = dragButton.gang.y+57;
-                checkbox.c1.x = dragButton.gang.x-211, checkbox.c1.y = dragButton.gang.y+87;
-                checkbox.c2.x = dragButton.gang.x-106, checkbox.c2.y = dragButton.gang.y+87;
-                checkbox.d1.x = dragButton.gang.x-211, checkbox.d1.y = dragButton.gang.y+117;
-                checkbox.d2.x = dragButton.gang.x-106, checkbox.d2.y = dragButton.gang.y+117;
-                /* update label positions */
-                labelMotorGang.a1.x = dragButton.gang.x-181, labelMotorGang.a1.y = dragButton.gang.y+30;
-                labelMotorGang.a2.x = dragButton.gang.x-76, labelMotorGang.a2.y = dragButton.gang.y+30;
-                labelMotorGang.b1.x = dragButton.gang.x-181, labelMotorGang.b1.y = dragButton.gang.y+60;
-                labelMotorGang.b2.x = dragButton.gang.x-76, labelMotorGang.b2.y = dragButton.gang.y+60;
-                labelMotorGang.c1.x = dragButton.gang.x-181, labelMotorGang.c1.y = dragButton.gang.y+90;
-                labelMotorGang.c2.x = dragButton.gang.x-76, labelMotorGang.c2.y = dragButton.gang.y+90;
-                labelMotorGang.d1.x = dragButton.gang.x-181, labelMotorGang.d1.y = dragButton.gang.y+120;
-                labelMotorGang.d2.x = dragButton.gang.x-76, labelMotorGang.d2.y = dragButton.gang.y+120;
-                labelMotorGang.g1.x = dragButton.gang.x-211, labelMotorGang.g1.y = dragButton.gang.y;
-                labelMotorGang.g2.x = dragButton.gang.x-106, labelMotorGang.g2.y = dragButton.gang.y;
-            } // end actionDragGang
+            //     // positionMotorGang.x = dragButton.gang.x - 200;
+            //     // positionMotorGang.y = dragButton.y;
+            //     /* update frame position */
+            //     frameMotorGanging.destroy();
+            //     frameMotorGanging = game.add.graphics(0,0);
+            //     frameMotorGanging.lineStyle(1, frameLineColor, 1);
+            //     frameMotorGanging.drawRect(dragButton.gang.x-220, dragButton.gang.y-5, 250, 160);
+            //     /* update checkbox positions */
+            //     checkbox.a1.x = dragButton.gang.x-211, checkbox.a1.y = dragButton.gang.y+27;
+            //     checkbox.a2.x = dragButton.gang.x-105, checkbox.a2.y = dragButton.gang.y+27;
+            //     checkbox.b1.x = dragButton.gang.x-211, checkbox.b1.y = dragButton.gang.y+57;
+            //     checkbox.b2.x = dragButton.gang.x-106, checkbox.b2.y = dragButton.gang.y+57;
+            //     checkbox.c1.x = dragButton.gang.x-211, checkbox.c1.y = dragButton.gang.y+87;
+            //     checkbox.c2.x = dragButton.gang.x-106, checkbox.c2.y = dragButton.gang.y+87;
+            //     checkbox.d1.x = dragButton.gang.x-211, checkbox.d1.y = dragButton.gang.y+117;
+            //     checkbox.d2.x = dragButton.gang.x-106, checkbox.d2.y = dragButton.gang.y+117;
+            //     /* update label positions */
+            //     labelMotorGang.a1.x = dragButton.gang.x-181, labelMotorGang.a1.y = dragButton.gang.y+30;
+            //     labelMotorGang.a2.x = dragButton.gang.x-76, labelMotorGang.a2.y = dragButton.gang.y+30;
+            //     labelMotorGang.b1.x = dragButton.gang.x-181, labelMotorGang.b1.y = dragButton.gang.y+60;
+            //     labelMotorGang.b2.x = dragButton.gang.x-76, labelMotorGang.b2.y = dragButton.gang.y+60;
+            //     labelMotorGang.c1.x = dragButton.gang.x-181, labelMotorGang.c1.y = dragButton.gang.y+90;
+            //     labelMotorGang.c2.x = dragButton.gang.x-76, labelMotorGang.c2.y = dragButton.gang.y+90;
+            //     labelMotorGang.d1.x = dragButton.gang.x-181, labelMotorGang.d1.y = dragButton.gang.y+120;
+            //     labelMotorGang.d2.x = dragButton.gang.x-76, labelMotorGang.d2.y = dragButton.gang.y+120;
+            //     labelMotorGang.g1.x = dragButton.gang.x-211, labelMotorGang.g1.y = dragButton.gang.y;
+            //     labelMotorGang.g2.x = dragButton.gang.x-106, labelMotorGang.g2.y = dragButton.gang.y;
+            // } // end actionDragGang
 
 
             /* Adding motor-ganging functionality */

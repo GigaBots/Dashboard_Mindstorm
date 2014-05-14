@@ -44,7 +44,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle = { font: "12px Arial", fill: "#bcbcbc" }
         var labelStyle2 = { font: "20px Arial", fill: "#bcbcbc" }        
         var labelStyle3 = { font: "16px Arial", fill: "#bcbcbc"}
-        var labelStyle4 = { font: "14px Arial", fill: "#bcbcbc" } 
+        var labelStyle4 = { font: "14px Arial", fill: "#bcbcbc" }
+        var labelStyle5 = { font: "20px Arial", fill: "#313131" } 
         var messageStyle = { font: "14px Lucida Console, Arial", fill: "#313131"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox;
@@ -73,10 +74,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
        
         /* Individual motor controls and feedback */
         var frameMotor;
-        var positionMotorA = { x : 15, y : 235 }
-        var positionMotorB = { x : 305, y : 235 }
-        var positionMotorC = { x : 15, y : 445 }
-        var positionMotorD = { x : 305, y : 445 }
+        var positionMotorA = { x : 15, y : 225 }
+        var positionMotorB = { x : 305, y : 225 }
+        var positionMotorC = { x : 15, y : 435 }
+        var positionMotorD = { x : 305, y : 435 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
         // forward and reverse
@@ -97,19 +98,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var speedRange = [0, 100, 200, 300, 400, 500, 600, 700];
 
         // rotation position         
+        var labelRotation = "Motor Rotational Positions";
         var dialA, dialB, dialC, dialD;
         var labelDial = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D" }
         var needleA, needleB, needleC, needleD;
 
         var frameDials;
-        var positionDials = { x : 658, y : 135 }
+        var positionDial = { x : 674, y : 135 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
         var positionMotorGang = { x : 970, y : 65 }
-        var positionMotorGang1 = { x : 595, y: 235 } 
-        var positionMotorGang2 = { x : 595, y: 445 } 
+        var positionMotorGang1 = { x : 595, y: 225 } 
+        var positionMotorGang2 = { x : 595, y: 435 } 
         var checkbox;
         var checkboxStatus;
         var fGangButton, rGangButton;
@@ -208,7 +210,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
          touchCountDisplay : 0 //display number of total presses
         }
         var frameTouch;
-        var positionTouch = { x : 427, y : 135 }
+        var positionTouch = { x : 443, y : 135 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
         var touchIndicator;
 
@@ -402,8 +404,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
             game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
             game.load.image('sliderBar2','assets/gigabot_dashboard_slider_bar_2.png', 65, 13);
-            game.load.image('needle','assets/gigabot_dashboard_needle_sm.png', 5, 30);
-            game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face_wt.png', 60, 60);
+            game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
+            game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
@@ -467,7 +469,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameTouch = game.add.graphics(0,0);
             frameTouch.lineStyle(1, frameLineColor, 1);
-            frameTouch.drawRect(positionTouch.x, positionTouch.y, 221, 48);
+            frameTouch.drawRect(positionTouch.x, positionTouch.y, 221, 80);
 
             frameIR = game.add.graphics(0,0);
             frameIR.lineStyle(1, frameLineColor, 1);
@@ -479,7 +481,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameColor = game.add.graphics(0,0);
             frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.drawRect(positionColor.x, positionColor.y, 200, 48);
+            frameColor.drawRect(positionColor.x, positionColor.y, 216, 80);
 
             frameBattery = game.add.graphics(0,0);
             frameBattery.lineStyle(1, frameLineColor, 1);
@@ -487,7 +489,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameScreen = game.add.graphics(0,0);
             frameScreen.lineStyle(1, frameLineColor, 1);
-            frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 60);
+            frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 102);
 
 
             frameMotorGanging = game.add.graphics(0,0);
@@ -504,7 +506,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameDials = game.add.graphics(0,0);
             frameDials.lineStyle(1, frameLineColor, 1);
-            frameDials.drawRect(positionDials.x, positionDials.y, 287, 90);
+            frameDials.drawRect(positionDial.x, positionDial.y, 271, 80);
 
 
 
@@ -540,7 +542,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             labelColor = game.add.text(positionColor.x+10, positionColor.y+5, labelColor, labelStyle3);
             labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+90, positionColor.y+27, labelColorName, labelStyle);
+            labelColorName = game.add.text(positionColor.x+100, positionColor.y+27, labelColorName, labelStyle);
 
             labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+5, labelBattery, labelStyle3);
             
@@ -1117,20 +1119,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Rotational position dials and needles for motors */
 
-            dialA = game.add.sprite(positionDials.x+8, positionDials.y+22, 'dialFace');
-            dialB = game.add.sprite(positionDials.x+78, positionDials.y+22, 'dialFace');
-            dialC = game.add.sprite(positionDials.x+148, positionDials.y+22, 'dialFace');
-            dialD = game.add.sprite(positionDials.x+218, positionDials.y+22, 'dialFace');
+            dialA = game.add.sprite(positionDial.x+12, positionDial.y+23, 'dialFace');
+            dialB = game.add.sprite(positionDial.x+77, positionDial.y+23, 'dialFace');
+            dialC = game.add.sprite(positionDial.x+142, positionDial.y+23, 'dialFace');
+            dialD = game.add.sprite(positionDial.x+207, positionDial.y+23, 'dialFace');
 
-            needleA = game.add.sprite(positionDials.x+38, positionDials.y+52, 'needle');
+            labelRotation = game.add.text(positionDial.x+10, positionDial.y+5, labelRotation, labelStyle3);
+            labelDial.a = game.add.text(positionDial.x+32, positionDial.y+47, 'A', labelStyle5);
+            labelDial.b = game.add.text(positionDial.x+97, positionDial.y+47, 'B', labelStyle5);
+            labelDial.c = game.add.text(positionDial.x+162, positionDial.y+47, 'C', labelStyle5);
+            labelDial.d = game.add.text(positionDial.x+227, positionDial.y+47, 'D', labelStyle5);
+
+            needleA = game.add.sprite(positionDial.x+38, positionDial.y+49, 'needle');
             needleA.anchor.setTo(0.48, 0.93);
-            needleB = game.add.sprite(positionDials.x+108, positionDials.y+52, 'needle');
+            needleB = game.add.sprite(positionDial.x+103, positionDial.y+49, 'needle');
             needleB.anchor.setTo(0.48, 0.93);
-            needleC = game.add.sprite(positionDials.x+178, positionDials.y+52, 'needle');
+            needleC = game.add.sprite(positionDial.x+168, positionDial.y+49, 'needle');
             needleC.anchor.setTo(0.48, 0.93);
-            needleD = game.add.sprite(positionDials.x+248, positionDials.y+52, 'needle');
+            needleD = game.add.sprite(positionDial.x+233, positionDial.y+49, 'needle');
             needleD.anchor.setTo(0.48, 0.93);
         
+
+            //labelDial.a = game.add.text(positionDial.x+17, positionDial.y+75, labelDial.a, labelStyle);
+            //labelDial.b = game.add.text(positionDial.x+82, positionDial.y+75, labelDial.b, labelStyle);
+            //labelDial.c = game.add.text(positionDial.x+147, positionDial.y+75, labelDial.c, labelStyle);
+            //labelDial.d = game.add.text(positionDial.x+212, positionDial.y+75, labelDial.d, labelStyle);
 
             //labelDial.a = game.add.text(positionMotorA.x+284, positionMotorA.y+182, "Rotation", labelStyle);
             //labelDial.b = game.add.text(positionMotorB.x+284, positionMotorB.y+182, "Rotation", labelStyle);

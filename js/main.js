@@ -28,7 +28,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, "content", { // 960 x 1068 fits nicely on an iPhone 4. 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,

@@ -131,6 +131,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         */
         var print;
+        var printNum;
         var motorA = {
             port: 'a',
             status : 1,
@@ -1387,11 +1388,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.camera.x -= 15;
             }*/
             
-            print = document.getElementById("thisId");
-            var printNum=parseInt(print.innerHTML);
-            //console.log(printNum)
-            needleA.angle = needleA.angle + printNum;
-            console.log(print.innerHTML);
+            // Create text editor for needleA above program
+            print = document.getElementById("textEdit"); // get text in textEditor
+            printNum=parseInt(print.innerHTML); // translate text into numeric format if possible
+            if (isNaN(printNum)) { // if it's NotaNumber
+                console.log("Not a number");
+            }
+            else { // if it is a number
+                needleA.angle = needleA.angle + printNum;
+                console.log(print.innerHTML);
+            }
+            // 
 
             if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
                 needleA.angle = needleA.angle + 10;

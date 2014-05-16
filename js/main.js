@@ -226,14 +226,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Color sensor */
         var frameColor;
         var positionColor = { x : 217, y : 135 }
-        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ";
-        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100, colorName = "White"; //THESE ARE PLACEHOLDERS FOR NOW
+        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
+        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100000, colorName = "White", lightIntensity = 0; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
             colorRDisplay : 0,
             colorGDisplay : 0,
             colorBDisplay : 0,
             colorValueDisplay : 0,
-            colorNameDisplay : 0
+            colorNameDisplay : 0,
+            lightIntensity : 0
         }
 
         /* Ultrasonic sensor */
@@ -358,7 +359,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
                 touchCountDisplay = touchCount;
-                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+25, touchCountDisplay, labelStyle3);
+                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
             }
             else {
                 touchIndicator.animations.play('up');
@@ -389,7 +390,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+171, positionUltrasonic.y+25, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+171, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
 
@@ -533,20 +534,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+2, labelMotor.d, labelStyle2);
 
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, labelStyle3);
-            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+24, labelTouched, labelStyle);
-            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+24, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+25, labelTouched, labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+25, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
 
             labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
-            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+24, labelIRDist, labelStyle);
-            labelIRUnits = game.add.text(positionIR.x+118, positionIR.y+24, labelIRUnits, labelStyle);
+            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+25, labelIRDist, labelStyle);
+            labelIRUnits = game.add.text(positionIR.x+118, positionIR.y+25, labelIRUnits, labelStyle);
 
             labelUltrasonic = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+2, labelUltrasonic, labelStyle3);
-            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+24, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+24, labelUltrasonicUnits, labelStyle);
+            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+25, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+25, labelUltrasonicUnits, labelStyle);
 
             labelColor = game.add.text(positionColor.x+10, positionColor.y+2, labelColor, labelStyle3);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+24, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+100, positionColor.y+24, labelColorName, labelStyle);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+25, labelColorValue, labelStyle);
+            labelColorName = game.add.text(positionColor.x+106, positionColor.y+25, labelColorName, labelStyle);
+            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50, labelIntensity, labelStyle);
 
             labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+2, labelBattery, labelStyle3);
             
@@ -673,6 +675,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log("onActionUpReverse");
                 stopMotor( this.port ); 
             }
+
+
+        /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
+            
+            // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
+            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+            fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
+            var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
+            fBKey.onDown.add(fButtonDownAction, motorB);
+            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+            fCKey.onDown.add(fButtonDownAction, motorC);
+            var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
+            fDKey.onDown.add(fButtonDownAction, motorD);
+
+            var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
+            rAKey.onDown.add(rButtonDownAction, motorA); // this will move motor A in reverse
+            var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
+            rBKey.onDown.add(rButtonDownAction, motorB);
+            var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
+            rCKey.onDown.add(rButtonDownAction, motorC);
+            var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
+            rDKey.onDown.add(rButtonDownAction, motorD);
+
+            // stop motor on key up:
+            fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
+            fBKey.onUp.add(fButtonUpAction, motorB);
+            fCKey.onUp.add(fButtonUpAction, motorC);
+            fDKey.onUp.add(fButtonUpAction, motorD);
+
+            rAKey.onUp.add(rButtonUpAction, motorA); // this will stop motor A
+            rBKey.onUp.add(rButtonUpAction, motorB);
+            rCKey.onUp.add(rButtonUpAction, motorC);
+            rDKey.onUp.add(rButtonUpAction, motorD);
 
             // old motor forward/reverse button actions
 /*
@@ -864,6 +899,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     stopMotor("d");
                 }
             }
+
+        /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
+            
+            // add reverse/forward keyboard controls (using Q & W for forward, and R & T for reverse):
+            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+            fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
+            var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
+            fG2Key.onDown.add(fGangButtonDownAction, gang2);
+
+            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.R);
+            rG1Key.onDown.add(rGangButtonDownAction, gang1); // this will move gang 1 in reverse
+            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
+            rG2Key.onDown.add(rGangButtonDownAction, gang2);
+
+            // stop motor on key up:
+            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
+            fG2Key.onUp.add(fGangButtonUpAction, gang2);
+
+            rG1Key.onUp.add(rGangButtonUpAction, gang2); // this will stop gang 1
+            rG2Key.onUp.add(rGangButtonUpAction, gang2);
+
+
             /* Move entire motor ganging box using a button for clicking and dragging */
             //dragButton = {
                 // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this)
@@ -1197,12 +1254,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
-                var speedLabelG1Y = positionMotorGang1.y + 165 - 22 * i; //for gang 1
+                var speedLabelG1Y = positionMotorGang1.y + 162 - 22 * i; //for gang 1
                 var speedLabelG1 = game.add.text(positionMotorGang1.x+308, speedLabelG1Y, speedLabel, labelStyle)
             }
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
-                var speedLabelG2Y = positionMotorGang2.y + 165 - 22 * i; //for gang 2
+                var speedLabelG2Y = positionMotorGang2.y + 162 - 22 * i; //for gang 2
                 var speedLabelG2 = game.add.text(positionMotorGang2.x+308, speedLabelG2Y, speedLabel, labelStyle)
             }
 
@@ -1251,13 +1308,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelDial.d = game.add.text(positionDial.x+227, positionDial.y+45, 'D', labelStyle5);
 
             needleA = game.add.sprite(positionDial.x+38, positionDial.y+49, 'needle');
-            needleA.anchor.setTo(0.48, 0.93);
+            needleA.anchor.setTo(0.495, 0.92);
             needleB = game.add.sprite(positionDial.x+103, positionDial.y+49, 'needle');
-            needleB.anchor.setTo(0.48, 0.93);
+            needleB.anchor.setTo(0.495, 0.92);
             needleC = game.add.sprite(positionDial.x+168, positionDial.y+49, 'needle');
-            needleC.anchor.setTo(0.48, 0.93);
+            needleC.anchor.setTo(0.495, 0.92);
             needleD = game.add.sprite(positionDial.x+233, positionDial.y+49, 'needle');
-            needleD.anchor.setTo(0.48, 0.93);
+            needleD.anchor.setTo(0.495, 0.92);
         
         /* Buttons to drag entire boxes (for motors and motor gangs) */
             dragButton = {
@@ -1587,13 +1644,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.camera.x -= 15;
             }*/
 
-            /* test out dials */
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-            //     needleA.angle = needleA.angle + 10;
-            //     needleB.angle = needleB.angle + 10;
-            //     needleC.angle = needleC.angle + 10;
-            //     needleD.angle = needleD.angle + 10;
-            // }
+            /* test out dials and values */
+            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+                needleA.angle = needleA.angle + 10;
+                needleB.angle = needleB.angle + 10;
+                needleC.angle = needleC.angle + 10;
+                needleD.angle = needleD.angle + 10;
+
+                game.world.remove(color.colorValueDisplay);
+                colorValue += 1;
+                colorValueDisplay = colorValue;
+                color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
+
+                game.world.remove(color.lightIntensityDisplay);
+                lightIntensity += 1;
+                lightIntensityDisplay = lightIntensity;
+                color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
+
+            }
+
+
+            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Yellow"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "White"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Black"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Blue"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Red"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Green"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Brown"
+                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) {
+                game.world.remove(color.colorNameDisplay);
+                colorNameDisplay = colorName = "Colorless"
+                color.colorNameDisplay = game.add.text(positionColor.x+1454, positionColor.y+22, colorNameDisplay, labelStyle3);
+            }
 
             /* motor A status */
             // var msg = { Astatus : 0 }

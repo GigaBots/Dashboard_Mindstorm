@@ -784,7 +784,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
             fG2Key.onUp.add(fGangButtonUpAction, gang2);
 
-            rG1Key.onUp.add(rGangButtonUpAction, gang2); // this will stop gang 1
+            rG1Key.onUp.add(rGangButtonUpAction, gang1); // this will stop gang 1
             rG2Key.onUp.add(rGangButtonUpAction, gang2);
 
             /* Adding motor-ganging functionality */
@@ -799,7 +799,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d1 : game.add.button(positionMotorGang1.x+10, positionMotorGang1.y+137, 'checkbox', actionCheckboxD1, this),
                 d2 : game.add.button(positionMotorGang2.x+10, positionMotorGang2.y+137, 'checkbox', actionCheckboxD2, this)
             }
-            checkboxStatus = { a1 : 0, a2 : 0, b1 : 3, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked (motors not members of a motor gang)
+            checkboxStatus = { a1 : 0, a2 : 0, b1 : 0, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked (motors not members of a motor gang)
             // let's initially set the checkbox frames so that they're unchecked and if you hvoer over them, they highlight
             checkbox.a1.setFrames(2,0,1,0);
             checkbox.a2.setFrames(2,0,1,0);
@@ -877,7 +877,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     //motorB.gang = 2;
                     gang2.b = true;
                     if ( checkboxStatus.b1 === 1 ) {
-                        gang2.b = true;
                         checkboxStatus.b1 = 0; 
                         checkbox.b1.setFrames(2,0,1,0);
                     } 

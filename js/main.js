@@ -1197,12 +1197,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
-                var speedLabelG1Y = positionMotorGang1.y + 165 - 22 * i; //for gang 1
+                var speedLabelG1Y = positionMotorGang1.y + 162 - 22 * i; //for gang 1
                 var speedLabelG1 = game.add.text(positionMotorGang1.x+308, speedLabelG1Y, speedLabel, labelStyle)
             }
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
-                var speedLabelG2Y = positionMotorGang2.y + 165 - 22 * i; //for gang 2
+                var speedLabelG2Y = positionMotorGang2.y + 162 - 22 * i; //for gang 2
                 var speedLabelG2 = game.add.text(positionMotorGang2.x+308, speedLabelG2Y, speedLabel, labelStyle)
             }
 

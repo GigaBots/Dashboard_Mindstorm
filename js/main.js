@@ -676,6 +676,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 stopMotor( this.port ); 
             }
 
+
+        /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
+            
+            // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
+            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+            fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
+            var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
+            fBKey.onDown.add(fButtonDownAction, motorB);
+            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+            fCKey.onDown.add(fButtonDownAction, motorC);
+            var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
+            fDKey.onDown.add(fButtonDownAction, motorD);
+
+            var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
+            rAKey.onDown.add(rButtonDownAction, motorA); // this will move motor A in reverse
+            var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
+            rBKey.onDown.add(rButtonDownAction, motorB);
+            var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
+            rCKey.onDown.add(rButtonDownAction, motorC);
+            var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
+            rDKey.onDown.add(rButtonDownAction, motorD);
+
+            // stop motor on key up:
+            fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
+            fBKey.onUp.add(fButtonUpAction, motorB);
+            fCKey.onUp.add(fButtonUpAction, motorC);
+            fDKey.onUp.add(fButtonUpAction, motorD);
+
+            rAKey.onUp.add(rButtonUpAction, motorA); // this will stop motor A
+            rBKey.onUp.add(rButtonUpAction, motorB);
+            rCKey.onUp.add(rButtonUpAction, motorC);
+            rDKey.onUp.add(rButtonUpAction, motorD);
+
             // old motor forward/reverse button actions
 /*
             fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
@@ -866,6 +899,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     stopMotor("d");
                 }
             }
+
+        /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
+            
+            // add reverse/forward keyboard controls (using Q & W for forward, and R & T for reverse):
+            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+            fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
+            var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
+            fG2Key.onDown.add(fGangButtonDownAction, gang2);
+
+            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.R);
+            rG1Key.onDown.add(rGangButtonDownAction, gang1); // this will move gang 1 in reverse
+            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
+            rG2Key.onDown.add(rGangButtonDownAction, gang2);
+
+            // stop motor on key up:
+            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
+            fG2Key.onUp.add(fGangButtonUpAction, gang2);
+
+            rG1Key.onUp.add(rGangButtonUpAction, gang2); // this will stop gang 1
+            rG2Key.onUp.add(rGangButtonUpAction, gang2);
+
+
             /* Move entire motor ganging box using a button for clicking and dragging */
             //dragButton = {
                 // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this)

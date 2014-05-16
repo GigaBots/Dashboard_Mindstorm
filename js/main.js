@@ -41,12 +41,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
         //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#313131"}
-        var labelStyle = { font: "12px Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#bcbcbc" }
-        var labelStyle2 = { font: "20px Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#bcbcbc" }        
-        var labelStyle3 = { font: "16px Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#bcbcbc"}
-        var labelStyle4 = { font: "14px Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#bcbcbc" }
-        var labelStyle5 = { font: "19px Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#313131" } 
-        var messageStyle = { font: "14px Lucida Console, Trebuchet MS, Helvetica, Arial, sans-serif", fill: "#313131"}   
+        var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
+        var labelStyle2 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
+        var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
+        var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
+        var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
+        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313131"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox, backgroundBottom;
 
@@ -86,7 +86,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1, directionG1 = 1, directionG2 = 1; // forward = 1, reverse = -1
 
         // speed
-        // WE WANT TO STOP USING POWER (0-1 SCALE) AND START USING SPEED (0-700 SCALE, IN UNITS OF DEG/SEC)
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
@@ -409,7 +408,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('sliderBar2','assets/gigabot_dashboard_slider_bar_2.png', 65, 13);
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
-            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input_2.png', 39, 18);
+            game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
             game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
@@ -516,59 +515,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameDials.drawRect(positionDial.x, positionDial.y, 271, 80);
 
         /* Labels */
-            labelMotorStatus = game.add.text(positionMotorStatus.x+39, positionMotorStatus.y+5, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
-            labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+42, labelMotors.a, labelStyle);
-            labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+42, labelMotors.b, labelStyle);
-            labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+42, labelMotors.c, labelStyle);
-            labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+42, labelMotors.d, labelStyle);
+            labelMotorStatus = game.add.text(positionMotorStatus.x+37, positionMotorStatus.y+2, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+39, labelMotors.a, labelStyle);
+            labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+39, labelMotors.b, labelStyle);
+            labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+39, labelMotors.c, labelStyle);
+            labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+39, labelMotors.d, labelStyle);
 
-            labelSensorStatus = game.add.text(positionSensorStatus.x+34, positionSensorStatus.y+5, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
-            label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+42, labelSensors.e, labelStyle);
-            label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+42, labelSensors.f, labelStyle);
-            label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+42, labelSensors.g, labelStyle);
-            label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+42, labelSensors.h, labelStyle);
+            labelSensorStatus = game.add.text(positionSensorStatus.x+33, positionSensorStatus.y+2, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+39, labelSensors.e, labelStyle);
+            label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+39, labelSensors.f, labelStyle);
+            label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+39, labelSensors.g, labelStyle);
+            label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
-            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+6, labelMotor.a, labelStyle2);
-            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+6, labelMotor.b, labelStyle2);
-            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+6, labelMotor.c, labelStyle2);
-            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+6, labelMotor.d, labelStyle2);
+            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, labelStyle2);
+            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+2, labelMotor.b, labelStyle2);
+            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+2, labelMotor.c, labelStyle2);
+            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+2, labelMotor.d, labelStyle2);
 
-            labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+5, labelTouch, labelStyle3);
-            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
-            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, labelStyle3);
+            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+24, labelTouched, labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+24, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
 
-            labelIR = game.add.text(positionIR.x+10, positionIR.y+5, labelIR, labelStyle3);
-            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27, labelIRDist, labelStyle);
-            labelIRUnits = game.add.text(positionIR.x+118, positionIR.y+27, labelIRUnits, labelStyle);
+            labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
+            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+24, labelIRDist, labelStyle);
+            labelIRUnits = game.add.text(positionIR.x+118, positionIR.y+24, labelIRUnits, labelStyle);
 
-            labelUltrasonic = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+5, labelUltrasonic, labelStyle3);
-            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+27, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+27, labelUltrasonicUnits, labelStyle);
+            labelUltrasonic = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+2, labelUltrasonic, labelStyle3);
+            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10, positionUltrasonic.y+24, labelUltrasonicDist, labelStyle);
+            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+24, labelUltrasonicUnits, labelStyle);
 
-            labelColor = game.add.text(positionColor.x+10, positionColor.y+5, labelColor, labelStyle3);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+100, positionColor.y+27, labelColorName, labelStyle);
+            labelColor = game.add.text(positionColor.x+10, positionColor.y+2, labelColor, labelStyle3);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+24, labelColorValue, labelStyle);
+            labelColorName = game.add.text(positionColor.x+100, positionColor.y+24, labelColorName, labelStyle);
 
-            labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+5, labelBattery, labelStyle3);
+            labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+2, labelBattery, labelStyle3);
             
-            labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+5, labelScreen, labelStyle3);
+            labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+2, labelScreen, labelStyle3);
 
             /* Ganging motors together */
             labelMotorGang = {
                 // g1 : game.add.text(positionMotorGang.x+10, positionMotorGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
                 // g2 : game.add.text(positionMotorGang.x+115, positionMotorGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
-                a1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+35, "Motor A", labelStyle), // motor A in gang 1
-                a2 : game.add.text(positionMotorGang2.x+40, positionMotorGang2.y+35, "Motor A", labelStyle), //motor A in gang 2
-                b1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+70, "Motor B", labelStyle), 
-                b2 : game.add.text(positionMotorGang2.x+40, positionMotorGang2.y+70, "Motor B", labelStyle), 
-                c1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+105, "Motor C", labelStyle), 
-                c2 : game.add.text(positionMotorGang2.x+40, positionMotorGang2.y+105, "Motor C", labelStyle), 
-                d1 : game.add.text(positionMotorGang1.x+40, positionMotorGang1.y+140, "Motor D", labelStyle), 
-                d2 : game.add.text(positionMotorGang2.x+40, positionMotorGang2.y+140, "Motor D", labelStyle) 
+                a1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
+                a2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
+                b1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+68, "Motor B", labelStyle), 
+                b2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+68, "Motor B", labelStyle), 
+                c1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+103, "Motor C", labelStyle), 
+                c2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+103, "Motor C", labelStyle), 
+                d1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+138, "Motor D", labelStyle), 
+                d2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+138, "Motor D", labelStyle) 
             }
 
-            labelGang1 = game.add.text(positionMotorGang1.x + 10, positionMotorGang1.y + 10, "Motor Gang 1", labelStyle3);
-            labelGang2 = game.add.text(positionMotorGang2.x + 10, positionMotorGang2.y + 10, "Motor Gang 2", labelStyle3);
+            labelGang1 = game.add.text(positionMotorGang1.x + 10, positionMotorGang1.y + 2, "Motor Gang 1", labelStyle3);
+            labelGang2 = game.add.text(positionMotorGang2.x + 10, positionMotorGang2.y + 2, "Motor Gang 2", labelStyle3);
 
 
 
@@ -1112,7 +1111,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
             /* LCD Screen Message */
-            screenInputButton = game.add.button(positionScreen.x+140, positionScreen.y+5, 'screenInputButton', actionInputOnClick);
+            screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+5, 'screenInputButton', actionInputOnClick);
 
 
         /* Click and drag motor speed setting & display */
@@ -1172,21 +1171,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             // Add some labels to the sliders
             sliderLabel = {
-                a : game.add.text(positionMotorA.x+129, positionMotorA.y+182, "Speed (\xB0/sec)", labelStyle),
-                b : game.add.text(positionMotorB.x+129, positionMotorB.y+182, "Speed (\xB0/sec)", labelStyle),
-                c : game.add.text(positionMotorC.x+129, positionMotorC.y+182, "Speed (\xB0/sec)", labelStyle),
-                d : game.add.text(positionMotorD.x+129, positionMotorD.y+182, "Speed (\xB0/sec)", labelStyle),
-                g1 : game.add.text(positionMotorGang1.x+229, positionMotorGang1.y+182, "Speed (\xB0/sec)" , labelStyle),
-                g2 : game.add.text(positionMotorGang2.x+229, positionMotorGang2.y+182, "Speed (\xB0/sec)", labelStyle)
+                a : game.add.text(positionMotorA.x+129, positionMotorA.y+179, "Speed (\xB0/sec)", labelStyle),
+                b : game.add.text(positionMotorB.x+129, positionMotorB.y+179, "Speed (\xB0/sec)", labelStyle),
+                c : game.add.text(positionMotorC.x+129, positionMotorC.y+179, "Speed (\xB0/sec)", labelStyle),
+                d : game.add.text(positionMotorD.x+129, positionMotorD.y+179, "Speed (\xB0/sec)", labelStyle),
+                g1 : game.add.text(positionMotorGang1.x+229, positionMotorGang1.y+179, "Speed (\xB0/sec)" , labelStyle),
+                g2 : game.add.text(positionMotorGang2.x+229, positionMotorGang2.y+179, "Speed (\xB0/sec)", labelStyle)
             }
             for (var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
              
                 var speedLabelY = { 
-                    a : positionMotorA.y+165 - 22 * i,
-                    b : positionMotorB.y+165 - 22 * i,
-                    c : positionMotorC.y+165 - 22 * i,
-                    d : positionMotorD.y+165 - 22 * i,
+                    a : positionMotorA.y+162 - 22 * i,
+                    b : positionMotorB.y+162 - 22 * i,
+                    c : positionMotorC.y+162 - 22 * i,
+                    d : positionMotorD.y+162 - 22 * i,
                 }
 
                 var speedLabelA = game.add.text(positionMotorA.x+210, speedLabelY.a, speedLabel, labelStyle)
@@ -1245,11 +1244,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dialC = game.add.sprite(positionDial.x+142, positionDial.y+23, 'dialFace');
             dialD = game.add.sprite(positionDial.x+207, positionDial.y+23, 'dialFace');
 
-            labelRotation = game.add.text(positionDial.x+10, positionDial.y+5, labelRotation, labelStyle3);
-            labelDial.a = game.add.text(positionDial.x+33, positionDial.y+48, 'A', labelStyle5);
-            labelDial.b = game.add.text(positionDial.x+98, positionDial.y+48, 'B', labelStyle5);
-            labelDial.c = game.add.text(positionDial.x+163, positionDial.y+48, 'C', labelStyle5);
-            labelDial.d = game.add.text(positionDial.x+228, positionDial.y+48, 'D', labelStyle5);
+            labelRotation = game.add.text(positionDial.x+10, positionDial.y+2, labelRotation, labelStyle3);
+            labelDial.a = game.add.text(positionDial.x+32, positionDial.y+45, 'A', labelStyle5);
+            labelDial.b = game.add.text(positionDial.x+97, positionDial.y+45, 'B', labelStyle5);
+            labelDial.c = game.add.text(positionDial.x+162, positionDial.y+45, 'C', labelStyle5);
+            labelDial.d = game.add.text(positionDial.x+227, positionDial.y+45, 'D', labelStyle5);
 
             needleA = game.add.sprite(positionDial.x+38, positionDial.y+49, 'needle');
             needleA.anchor.setTo(0.48, 0.93);

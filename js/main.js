@@ -390,7 +390,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+171, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
 
@@ -1453,23 +1453,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             /* test out dials and values */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                needleA.angle = needleA.angle + 10;
-                needleB.angle = needleB.angle + 10;
-                needleC.angle = needleC.angle + 10;
-                needleD.angle = needleD.angle + 10;
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            //     needleA.angle = needleA.angle + 10;
+            //     needleB.angle = needleB.angle + 10;
+            //     needleC.angle = needleC.angle + 10;
+            //     needleD.angle = needleD.angle + 10;
 
-                game.world.remove(color.colorValueDisplay);
-                colorValue += 1;
-                colorValueDisplay = colorValue;
-                color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
+            //     game.world.remove(color.colorValueDisplay);
+            //     colorValue += 1;
+            //     colorValueDisplay = colorValue;
+            //     color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
 
-                game.world.remove(color.lightIntensityDisplay);
-                lightIntensity += 1;
-                lightIntensityDisplay = lightIntensity;
-                color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
+            //     game.world.remove(color.lightIntensityDisplay);
+            //     lightIntensity += 1;
+            //     lightIntensityDisplay = lightIntensity;
+            //     color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
 
-            }
+            // }
 
 
 /*            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {

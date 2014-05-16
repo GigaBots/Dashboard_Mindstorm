@@ -129,6 +129,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             speed : 0,
             position : 0,
             gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
+            stalled: false
         }
         var motorB = {
             port: 'b',
@@ -136,20 +137,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             speed : 0,
             position : 0,
             gang: 0,
+            stalled: false
         }
         var motorC = {
             port: 'c',
             status : 1,
             speed : 0,
             position : 0,
-            gang: 0
+            gang: 0,
+            stalled: false
         }
         var motorD = {
             port: 'd',
             status : 1,
             speed : 0,
             position : 0,
-            gang: 0
+            gang: 0,
+            stalled: false
         }
         var gang1 = {
             speed : 0,
@@ -1434,6 +1438,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
         function update() {
+
+            // For linear interpolation of motor angles
+            //channel.channelData.get('a'); 
+            
+             channel.channelData.get(function(key) {
+                 needleA.angle = val.position;
+             })
+
+             //needleA.angle = needleA.angle + (needleA.angle - val.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
+
+
             // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 

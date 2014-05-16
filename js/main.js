@@ -769,15 +769,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
             
-            // add reverse/forward keyboard controls (using Q & W for forward, and R & T for reverse):
+            //add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
             var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
             fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
             var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
             fG2Key.onDown.add(fGangButtonDownAction, gang2);
 
-            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.R);
+            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
             rG1Key.onDown.add(rGangButtonDownAction, gang1); // this will move gang 1 in reverse
-            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
+            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.Y);
             rG2Key.onDown.add(rGangButtonDownAction, gang2);
 
             // stop motor on key up:
@@ -877,6 +877,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     //motorB.gang = 2;
                     gang2.b = true;
                     if ( checkboxStatus.b1 === 1 ) {
+                        gang1.b = false;
                         checkboxStatus.b1 = 0; 
                         checkbox.b1.setFrames(2,0,1,0);
                     } 
@@ -1471,7 +1472,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
 
-            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
+/*            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Yellow"
                 color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
@@ -1487,7 +1488,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Blue"
                 color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Red"
                 color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
@@ -1503,7 +1504,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Colorless"
                 color.colorNameDisplay = game.add.text(positionColor.x+144, positionColor.y+22, colorNameDisplay, labelStyle3);
-            }
+            }*/
 
             /* motor A status */
             // var msg = { Astatus : 0 }
@@ -1730,44 +1731,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, "0", {font: "16px Arial", fill: "blue"});
             //     }
             // }
-
-            // //=======
-            // // WE MIGHT WANT TO STRUCTURE THIS LOGIC A LITTLE MORE NEATLY, BUT IT'LL DEPEND ON THE CONTENT OF THE MESSAGES, AND OF COURSE WONT TAKE KEYBOARD INPUTS
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Yellow"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "White"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Black"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Blue"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.R)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Red"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Green"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Orange"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-            //     game.world.remove(color.colorNameDisplay);
-            //     colorNameDisplay = colorName = "Purple"
-            //     color.colorNameDisplay = game.add.text(positionColor.x+160, positionColor.y+5, colorNameDisplay, labelStyle3);
-            // }
-
-
 
             //=============================================================================
 

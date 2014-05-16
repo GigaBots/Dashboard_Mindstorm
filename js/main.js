@@ -1500,10 +1500,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Brown"
                 color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) {
+            } else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) {
                 game.world.remove(color.colorNameDisplay);
                 colorNameDisplay = colorName = "Colorless"
-                color.colorNameDisplay = game.add.text(positionColor.x+1454, positionColor.y+22, colorNameDisplay, labelStyle3);
+                color.colorNameDisplay = game.add.text(positionColor.x+144, positionColor.y+22, colorNameDisplay, labelStyle3);
             }
 
             /* motor A status */

@@ -28,11 +28,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-<<<<<<< HEAD
-        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, "content", { // 960 x 1068 fits nicely on an iPhone 4. 
-=======
-        var game = new Phaser.Game(960, 720, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
->>>>>>> master
+        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, "thisGame", { // 960 x 1068 fits nicely on an iPhone 4. 
+
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -1599,7 +1596,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             // Create text editor for needleA above program
             print = document.getElementById("textEdit"); // get text in textEditor
-            printNum=parseFloat(print.value, 10); // translate text into numeric format if possible
+            printNum=parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
             if (isNaN(printNum)) { // if it's NotaNumber
                 console.log("Not a number. Attempted parsed value: " + printNum);
             }

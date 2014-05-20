@@ -598,6 +598,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d : game.add.button(positionMotorD.x+10, positionMotorD.y+90, 'reverseButton')
             }
 
+            /* set different frames for buttons out, over, down, and up */
+            fButton.a.setFrames(1,0,2,2);
+            rButton.a.setFrames(1,0,2,2);
+            fButton.b.setFrames(1,0,2,2);
+            rButton.b.setFrames(1,0,2,2);
+            fButton.c.setFrames(1,0,2,2);
+            rButton.c.setFrames(1,0,2,2);
+            fButton.d.setFrames(1,0,2,2);
+            rButton.d.setFrames(1,0,2,2);
+
+            /* change cursor to a hand when hovering over the buttons */
+            fButton.a.input.useHandCursor = true;
+            rButton.a.input.useHandCursor = true;
+            fButton.b.input.useHandCursor = true;
+            rButton.b.input.useHandCursor = true;
+            fButton.c.input.useHandCursor = true;
+            rButton.c.input.useHandCursor = true;
+            fButton.d.input.useHandCursor = true;
+            rButton.d.input.useHandCursor = true;
+
             /* adding forward button events */
             fButton.a.events.onInputDown.add(fButtonDownAction, motorA); // motorA object declared around line 121
             fButton.a.events.onInputUp.add(fButtonUpAction, motorA);
@@ -618,25 +638,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.d.events.onInputDown.add(rButtonDownAction, motorD);
             rButton.d.events.onInputUp.add(rButtonUpAction, motorD);
 
-            /* set different frames for buttons out, over, down, and up */
-            fButton.a.setFrames(1,0,2,2);
-            rButton.a.setFrames(1,0,2,2);
-            fButton.b.setFrames(1,0,2,2);
-            rButton.b.setFrames(1,0,2,2);
-            fButton.c.setFrames(1,0,2,2);
-            rButton.c.setFrames(1,0,2,2);
-            fButton.d.setFrames(1,0,2,2);
-            rButton.d.setFrames(1,0,2,2);
-
-            /* change cursor to a hand when hovering over the buttons */
-            fButton.a.input.useHandCursor = true;
-            rButton.a.input.useHandCursor = true;
-            fButton.b.input.useHandCursor = true;
-            rButton.b.input.useHandCursor = true;
-            fButton.c.input.useHandCursor = true;
-            rButton.c.input.useHandCursor = true;
-            fButton.d.input.useHandCursor = true;
-            rButton.d.input.useHandCursor = true;
 
             // THESE 4 FUNCTIONS SHOULD BE USABLE BY ANY NUMBER OF MOTORS
             /* forward button actions */
@@ -1215,11 +1216,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Try to send out all speeds, so they update in each window viewing the dashboard...unless we make a keyspace for speeds */
-            channel.handler = function (message) {
-                console.log("update speed");
-                var m = message.payload.getBytesAsJSON();
-                updateSpeed(m);
-            }
+            // channel.handler = function (message) {
+            //     console.log("update speed");
+            //     var m = message.payload.getBytesAsJSON();
+            //     updateSpeed(m);
+            // }
 
 
         } // end create 
@@ -1543,42 +1544,42 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
         /* Publish a motor/speed combination to a motor keyspace */
-        function publishSpeed(motor, speed) {
-            channel.getKeyspace(motor).put(motor, speed);
-            console.log("got keyspace for motor " + motor + " with speed " + speed);
-            updateMotorSpeed(motor, speed);
-        }
+        // function publishSpeed(motor, speed) {
+        //     channel.getKeyspace(motor).put(motor, speed);
+        //     console.log("got keyspace for motor " + motor + " with speed " + speed);
+        //     updateMotorSpeed(motor, speed);
+        // }
 
-        function publishSpeedSubscriber(motor, speed) {
-            channel.getKeyspace(client.clientId()).put(motor, speed);
-            console.log("got keyspace for " + client.client.Id() + " with motor " + motor + " and speed " + speed);
-            updateMotorSpeed(motor, speed);
-        } 
+        // function publishSpeedSubscriber(motor, speed) {
+        //     channel.getKeyspace(client.clientId()).put(motor, speed);
+        //     console.log("got keyspace for " + client.client.Id() + " with motor " + motor + " and speed " + speed);
+        //     updateMotorSpeed(motor, speed);
+        // } 
 
-        function publishSpeedPositionSubscriber(motor, speed) {
-            if (channel) {
-                channel.getKeyspace(client.clientId()).put("port",motor);
-                channel.getKeyspace(client.clientId()).put("speed",speed);
-            }
-        }
+        // function publishSpeedPositionSubscriber(motor, speed) {
+        //     if (channel) {
+        //         channel.getKeyspace(client.clientId()).put("port",motor);
+        //         channel.getKeyspace(client.clientId()).put("speed",speed);
+        //     }
+        // }
 
-        function subscribeUser(clientId) {
-            channel.getKeyspace(clientId).on("pos", function (update) {
-                console.log("joined = " + clientId);
-                drawSpeed(clientId, update);
-            }, function (deleted) {
-                console.log("deleted");
-            });
-        }
+        // function subscribeUser(clientId) {
+        //     channel.getKeyspace(clientId).on("pos", function (update) {
+        //         console.log("joined = " + clientId);
+        //         drawSpeed(clientId, update);
+        //     }, function (deleted) {
+        //         console.log("deleted");
+        //     });
+        // }
 
-        function subscribeMotor(port, speed) {
-            channel.getKeyspace(port).on("motor", function (update) {
-                console.log("joined = " + port);
-                drawSpeed(port, update);
-            }, function (deleted) {
-                console.log("deleted");
-            });
-        }
+        // function subscribeMotor(port, speed) {
+        //     channel.getKeyspace(port).on("motor", function (update) {
+        //         console.log("joined = " + port);
+        //         drawSpeed(port, update);
+        //     }, function (deleted) {
+        //         console.log("deleted");
+        //     });
+        // }
 
         // function subscribeMotor(motor) {
         //     channel.getKeyspace(motor).on("speed", function (update) {

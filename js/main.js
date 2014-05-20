@@ -38,12 +38,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         });
 
-<<<<<<< HEAD
-        // can I get the contenteditable element text?
-
-=======
->>>>>>> master
-
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";

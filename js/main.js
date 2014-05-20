@@ -28,11 +28,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-<<<<<<< HEAD
-        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, "thisGame", { // 960 x 1068 fits nicely on an iPhone 4. 
-=======
+
         var game = new Phaser.Game(944, 704, Phaser.AUTO, "gameWorld", { // 960 x 1068 fits nicely on an iPhone 4. 
->>>>>>> Cole
 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
@@ -127,13 +124,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             direction : ''
         }
         */
-<<<<<<< HEAD
-        var print;
-        var printNum;
-=======
+
         var userType;
         var userNum;
->>>>>>> Cole
         var motorA = {
             port: 'a',
             status : 1,
@@ -1660,7 +1653,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
             
             // Create text editor for needleA above program
-<<<<<<< HEAD
             print = document.getElementById("textEdit"); // get text in textEditor
             printNum=parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
             if (isNaN(printNum)) { // if it's NotaNumber
@@ -1670,9 +1662,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 needleA.angle = needleA.angle + printNum;
                 console.log("Success! Parsed printNum value: " + printNum);
             }
-=======
-            
->>>>>>> Cole
             // 
 
             /* test out dials and values */

@@ -1618,8 +1618,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
              //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
-            userType = document.getElementById("textEdit"); // get text in textEditor
-            userNum=parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
+            userType = document.getElementById("textSpinA"); // get text in textEditor
+            userNum = parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
             if (isNaN(userNum)) { // if it's NotaNumber
                 console.log("Not a number. Attempted parsed value: " + userNum);
             }
@@ -1653,14 +1653,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
             
             // Create text editor for needleA above program
-            print = document.getElementById("textEdit"); // get text in textEditor
-            printNum=parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(printNum)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + printNum);
+            print = document.getElementById("textSpinA");// get text in textEditor
+            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
+            if (isNaN(print)) { // if it's NotaNumber
+                console.log("Not a number. Attempted parsed value: " + print);
             }
             else { // if it is a number
-                needleA.angle = needleA.angle + printNum;
-                console.log("Success! Parsed printNum value: " + printNum);
+                needleA.angle = needleA.angle + print;
+                console.log("Success! Parsed printNum value: " + print);
             }
             // 
 

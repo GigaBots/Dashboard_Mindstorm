@@ -11,11 +11,26 @@ body {
 	width: 500px;
 	height: 50px;
 }
-[contentEditable="true"]:empty:not(:focus):before{
-        content:attr(placeholder)
-    }
-/*#gameWorld {
-	padding: -10px, -10px, -10px, -10px;
-	margin: -8px, -8px, -8px, -8px;
-}*/
 
+/* Create placeholder text for textEdit */
+[contentEditable="true"]:empty:not(:focus):before {
+        content:attr(placeholder);
+        font-style: italic;
+}
+
+@media screen and (min-width: 1300px) {
+	#gameWorld {
+		float: left;
+		display: inline;
+	}
+	#textEdit {
+		/* push right */
+		display: inline;
+		width: 20%;
+		height: 65px;
+		float: left;
+		margin-top: 137px;
+		padding: 5px;
+		border-style: solid;
+	}
+}

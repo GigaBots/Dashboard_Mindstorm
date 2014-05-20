@@ -102,7 +102,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var needleA, needleB, needleC, needleD;
 
         var frameDials;
-        var positionDial = { x : 674, y : 145 }
+        var positionDial = { x : 674, y : 136 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
@@ -410,7 +410,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            //game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
             game.load.image('title','assets/gigabot_dashboard_title_2.png', 400, 50);
@@ -1592,7 +1591,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function update() {
             // For linear interpolation of motor angles
 
-/*            var dMotor = channel.channelData.get('d');
+/*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
             if (dMotor) {
                 //console.log(dMotor.position);
                 needleD.angle = dMotor.position;

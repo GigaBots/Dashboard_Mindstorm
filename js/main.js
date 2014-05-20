@@ -20,7 +20,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
               else {
                   console.log("Subscribe failure. " + err);
               }
-           });
+           })
         }
         else {
             console.log("CONNECT FAILURE.");
@@ -47,7 +47,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
         var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
         var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
-        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313131"}   
+        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#222222"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox, backgroundBottom;
 
@@ -583,6 +583,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             resumeButton = game.add.button(15, 66, 'resumeButton', actionResumeOnClick, this);
             resumeButton.setFrames(3,3,3,3); // initially the dashboard will already be active, so make the Resume not appear usable
             pauseButton = game.add.button(111, 66, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+            pauseButton.input.useHandCursor = true;
+
             // Forward button object and reverse button object
             fButton = {
                 a : game.add.button(positionMotorA.x+10, positionMotorA.y+32, 'forwardButton'),
@@ -617,6 +619,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.d.events.onInputDown.add(rButtonDownAction, motorD);
             rButton.d.events.onInputUp.add(rButtonUpAction, motorD);
 
+            /* set different frames for buttons out, over, down, and up */
             fButton.a.setFrames(1,0,2,2);
             rButton.a.setFrames(1,0,2,2);
             fButton.b.setFrames(1,0,2,2);
@@ -625,6 +628,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.c.setFrames(1,0,2,2);
             fButton.d.setFrames(1,0,2,2);
             rButton.d.setFrames(1,0,2,2);
+
+            /* change cursor to a hand when hovering over the buttons */
+            fButton.a.input.useHandCursor = true;
+            rButton.a.input.useHandCursor = true;
+            fButton.b.input.useHandCursor = true;
+            rButton.b.input.useHandCursor = true;
+            fButton.c.input.useHandCursor = true;
+            rButton.c.input.useHandCursor = true;
+            fButton.d.input.useHandCursor = true;
+            rButton.d.input.useHandCursor = true;
 
             // THESE 4 FUNCTIONS SHOULD BE USABLE BY ANY NUMBER OF MOTORS
             /* forward button actions */
@@ -704,10 +717,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fGangButton.g2.setFrames(1,0,2,2);
             rGangButton.g2.setFrames(1,0,2,2);
 
+            fGangButton.g1.input.useHandCursor = true;
+            rGangButton.g1.input.useHandCursor = true;
+            fGangButton.g2.input.useHandCursor = true;
+            rGangButton.g2.input.useHandCursor = true;
+
             minusButtonG1 = game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
             plusButtonG1 = game.add.button(positionMotorGang1.x+158, positionMotorGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
             minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
             plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
+
+            minusButtonG1.input.useHandCursor = true;
+            plusButtonG1.input.useHandCursor = true;
+            minusButtonG2.input.useHandCursor = true;
+            plusButtonG2.input.useHandCursor = true;
 
             // Pretty quick and dirty here, hopefully this works though:
             /* forward button actions */
@@ -819,6 +842,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //console.log(checkboxStatus.this);
                 //console.log(motorPortGang);
             }*/
+
+            /* use hand cursor when hovering over checkboxes */
+            checkbox.a1.input.useHandCursor = true;
+            checkbox.a2.input.useHandCursor = true;
+            checkbox.b1.input.useHandCursor = true;
+            checkbox.b2.input.useHandCursor = true;
+            checkbox.c1.input.useHandCursor = true;
+            checkbox.c2.input.useHandCursor = true;
+            checkbox.d1.input.useHandCursor = true;
+            checkbox.d2.input.useHandCursor = true;
 
             function actionCheckboxA1 () {
                 if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
@@ -980,10 +1013,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
             minusButtonD = game.add.button(positionMotorD.x+10, positionMotorD.y+148, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
             plusButtonD = game.add.button(positionMotorD.x+63, positionMotorD.y+148, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
+            /* Use hand cursor when hovering over plus and minus buttons */
+            minusButtonA.input.useHandCursor = true;
+            plusButtonA.input.useHandCursor = true;
+            minusButtonB.input.useHandCursor = true;
+            plusButtonB.input.useHandCursor = true;
+            minusButtonC.input.useHandCursor = true;
+            plusButtonC.input.useHandCursor = true;
+            minusButtonD.input.useHandCursor = true;
+            plusButtonD.input.useHandCursor = true;
 
             /* LCD Screen Message */
             screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+5, 'screenInputButton', actionInputOnClick);
-
+            screenInputButton.input.useHandCursor = true;
 
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
@@ -991,6 +1033,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA.drawRect(positionMotorA.x+163, positionMotorA.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(positionMotorA.x+133, positionMotorA.y+165, 'sliderBar');
             sliderBarA.inputEnabled=true;
+            sliderBarA.input.useHandCursor = true;
             sliderBarA.input.enableDrag();
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
@@ -1000,6 +1043,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackB.drawRect(positionMotorB.x+163, positionMotorB.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarB = game.add.button(positionMotorB.x+133, positionMotorB.y+165, 'sliderBar');
             sliderBarB.inputEnabled=true;
+            sliderBarB.input.useHandCursor = true;
             sliderBarB.input.enableDrag();
             sliderBarB.input.allowHorizontalDrag=false;
             sliderBarB.events.onInputUp.add(actionDragOnClickB);
@@ -1009,6 +1053,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackC.drawRect(positionMotorC.x+163, positionMotorC.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarC = game.add.button(positionMotorC.x+133, positionMotorC.y+165, 'sliderBar');
             sliderBarC.inputEnabled=true;
+            sliderBarC.input.useHandCursor = true;
             sliderBarC.input.enableDrag();
             sliderBarC.input.allowHorizontalDrag=false;
             sliderBarC.events.onInputUp.add(actionDragOnClickC);
@@ -1018,6 +1063,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackD.drawRect(positionMotorD.x+163, positionMotorD.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarD = game.add.button(positionMotorD.x+133, positionMotorD.y+165, 'sliderBar');
             sliderBarD.inputEnabled=true;
+            sliderBarD.input.useHandCursor = true;
             sliderBarD.input.enableDrag();
             sliderBarD.input.allowHorizontalDrag=false;
             sliderBarD.events.onInputUp.add(actionDragOnClickD);
@@ -1027,6 +1073,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG1.drawRect(positionMotorGang1.x+263, positionMotorGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarG1 = game.add.button(positionMotorGang1.x+233, positionMotorGang1.y+165, 'sliderBar2', actionDragOnClickG1);
             sliderBarG1.inputEnabled=true;
+            sliderBarG1.input.useHandCursor = true;
             sliderBarG1.input.enableDrag();
             sliderBarG1.input.allowHorizontalDrag=false;
             sliderBarG1.events.onInputUp.add(actionDragOnClickG1);
@@ -1036,6 +1083,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG2.drawRect(positionMotorGang2.x+263, positionMotorGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarG2 = game.add.button(positionMotorGang2.x+233, positionMotorGang2.y+165, 'sliderBar2', actionDragOnClickG2);
             sliderBarG2.inputEnabled=true;
+            sliderBarG2.input.useHandCursor = true;
             sliderBarG2.input.enableDrag();
             sliderBarG2.input.allowHorizontalDrag=false;
             sliderBarG2.events.onInputUp.add(actionDragOnClickG2);
@@ -1254,12 +1302,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dashboardStatus = 1;
             resumeButton.setFrames(3,3,3,3);
             pauseButton.setFrames(1,0,2,0);
+            resumeButton.input.useHandCursor = false;
+            pauseButton.input.useHandCursor = true;
         }
         function actionPauseOnClick () {
             // stop all motors at their current settings
             dashboardStatus = 0;
             pauseButton.setFrames(3,3,3,3);
             resumeButton.setFrames(1,0,2,0);
+            pauseButton.input.useHandCursor = false;
+            resumeButton.input.useHandCursor = true;
         }
 
         

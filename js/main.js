@@ -20,7 +20,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
               else {
                   console.log("Subscribe failure. " + err);
               }
-           });
+           })
         }
         else {
             console.log("CONNECT FAILURE.");
@@ -37,8 +37,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         });
 
+
         var bbLogo, botLogo;
-        var poweredBy = "Powered by ";
+        //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
         //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#313131"}
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -46,7 +47,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
         var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
         var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
-        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313131"}   
+        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#222222"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox, backgroundBottom;
 
@@ -56,9 +57,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Motor and sensor statuses */
         var frameMotorStatus, labelMotorStatus = "Motors";
-        var positionMotorStatus = { x : 541, y : 65 }
+        var positionMotorStatus = { x : 541, y : 66 }
         var frameSensorStatus, labelSensorStatus = "Sensors";
-        var positionSensorStatus = { x : 681, y : 65}
+        var positionSensorStatus = { x : 681, y : 66}
         
         var labelMotorStatus;
 
@@ -74,10 +75,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
        
         /* Individual motor controls and feedback */
         var frameMotor;
-        var positionMotorA = { x : 15, y : 225 }
-        var positionMotorB = { x : 295, y : 225 }
-        var positionMotorC = { x : 15, y : 435 }
-        var positionMotorD = { x : 295, y : 435 }
+        var positionMotorA = { x : 15, y : 226 }
+        var positionMotorB = { x : 295, y : 226 }
+        var positionMotorC = { x : 15, y : 436 }
+        var positionMotorD = { x : 295, y : 436 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
         // forward and reverse
@@ -101,14 +102,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var needleA, needleB, needleC, needleD;
 
         var frameDials;
-        var positionDial = { x : 674, y : 135 }
+        var positionDial = { x : 674, y : 136 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
-        var positionMotorGang = { x : 970, y : 65 }
-        var positionMotorGang1 = { x : 575, y: 225 } 
-        var positionMotorGang2 = { x : 575, y: 435 } 
+        var positionMotorGang = { x : 970, y : 66 }
+        var positionMotorGang1 = { x : 575, y: 226 } 
+        var positionMotorGang2 = { x : 575, y: 436 } 
         var checkbox;
         var checkboxStatus;
         var fGangButton, rGangButton;
@@ -129,6 +130,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             speed : 0,
             position : 0,
             gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
+            stalled: false
         }
         var motorB = {
             port: 'b',
@@ -136,20 +138,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             speed : 0,
             position : 0,
             gang: 0,
+            stalled: false
         }
         var motorC = {
             port: 'c',
             status : 1,
             speed : 0,
             position : 0,
-            gang: 0
+            gang: 0,
+            stalled: false
         }
         var motorD = {
             port: 'd',
             status : 1,
             speed : 0,
             position : 0,
-            gang: 0
+            gang: 0,
+            stalled: false
         }
         var gang1 = {
             speed : 0,
@@ -165,29 +170,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             c : false,
             d : false
         }
-
-
-        // old motor stuff we can remove in a little bit
-        // var motorA = {
-        //     status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled // 3 for initial setting
-        //     speed : '', // degrees/second
-        //     position : '' //degrees
-        // }
-        // var motorB = {
-        //     status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
-        //     speed : '', // rpm
-        //     position : '' //degrees
-        // }
-        // var motorC = {
-        //     status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
-        //     speed : '', // rpm
-        //     position : '' //degrees
-        // }
-        // var motorD = {
-        //     status : 3, //0 = unplugged, 1 = plugged-in, 2 = stalled
-        //     speed : '', // rpm
-        //     position : '' //degrees
-        // }
 
         /* Sensors */
         var sensor1 = {
@@ -205,18 +187,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Touch sensor */
         var press = 0; // 0 = not pressed, 1 = pressed
-        var touchCount = 0; //count total presses
+        var touchCount = 0, bumpCount = 0; //count total touches or bumps
         var touch = {
          touchCountDisplay : 0 //display number of total presses
         }
+        var bump = {
+         bumpCountDisplay : 0 //display number of total presses
+        }
         var frameTouch;
-        var positionTouch = { x : 443, y : 135 }
-        var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ";
+        var positionTouch = { x : 443, y : 136 }
+        var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ";
         var touchIndicator;
 
         /* IR sensor */
         var frameIR;
-        var positionIR = { x : 217, y : 65 }
+        var positionIR = { x : 217, y : 66 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
         var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var IR = {
@@ -225,7 +210,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Color sensor */
         var frameColor;
-        var positionColor = { x : 217, y : 135 }
+        var positionColor = { x : 217, y : 136 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
         var colorR = 255, colorG = 255, colorB = 255, colorValue = 100000, colorName = "White", lightIntensity = 0; //THESE ARE PLACEHOLDERS FOR NOW
         var color = {
@@ -239,7 +224,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Ultrasonic sensor */
         var frameUltrasonic;
-        var positionUltrasonic = { x : 379, y : 65 }
+        var positionUltrasonic = { x : 379, y : 66 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
         var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
         var ultrasonic = {
@@ -248,14 +233,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Battery level sensor */
         var frameBattery;
-        var positionBattery = { x : 821, y : 65 }
+        var positionBattery = { x : 821, y : 66 }
         var labelBattery = "Battery Level";
         var batteryLevel = 1; //initialize the level at 100% (or, 1);
         var batteryLevelBox, batteryLevelFill, batteryShape;
 
         /* LCD Screen */
         var frameScreen, LCDScreenBox;
-        var positionScreen = { x : 15, y : 123 }
+        var positionScreen = { x : 15, y : 124 }
         var labelScreen = "LCD Screen";
         var screenMessage = {
             messageDisplay1 : "Hello GigaBot!", // this is a placeholder
@@ -263,10 +248,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay3 : ""
         }
 
+
         //===================================================
 
+        // user subscribing to the channel
+        channel.onSubscribers(function (joined) {
+            subscribeUser(joined);
+            console.log("subscriber joined " + joined);
+        }, function (left) {
+            console.log("subscriber left");
+        });
         channel.channelData.onValue(function (key, val) {
-            console.log("Add:" + key +"->"+JSON.stringify(val) );
+            //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
@@ -281,7 +274,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         }, function (key, val) {
-            console.log("Update:" + key +"->"+JSON.stringify(val));
+            //console.log("Update:" + key +"->"+JSON.stringify(val));
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
@@ -307,15 +300,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 needleA.angle = val.position; // THE ERROR WE GET HERE IS BECAUSE THE NEEDLE VARIABLES DON'T GET THEIR SPRITES UNTIL LATER
                 if ( val.moving ) { // WE SHOULD ADDRESS THIS ERROR AFTER WE GET OTHER THINGS WORKING AND THEN START USING A NEEDLE OBJECT, WE MIGHT HAVE TO DO SOME REARRANGING
                     motorA.status =1;
-                    statusLightB.animations.play('pluggedIn');
+                    statusLightA.animations.play('pluggedIn');
                 }
                 else if ( val.stalled ) {
                     motorA.status =2;
-                    statusLightB.animations.play('stalled');
+                    statusLightA.animations.play('stalled');
                 } 
                 else {
                     motorA.status =0;
-                    statusLightB.animations.play('unplugged');
+                    statusLightA.animations.play('unplugged');
                 } 
                 // is there a way to handle simply whether or not there is a motor plugged into a port?
                     //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged') when there is not a motor plugged into port A, for example
@@ -342,7 +335,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else if( key === 'd')  {
                 motorD.status =1;
-                needleD.angle = val.position;
+                needleD.angle = val.position; // in update function now
                 if( !val.stalled ) {
                     statusLightD.animations.play('pluggedIn');
                 } else {
@@ -353,7 +346,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setTouchSensor( val ) {
-            console.log("touchSensor " + JSON.stringify(val));
+            //console.log("touchSensor " + JSON.stringify(val));
             if( val.touched ) {
                 touchIndicator.animations.play('pressed');
                 game.world.remove(touch.touchCountDisplay);
@@ -390,8 +383,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+171, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
+/*        channel.handler = function (message) {
+            console.log("update speed");
+            console.log("channel handler: " + message);
+            //var m = message.payload.getBytesAsJSON();
+            //updateSpeed(m);
+        }*/
+
 
 
     //==============================================================================================================================
@@ -410,10 +410,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            game.load.image('bbLogoSm', 'assets/logo1_sm.png', 130, 49);
             game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
-            game.load.image('title','assets/gigabot_dashboard_title.png', 50, 400);
+            game.load.image('title','assets/gigabot_dashboard_title_2.png', 400, 50);
+            game.load.image('poweredBy','assets/powered_by_big_bang.png', 280, 48);
         } //end preload
 
     //==============================================================================================================================
@@ -427,25 +427,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var titleBox = game.add.graphics(0,0);
             //titleBox.beginFill(0xCD8500,0.75); // slightly translucent medium-dark orange
             titleBox.beginFill(0xFFFFFF,1);
-            titleBox.drawRect(0,0,960,50);
+            titleBox.drawRect(0,0,960,60);
+
+            var titleBarLine = game.add.graphics(0,0);
+            titleBarLine.beginFill(frameLineColor,1);
+            titleBarLine.drawRect(0,50,960,1);
 
             backgroundBox = game.add.graphics(0,0);
             backgroundBox.beginFill(0x313233,1);
-            backgroundBox.lineStyle(1,frameLineColor,1);
-            backgroundBox.drawRect(0,50,960,1064);
+            backgroundBox.drawRect(0,51,960,1054);
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,645,960, 75);
+            backgroundBottom.drawRect(0,650,960, 74);
 
 
         /* Title */
             //dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
             dashboardName = game.add.sprite(72,0,'title');
-            bbLogo = game.add.sprite(816, 1, 'bbLogoSm');
-            botLogo = game.add.sprite(0,0, 'robotOrangeSm');
-            poweredBy = game.add.text(722, 19, poweredBy, labelStyle4);
-            var allRightsReserved = game.add.text(15, 665, "All Rights Reserved, thegigabots.com", labelStyle);
+            bbLogo = game.add.sprite(816, 1,'bbLogoSm');
+            botLogo = game.add.sprite(0,0,'robotOrangeSm');
+            poweredBy = game.add.sprite(665,1,'poweredBy');
+            //poweredBy = game.add.text(722, 19, poweredBy, labelStyle4);
+            var allRightsReserved = game.add.text(15, 665, "All Rights Reserved, TheGigabots.com", labelStyle);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);
@@ -536,6 +540,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, labelStyle3);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+25, labelTouched, labelStyle);
             labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+25, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50, labelBumpCount, labelStyle);
 
             labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
             labelIRDist = game.add.text(positionIR.x+10, positionIR.y+25, labelIRDist, labelStyle);
@@ -574,9 +579,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Buttons */
             // Add button for resuming all motors at their current settings, after having paused them
-            resumeButton = game.add.button(15, 65, 'resumeButton', actionResumeOnClick, this);
+            resumeButton = game.add.button(15, 66, 'resumeButton', actionResumeOnClick, this);
             resumeButton.setFrames(3,3,3,3); // initially the dashboard will already be active, so make the Resume not appear usable
-            pauseButton = game.add.button(111, 65, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+            pauseButton = game.add.button(111, 66, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
+            pauseButton.input.useHandCursor = true;
+
             // Forward button object and reverse button object
             fButton = {
                 a : game.add.button(positionMotorA.x+10, positionMotorA.y+32, 'forwardButton'),
@@ -611,6 +618,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.d.events.onInputDown.add(rButtonDownAction, motorD);
             rButton.d.events.onInputUp.add(rButtonUpAction, motorD);
 
+            /* set different frames for buttons out, over, down, and up */
             fButton.a.setFrames(1,0,2,2);
             rButton.a.setFrames(1,0,2,2);
             fButton.b.setFrames(1,0,2,2);
@@ -619,6 +627,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rButton.c.setFrames(1,0,2,2);
             fButton.d.setFrames(1,0,2,2);
             rButton.d.setFrames(1,0,2,2);
+
+            /* change cursor to a hand when hovering over the buttons */
+            fButton.a.input.useHandCursor = true;
+            rButton.a.input.useHandCursor = true;
+            fButton.b.input.useHandCursor = true;
+            rButton.b.input.useHandCursor = true;
+            fButton.c.input.useHandCursor = true;
+            rButton.c.input.useHandCursor = true;
+            fButton.d.input.useHandCursor = true;
+            rButton.d.input.useHandCursor = true;
 
             // THESE 4 FUNCTIONS SHOULD BE USABLE BY ANY NUMBER OF MOTORS
             /* forward button actions */
@@ -698,10 +716,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fGangButton.g2.setFrames(1,0,2,2);
             rGangButton.g2.setFrames(1,0,2,2);
 
+            fGangButton.g1.input.useHandCursor = true;
+            rGangButton.g1.input.useHandCursor = true;
+            fGangButton.g2.input.useHandCursor = true;
+            rGangButton.g2.input.useHandCursor = true;
+
             minusButtonG1 = game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
             plusButtonG1 = game.add.button(positionMotorGang1.x+158, positionMotorGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
             minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
             plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
+
+            minusButtonG1.input.useHandCursor = true;
+            plusButtonG1.input.useHandCursor = true;
+            minusButtonG2.input.useHandCursor = true;
+            plusButtonG2.input.useHandCursor = true;
 
             // Pretty quick and dirty here, hopefully this works though:
             /* forward button actions */
@@ -813,6 +841,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //console.log(checkboxStatus.this);
                 //console.log(motorPortGang);
             }*/
+
+            /* use hand cursor when hovering over checkboxes */
+            checkbox.a1.input.useHandCursor = true;
+            checkbox.a2.input.useHandCursor = true;
+            checkbox.b1.input.useHandCursor = true;
+            checkbox.b2.input.useHandCursor = true;
+            checkbox.c1.input.useHandCursor = true;
+            checkbox.c2.input.useHandCursor = true;
+            checkbox.d1.input.useHandCursor = true;
+            checkbox.d2.input.useHandCursor = true;
 
             function actionCheckboxA1 () {
                 if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
@@ -974,10 +1012,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
             minusButtonD = game.add.button(positionMotorD.x+10, positionMotorD.y+148, 'minusButton', actionDecreaseOnClickD, this, 1, 0, 2, 0);
             plusButtonD = game.add.button(positionMotorD.x+63, positionMotorD.y+148, 'plusButton', actionIncreaseOnClickD, this, 1, 0, 2, 0);
 
+            /* Use hand cursor when hovering over plus and minus buttons */
+            minusButtonA.input.useHandCursor = true;
+            plusButtonA.input.useHandCursor = true;
+            minusButtonB.input.useHandCursor = true;
+            plusButtonB.input.useHandCursor = true;
+            minusButtonC.input.useHandCursor = true;
+            plusButtonC.input.useHandCursor = true;
+            minusButtonD.input.useHandCursor = true;
+            plusButtonD.input.useHandCursor = true;
 
             /* LCD Screen Message */
             screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+5, 'screenInputButton', actionInputOnClick);
-
+            screenInputButton.input.useHandCursor = true;
 
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
@@ -985,6 +1032,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackA.drawRect(positionMotorA.x+163, positionMotorA.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarA = game.add.button(positionMotorA.x+133, positionMotorA.y+165, 'sliderBar');
             sliderBarA.inputEnabled=true;
+            sliderBarA.input.useHandCursor = true;
             sliderBarA.input.enableDrag();
             sliderBarA.input.allowHorizontalDrag=false;
             sliderBarA.events.onInputUp.add(actionDragOnClickA);
@@ -994,6 +1042,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackB.drawRect(positionMotorB.x+163, positionMotorB.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarB = game.add.button(positionMotorB.x+133, positionMotorB.y+165, 'sliderBar');
             sliderBarB.inputEnabled=true;
+            sliderBarB.input.useHandCursor = true;
             sliderBarB.input.enableDrag();
             sliderBarB.input.allowHorizontalDrag=false;
             sliderBarB.events.onInputUp.add(actionDragOnClickB);
@@ -1003,6 +1052,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackC.drawRect(positionMotorC.x+163, positionMotorC.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarC = game.add.button(positionMotorC.x+133, positionMotorC.y+165, 'sliderBar');
             sliderBarC.inputEnabled=true;
+            sliderBarC.input.useHandCursor = true;
             sliderBarC.input.enableDrag();
             sliderBarC.input.allowHorizontalDrag=false;
             sliderBarC.events.onInputUp.add(actionDragOnClickC);
@@ -1012,6 +1062,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackD.drawRect(positionMotorD.x+163, positionMotorD.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarD = game.add.button(positionMotorD.x+133, positionMotorD.y+165, 'sliderBar');
             sliderBarD.inputEnabled=true;
+            sliderBarD.input.useHandCursor = true;
             sliderBarD.input.enableDrag();
             sliderBarD.input.allowHorizontalDrag=false;
             sliderBarD.events.onInputUp.add(actionDragOnClickD);
@@ -1021,6 +1072,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG1.drawRect(positionMotorGang1.x+263, positionMotorGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarG1 = game.add.button(positionMotorGang1.x+233, positionMotorGang1.y+165, 'sliderBar2', actionDragOnClickG1);
             sliderBarG1.inputEnabled=true;
+            sliderBarG1.input.useHandCursor = true;
             sliderBarG1.input.enableDrag();
             sliderBarG1.input.allowHorizontalDrag=false;
             sliderBarG1.events.onInputUp.add(actionDragOnClickG1);
@@ -1030,6 +1082,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG2.drawRect(positionMotorGang2.x+263, positionMotorGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
             sliderBarG2 = game.add.button(positionMotorGang2.x+233, positionMotorGang2.y+165, 'sliderBar2', actionDragOnClickG2);
             sliderBarG2.inputEnabled=true;
+            sliderBarG2.input.useHandCursor = true;
             sliderBarG2.input.enableDrag();
             sliderBarG2.input.allowHorizontalDrag=false;
             sliderBarG2.events.onInputUp.add(actionDragOnClickG2);
@@ -1156,12 +1209,51 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
-            LCDScreenBox.beginFill(0xD8D8D8, 1);
+            LCDScreenBox.beginFill(0x808080, 1);
             LCDScreenBox.lineStyle(1.5, frameLineColor, 1);
             LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+32, 172, 50);
 
-        } // end create 
 
+        /* Try to send out all speeds, so they update in each window viewing the dashboard...unless we make a keyspace for speeds */
+            channel.handler = function (message) {
+                console.log("update speed");
+                var m = message.payload.getBytesAsJSON();
+                updateSpeed(m);
+            }
+
+
+        } // end create 
+        //=============================================================================
+
+    /* To go with the channel handler function for updating speeds */
+        function sendSpeed(port, speed) {
+            var setting = {}; // create 'setting' object to hold the motor port and speed setting
+            setting.port = port;
+            setting.speed = speed;
+            console.log ("sending speed " + setting.speed + " for port " + setting.port);
+            //channel.publish(setting);
+
+            subscribeMotor(port, speed);
+            //console.log("motor joined " + joined);
+
+
+        }
+
+        // function updateSpeed(speedMessage) {
+        //     console.log ("updating speed " + speedMessage.speed + " for port " + speedMessage.port);
+        //     //if (speedMessage.port == 'a') {
+        //     sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speedMessage.speed - 700);
+        //     // }
+        // }
+        // function updateMotorSpeed(motor, speed) {
+        //     console.log ("updating speed " + speed + " for port " + motor);
+        //     //if (speedMessage.port == 'a') {
+        //     sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
+        //     // }
+        // }
+        function drawSpeed(motor, speed) {
+            sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
+        }
 
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( motor, direction, speed ) {
@@ -1209,12 +1301,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dashboardStatus = 1;
             resumeButton.setFrames(3,3,3,3);
             pauseButton.setFrames(1,0,2,0);
+            resumeButton.input.useHandCursor = false;
+            pauseButton.input.useHandCursor = true;
         }
         function actionPauseOnClick () {
             // stop all motors at their current settings
             dashboardStatus = 0;
             pauseButton.setFrames(3,3,3,3);
             resumeButton.setFrames(1,0,2,0);
+            pauseButton.input.useHandCursor = false;
+            resumeButton.input.useHandCursor = true;
         }
 
         
@@ -1229,6 +1325,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarA.y = positionMotorA.y + 165; // and move sliderbar to that corresponding position
             }
             console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
+            sendSpeed('a', motorA.speed);
         }
         function actionIncreaseOnClickA() {
             if (motorA.speed <= 650) {
@@ -1239,6 +1336,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarA.y = positionMotorA.y + 11; // and move sliderbar to that corresponding position
             }
             console.log(motorA.speed.toFixed(2));
+            sendSpeed('a', motorA.speed);
+            publishSpeed('a', motorA.speed);
         }
         function actionDecreaseOnClickB() {
             if (motorB.speed >= 50) {
@@ -1249,6 +1348,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarB.y = positionMotorB.y + 165;
             }
             console.log(motorB.speed.toFixed(2));
+            sendSpeed('b', motorB.speed);
         }
         function actionIncreaseOnClickB() {
             if (motorB.speed <= 650) {
@@ -1259,6 +1359,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarB.y = positionMotorB.y + 11;
             }
             console.log(motorB.speed.toFixed(2));
+            sendSpeed('b', motorB.speed);
         }
         function actionDecreaseOnClickC() {
             if (motorC.speed >= 50) {
@@ -1269,6 +1370,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarC.y = positionMotorC.y + 165;
             }
             console.log(motorC.speed.toFixed(2));
+            sendSpeed('c', motorC.speed);
         }
         function actionIncreaseOnClickC() {
             if (motorC.speed <= 650) {
@@ -1279,6 +1381,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarC.y = positionMotorC.y + 11;
             }
             console.log(motorC.speed.toFixed(2));
+            sendSpeed('c', motorC.speed);
         }
         function actionDecreaseOnClickD() {
             if (motorD.speed >= 50) {
@@ -1289,6 +1392,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 165;
             }
             console.log(motorD.speed.toFixed(2));
+            sendSpeed('d', motorD.speed);
         }
         function actionIncreaseOnClickD() {
             if (motorD.speed <= 650) {
@@ -1299,6 +1403,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 11;
             }
             console.log(motorD.speed.toFixed(2));
+            sendSpeed('d', motorD.speed);
         }
 
         //=============================================================================
@@ -1312,6 +1417,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorA.speed = 700 + (700/154) * (positionMotorA.y + 11 - sliderBarA.y);
             console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
+            sendSpeed('a', motorA.speed);
         }
         function actionDragOnClickB() {
             if (sliderBarB.y < positionMotorB.y+11) {
@@ -1321,6 +1427,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorB.speed = 700 + (700/154) * (positionMotorB.y + 11 - sliderBarB.y);
             console.log(motorB.speed.toFixed(2));
+            sendSpeed('b', motorB.speed);
         }
         function actionDragOnClickC() {
             if (sliderBarC.y < positionMotorC.y+11) {
@@ -1330,6 +1437,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorC.speed = 700 + (700/154) * (positionMotorC.y + 11 - sliderBarC.y);
             console.log(motorC.speed.toFixed(2));
+            sendSpeed('c', motorC.speed);
         }
         function actionDragOnClickD() {
             if (sliderBarD.y < positionMotorD.y+11) {
@@ -1339,6 +1447,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorD.speed = 700 + (700/154) * (positionMotorD.y + 11 - sliderBarD.y);
             console.log(motorD.speed.toFixed(2));
+            sendSpeed('d', motorD.speed);
         }
 
         //=============================================================================
@@ -1433,7 +1542,86 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
     //==============================================================================================================================
+        /* Publish a motor/speed combination to a motor keyspace */
+        function publishSpeed(motor, speed) {
+            channel.getKeyspace(motor).put(motor, speed);
+            console.log("got keyspace for motor " + motor + " with speed " + speed);
+            updateMotorSpeed(motor, speed);
+        }
+
+        function publishSpeedSubscriber(motor, speed) {
+            channel.getKeyspace(client.clientId()).put(motor, speed);
+            console.log("got keyspace for " + client.client.Id() + " with motor " + motor + " and speed " + speed);
+            updateMotorSpeed(motor, speed);
+        } 
+
+        function publishSpeedPositionSubscriber(motor, speed) {
+            if (channel) {
+                channel.getKeyspace(client.clientId()).put("port",motor);
+                channel.getKeyspace(client.clientId()).put("speed",speed);
+            }
+        }
+
+        function subscribeUser(clientId) {
+            channel.getKeyspace(clientId).on("pos", function (update) {
+                console.log("joined = " + clientId);
+                drawSpeed(clientId, update);
+            }, function (deleted) {
+                console.log("deleted");
+            });
+        }
+
+        function subscribeMotor(port, speed) {
+            channel.getKeyspace(port).on("motor", function (update) {
+                console.log("joined = " + port);
+                drawSpeed(port, update);
+            }, function (deleted) {
+                console.log("deleted");
+            });
+        }
+
+        // function subscribeMotor(motor) {
+        //     channel.getKeyspace(motor).on("speed", function (update) {
+        //         drawSpeed(motor, update);
+        //     }, function (deleted) {
+        //         console.log("deleted");
+        //     });
+        // }
+
         function update() {
+            // For linear interpolation of motor angles
+
+/*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
+            if (dMotor) {
+                //console.log(dMotor.position);
+                needleD.angle = dMotor.position;
+                //console.log(needleD.angle);
+             }*/
+
+
+
+            // Add something to show the current Speed of the robot, on the slider (so all viewers see the current speed)
+            //sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (dMotor.speed - 700);
+
+            /*     from moveMotor function:
+            var data = {};
+            data.type = "motorStart";
+            data.port = motor;
+            data.dir = direction;
+            data.speed = speed;
+            console.log( "sending " + JSON.stringify(data));
+            channel.publish( data );
+            */
+
+
+             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
+        
+        } // end update
+
+    } // end beginGame
+
+}); // end require
+
             // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
@@ -1453,23 +1641,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
 
             /* test out dials and values */
-            if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-                needleA.angle = needleA.angle + 10;
-                needleB.angle = needleB.angle + 10;
-                needleC.angle = needleC.angle + 10;
-                needleD.angle = needleD.angle + 10;
+            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            //     needleA.angle = needleA.angle + 10;
+            //     needleB.angle = needleB.angle + 10;
+            //     needleC.angle = needleC.angle + 10;
+            //     needleD.angle = needleD.angle + 10;
 
-                game.world.remove(color.colorValueDisplay);
-                colorValue += 1;
-                colorValueDisplay = colorValue;
-                color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
+            //     game.world.remove(color.colorValueDisplay);
+            //     colorValue += 1;
+            //     colorValueDisplay = colorValue;
+            //     color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
 
-                game.world.remove(color.lightIntensityDisplay);
-                lightIntensity += 1;
-                lightIntensityDisplay = lightIntensity;
-                color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
+            //     game.world.remove(color.lightIntensityDisplay);
+            //     lightIntensity += 1;
+            //     lightIntensityDisplay = lightIntensity;
+            //     color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
 
-            }
+            // }
 
 
 /*            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
@@ -1737,7 +1925,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* LCD Screen */
 
-        } // end update
+        
 
         //function render() {
             //console.log("render");
@@ -1751,8 +1939,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("destroy");
         }*/
 
-    }
-}); // end require
+
 
 
 //=======================================================================================================================================

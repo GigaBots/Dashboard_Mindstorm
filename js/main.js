@@ -28,7 +28,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(960, 720, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+        var game = new Phaser.Game(1230, 1068, Phaser.AUTO, "thisGame", { // 960 x 1068 fits nicely on an iPhone 4. 
+
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -36,7 +37,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
-
 
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
@@ -123,7 +123,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             direction : ''
         }
         */
-
+        var print;
+        var printNum;
         var motorA = {
             port: 'a',
             status : 1,
@@ -1635,10 +1636,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             if (game.input.mousePointer.x >= 900) {
                 game.camera.x += 15;
+
             }
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
+            
+            // Create text editor for needleA above program
+            print = document.getElementById("textEdit"); // get text in textEditor
+            printNum=parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
+            if (isNaN(printNum)) { // if it's NotaNumber
+                console.log("Not a number. Attempted parsed value: " + printNum);
+            }
+            else { // if it is a number
+                needleA.angle = needleA.angle + printNum;
+                console.log("Success! Parsed printNum value: " + printNum);
+            }
+            // 
 
             /* test out dials and values */
             // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {

@@ -1,12 +1,8 @@
 /* Layout
 ================================= */
 
-body { 
-	margin: 0px;
-}
-
-/*#gameWorld {
+#gameWorld {
+	/* why don't these work!? */
 	padding: -10px, -10px, -10px, -10px;
 	margin: -8px, -8px, -8px, -8px;
-}*/
-
+}

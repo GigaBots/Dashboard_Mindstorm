@@ -5,6 +5,15 @@ body {
 	margin: 0px;
 }
 
+#textEdit {
+	background-color: #313233;
+	color: #C8C8C8;
+	width: 500px;
+	height: 50px;
+}
+[contentEditable="true"]:empty:not(:focus):before{
+        content:attr(placeholder)
+    }
 /*#gameWorld {
 	padding: -10px, -10px, -10px, -10px;
 	margin: -8px, -8px, -8px, -8px;

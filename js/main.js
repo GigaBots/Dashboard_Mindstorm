@@ -7,6 +7,7 @@ require.config({
     }
 });
 
+
 require(['BrowserBigBangClient'], function (bigbang) {
 
     var client = new bigbang.client.BrowserBigBangClient();
@@ -27,6 +28,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
     });
 
+
     function beginGame(client, channel) {
 
         var game = new Phaser.Game(944, 704, Phaser.AUTO, "gameWorld", { // 960 x 1068 fits nicely on an iPhone 4. 
@@ -38,7 +40,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
-
+        
+        var theirCode;
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
@@ -665,12 +668,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
             
             // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
-            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
-            fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
+            //var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+            //fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
             var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
             fBKey.onDown.add(fButtonDownAction, motorB);
-            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-            fCKey.onDown.add(fButtonDownAction, motorC);
+            //var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+            //fCKey.onDown.add(fButtonDownAction, motorC);
             var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
             fDKey.onDown.add(fButtonDownAction, motorD);
 
@@ -684,9 +687,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rDKey.onDown.add(rButtonDownAction, motorD);
 
             // stop motor on key up:
-            fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
+            //fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
             fBKey.onUp.add(fButtonUpAction, motorB);
-            fCKey.onUp.add(fButtonUpAction, motorC);
+            //fCKey.onUp.add(fButtonUpAction, motorC);
             fDKey.onUp.add(fButtonUpAction, motorD);
 
             rAKey.onUp.add(rButtonUpAction, motorA); // this will stop motor A
@@ -802,6 +805,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             //add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
             var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+
             fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
             var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
             fG2Key.onDown.add(fGangButtonDownAction, gang2);
@@ -1618,15 +1622,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
              //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
-            userType = document.getElementById("textSpinA"); // get text in textEditor
-            userNum = parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(userNum)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + userNum);
+            userDialType = document.getElementById("textSpinA"); // get text in textEditor
+            userDialNum = parseFloat(userDialType.innerHTML, 10); // translate text into numeric format if possible
+            if (isNaN(userDialNum)) { // if it's NotaNumber
             }
             else { // if it is a number
-                needleA.angle = needleA.angle + userNum;
-                console.log("Success! Parsed userNum value: " + userNum);
+                needleA.angle = needleA.angle + userDialNum;
             }
+
+            //needleB.angle = needleB.angle + 4;
+            document.getElementById("subButton").onclick = function() {
+                theirCode = document.getElementById("theirCode").innerHTML;
+                try {
+                    eval(theirCode);
+                }
+                catch(err) {
+                    var codeError="Error: " + err.message
+                    document.getElementById("errorMsg").innerHTML = codeError
+                };
+            }
+            eval(theirCode);
+
         } // end update
 
     } // end beginGame
@@ -1651,17 +1667,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
-            
-            // Create text editor for needleA above program
-            print = document.getElementById("textSpinA");// get text in textEditor
-            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(print)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + print);
-            }
-            else { // if it is a number
-                needleA.angle = needleA.angle + print;
-                console.log("Success! Parsed printNum value: " + print);
-            }
+
             // 
 
             /* test out dials and values */

@@ -42,6 +42,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         });
         
         var theirCode;
+        var codeError;
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
@@ -668,12 +669,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
             
             // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
-            //var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
-            //fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
+            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+            fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
             var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
             fBKey.onDown.add(fButtonDownAction, motorB);
-            //var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-            //fCKey.onDown.add(fButtonDownAction, motorC);
+            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+            fCKey.onDown.add(fButtonDownAction, motorC);
             var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
             fDKey.onDown.add(fButtonDownAction, motorD);
 
@@ -687,9 +688,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rDKey.onDown.add(rButtonDownAction, motorD);
 
             // stop motor on key up:
-            //fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
+            fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
             fBKey.onUp.add(fButtonUpAction, motorB);
-            //fCKey.onUp.add(fButtonUpAction, motorC);
+            fCKey.onUp.add(fButtonUpAction, motorC);
             fDKey.onUp.add(fButtonUpAction, motorD);
 
             rAKey.onUp.add(rButtonUpAction, motorA); // this will stop motor A
@@ -804,9 +805,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
             
             //add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
-            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+            console.log(document.activeElement.id);
+            if (document.activeElement.id == "") {  //focus is on game's element then 
+                console.log('look here!');
+                var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+                fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
+            }
 
-            fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
+
             var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
             fG2Key.onDown.add(fGangButtonDownAction, gang2);
 
@@ -816,7 +822,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rG2Key.onDown.add(rGangButtonDownAction, gang2);
 
             // stop motor on key up:
-            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
+            //fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
             fG2Key.onUp.add(fGangButtonUpAction, gang2);
 
             rG1Key.onUp.add(rGangButtonUpAction, gang1); // this will stop gang 1
@@ -1604,9 +1610,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 needleD.angle = dMotor.position;
                 //console.log(needleD.angle);
              }*/
-
-
-
             // Add something to show the current Speed of the robot, on the slider (so all viewers see the current speed)
             //sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (dMotor.speed - 700);
 
@@ -1637,7 +1640,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     eval(theirCode);
                 }
                 catch(err) {
-                    var codeError="Error: " + err.message
+                    codeError="Error: " + err.message
                     document.getElementById("errorMsg").innerHTML = codeError
                 };
             }

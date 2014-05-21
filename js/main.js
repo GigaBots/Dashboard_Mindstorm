@@ -248,16 +248,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay3 : ""
         }
 
-
         //===================================================
 
         // user subscribing to the channel
-        channel.onSubscribers(function (joined) {
-            subscribeUser(joined);
-            console.log("subscriber joined " + joined);
-        }, function (left) {
-            console.log("subscriber left");
-        });
+        // channel.onSubscribers(function (joined) {
+        //     subscribeUser(joined);
+        //     //console.log("subscriber joined " + joined);
+        // }, function (left) {
+        //     //console.log("subscriber left");
+        // });
+
+        /* Try to send out all speeds, so they update in each window viewing the dashboard...unless we make a keyspace for speeds */
+        // channel.onMessage = function (message) {
+        //     console.log("update speed");
+        //     var m = message.payload.getBytesAsJSON();
+        //     updateSpeed(m);
+        // }
+
+/* define the keyspace here? */
+
         channel.channelData.onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -385,14 +394,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             ultrasonicDistDisplay = ultrasonicDist;
             ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
-/*        channel.handler = function (message) {
-            console.log("update speed");
-            console.log("channel handler: " + message);
-            //var m = message.payload.getBytesAsJSON();
-            //updateSpeed(m);
-        }*/
-
-
 
     //==============================================================================================================================
         function preload() {
@@ -1227,34 +1228,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //=============================================================================
 
     /* To go with the channel handler function for updating speeds */
-        function sendSpeed(port, speed) {
+ /*       function //sendSpeed(port, speed) {
             var setting = {}; // create 'setting' object to hold the motor port and speed setting
             setting.port = port;
             setting.speed = speed;
             console.log ("sending speed " + setting.speed + " for port " + setting.port);
-            //channel.publish(setting);
-
-            subscribeMotor(port, speed);
+            channel.publish(setting);
+            console.log("here");
+            //subscribeMotor(port, speed);
             //console.log("motor joined " + joined);
+        }*/
 
-
+        function updateSpeed(speed) {
+             //console.log ("updating speed " + speed);
+             //if (speedMessage.port == 'a') {
+             sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
+             // }
         }
-
-        // function updateSpeed(speedMessage) {
-        //     console.log ("updating speed " + speedMessage.speed + " for port " + speedMessage.port);
-        //     //if (speedMessage.port == 'a') {
-        //     sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speedMessage.speed - 700);
-        //     // }
-        // }
         // function updateMotorSpeed(motor, speed) {
         //     console.log ("updating speed " + speed + " for port " + motor);
         //     //if (speedMessage.port == 'a') {
         //     sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
         //     // }
         // }
-        function drawSpeed(motor, speed) {
+/*        function drawSpeed(motor, speed) {
             sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
-        }
+        }*/
 
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( motor, direction, speed ) {
@@ -1326,7 +1325,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarA.y = positionMotorA.y + 165; // and move sliderbar to that corresponding position
             }
             console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
-            sendSpeed('a', motorA.speed);
+            //sendSpeed('a', motorA.speed);
         }
         function actionIncreaseOnClickA() {
             if (motorA.speed <= 650) {
@@ -1337,8 +1336,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarA.y = positionMotorA.y + 11; // and move sliderbar to that corresponding position
             }
             console.log(motorA.speed.toFixed(2));
-            sendSpeed('a', motorA.speed);
-            publishSpeed('a', motorA.speed);
+            //sendSpeed('a', motorA.speed);
+            //publishSpeed('a', motorA.speed);
         }
         function actionDecreaseOnClickB() {
             if (motorB.speed >= 50) {
@@ -1349,7 +1348,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarB.y = positionMotorB.y + 165;
             }
             console.log(motorB.speed.toFixed(2));
-            sendSpeed('b', motorB.speed);
+            channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'b' into it, which contains the value 'speed' equal to motorB.speed
+
+            //sendSpeed('b', motorB.speed);
         }
         function actionIncreaseOnClickB() {
             if (motorB.speed <= 650) {
@@ -1360,7 +1361,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarB.y = positionMotorB.y + 11;
             }
             console.log(motorB.speed.toFixed(2));
-            sendSpeed('b', motorB.speed);
+            //sendSpeed('b', motorB.speed);
+            channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'b' into it, which contains the value 'speed' equal to motorB.speed
         }
         function actionDecreaseOnClickC() {
             if (motorC.speed >= 50) {
@@ -1371,7 +1373,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarC.y = positionMotorC.y + 165;
             }
             console.log(motorC.speed.toFixed(2));
-            sendSpeed('c', motorC.speed);
+            //sendSpeed('c', motorC.speed);
         }
         function actionIncreaseOnClickC() {
             if (motorC.speed <= 650) {
@@ -1382,7 +1384,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarC.y = positionMotorC.y + 11;
             }
             console.log(motorC.speed.toFixed(2));
-            sendSpeed('c', motorC.speed);
+            //sendSpeed('c', motorC.speed);
         }
         function actionDecreaseOnClickD() {
             if (motorD.speed >= 50) {
@@ -1393,7 +1395,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 165;
             }
             console.log(motorD.speed.toFixed(2));
-            sendSpeed('d', motorD.speed);
+            //sendSpeed('d', motorD.speed);
         }
         function actionIncreaseOnClickD() {
             if (motorD.speed <= 650) {
@@ -1404,7 +1406,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 11;
             }
             console.log(motorD.speed.toFixed(2));
-            sendSpeed('d', motorD.speed);
+            //sendSpeed('d', motorD.speed);
         }
 
         //=============================================================================
@@ -1418,7 +1420,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorA.speed = 700 + (700/154) * (positionMotorA.y + 11 - sliderBarA.y);
             console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
-            sendSpeed('a', motorA.speed);
+            //sendSpeed('a', motorA.speed);
         }
         function actionDragOnClickB() {
             if (sliderBarB.y < positionMotorB.y+11) {
@@ -1428,7 +1430,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorB.speed = 700 + (700/154) * (positionMotorB.y + 11 - sliderBarB.y);
             console.log(motorB.speed.toFixed(2));
-            sendSpeed('b', motorB.speed);
+            channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'b' into it, which contains the value 'speed' equal to motorB.speed
+
+            //sendSpeed('b', motorB.speed);
         }
         function actionDragOnClickC() {
             if (sliderBarC.y < positionMotorC.y+11) {
@@ -1438,7 +1442,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorC.speed = 700 + (700/154) * (positionMotorC.y + 11 - sliderBarC.y);
             console.log(motorC.speed.toFixed(2));
-            sendSpeed('c', motorC.speed);
+            //sendSpeed('c', motorC.speed);
         }
         function actionDragOnClickD() {
             if (sliderBarD.y < positionMotorD.y+11) {
@@ -1448,7 +1452,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motorD.speed = 700 + (700/154) * (positionMotorD.y + 11 - sliderBarD.y);
             console.log(motorD.speed.toFixed(2));
-            sendSpeed('d', motorD.speed);
+            //sendSpeed('d', motorD.speed);
         }
 
         //=============================================================================
@@ -1574,7 +1578,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         // function subscribeMotor(port, speed) {
         //     channel.getKeyspace(port).on("motor", function (update) {
-        //         console.log("joined = " + port);
+        //         console.log("motor joined = " + port);
         //         drawSpeed(port, update);
         //     }, function (deleted) {
         //         console.log("deleted");
@@ -1589,7 +1593,46 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //     });
         // }
 
+    //==============================================================================================================================
+    //var bSpeed = 0;
+        
+        function updateSpeed(key, speed) {
+             console.log ("updating speed " + speed);
+             //if (speedMessage.port == 'a') {
+             motorB.speed = speed;
+             sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
+             // }
+        }
+
+        function getDashboardSpeed (key, val) {
+            //console.log(val.speed);
+            if ( key === 'b' ) {
+                updateSpeed(key, val.speed);
+            }
+        }
+
         function update() {
+            var bSpeed = channel.getKeyspace('dashboard').get('b'); // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}' etc 
+                //keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
+            if (typeof(bSpeed) !== "undefined") {
+                //console.log(bSpeed);
+                getDashboardSpeed('b', bSpeed);
+            }
+
+
+
+
+            //var bSpeed = 100;
+            //bSpeed = channel.getKeyspace('dashboard').get('b');
+            //console.log(bSpeed.speed);
+            // if (bSpeed != motorB.speed) {
+            //     //console.log("need to update speed");
+            //     console.log(bSpeed);
+            //    // motorB.speed = bSpeed.speed;
+            //     //updateSpeed(bSpeed.speed);
+            // }
+
+
             // For linear interpolation of motor angles
 
 /*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)

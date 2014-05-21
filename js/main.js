@@ -1227,34 +1227,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } // end create 
         //=============================================================================
 
-    /* To go with the channel handler function for updating speeds */
- /*       function //sendSpeed(port, speed) {
-            var setting = {}; // create 'setting' object to hold the motor port and speed setting
-            setting.port = port;
-            setting.speed = speed;
-            console.log ("sending speed " + setting.speed + " for port " + setting.port);
-            channel.publish(setting);
-            console.log("here");
-            //subscribeMotor(port, speed);
-            //console.log("motor joined " + joined);
-        }*/
-
-        function updateSpeed(speed) {
-             //console.log ("updating speed " + speed);
-             //if (speedMessage.port == 'a') {
-             sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
-             // }
-        }
-        // function updateMotorSpeed(motor, speed) {
-        //     console.log ("updating speed " + speed + " for port " + motor);
-        //     //if (speedMessage.port == 'a') {
-        //     sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
-        //     // }
-        // }
-/*        function drawSpeed(motor, speed) {
-            sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700);
-        }*/
-
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( motor, direction, speed ) {
             var data = {};
@@ -1264,6 +1236,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.speed = speed;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
+            if (motor === 'd') {
+               channel.getKeyspace('dashboard').put('d', { 'speed': speed, 'direction': direction });
+            }
         }
 
         function stopMotor( motor ) {
@@ -1272,6 +1247,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.port = motor;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
+            if (data.port === 'd') {
+                channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed, 'direction': "stopped" });
+            }
         }
 
 
@@ -1543,7 +1521,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
     //==============================================================================================================================
-        
+    /* Update stuff */
+
+/*        function updateGang (key, speed, a, b, c, d) {
+            if ( key === 'g1' ) {
+                gang1.speed = speed;
+                gang1.a = a;
+                gang1.b = b;
+                gang1.c = c;
+                gang1.d = d;
+                sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                // need to also update checkboxes based on the new values:
+                if (gang1.a = true) {
+                    checkboxStatus.a1 = 1; // check it now
+                    checkbox.a1.setFrames(1,1,1,0);
+                } else if (gang1.a = false) {
+                    checkboxStatus.a1 = 0; // uncheck it now
+                    checkbox.a1.setFrames(2,0,1,0);
+                }
+                // etc
+            }
+        }*/
+
+
         function updateSpeed (key, speed) {
             console.log ("updating speed of motor " + key + " to " + speed);
             if ( key === 'a') { 
@@ -1584,8 +1584,89 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( motorD.speed !== val.speed ) {
                     updateSpeed(key, val.speed);
                 }
+                if ( val.direction === 'f' || val.direction === 'r' ) {
+                    moveDial ('d', val.direction) //smooth linear interpolation
+                } else if ( val.direction === "stopped" ) {
+                    channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed }); // get rid of direction value until the motor's moving again
+                    var motorDataD = channel.channelData.get('d');
+                    updateDial ('d', motorDataD); // update at the next second to the value in the message sent by the bot
+                }
+            }
+/*            if ( key === 'g1' ) {
+                if ( gang1.speed !== val.speed || gang1.a != val.a || gang1.b != val.b || gang1.c != val.c || gang1.d != val.d ) {
+                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+                }
+            }*/
+        }
+
+        var updateRate = 32; //updateRate is for an approximation (updating function running roughly 28 times/second)
+        function moveDial (key, direction) {
+            if ( key === 'd' ) {
+                if (direction = 'f') {
+                    //if (0 <= needleD.angle && needleD.angle <180) {
+                        needleD.angle = needleD.angle + motorD.speed/updateRate;
+                    //} else {
+                    //    needleD.angle = needleD.angle - motorD.speed/updateRate
+                    //}
+                }
+                else if (direction = 'r') {
+                    needleD.angle = needleD.angle - motorD.speed/updateRate;
+                }
+
+                // var remainder = (needleD.angle/360) % 1; // take just the decimal place of whatever big rotational position we get, to figure out what side of the dial we should be on
+                // console.log(needleD.angle);
+                // console.log(remainder); 
+                // if (direction = 'f') {
+                //     //if (0 <= remainder && remainder < 0.5) { //we're on the right side of the dial (b/w 0 and 180 degrees)
+                //         needleD.angle = needleD.angle + motorD.speed/updateRate; //updateRate is for an approximation (updating function running roughly at 'updateRate' times/second)
+                //     //}
+                //     //else { //we're on the left side of the dial (b/w -180 and 0 degress)
+                //     //    needleD.angle = needleD.angle - motorD.speed/updateRate;
+                //     //}
+                // } else if (direction = 'r') {
+                //     //if (0 <= remainder && remainder < 0.5) {
+                //         needleD.angle = needleD.angle - motorD.speed/updateRate; 
+                //     //}
+                //     //else {
+                //     //    needleD.angle = needleD.angle + motorD.speed/updateRate;
+                //     //}
+                // }
+            }
+        } 
+
+        function updateDial (key, motorData) {
+            if ( key === 'd') {
+                if ( motorData.moving === false) {
+                    //console.log(motorData);
+                    console.log(motorData.position);
+                    var remainder = (motorData.position / 360) % 1;
+                    if (0 <= remainder && remainder < 0.5) {
+                        needleD.angle = remainder * 360;
+                    }
+                    else {
+                        needleD.angle = remainder * 360 - 360;
+                    }
+                    console.log(needleD.angle);
+                }
             }
         }
+
+        // function updateDial (key, val) {
+        //     if ( key === 'd' ) {           
+        //         //console.log("position of D: " + val.position);
+        //         //console.log("speed of D: " + motorD.speed);
+        //         if (val.moving === false) {
+        //             needleD.angle = val.position;
+        //         }
+        //         else {
+        //             if (val.direction = 'r') {
+        //                 needleD.angle = needleD.angle + motorD.speed/28;
+        //             } else {
+        //                 needleD.angle = needleD.angle - motorD.speed/28;
+        //             }
+        //         }
+        //     }
+        // }
 
         function update() {
             // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
@@ -1606,12 +1687,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             var dashMotorD = channel.getKeyspace('dashboard').get('d'); 
             if ( typeof(dashMotorD) !== "undefined") {
+                //console.log(dashMotorD);
                 getDashboardValues('d', dashMotorD);
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
+/*            var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
+            if ( typeof(dashGang1) !== "undefined") {
+                getDashboardValues('g1', dashGang1);
+            }
+            var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
+            if ( typeof(dashGang2) !== "undefined") {
+                getDashboardValues('g2', dashGang2);
+            }*/
 
 
-/*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
+
+            
+            /* Smooth rotation of motor position dials */
+
+/*            var dMotor = channel.channelData.get('d');
             if (dMotor) {
                 //console.log(dMotor.position);
                 needleD.angle = dMotor.position;
@@ -1619,11 +1713,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
              }*/
 
 
+            // var dMotor = channel.channelData.get('d');
+            // if ( typeof(dMotor) !== "undefined") {
+            //     updateDial ('d', dMotor);
+            // }
+
+             // console.log("position of D: "+dMotor.position);
+             // console.log("speed of D: "+dMotor.speed);
 
 
 
 
-             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
+
+
         
         } // end update
 

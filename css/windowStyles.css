@@ -11,6 +11,7 @@ body {
 	width: 500px;
 	height: 150px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
+	border-radius: 10px;
 }
 
 /* Create placeholder text for editArea */

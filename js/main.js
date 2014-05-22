@@ -1836,7 +1836,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else { // if it is a number
                 //needleA.angle = needleA.angle + userNum; // For testing, add something to use now instead of the 4 motor dials
-                console.log("Success! Parsed userNum value: " + userNum);
+                //console.log("Success! Parsed userNum value: " + userNum);
             }
 
         } // end update
@@ -1870,7 +1870,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else { // if it is a number
                 needleA.angle = needleA.angle + print;
-                console.log("Success! Parsed printNum value: " + print);
+                //console.log("Success! Parsed printNum value: " + print);
             }
 
     

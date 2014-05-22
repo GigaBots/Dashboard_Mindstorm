@@ -100,9 +100,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dialA, dialB, dialC, dialD;
         var labelDial = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D" }
         var needleA, needleB, needleC, needleD;
-
         var frameDials;
         var positionDial = { x : 674, y : 136 }
+        var updateRate = 32; //updateRate is for an approximation (updating function running roughly 28 times/second)
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
@@ -1522,7 +1522,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
     /* Update stuff */
-
+        //We can implement this guy when we're ready */  
 /*        function updateGang (key, speed, a, b, c, d) {
             if ( key === 'g1' ) {
                 gang1.speed = speed;
@@ -1539,7 +1539,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkboxStatus.a1 = 0; // uncheck it now
                     checkbox.a1.setFrames(2,0,1,0);
                 }
-                // etc
+                if (gang1.b = true) {
+                    checkboxStatus.b1 = 1; // check it now
+                    checkbox.b1.setFrames(1,1,1,0);
+                } else if (gang1.b = false) {
+                    checkboxStatus.b1 = 0; // uncheck it now
+                    checkbox.b1.setFrames(2,0,1,0);
+                }
+                if (gang1.c = true) {
+                    checkboxStatus.c1 = 1; // check it now
+                    checkbox.c1.setFrames(1,1,1,0);
+                } else if (gang1.c = false) {
+                    checkboxStatus.c1 = 0; // uncheck it now
+                    checkbox.c1.setFrames(2,0,1,0);
+                }
+                if (gang1.d = true) {
+                    checkboxStatus.d1 = 1; // check it now
+                    checkbox.d1.setFrames(1,1,1,0);
+                } else if (gang1.d = false) {
+                    checkboxStatus.d1 = 0; // uncheck it now
+                    checkbox.d1.setFrames(2,0,1,0);
+                }
             }
         }*/
 
@@ -1598,75 +1618,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
         }
-
-        var updateRate = 32; //updateRate is for an approximation (updating function running roughly 28 times/second)
-        function moveDial (key, direction) {
+        /* Smooth/continuous rotation of motor position dials */
+        function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
             if ( key === 'd' ) {
-                if (direction = 'f') {
-                    //if (0 <= needleD.angle && needleD.angle <180) {
-                        needleD.angle = needleD.angle + motorD.speed/updateRate;
-                    //} else {
-                    //    needleD.angle = needleD.angle - motorD.speed/updateRate
-                    //}
+                if (direction === 'f') {
+                    needleD.angle = needleD.angle + motorD.speed/updateRate;
                 }
-                else if (direction = 'r') {
+                else if (direction === 'r') {
                     needleD.angle = needleD.angle - motorD.speed/updateRate;
                 }
-
-                // var remainder = (needleD.angle/360) % 1; // take just the decimal place of whatever big rotational position we get, to figure out what side of the dial we should be on
-                // console.log(needleD.angle);
-                // console.log(remainder); 
-                // if (direction = 'f') {
-                //     //if (0 <= remainder && remainder < 0.5) { //we're on the right side of the dial (b/w 0 and 180 degrees)
-                //         needleD.angle = needleD.angle + motorD.speed/updateRate; //updateRate is for an approximation (updating function running roughly at 'updateRate' times/second)
-                //     //}
-                //     //else { //we're on the left side of the dial (b/w -180 and 0 degress)
-                //     //    needleD.angle = needleD.angle - motorD.speed/updateRate;
-                //     //}
-                // } else if (direction = 'r') {
-                //     //if (0 <= remainder && remainder < 0.5) {
-                //         needleD.angle = needleD.angle - motorD.speed/updateRate; 
-                //     //}
-                //     //else {
-                //     //    needleD.angle = needleD.angle + motorD.speed/updateRate;
-                //     //}
-                // }
             }
         } 
-
-        function updateDial (key, motorData) {
+        function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
             if ( key === 'd') {
                 if ( motorData.moving === false) {
                     //console.log(motorData);
-                    console.log(motorData.position);
-                    var remainder = (motorData.position / 360) % 1;
-                    if (0 <= remainder && remainder < 0.5) {
-                        needleD.angle = remainder * 360;
-                    }
-                    else {
-                        needleD.angle = remainder * 360 - 360;
-                    }
-                    console.log(needleD.angle);
+                    needleD.angle = motorData.position;
                 }
             }
         }
-
-        // function updateDial (key, val) {
-        //     if ( key === 'd' ) {           
-        //         //console.log("position of D: " + val.position);
-        //         //console.log("speed of D: " + motorD.speed);
-        //         if (val.moving === false) {
-        //             needleD.angle = val.position;
-        //         }
-        //         else {
-        //             if (val.direction = 'r') {
-        //                 needleD.angle = needleD.angle + motorD.speed/28;
-        //             } else {
-        //                 needleD.angle = needleD.angle - motorD.speed/28;
-        //             }
-        //         }
-        //     }
-        // }
 
         function update() {
             // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
@@ -1699,33 +1669,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof(dashGang2) !== "undefined") {
                 getDashboardValues('g2', dashGang2);
             }*/
-
-
-
-            
-            /* Smooth rotation of motor position dials */
-
-/*            var dMotor = channel.channelData.get('d');
-            if (dMotor) {
-                //console.log(dMotor.position);
-                needleD.angle = dMotor.position;
-                //console.log(needleD.angle);
-             }*/
-
-
-            // var dMotor = channel.channelData.get('d');
-            // if ( typeof(dMotor) !== "undefined") {
-            //     updateDial ('d', dMotor);
-            // }
-
-             // console.log("position of D: "+dMotor.position);
-             // console.log("speed of D: "+dMotor.speed);
-
-
-
-
-
-
         
         } // end update
 

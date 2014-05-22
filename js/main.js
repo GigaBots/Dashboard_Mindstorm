@@ -102,7 +102,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var needleA, needleB, needleC, needleD;
         var frameDials;
         var positionDial = { x : 674, y : 136 }
-        var updateRate = 32; //updateRate is for an approximation (updating function running roughly 28 times/second)
+        var updateRate = 30; //updateRate is for an approximation (updating function running roughly 28 times/second)
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
@@ -1236,6 +1236,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.speed = speed;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
+            if (motor === 'a') {
+               channel.getKeyspace('dashboard').put('a', { 'speed': speed, 'direction': direction });
+            }
+            if (motor === 'b') {
+               channel.getKeyspace('dashboard').put('b', { 'speed': speed, 'direction': direction });
+            }
+            if (motor === 'c') {
+               channel.getKeyspace('dashboard').put('c', { 'speed': speed, 'direction': direction });
+            }
             if (motor === 'd') {
                channel.getKeyspace('dashboard').put('d', { 'speed': speed, 'direction': direction });
             }
@@ -1247,6 +1256,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.port = motor;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
+            if (data.port === 'a') {
+                channel.getKeyspace('dashboard').put('a', { 'speed': motorA.speed, 'direction': "stopped" });
+            }
+            if (data.port === 'b') {
+                channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed, 'direction': "stopped" });
+            }
+            if (data.port === 'c') {
+                channel.getKeyspace('dashboard').put('c', { 'speed': motorC.speed, 'direction': "stopped" });
+            }
             if (data.port === 'd') {
                 channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed, 'direction': "stopped" });
             }
@@ -1336,7 +1354,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarB.y = positionMotorB.y + 11;
             }
             console.log(motorB.speed.toFixed(2));
-            //sendSpeed('b', motorB.speed);
             channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); 
         }
         function actionDecreaseOnClickC() {
@@ -1563,7 +1580,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }*/
 
-
+        /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
             console.log ("updating speed of motor " + key + " to " + speed);
             if ( key === 'a') { 
@@ -1583,21 +1600,42 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
             }
         }
-
+        /* Get key-value pairs from the dashboard keyspace and do things with them */
         function getDashboardValues (key, val) {
             if ( key === 'a' ) {
                 if ( motorA.speed !== val.speed ) {
                     updateSpeed(key, val.speed);
+                }
+                if ( val.direction === 'f' || val.direction === 'r' ) {
+                    moveDial ('a', val.direction); //smooth-ish linear interpolation
+                } else if ( val.direction === "stopped" ) {
+                    channel.getKeyspace('dashboard').put('a', { 'speed': motorA.speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
+                    var motorDataA = channel.channelData.get('a');
+                    updateDial ('a', motorDataA); // update at the next second to the value in the message sent by the bot
                 }
             }
             if ( key === 'b' ) {
                 if ( motorB.speed !== val.speed ) {
                     updateSpeed(key, val.speed);
                 }
+                if ( val.direction === 'f' || val.direction === 'r' ) {
+                    moveDial ('b', val.direction);
+                } else if ( val.direction === "stopped" ) {
+                    channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); 
+                    var motorDataB = channel.channelData.get('b');
+                    updateDial ('b', motorDataB); 
+                }
             }
             if ( key === 'c' ) {
                 if ( motorC.speed !== val.speed ) {
                     updateSpeed(key, val.speed);
+                }
+                if ( val.direction === 'f' || val.direction === 'r' ) {
+                    moveDial ('c', val.direction); 
+                } else if ( val.direction === "stopped" ) {
+                    channel.getKeyspace('dashboard').put('c', { 'speed': motorC.speed }); 
+                    var motorDataC = channel.channelData.get('c');
+                    updateDial ('c', motorDataC); 
                 }
             }
             if ( key === 'd' ) {
@@ -1605,11 +1643,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     updateSpeed(key, val.speed);
                 }
                 if ( val.direction === 'f' || val.direction === 'r' ) {
-                    moveDial ('d', val.direction) //smooth linear interpolation
+                    moveDial ('d', val.direction);
                 } else if ( val.direction === "stopped" ) {
-                    channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed }); // get rid of direction value until the motor's moving again
+                    channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed }); 
                     var motorDataD = channel.channelData.get('d');
-                    updateDial ('d', motorDataD); // update at the next second to the value in the message sent by the bot
+                    updateDial ('d', motorDataD);
                 }
             }
 /*            if ( key === 'g1' ) {
@@ -1618,8 +1656,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }*/
         }
-        /* Smooth/continuous rotation of motor position dials */
+        /* Rotation of motor position dials */
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
+            if ( key === 'a' ) {
+                if (direction === 'f') {
+                    needleA.angle = needleA.angle + motorA.speed/updateRate; //clockwise
+                }
+                else if (direction === 'r') {
+                    needleA.angle = needleA.angle - motorA.speed/updateRate; //counterclockwise
+                }
+            }
+            if ( key === 'b' ) {
+                if (direction === 'f') {
+                    needleB.angle = needleB.angle + motorB.speed/updateRate;
+                }
+                else if (direction === 'r') {
+                    needleB.angle = needleB.angle - motorB.speed/updateRate;
+                }
+            }
+            if ( key === 'c' ) {
+                if (direction === 'f') {
+                    needleC.angle = needleC.angle + motorC.speed/updateRate;
+                }
+                else if (direction === 'r') {
+                    needleC.angle = needleC.angle - motorC.speed/updateRate;
+                }
+            }
             if ( key === 'd' ) {
                 if (direction === 'f') {
                     needleD.angle = needleD.angle + motorD.speed/updateRate;
@@ -1630,9 +1692,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
+            if ( key === 'a') {
+                if ( motorData.moving === false) {
+                    needleA.angle = motorData.position; //value published to channel by bot
+                }
+            }
+            if ( key === 'b') {
+                if ( motorData.moving === false) {
+                    needleB.angle = motorData.position;
+                }
+            }
+            if ( key === 'c') {
+                if ( motorData.moving === false) {
+                    needleC.angle = motorData.position;
+                }
+            }
             if ( key === 'd') {
                 if ( motorData.moving === false) {
-                    //console.log(motorData);
                     needleD.angle = motorData.position;
                 }
             }
@@ -1657,7 +1733,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             var dashMotorD = channel.getKeyspace('dashboard').get('d'); 
             if ( typeof(dashMotorD) !== "undefined") {
-                //console.log(dashMotorD);
                 getDashboardValues('d', dashMotorD);
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)

@@ -28,7 +28,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });
 
     function beginGame(client, channel) {
-        var game = new Phaser.Game(960, 720, Phaser.AUTO, null, { // 960 x 1068 fits nicely on an iPhone 4. 
+
+        var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 1068 fits nicely on an iPhone 4. 
+
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -36,7 +38,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
-
 
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
@@ -113,16 +114,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var checkbox;
         var checkboxStatus;
         var fGangButton, rGangButton;
-
-        /* // this might be the cleaner way to use a motor object, where the ports are a, b, c, & d
-        var motor = { 
-            port : '',
-            status : '',
-            speed : '',
-            position : '',
-            direction : ''
-        }
-        */
 
         var motorA = {
             port: 'a',
@@ -252,6 +243,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay3 : ""
         }
 
+
+        /* Text editor stuff */
+
+        var userType;
+        var userNum;
+
         //===================================================
 
         // user subscribing to the channel
@@ -268,8 +265,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //     var m = message.payload.getBytesAsJSON();
         //     updateSpeed(m);
         // }
-
-/* define the keyspace here? */
 
         channel.channelData.onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
@@ -507,10 +502,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameScreen = game.add.graphics(0,0);
             frameScreen.lineStyle(1, frameLineColor, 1);
             frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 92);
-
-            // frameMotorGanging = game.add.graphics(0,0);
-            // frameMotorGanging.lineStyle(1, frameLineColor, 1);
-            // frameMotorGanging.drawRect(positionMotorGang.x, positionMotorGang.y, 250, 160);
 
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
@@ -1560,7 +1551,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
     /* Update stuff */
-        //We can implement this guy when we're ready with everything else for it  
+        //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
 /*        function updateGang (key, speed, a, b, c, d) {
             if ( key === 'g1' ) {
                 gang1.speed = speed;
@@ -1779,12 +1770,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
         }
 
-        function update() { //function running in infinite game loop
+        function update() {
+            /* DASHBOARD STUFF */
             // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
             // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
             /* Add something to show the set speed of a motor on all users' dashboards whenever a user adjusts it. Show it on the slider */
-            // NOTE: THERE'S A SMALL GLITCH TO FIX REGARDING THE DASHBOARD OF THE USER WHO CHANGED THE SPEED (THIS OTHERS ARE FINE), BECAUSE IT QUICKLY UPDATES THE SPEED TO THE PREVIOUS VALUE AND THEN THE CURRENT ONE
-            if (sliderBarState.a === "up") {
+            if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
                 if ( typeof(dashMotorA) !== "undefined") {
                     getDashboardValues('a', dashMotorA);
@@ -1809,14 +1800,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
-/*            var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
+            /* var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
             if ( typeof(dashGang1) !== "undefined") {
                 getDashboardValues('g1', dashGang1);
             }
             var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
             if ( typeof(dashGang2) !== "undefined") {
                 getDashboardValues('g2', dashGang2);
-            }*/
+            } */
 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined") {
@@ -1835,15 +1826,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof(dashMotorD) !== "undefined") {
                 getDialValues('d', dashMotorD);
             }
-        
+
+
+            /* TEXT EDITOR STUFF */
+            userType = document.getElementById("textSpinA"); // get text in textEditor
+            userNum = parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
+            if (isNaN(userNum)) { // if it's NotaNumber
+                console.log("Not a number. Attempted parsed value: " + userNum);
+            }
+            else { // if it is a number
+                //needleA.angle = needleA.angle + userNum; // For testing, add something to use now instead of the 4 motor dials
+                console.log("Success! Parsed userNum value: " + userNum);
+            }
+
         } // end update
 
     } // end beginGame
 
 }); // end require
 
-            // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
-            // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
             // game.camera.y = game.input.y;
             // game.camera.x = game.input.x;
@@ -1855,10 +1856,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             if (game.input.mousePointer.x >= 900) {
                 game.camera.x += 15;
+
             }
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
+            
+            // Create text editor for needleA above program
+            print = document.getElementById("textSpinA");// get text in textEditor
+            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
+            if (isNaN(print)) { // if it's NotaNumber
+                console.log("Not a number. Attempted parsed value: " + print);
+            }
+            else { // if it is a number
+                needleA.angle = needleA.angle + print;
+                console.log("Success! Parsed printNum value: " + print);
+            }
+
+    
 
             //     game.world.remove(color.colorValueDisplay);
             //     colorValue += 1;
@@ -1871,7 +1886,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
 
             // }
-
 
 /*            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
                 game.world.remove(color.colorNameDisplay);
@@ -2114,136 +2128,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 //=======================================================================================================================================
 //=======================================================================================================================================
-
-
-
-            //fButton.a.name = "a", fButton.b.name = "b", fButton.c.name = "c", fButton.d.name = "d";
-            
-/*            function fButtonCallback () {
-                // NOW THIS FUNCTION IS CALLED ON CLICK RATHER THAN ON RELEASE (MODIFIED LINE 3556 IN THE NON-MINIFIED PHASER FRAMEWORK FILE)
-
-                moveMotor(this, "f", speed.this);
-            
-            }*/
-
-           /*function fButtonSet (newDirectionButton) {
-                this.directionButton = newDirectionButton;
-
-                this.directionButton.events.onInputOver.add(this.directionButton.onInputOverHandler, this);
-                this.directionButton.events.onInputOut.add(this.directionButton.onInputOutHandler, this);
-                this.directionButton.events.onInputDown.add(this.directionButton.onInputDownHandler, this);
-                this.directionButton.events.onInputUp.add(this.directionButton.onInputUpHandler, this);
-                console.log("finished 1");
-                console.log(this.directionButton);
-                onInputDownHandler = function () {
-                    console.log("here");
-                }
-            }*/
-
-/*            speed = {
-                a : 314, // these are placeholders for now
-                b : 159,
-                c : 265,
-                d : 359
-
-            }*/
-
-// old motor forward/reverse button actions
-/*
-            fButton.a.events.onInputDown.add(onActionDownForwardA, this); // on click
-            function onActionDownForwardA() {
-                console.log("onActionDownForwardA"); 
-                moveMotor( "a", "f", motorA.speed);
-            }
-            fButton.a.events.onInputUp.add(onActionUpForwardA, this); // on release
-            function onActionUpForwardA() {
-                console.log("onActionUpForwardA");
-                stopMotor("a"); 
-            }*/
-/*            rButton.a.events.onInputDown.add(onActionDownReverseA, this); //on click
-            function onActionDownReverseA() {
-                console.log("onActionDownReverseA"); 
-                moveMotor( "a", "r", motorA.speed);
-            }
-            rButton.a.events.onInputUp.add(onActionUpReverseA, this); //on release
-            function onActionUpReverseA() {
-                console.log("onActionUpReverseA");
-                stopMotor("a"); 
-            }*/
-
-            
-
-/*            fButton.b.events.onInputDown.add(onActionDownForwardB, this);
-            function onActionDownForwardB() {
-                console.log("onActionDownForwardB"); 
-                moveMotor( "b", "f", motorB.speed);
-            }
-            fButton.b.events.onInputUp.add(onActionUpForwardB, this);
-            function onActionUpForwardB() {
-                console.log("onActionUpForwardB");
-                stopMotor("b"); 
-            }
-            rButton.b.events.onInputDown.add(onActionDownReverseB, this);
-            function onActionDownReverseB() {
-                console.log("onActionDownReverseB"); 
-                moveMotor( "b", "r", motorB.speed);
-            }
-            rButton.b.events.onInputUp.add(onActionUpReverseB, this);
-            function onActionUpReverseB() {
-                console.log("onActionUpReverseB");
-                stopMotor("b"); 
-            }
-
-            
-
-            fButton.c.events.onInputDown.add(onActionDownForwardC, this);
-            function onActionDownForwardC() {
-                console.log("onActionDownForwardC"); 
-                moveMotor( "c", "f", motorC.speed);
-            }
-            fButton.c.events.onInputUp.add(onActionUpForwardC, this);
-            function onActionUpForwardC() {
-                console.log("onActionUpForwardC");
-                stopMotor("c"); 
-            }
-            rButton.c.events.onInputDown.add(onActionDownReverseC, this);
-            function onActionDownReverseC() {
-                console.log("onActionDownReverseC"); 
-                moveMotor( "c", "r", motorC.speed);
-            }
-            rButton.c.events.onInputUp.add(onActionUpReverseC, this);
-            function onActionUpReverseC() {
-                console.log("onActionUpReverseC");
-                stopMotor("c"); 
-            }
-
-
-            
-            fButton.d.events.onInputDown.add(onActionDownForwardD, this);
-            function onActionDownForwardD() {
-                console.log("onActionDownForwardD"); 
-                moveMotor( "d", "f", motorD.speed);
-            }
-            fButton.d.events.onInputUp.add(onActionUpForwardD, this);
-            function onActionUpForwardD() {
-                console.log("onActionUpForwardD");
-                stopMotor("d"); 
-            }
-            rButton.d.events.onInputDown.add(onActionDownReverseD, this);
-            function onActionDownReverseD() {
-                console.log("onActionDownReverseD"); 
-                moveMotor( "d", "r", motorD.speed);
-            }
-            rButton.d.events.onInputUp.add(onActionUpReverseD, this);
-            function onActionUpReverseD() {
-                console.log("onActionUpReverseD");
-                stopMotor("d"); 
-            }*/
-
-
-            /* Button States */
-            // To change the states of buttons (i.e., their appearance when up, down, over, and out), we can set and update the states using:
-            // see Phaser API file 'Button.js' at ll. 586-637
 
 
 

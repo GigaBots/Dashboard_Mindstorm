@@ -5,8 +5,34 @@ body {
 	margin: 0px;
 }
 
-/*#gameWorld {
-	padding: -10px, -10px, -10px, -10px;
-	margin: -8px, -8px, -8px, -8px;
-}*/
+#editArea {
+	background-color: #313233;
+	color: #C8C8C8;
+	width: 500px;
+	height: 150px;
+	font-family: Courier New, Lucida Console, Monaco, monospace;
+	border-radius: 10px;
+}
 
+/* Create placeholder text for editArea */
+[contentEditable="true"]:empty:not(:focus):before {
+        content:attr(placeholder);
+        font-style: italic;
+}
+
+@media screen and (min-width: 1300px) {
+	#gameWorld {
+		float: left;
+		display: inline;
+	}
+	#editArea {
+		/* push right */
+		display: inline;
+		width: 20%;
+		height: 150px;
+		float: left;
+		margin-top: 137px;
+		padding: 5px;
+		border-style: solid;
+	}
+}

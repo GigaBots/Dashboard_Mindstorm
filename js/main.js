@@ -807,14 +807,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
             
             //add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
-            console.log(document.activeElement.id);
-            if (document.activeElement.id == "") {  //focus is on game's element then 
-                console.log('look here!');
-                var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
-                fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
-            }
-
-
+            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+            fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
             var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
             fG2Key.onDown.add(fGangButtonDownAction, gang2);
 
@@ -1604,6 +1598,37 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // }
 
         function update() {
+
+            
+            function oneFunction() {
+                console.log("You hit 1 from inside the game!");
+            }
+                
+            if (document.activeElement.id="theirCode") {
+                console.log("Now you're in the textEditor!");
+                game.input.keyboard.removeKey(Phaser.Keyboard.ONE);
+            }
+            else {
+                console.log("You clicked inside the game!");
+                var oneKey = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
+                game.input.keyboard.add(oneFunction, this);
+            }
+
+
+/*
+            function oneDown() {
+                // if text editor is not selected, use hotkey
+                if (document.activeElement.id != "theirCode") {
+                    console.log("You're not in the textEditor");
+                }
+                // if the text editor is selected
+                else {
+                    console.log("You're in the textEditor");
+                    game.input.keyboard.removeKey(Phaser.Keyboard.ONE);
+                }
+            }
+*/
+
             // For linear interpolation of motor angles
 
 /*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
@@ -1648,13 +1673,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             eval(theirCode);
 
+            
         } // end update
 
     } // end beginGame
 
 }); // end require
 
-            // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
+function removeKeys() {
+                console.log("You clicked the textEditor");
+}
+
+         // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
             // game.camera.y = game.input.y;

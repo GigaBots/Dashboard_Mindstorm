@@ -103,8 +103,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var needleA, needleB, needleC, needleD;
         var frameDials;
         var positionDial = { x : 674, y : 136 }
-        var updateRate = 1000/60; //updateRate is for an approximation (updating function running roughly 28 times/second)
-
+        var t = {a1 : 0, a2 : 0, aDelta : 0, b1 : 0 , b2 : 0, bDelta : 0, c1 : 0, c2 : 0, cDelta : 0, d1 : 0, d2 : 0, dDelta : 0}
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
@@ -1628,37 +1627,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Rotation of motor position dials */
+
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
             if ( key === 'a' ) {
+                t.a2 = game.time.time;
+                t.aDelta = t.a2 - t.a1; //change in time in milliseconds
+                if (t.aDelta >= 80) {
+                    t.aDelta = 28; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+                }
                 if (direction === 'f') {
-                    needleA.angle = needleA.angle + motorA.speed/updateRate; //clockwise
+                    needleA.angle = needleA.angle + motorA.speed*t.aDelta/1000; //clockwise
                 }
                 else if (direction === 'r') {
-                    needleA.angle = needleA.angle - motorA.speed/updateRate; //counterclockwise
+                    needleA.angle = needleA.angle - motorA.speed*t.aDelta/1000; //counterclockwise
                 }
+                t.a1 = t.a2; //
             }
             if ( key === 'b' ) {
+                t.b2 = game.time.time;
+                t.bDelta = t.b2 - t.b1;
+                if (t.bDelta >= 80) {
+                    t.bDelta = 28; 
+                }                
                 if (direction === 'f') {
-                    needleB.angle = needleB.angle + motorB.speed/updateRate;
+                    needleB.angle = needleB.angle + motorB.speed*t.bDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleB.angle = needleB.angle - motorB.speed/updateRate;
+                    needleB.angle = needleB.angle - motorB.speed*t.bDelta/1000;
                 }
             }
             if ( key === 'c' ) {
+                t.c2 = game.time.time;
+                t.cDelta = t.c2 - t.c1;
+                if (t.cDelta >= 80) {
+                    t.cDelta = 28; 
+                } 
                 if (direction === 'f') {
-                    needleC.angle = needleC.angle + motorC.speed/updateRate;
+                    needleC.angle = needleC.angle + motorC.speed*t.cDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleC.angle = needleC.angle - motorC.speed/updateRate;
+                    needleC.angle = needleC.angle - motorC.speed*t.cDelta/1000;
                 }
             }
             if ( key === 'd' ) {
+                t.d2 = game.time.time;
+                t.dDelta = t.d2 - t.d1;
+                if (t.dDelta >= 80) {
+                    t.dDelta = 28; 
+                } 
                 if (direction === 'f') {
-                    needleD.angle = needleD.angle + motorD.speed/updateRate;
+                    needleD.angle = needleD.angle + motorD.speed*t.dDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleD.angle = needleD.angle - motorD.speed/updateRate;
+                    needleD.angle = needleD.angle - motorD.speed*t.dDelta/1000;
                 }
             }
         } 
@@ -1799,6 +1820,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined") {
+                //var tA2 = game.time.time;
                 getDialValues('a', dashMotorA);
             }
             var dialDataB = channel.getKeyspace('dashboard').get('b');

@@ -754,6 +754,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( this.d === true) {
                     moveMotor( "d", "f", this.speed );
                 }
+
+                game.input.keyboard.removeKey(Phaser.Keyboard.Q);
             }
             function fGangButtonUpAction() {
                 console.log("onActionUpForwardGang");

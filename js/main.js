@@ -1660,7 +1660,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = err.message;
             }
-
+            console.log(userDialNum);
             if (isNaN(userDialNum)) { // if it's NotaNumber
                 document.getElementById("errorMsg").innerHTML = "That's not a number!"
             }

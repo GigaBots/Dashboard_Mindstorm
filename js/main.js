@@ -40,9 +40,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         });
 
         var bbLogo, botLogo;
-        //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
-        //var titleStyle = { font: "32px Lucida Console, Arial",fill: "#313131"}
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var labelStyle2 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
@@ -412,8 +410,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
             game.load.image('robotOrangeSm', 'assets/gigabots_logo_color_background_sm.png', 50, 50);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
-            game.load.image('title','assets/gigabot_dashboard_title.png', 400, 50);
-            game.load.image('poweredBy','assets/powered_by_big_bang.png', 280, 48);
+            game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
+            game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
         } //end preload
 
     //==============================================================================================================================
@@ -443,12 +441,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Title */
-            //dashboardName = game.add.text(68, 10, dashboardName, titleStyle);
             dashboardName = game.add.sprite(72,0,'title');
             bbLogo = game.add.sprite(816, 1,'bbLogoSm');
             botLogo = game.add.sprite(0,0,'robotOrangeSm');
-            poweredBy = game.add.sprite(665,1,'poweredBy');
-            //poweredBy = game.add.text(722, 19, poweredBy, labelStyle4);
+            poweredBy = game.add.sprite(740,0,'poweredBy');
             var allRightsReserved = game.add.text(15, 665, "All Rights Reserved, TheGigabots.com", labelStyle);
 
         /* Frames */

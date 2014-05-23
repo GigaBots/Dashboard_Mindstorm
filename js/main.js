@@ -410,7 +410,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            game.load.image('robotOrangeSm', 'assets/robot_orange_sm.png', 50, 50);
+            game.load.image('robotOrangeSm', 'assets/gigabots_logo_color_background_sm.png', 50, 50);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
             game.load.image('title','assets/gigabot_dashboard_title.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 280, 48);
@@ -1836,7 +1836,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else { // if it is a number
                 //needleA.angle = needleA.angle + userNum; // For testing, add something to use now instead of the 4 motor dials
-                console.log("Success! Parsed userNum value: " + userNum);
+                //console.log("Success! Parsed userNum value: " + userNum);
             }
 
         } // end update
@@ -1870,7 +1870,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else { // if it is a number
                 needleA.angle = needleA.angle + print;
-                console.log("Success! Parsed printNum value: " + print);
+                //console.log("Success! Parsed printNum value: " + print);
             }
 
     

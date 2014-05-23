@@ -1653,8 +1653,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
              //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
             userDialType = document.getElementById("textSpinA"); // get text in textEditor
-            userDialNum = parseFloat(userDialType.innerHTML, 10); // translate text into numeric format if possible
+            
+            try {
+                userDialNum = parseFloat(userDialType.innerHTML, 10); // translate text into numeric format if possible
+            }
+            catch(err) {
+                document.getElementById("errorMsg").innerHTML = err.message;
+            }
+
             if (isNaN(userDialNum)) { // if it's NotaNumber
+                document.getElementById("errorMsg").innerHTML = "That's not a number!"
             }
             else { // if it is a number
                 needleA.angle = needleA.angle + userDialNum;
@@ -1679,10 +1687,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
     } // end beginGame
 
 }); // end require
-
-function removeKeys() {
-                console.log("You clicked the textEditor");
-}
 
          // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS

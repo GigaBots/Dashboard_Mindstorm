@@ -1847,6 +1847,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if (isNaN(parseFloat(userDialA, 10))) {
                     document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
                 }
+                // remove error message if previously had an error but then fixed it
+                else {
+                    document.getElementById("errorMsg").innerHTML = "";
+                }
+
                 // try to evalate user's input code in text editor area
                 try {
                     eval(theirCode);
@@ -1855,6 +1860,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
                 }
+
                 // evaluate their input code
                 eval(theirCode);
                 // evaluate their DialA number

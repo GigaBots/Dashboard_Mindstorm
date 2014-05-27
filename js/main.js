@@ -1845,7 +1845,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             document.getElementById("subButton").onclick = function() {
                 // if DialA text is not a number, output error in error message area
                 if (isNaN(parseFloat(userDialA, 10))) {
-                    document.getElementById("errorMsg").innerHTML = "Not a number!";
+                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
                 }
                 // try to evalate user's input code in text editor area
                 try {

@@ -23,7 +23,7 @@ body {
 #errorMsg {
 	position: absolute;
 	bottom: 25px;
-	left: 0;
+	left: 5px;
 	color: red;
 }
 

@@ -1778,7 +1778,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function update() {
-<<<<<<< HEAD
             /* DASHBOARD STUFF */
             // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
             // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
@@ -1816,19 +1815,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof(dashGang2) !== "undefined") {
                 getDashboardValues('g2', dashGang2);
             } */
-=======
-
-            // For linear interpolation of motor angles
-
-/*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
-            if (dMotor) {
-                //console.log(dMotor.position);
-                needleD.angle = dMotor.position;
-                //console.log(needleD.angle);
-             }*/
-            // Add something to show the current Speed of the robot, on the slider (so all viewers see the current speed)
-            //sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (dMotor.speed - 700);
->>>>>>> Cole
 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined") {
@@ -1848,35 +1834,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dashMotorD);
             }
 
+             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
 
-<<<<<<< HEAD
-            /* TEXT EDITOR STUFF */
-            userType = document.getElementById("textSpinA"); // get text in textEditor
-            userNum = parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(userNum)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + userNum);
-            }
-            else { // if it is a number
-                //needleA.angle = needleA.angle + userNum; // For testing, add something to use now instead of the 4 motor dials
-                console.log("Success! Parsed userNum value: " + userNum);
-=======
-             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?            
+
+             // get text from DialA text area      
             userDialA = document.getElementById("textSpinA").innerHTML;
+            // get text from text editor text area
             theirCode = document.getElementById("theirCode").innerHTML;
+            //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
-                try {
-                    needleA.angle = parseFloat(userDialA, 10); // translate text into numeric format if possible
-                    eval(theirCode);
-                    console.log("here");
+                // if DialA text is not a number, output error in error message area
+                if (isNaN(parseFloat(userDialA, 10))) {
+                    document.getElementById("errorMsg").innerHTML = "Not a number!";
                 }
+                // try to evalate user's input code in text editor area
+                try {
+                    eval(theirCode);
+                }
+                // if input code is not able to be run, display console's error message to user in text editor area
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-                    console.log(true);
                 }
+                // evaluate their input code
                 eval(theirCode);
+                // evaluate their DialA number
                 needleA.angle = parseFloat(userDialA, 10);
->>>>>>> Cole
-            }
+            } // end .onclick
 
         } // end update
 
@@ -1884,11 +1867,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 }); // end require
 
-<<<<<<< HEAD
-=======
          // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
->>>>>>> Cole
+
 
             // game.camera.y = game.input.y;
             // game.camera.x = game.input.x;
@@ -1905,22 +1886,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
-<<<<<<< HEAD
-            
-            // Create text editor for needleA above program
-            print = document.getElementById("textSpinA");// get text in textEditor
-            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(print)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + print);
-            }
-            else { // if it is a number
-                needleA.angle = needleA.angle + print;
-                console.log("Success! Parsed printNum value: " + print);
-            }
-
-    
-=======
-
             // 
 
             /* test out dials and values */
@@ -1929,7 +1894,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     needleB.angle = needleB.angle + 4;
             //     needleC.angle = needleC.angle + 10;
             //     needleD.angle = needleD.angle + 10;
->>>>>>> Cole
 
             //     game.world.remove(color.colorValueDisplay);
             //     colorValue += 1;

@@ -12,27 +12,16 @@
 	<div id="gameWorld">
 		<script src="js/phaser.min.js"></script>
 		<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+		<script src="js/jquery.min.js"></script>
 	</div>
 	<div id="textEditor">
-		<span>Text Editor:<br>var DialA;<br>DialA = </span>
-		<span class="Editable" id="textSpinA" contentEditable="true">4</span>;<br><br>
+		<span>Text Editor:<br>var DialAPosition;<br>DialAPosition = </span>
+		<span class="Editable" id="textSpinA" contentEditable="true">248</span>;<br><br>
 		<span>var resumeButton;<br>resumeButton = </span>
 		<span class="Editable" id="textResume" contentEditable="true">0</span>;<br><br>
 		<span class="Editable" id="theirCode" contentEditable="true" placeholder="Type your code here! For example: needleB.angle = needleB.angle + 4;"></span>
 		<button id="subButton">Submit</button>
 		<div id="errorMsg"></div>
 	</div>
-	<!--<script>
-		var pasteTarget = document.getElementById("theirCode");
-		document addEventListener("paste", function(e)
-		{
-			pasteHandler(e);
-		}, false);
-		function pasteHandler(e)
-		{
-			e.preventDefault();
-			pasteTarget.innerHTML = e.clipboardData.getData("text/plain");
-		}; -->
-	</script>
 </body>
 </html>

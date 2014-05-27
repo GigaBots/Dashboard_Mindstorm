@@ -40,6 +40,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
+        var overEditor;
+        // $(selector).hover(mouseEnter,mouseLeave);
+        $("#textEditor").hover( function () {
+            // code for while hovering over textEditor
+            overEditor = true;
+            console.log(overEditor);
+        },
+            // code for while not hovering over textEditor
+        function() {
+            var overEditor = false;
+            console.log(overEditor);
+        });
         
         var theirCode;
         var codeError;
@@ -1845,8 +1857,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             document.getElementById("subButton").onclick = function() {
                 // if DialA text is not a number, output error in error message area
                 if (isNaN(parseFloat(userDialA, 10))) {
-                    document.getElementById("errorMsg").innerHTML = "Not a number!";
+                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
                 }
+                // remove error message if previously had an error but then fixed it
+                else {
+                    document.getElementById("errorMsg").innerHTML = "";
+                }
+
                 // try to evalate user's input code in text editor area
                 try {
                     eval(theirCode);
@@ -1855,17 +1872,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
                 }
+
                 // evaluate their input code
                 eval(theirCode);
                 // evaluate their DialA number
                 needleA.angle = parseFloat(userDialA, 10);
+                
             } // end .onclick
 
         } // end update
 
     } // end beginGame
 
-}); // end require
+});
+
+
+ // end require
 
          // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS

@@ -7,6 +7,7 @@ require.config({
     }
 });
 
+
 require(['BrowserBigBangClient'], function (bigbang) {
 
     var client = new bigbang.client.BrowserBigBangClient();
@@ -27,6 +28,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
     });
 
+
     function beginGame(client, channel) {
 
         var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 1068 fits nicely on an iPhone 4. 
@@ -39,7 +41,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         });
 
-        var gameBoundX = 960, gameBoundY = 710;
+        var overEditor;
+        // $(selector).hover(mouseEnter,mouseLeave);
+        $("#textEditor").hover( function () {
+            // code for while hovering over textEditor
+            overEditor = true;
+            console.log(overEditor);
+        },
+            // code for while not hovering over textEditor
+        function() {
+            var overEditor = false;
+            console.log(overEditor);
+        });
+        var theirCode;
+        var codeError;
+        var clicked = false;
+
+
         var bbLogo, botLogo;
         var dashboardName = "GigaBots Dashboard";
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -50,8 +68,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#222222"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox, backgroundBottom;
-
         var dragButton;
+        var gameBoundX = 960, gameBoundY = 710;
 
         // positions of different units are the upper left x & y coordinates of their frames
 
@@ -742,6 +760,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( this.d === true) {
                     moveMotor( "d", "f", this.speed );
                 }
+
+                game.input.keyboard.removeKey(Phaser.Keyboard.Q);
             }
             function fGangButtonUpAction() {
                 console.log("onActionUpForwardGang");
@@ -804,7 +824,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rG2Key.onDown.add(rGangButtonDownAction, gang2);
 
             // stop motor on key up:
-            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
+            //fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
             fG2Key.onUp.add(fGangButtonUpAction, gang2);
 
             rG1Key.onUp.add(rGangButtonUpAction, gang1); // this will stop gang 1
@@ -1825,24 +1845,49 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dashMotorD);
             }
 
+             // get text from DialA text area      
+            userDialA = document.getElementById("textSpinA").innerHTML;
+            // get text from text editor text area
+            theirCode = document.getElementById("theirCode").innerHTML;
+            //  on click of submit button ...
+            document.getElementById("subButton").onclick = function() {
+                // if DialA text is not a number, output error in error message area
+                if (isNaN(parseFloat(userDialA, 10))) {
+                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
+                }
+                // remove error message if previously had an error but then fixed it
+                else {
+                    document.getElementById("errorMsg").innerHTML = "";
+                }
 
-            /* TEXT EDITOR STUFF */
-            userType = document.getElementById("textSpinA"); // get text in textEditor
-            userNum = parseFloat(userType.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(userNum)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + userNum);
-            }
-            else { // if it is a number
-                //needleA.angle = needleA.angle + userNum; // For testing, add something to use now instead of the 4 motor dials
-                //console.log("Success! Parsed userNum value: " + userNum);
-            }
+                // try to evalate user's input code in text editor area
+                try {
+                    eval(theirCode);
+                }
+                // if input code is not able to be run, display console's error message to user in text editor area
+                catch(err) {
+                    document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+                }
+
+                // evaluate their input code
+                eval(theirCode);
+                // evaluate their DialA number
+                needleA.angle = parseFloat(userDialA, 10);
+                
+            } // end .onclick
 
 
         } // end update
 
     } // end beginGame
 
-}); // end require
+});
+
+
+ // end require
+
+         // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
+            // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
 
 
             // game.camera.y = game.input.y;
@@ -1860,6 +1905,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if (game.input.mousePointer.x < 900) {
                 game.camera.x -= 15;
             }*/
+
             
             // Create text editor for needleA above program
             print = document.getElementById("textSpinA");// get text in textEditor
@@ -1871,8 +1917,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 needleA.angle = needleA.angle + print;
                 //console.log("Success! Parsed printNum value: " + print);
             }
-
-    
 
             //     game.world.remove(color.colorValueDisplay);
             //     colorValue += 1;

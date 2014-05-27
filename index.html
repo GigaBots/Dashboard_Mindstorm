@@ -12,13 +12,16 @@
 	<div id="gameWorld">
 		<script src="js/phaser.min.js"></script>
 		<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+		<script src="js/jquery.min.js"></script>
 	</div>
-	<!-- <div id="textEdit" contentEditable="true" placeholder="Enter speed at which you'd like dialA to spin"></div> -->
-	<div id="editArea">
-		<span>Text Editor:<br>var DialA;<br>DialA = </span>
-		<span class="Editable" id="textSpinA" contentEditable="true">4</span>;<br></br>
+	<div id="textEditor">
+		<span>Text Editor:<br>var DialAPosition;<br>DialAPosition = </span>
+		<span class="Editable" id="textSpinA" contentEditable="true">248</span>;<br><br>
 		<span>var resumeButton;<br>resumeButton = </span>
-		<span class="Editable" id="textResume" contentEditable="true">0</span>;<br>
+		<span class="Editable" id="textResume" contentEditable="true">0</span>;<br><br>
+		<span class="Editable" id="theirCode" contentEditable="true" placeholder="Type your code here! For example: needleB.angle = needleB.angle + 4;"></span>
+		<button id="subButton">Submit</button>
+		<div id="errorMsg"></div>
 	</div>
 </body>
 </html>

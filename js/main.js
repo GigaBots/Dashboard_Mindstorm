@@ -40,6 +40,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
+        var overEditor;
+        // $(selector).hover(mouseEnter,mouseLeave);
+        $("#textEditor").hover( function () {
+            // code for while hovering over textEditor
+            overEditor = true;
+            console.log(overEditor);
+        },
+            // code for while not hovering over textEditor
+        function() {
+            var overEditor = false;
+            console.log(overEditor);
+        });
         
         var theirCode;
         var codeError;
@@ -1865,13 +1877,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 eval(theirCode);
                 // evaluate their DialA number
                 needleA.angle = parseFloat(userDialA, 10);
+                
             } // end .onclick
 
         } // end update
 
     } // end beginGame
 
-}); // end require
+});
+
+
+ // end require
 
          // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
             // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS

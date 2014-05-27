@@ -5,14 +5,27 @@ body {
 	margin: 0px;
 }
 
+#gameWorld {	
+	display: block;
+	vertical-align: baseline;
+	margin: 0 auto 0 auto;
+	padding: 0;
+	border: 0;
+	width: 960px;
+	height: 710px;
+	overflow: hidden;
+	clear: both;
+	z-index: 10;
+}
+
 #textEditor {
 	background-color: #313233;
 	color: #C8C8C8;
-	width: 500px;
+	width: 960px;
 	height: 150px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 10px;
-	position: relative;
+	margin: 3px auto 0 auto;
 	font-size: 12px
 }
 #subButton {
@@ -27,25 +40,13 @@ body {
 	color: red;
 }
 
+span#editorLabel {
+	width: inherit;
+	text-align: center;
+}
+
 /* Create placeholder text for textEditor*/
 [contentEditable="true"]:empty:not(:focus):before {
         content:attr(placeholder);
         font-style: italic;
-}
-
-@media screen and (min-width: 1300px) {
-	#gameWorld {
-		float: left;
-		display: inline;
-	}
-	#textEditor {
-		/* push beside game */
-		display: inline;
-		width: 20%;
-		height: 300px;
-		float: left;
-		margin-top: 137px;
-		padding: 5px;
-		border-style: solid;
-	}
 }

@@ -43,6 +43,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         
         var theirCode;
         var codeError;
+        var clicked = false;
         var bbLogo, botLogo;
         //var poweredBy = "Powered by ";
         var dashboardName = "GigaBots Dashboard";
@@ -1624,27 +1625,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
              //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?            
             userDialA = document.getElementById("textSpinA").innerHTML;
             theirCode = document.getElementById("theirCode").innerHTML;
-            clicked = false;
             document.getElementById("subButton").onclick = function() {
                 try {
-                    needleA.angle = needleA.angle + parseFloat(userDialA, 10); // translate text into numeric format if possible
+                    needleA.angle = parseFloat(userDialA, 10); // translate text into numeric format if possible
                     eval(theirCode);
+                    console.log("here");
                 }
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+                    console.log(true);
                 }
-                clicked = true;
-                console.log(clicked);
+                eval(theirCode);
+                needleA.angle = parseFloat(userDialA, 10);
             }
-            console.log(clicked);
-            if (clicked=true) {
-                    eval(theirCode);
-                    needleA.angle = needleA.angle + parseFloat(userDialA, 10);
-            }
-
-            //eval(theirCode);
-
-            
         } // end update
 
     } // end beginGame

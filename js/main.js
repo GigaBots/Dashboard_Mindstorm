@@ -1599,36 +1599,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function update() {
 
-            
-            function oneFunction() {
-                console.log("You hit 1 from inside the game!");
-            }
-                
-            if (document.activeElement.id="theirCode") {
-                console.log("Now you're in the textEditor!");
-                game.input.keyboard.removeKey(Phaser.Keyboard.ONE);
-            }
-            else {
-                console.log("You clicked inside the game!");
-                var oneKey = this.input.keyboard.addKey(Phaser.Keyboard.ONE);
-                game.input.keyboard.add(oneFunction, this);
-            }
-
-
-/*
-            function oneDown() {
-                // if text editor is not selected, use hotkey
-                if (document.activeElement.id != "theirCode") {
-                    console.log("You're not in the textEditor");
-                }
-                // if the text editor is selected
-                else {
-                    console.log("You're in the textEditor");
-                    game.input.keyboard.removeKey(Phaser.Keyboard.ONE);
-                }
-            }
-*/
-
             // For linear interpolation of motor angles
 
 /*            var dMotor = channel.channelData.get('d'); //this seems to just be getting data that only updates 1 time per second (i.e., it'll get the same value about 20 times before getting an updated one)
@@ -1651,35 +1621,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
             */
 
 
-             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?
-            userDialType = document.getElementById("textSpinA"); // get text in textEditor
-            
-            try {
-                userDialNum = parseFloat(userDialType.innerHTML, 10); // translate text into numeric format if possible
-            }
-            catch(err) {
-                document.getElementById("errorMsg").innerHTML = err.message;
-            }
-            console.log(userDialNum);
-            if (isNaN(userDialNum)) { // if it's NotaNumber
-                document.getElementById("errorMsg").innerHTML = "That's not a number!"
-            }
-            else { // if it is a number
-                needleA.angle = needleA.angle + userDialNum;
-            }
-
-            //needleB.angle = needleB.angle + 4;
+             //needleD.angle = needleD.angle + (needleD.angle - dMotor.position) / 2; // will this make the movements less jerky (sort of an interpolation)?            
+            userDialA = document.getElementById("textSpinA").innerHTML;
+            theirCode = document.getElementById("theirCode").innerHTML;
+            clicked = false;
             document.getElementById("subButton").onclick = function() {
-                theirCode = document.getElementById("theirCode").innerHTML;
                 try {
+                    needleA.angle = needleA.angle + parseFloat(userDialA, 10); // translate text into numeric format if possible
                     eval(theirCode);
                 }
                 catch(err) {
-                    codeError="Error: " + err.message
-                    document.getElementById("errorMsg").innerHTML = codeError
-                };
+                    document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+                }
+                clicked = true;
+                console.log(clicked);
             }
-            eval(theirCode);
+            console.log(clicked);
+            if (clicked=true) {
+                    eval(theirCode);
+                    needleA.angle = needleA.angle + parseFloat(userDialA, 10);
+            }
+
+            //eval(theirCode);
 
             
         } // end update
@@ -1712,7 +1675,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* test out dials and values */
             // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
             //     needleA.angle = needleA.angle + 10;
-            //     needleB.angle = needleB.angle + 10;
+            //     needleB.angle = needleB.angle + 4;
             //     needleC.angle = needleC.angle + 10;
             //     needleD.angle = needleD.angle + 10;
 

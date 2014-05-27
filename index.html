@@ -22,6 +22,17 @@
 		<button id="subButton">Submit</button>
 		<div id="errorMsg"></div>
 	</div>
-	
+	<!--<script>
+		var pasteTarget = document.getElementById("theirCode");
+		document addEventListener("paste", function(e)
+		{
+			pasteHandler(e);
+		}, false);
+		function pasteHandler(e)
+		{
+			e.preventDefault();
+			pasteTarget.innerHTML = e.clipboardData.getData("text/plain");
+		}; -->
+	</script>
 </body>
 </html>

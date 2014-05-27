@@ -5,16 +5,29 @@ body {
 	margin: 0px;
 }
 
-#editArea {
+#textEditor {
 	background-color: #313233;
 	color: #C8C8C8;
 	width: 500px;
 	height: 150px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 10px;
+	position: relative;
+	font-size: 12px
+}
+#subButton {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+#errorMsg {
+	position: absolute;
+	bottom: 25px;
+	left: 0;
+	color: red;
 }
 
-/* Create placeholder text for editArea */
+/* Create placeholder text for textEditor*/
 [contentEditable="true"]:empty:not(:focus):before {
         content:attr(placeholder);
         font-style: italic;
@@ -25,11 +38,11 @@ body {
 		float: left;
 		display: inline;
 	}
-	#editArea {
-		/* push right */
+	#textEditor {
+		/* push beside game */
 		display: inline;
 		width: 20%;
-		height: 150px;
+		height: 300px;
 		float: left;
 		margin-top: 137px;
 		padding: 5px;

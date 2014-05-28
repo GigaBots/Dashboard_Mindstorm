@@ -842,7 +842,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a1 = 1; // so check it now
                     checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    //motorA.gang = 1; // join motor a with gang 1
                     gang1.a = true; // motor A is in gang 1
                     if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
                         gang2.a = false; // motor A is no longer in gang 2
@@ -853,7 +852,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a1 = 0; // so uncheck it now
                     checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    //motorA.gang = 0; // ungang motor a
                     gang1.a = false; // motor A is not in gang 1
                 }
             }
@@ -861,7 +859,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
                     checkboxStatus.a2 = 1; // so check it now
                     checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    //motorA.gang = 2; // join motor a with gang 2
                     gang2.a = true; // motor A is in gang 2
                     if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
                         gang1.a = false; // motor A is no longer in gang 1
@@ -872,7 +869,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else { // the checkbox is CHECKED
                     checkboxStatus.a2 = 0; // so uncheck it now
                     checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    //motorA.gang = 0; // ungang motor a
                     gang2.a = false; // motor A is not in gang 2
                 }
             } 
@@ -880,7 +876,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.b1 === 0 ) {
                     checkboxStatus.b1 = 1; 
                     checkbox.b1.setFrames(1,1,1,0);
-                    //motorB.gang = 1;
                     gang1.b = true;
                     if ( checkboxStatus.b2 === 1 ) { 
                         gang2.b = false;
@@ -890,7 +885,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.b1 = 0; 
                     checkbox.b1.setFrames(2,0,1,0);
-                   // motorB.gang = 0;
                    gang1.b = false;
                 }
             }
@@ -898,7 +892,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.b2 === 0 ) { 
                     checkboxStatus.b2 = 1; 
                     checkbox.b2.setFrames(1,1,1,0);
-                    //motorB.gang = 2;
                     gang2.b = true;
                     if ( checkboxStatus.b1 === 1 ) {
                         gang1.b = false;
@@ -908,7 +901,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.b2 = 0;
                     checkbox.b2.setFrames(2,0,1,0); 
-                    //motorB.gang = 0;
                     gang2.b = false;
                 }
             }
@@ -916,7 +908,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.c1 === 0 ) {
                     checkboxStatus.c1 = 1; 
                     checkbox.c1.setFrames(1,1,1,0);
-                    //motorC.gang = 1;
                     gang1.c = true;
                     if ( checkboxStatus.c2 === 1 ) { 
                         gang2.c = false;
@@ -926,7 +917,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.c1 = 0; 
                     checkbox.c1.setFrames(2,0,1,0);
-                    //motorC.gang = 0;
                     gang1.c = false;
                 }
             }
@@ -934,7 +924,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.c2 === 0 ) { 
                     checkboxStatus.c2 = 1; 
                     checkbox.c2.setFrames(1,1,1,0);
-                    //motorC.gang = 2;
                     gang2.c = true;
                     if ( checkboxStatus.c1 === 1 ) { 
                         gang1.c = false;
@@ -944,7 +933,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else {
                     checkboxStatus.c2 = 0;
                     checkbox.c2.setFrames(2,0,1,0); 
-                    //motorC.gang = 0;
                     gang2.c = false;
                 }
             }
@@ -952,7 +940,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.d1 === 0 ) {
                     checkboxStatus.d1 = 1; 
                     checkbox.d1.setFrames(1,1,1,0);
-                    //motorD.gang = 1;
                     gang1.d = true;
                     if ( checkboxStatus.d2 === 1 ) { 
                         gang2.d = false;
@@ -962,7 +949,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else { 
                     checkboxStatus.d1 = 0; 
                     checkbox.d1.setFrames(2,0,1,0); 
-                    //motorD.gang = 0;
                     gang1.d = false;
                 }
             }
@@ -970,7 +956,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( checkboxStatus.d2 === 0 ) { 
                     checkboxStatus.d2 = 1; 
                     checkbox.d2.setFrames(1,1,1,0);
-                    //motorD.gang = 2;
                     gang2.d = true;
                     if ( checkboxStatus.d1 === 1 ) {
                         gang1.d = false; 
@@ -980,7 +965,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 } else { 
                     checkboxStatus.d2 = 0; 
                     checkbox.d2.setFrames(2,0,1,0); 
-                    //motorD.gang = 0;
                     gang2.d = false;
                 }
             }
@@ -1263,7 +1247,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var messageDisplay3 = messageDisplay.substring(40,60);
 
             if ( messageDisplay.length > 60 ) {
-                alert("Sorry, too many characters! The following will be displayed: \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3);
+                alert("Sorry, too many characters! The following will be displayed on the screen: \n \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3);
             }
             screenMessage.messageDisplay1 = game.add.text(positionScreen.x+13, positionScreen.y+37, messageDisplay1, messageStyle);
             screenMessage.messageDisplay2 = game.add.text(positionScreen.x+13, positionScreen.y+51, messageDisplay2, messageStyle);
@@ -1446,14 +1430,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarState.d = "down";
             motorD.previousSpeed = motorD.speed;        
         }
-        function actionDownOnSlideG1() {
-            sliderBarState.g1 = "down";
-            gang1.previousSpeed = gang1.speed;
-        }
-        function actionDownOnSlideG2() {
-            sliderBarState.g2 = "down";
-            gang2.previousSpeed = gang2.speed;        
-        }
 
         //=============================================================================
     /* Gang speed controls */
@@ -1523,6 +1499,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(gang2.speed.toFixed(2));
             //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
             //sliderBarState.g2 = "up";
+        }
+
+        function actionDownOnSlideG1() {
+            sliderBarState.g1 = "down";
+            gang1.previousSpeed = gang1.speed;
+        }
+        function actionDownOnSlideG2() {
+            sliderBarState.g2 = "down";
+            gang2.previousSpeed = gang2.speed;        
         }
 
 
@@ -1663,10 +1648,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* if ( key === 'g1') {
                 gang1.speed = speed;
                 sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700);
+                gang1.previousSpeed = speed;
             }
             if ( key === 'g2') {
                 gang2.speed = speed;
                 sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700);
+                gang2.previousSpeed = speed;
             }*/
         }
 
@@ -1822,11 +1809,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     updateDial ('d', motorDataD);
                 }
             }
-/*            if ( key === 'g1' ) {
-                if ( gang1.speed !== val.speed || gang1.a != val.a || gang1.b != val.b || gang1.c != val.c || gang1.d != val.d ) {
-                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                }
-            }*/
         }
 
         function update() {
@@ -1859,14 +1841,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
-            /* var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
-            if ( typeof(dashGang1) !== "undefined") {
-                getDashboardValues('g1', dashGang1);
+            if (sliderBarState.G1 === "up") {
+                var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
+                if ( typeof(dashGang1) !== "undefined") {
+                    getDashboardValues('g1', dashGang1);
+                }
             }
-            var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
-            if ( typeof(dashGang2) !== "undefined") {
-                getDashboardValues('g2', dashGang2);
-            } */
+            if (sliderBarState.G2 === "up") {
+                var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
+                if ( typeof(dashGang2) !== "undefined") {
+                    getDashboardValues('g2', dashGang2);
+                }
+            }
 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined") {

@@ -28,11 +28,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
     });
 
+    
 
     function beginGame(client, channel) {
-
-        var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 1068 fits nicely on an iPhone 4. 
-
+        /* === Dashboard control panel stuff === */
+        var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -40,22 +40,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         });
-
-        var overEditor;
-        // $(selector).hover(mouseEnter,mouseLeave);
-        $("#textEditor").hover( function () {
-            // code for while hovering over textEditor
-            overEditor = true;
-            console.log(overEditor);
-        },
-            // code for while not hovering over textEditor
-        function() {
-            var overEditor = false;
-            console.log(overEditor);
-        });
-        var theirCode;
-        var codeError;
-        var clicked = false;
 
         var gameBoundX = 960, gameBoundY = 710;
         var bbLogo, botLogo, dashboardTitle;
@@ -260,11 +244,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay3 : ""
         }
 
-
-        /* Text editor stuff */
-
+        /* === Text editor stuff === */
         var userType;
         var userNum;
+        var theirCode;
+        var codeError;
+        var clicked = false;
+        var cursorOverEditor;
 
         //===================================================
 
@@ -1677,23 +1663,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
-// Comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
-            if ( key === 'a') {
-                if ( motorData.moving === false) {
+        // Comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
+            if ( key === 'a' && typeof(motorData) !== "undefined" ) {
+                if ( motorData.moving === false ) {
                     needleA.angle = motorData.position; //value published to channel by bot
                 }
             }
-            if ( key === 'b') {
+            if ( key === 'b' && typeof(motorData) !== "undefined") {
                 if ( motorData.moving === false) {
                     needleB.angle = motorData.position;
                 }
             }
-            if ( key === 'c') {
+            if ( key === 'c' && typeof(motorData) !== "undefined") {
                 if ( motorData.moving === false) {
                     needleC.angle = motorData.position;
                 }
             }
-            if ( key === 'd') {
+            if ( key === 'd' && typeof(motorData) !== "undefined") {
                 if ( motorData.moving === false) {
                     needleD.angle = motorData.position;
                 }
@@ -1857,12 +1843,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // evaluate their input code
                 eval(theirCode);
                 // evaluate their DialA number
-                needleA.angle = parseFloat(userDialA, 10);
+                //needleA.angle = parseFloat(userDialA, 10);
                 
             } // end .onclick
 
+            if ( cursorOverEditor ) {
+                this.game.input.keyboard.disabled = true;
+            }
+            else {
+                 this.game.input.keyboard.disabled = false;
+            }
 
         } // end update
+
+        $("#textEditor").hover( function () { // code for while hovering over textEditor
+            cursorOverEditor = true;
+            console.log(cursorOverEditor);
+        }, function() { // code for while not hovering over textEditor
+            cursorOverEditor = false;
+            console.log(cursorOverEditor);
+        });
 
     } // end beginGame
 
@@ -1877,7 +1877,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log("Not a number. Attempted parsed value: " + print);
             }
             else { // if it is a number
-                needleA.angle = needleA.angle + print;
+                //needleA.angle = needleA.angle + print;
                 //console.log("Success! Parsed printNum value: " + print);
             }
 

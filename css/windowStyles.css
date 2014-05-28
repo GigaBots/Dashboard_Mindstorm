@@ -5,34 +5,51 @@ body {
 	margin: 0px;
 }
 
-#editArea {
+#gameWorld {	
+	display: block;
+	vertical-align: baseline;
+	margin: 0 auto 0 auto;
+	padding: 0;
+	border: 0;
+	width: 960px;
+	height: 710px;
+	overflow: hidden;
+	clear: both;
+}
+
+#textEditor {
 	background-color: #313233;
 	color: #C8C8C8;
-	width: 500px;
+	width: 950px;
 	height: 150px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 10px;
+	margin: 3px auto 0 auto;
+	font-size: 12px;
+	position: relative;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
-/* Create placeholder text for editArea */
+#label {
+	text-align: center;
+	margin: 0;
+
+}
+#subButton {
+	position: absolute;
+	bottom: 2px;
+	left: 2px;
+}
+#errorMsg {
+	position: absolute;
+	bottom: 25px;
+	left: 5px;
+	color: red;
+}
+
+/* Create placeholder text for textEditor*/
 [contentEditable="true"]:empty:not(:focus):before {
         content:attr(placeholder);
         font-style: italic;
-}
-
-@media screen and (min-width: 1300px) {
-	#gameWorld {
-		float: left;
-		display: inline;
-	}
-	#editArea {
-		/* push right */
-		display: inline;
-		width: 20%;
-		height: 150px;
-		float: left;
-		margin-top: 137px;
-		padding: 5px;
-		border-style: solid;
-	}
 }

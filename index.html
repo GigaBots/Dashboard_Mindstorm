@@ -2,14 +2,24 @@
 <html class="no-js" lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>Gigabot Dashboard</title>
+    <title>Gigabots Dashboard</title>
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-	<link rel="shortcut icon" type="image/x-icon" href="assets/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
+	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
 </head>
 <body>
-<script src="js/phaser.min.js"></script>
-<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+	<div id="gameWorld">
+		<script src="js/phaser.min.js"></script>
+		<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+		<script src="js/jquery.min.js"></script>
+	</div>
+	<div id="textEditor">
+		<p id="label">Text Editor:</p>var DialAPosition;<br>DialAPosition =
+		<span class="Editable" id="textSpinA" contentEditable="true">248</span>;<br><br>
+		<span class="Editable" id="theirCode" contentEditable="true" placeholder="Type your code here! For example: needleB.angle = needleB.angle + 4;"></span>
+		<button id="subButton">Submit</button>
+		<div id="errorMsg"></div>
+	</div>
 </body>
 </html>
-

@@ -1066,6 +1066,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarG1.input.enableDrag();
             sliderBarG1.input.allowHorizontalDrag=false;
             sliderBarG1.events.onInputUp.add(actionDragOnClickG1);
+            //sliderBarG1.events.onInputDown.add(actionDownOnSlideG1);
 
             sliderTrackG2 = game.add.graphics(0,0);
             sliderTrackG2.beginFill(frameLineColor, 1);
@@ -1076,6 +1077,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarG2.input.enableDrag();
             sliderBarG2.input.allowHorizontalDrag=false;
             sliderBarG2.events.onInputUp.add(actionDragOnClickG2);
+            //sliderBarG2.events.onInputDown.add(actionDownOnSlideG2);
 
             // Add some labels to the sliders
             sliderLabel = {
@@ -1444,9 +1446,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBarState.d = "down";
             motorD.previousSpeed = motorD.speed;        
         }
+        function actionDownOnSlideG1() {
+            sliderBarState.g1 = "down";
+            gang1.previousSpeed = gang1.speed;
+        }
+        function actionDownOnSlideG2() {
+            sliderBarState.g2 = "down";
+            gang2.previousSpeed = gang2.speed;        
+        }
 
         //=============================================================================
     /* Gang speed controls */
+        //uncomment the comments when we're ready for the gang dashboard sync feature
         function actionDecreaseOnClickG1() {
             if (gang1.speed >= 50) {
                 gang1.speed = gang1.speed - 50;
@@ -1456,6 +1467,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG1.y = positionMotorGang1.y + 165; //and move sliderbar to that position
             }
             console.log(gang1.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
         }
         function actionIncreaseOnClickG1() {
             if (gang1.speed <= 650) {
@@ -1466,6 +1478,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG1.y = positionMotorGang1.y + 11; //and move sliderbar to that position
             }
             console.log(gang1.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
         }
         function actionDecreaseOnClickG2() {
             if (gang2.speed >= 50) {
@@ -1476,6 +1489,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG2.y = positionMotorGang2.y + 165;
             }
             console.log(gang2.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
         }
         function actionIncreaseOnClickG2() {
             if (gang2.speed <= 650) {
@@ -1486,6 +1500,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG2.y = positionMotorGang2.y + 11;
             }
             console.log(gang2.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
         }
         function actionDragOnClickG1() {
             if (sliderBarG1.y < positionMotorGang1.y+11) {
@@ -1495,6 +1510,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             gang1.speed = 700 + (700/154) * (positionMotorGang1.y + 11 - sliderBarG1.y);
             console.log(gang1.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
+            //sliderBarState.g1 = "up";
         }
         function actionDragOnClickG2() {
             if (sliderBarG2.y < positionMotorGang2.y+11) {
@@ -1504,6 +1521,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             gang2.speed = 700 + (700/154) * (positionMotorGang2.y + 11 - sliderBarG2.y);
             console.log(gang2.speed.toFixed(2));
+            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
+            //sliderBarState.g2 = "up";
         }
 
 
@@ -1578,10 +1597,48 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.d1.setFrames(2,0,1,0);
                 }
             }
+            if ( key === 'g2' ) {
+                gang2.speed = speed;
+                gang2.a = a;
+                gang2.b = b;
+                gang2.c = c;
+                gang2.d = d;
+                sliderBarG2.y = positiongang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                // need to also update checkboxes based on the new values:
+                if (gang2.a = true) {
+                    checkboxStatus.a2 = 1; // check it now
+                    checkbox.a2.setFrames(1,1,1,0);
+                } else if (gang2.a = false) {
+                    checkboxStatus.a2 = 0; // uncheck it now
+                    checkbox.a2.setFrames(2,0,1,0);
+                }
+                if (gang2.b = true) {
+                    checkboxStatus.b2 = 1; // check it now
+                    checkbox.b2.setFrames(1,1,1,0);
+                } else if (gang2.b = false) {
+                    checkboxStatus.b2 = 0; // uncheck it now
+                    checkbox.b2.setFrames(2,0,1,0);
+                }
+                if (gang2.c = true) {
+                    checkboxStatus.c2 = 1; // check it now
+                    checkbox.c2.setFrames(1,1,1,0);
+                } else if (gang2.c = false) {
+                    checkboxStatus.c2 = 0; // uncheck it now
+                    checkbox.c2.setFrames(2,0,1,0);
+                }
+                if (gang2.d = true) {
+                    checkboxStatus.d2 = 1; // check it now
+                    checkbox.d2.setFrames(1,1,1,0);
+                } else if (gang2.d = false) {
+                    checkboxStatus.d2 = 0; // uncheck it now
+                    checkbox.d2.setFrames(2,0,1,0);
+                }
+            }
         }*/
 
         /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
+        //uncomment the comments when we're ready for the gang dashboard sync feature
             console.log ("updating speed of motor " + key + " to " + speed);
             if ( key === 'a' ) { 
                 motorA.speed = speed;
@@ -1590,19 +1647,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             if ( key === 'b') { 
                 motorB.speed = speed;
-                sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                sliderBarB.y = positionMotorB.y + 11 - (154 / 700) * (speed - 700); 
                 motorB.previousSpeed = speed;
             }
             if ( key === 'c') { 
                 motorC.speed = speed;
-                sliderBarC.y = positionMotorC.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                sliderBarC.y = positionMotorC.y + 11 - (154 / 700) * (speed - 700); 
                 motorC.previousSpeed = speed;
             }
             if ( key === 'd') { 
                 motorD.speed = speed;
-                sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (speed - 700); 
                 motorD.previousSpeed = speed;
             }
+            /* if ( key === 'g1') {
+                gang1.speed = speed;
+                sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700);
+            }
+            if ( key === 'g2') {
+                gang2.speed = speed;
+                sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700);
+            }*/
         }
 
         /* Rotation of motor position dials */
@@ -1669,17 +1734,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     needleA.angle = motorData.position; //value published to channel by bot
                 }
             }
-            if ( key === 'b' && typeof(motorData) !== "undefined") {
+            if ( key === 'b' && typeof(motorData) !== "undefined" ) {
                 if ( motorData.moving === false) {
                     needleB.angle = motorData.position;
                 }
             }
-            if ( key === 'c' && typeof(motorData) !== "undefined") {
+            if ( key === 'c' && typeof(motorData) !== "undefined" ) {
                 if ( motorData.moving === false) {
                     needleC.angle = motorData.position;
                 }
             }
-            if ( key === 'd' && typeof(motorData) !== "undefined") {
+            if ( key === 'd' && typeof(motorData) !== "undefined" ) {
                 if ( motorData.moving === false) {
                     needleD.angle = motorData.position;
                 }
@@ -1708,11 +1773,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     updateSpeed(key, val.speed);
                 }
             }
-/*            if ( key === 'g1' ) {
+            /* if ( key === 'g1' ) {
                 if ( gang1.speed !== val.speed || gang1.a != val.a || gang1.b != val.b || gang1.c != val.c || gang1.d != val.d ) {
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
-            }*/
+            }
+            if ( key === 'g2' ) {
+                if ( gang2.speed !== val.speed || gang2.a != val.a || gang2.b != val.b || gang2.c != val.c || gang2.d != val.d ) {
+                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+                }
+            } */
         }
 
         function getDialValues (key, val) {
@@ -1848,13 +1918,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             } // end .onclick
 
             if ( cursorOverEditor ) {
-                this.game.input.keyboard.disabled = true;
+                this.game.input.keyboard.disabled = true; // allow users to type in the text editor, w/o affecting dashboard keyboard controls
             }
             else {
-                 this.game.input.keyboard.disabled = false;
+                this.game.input.keyboard.disabled = false; // allow users to again control the dashboard with the keyboard, w/o typing in the text editor
             }
 
         } // end update
+        /*
+        function pause() {
+        } // end pause
+        */
 
         $("#textEditor").hover( function () { // code for while hovering over textEditor
             cursorOverEditor = true;

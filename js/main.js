@@ -57,9 +57,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var codeError;
         var clicked = false;
 
+        var gameBoundX = 960, gameBoundY = 710;
+        var bbLogo, botLogo, dashboardTitle;
 
-        var bbLogo, botLogo;
-        var dashboardName = "GigaBots Dashboard";
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var labelStyle2 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
@@ -68,8 +68,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#222222"}   
         var frameLineColor = 0xa3a3a3;
         var backgound, backgroundBox, backgroundBottom;
-        var dragButton;
-        var gameBoundX = 960, gameBoundY = 710;
+
+        var dragBoxButton;
 
         // positions of different units are the upper left x & y coordinates of their frames
 
@@ -268,21 +268,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        // user subscribing to the channel
-        // channel.onSubscribers(function (joined) {
-        //     subscribeUser(joined);
-        //     //console.log("subscriber joined " + joined);
-        // }, function (left) {
-        //     //console.log("subscriber left");
-        // });
-
-        /* Try to send out all speeds, so they update in each window viewing the dashboard...unless we make a keyspace for speeds */
-        // channel.onMessage = function (message) {
-        //     console.log("update speed");
-        //     var m = message.payload.getBytesAsJSON();
-        //     updateSpeed(m);
-        // }
-
         channel.channelData.onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -462,7 +447,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Title */
-            dashboardName = game.add.sprite(72,0,'title');
+            dashboardTitle = game.add.sprite(72,0,'title');
             botLogo = game.add.sprite(0,0,'robotOrangeSm');
             poweredBy = game.add.sprite(740,0,'poweredBy');
             var allRightsReserved = game.add.text(15, 665, "All Rights Reserved, TheGigabots.com", labelStyle);
@@ -1197,7 +1182,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             needleD.anchor.setTo(0.495, 0.92);
         
         /* Buttons to drag entire boxes (for motors and motor gangs) */
-            dragButton = {
+            dragBoxButton = {
                 g1 : game.add.button(positionMotorGang1.x+339, positionMotorGang1.y+5, 'dragButton', actionDragG1, this),
                 g2 : game.add.button(positionMotorGang2.x+339, positionMotorGang2.y+5, 'dragButton', actionDragG2, this),
                 a : game.add.button(positionMotorA.x+239, positionMotorA.y+5, 'dragButton', actionDragA, this),
@@ -1881,30 +1866,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     } // end beginGame
 
-});
 
-
- // end require
-
-         // NOTE, IN THIS DEVELOPMENT STAGE, WE'RE USING 'msg' AND KEYBOARD INPUTS AS PLACEHOLDERS FOR THE MESSAGES ON THE CHANNEL. 
-            // THE IF BLOCK STRUCTURE MAY STAY BUT WITH DIFFERENT INPUTS
-
-
-            // game.camera.y = game.input.y;
-            // game.camera.x = game.input.x;
-/*            if (game.input.mousePointer.y >= 600) {
-                game.camera.y += 15;
-            }
-            if (game.input.mousePointer.y < 500) {
-                game.camera.y -= 15;
-            }
-            if (game.input.mousePointer.x >= 900) {
-                game.camera.x += 15;
-
-            }
-            if (game.input.mousePointer.x < 900) {
-                game.camera.x -= 15;
-            }*/
+}); // end require
 
             
             // Create text editor for needleA above program
@@ -1917,319 +1880,4 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 needleA.angle = needleA.angle + print;
                 //console.log("Success! Parsed printNum value: " + print);
             }
-
-            //     game.world.remove(color.colorValueDisplay);
-            //     colorValue += 1;
-            //     colorValueDisplay = colorValue;
-            //     color.colorValueDisplay = game.add.text(positionColor.x + 42, positionColor.y+22, colorValueDisplay, labelStyle3);
-
-            //     game.world.remove(color.lightIntensityDisplay);
-            //     lightIntensity += 1;
-            //     lightIntensityDisplay = lightIntensity;
-            //     color.lightIntensityDisplay = game.add.text(positionColor.x + 98, positionColor.y+47, lightIntensityDisplay, labelStyle3);
-
-            // }
-
-/*            if (game.input.keyboard.isDown(Phaser.Keyboard.Y)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Yellow"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3); //(colorR, colorG, colorB));
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "White"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.B)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Black"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.U)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Blue"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.P)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Red"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Green"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.O)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Brown"
-                color.colorNameDisplay = game.add.text(positionColor.x+145, positionColor.y+22, colorNameDisplay, labelStyle3);
-            } else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) {
-                game.world.remove(color.colorNameDisplay);
-                colorNameDisplay = colorName = "Colorless"
-                color.colorNameDisplay = game.add.text(positionColor.x+144, positionColor.y+22, colorNameDisplay, labelStyle3);
-            }*/
-
-            /* motor A status */
-            // var msg = { Astatus : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.Q)) { msg.Astatus = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.A)) { msg.Astatus = 1; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.Z)) { msg.Astatus = 2; }
-            // if (motorA.status == msg.Astatus) {
-            // } else {
-            //     motorA.status = msg.Astatus;
-            //     if (motorA.status == 1) {
-            //         statusLightA.animations.play('pluggedIn');
-            //     } else if (motorA.status == 2) {
-            //         statusLightA.animations.play('stalled'); 
-            //     } else if (motorA.status == 0) { //default
-            //         statusLightA.animations.play('unplugged');
-            //     }
-            // }
-            /* motor B status */
-            // var msg = { Bstatus : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.W)) { msg.Bstatus = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.S)) { msg.Bstatus = 1; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.X)) { msg.Bstatus = 2; }
-            // if (motorB.status == msg.Bstatus) {
-            // } else {
-            //     motorB.status = msg.Bstatus;
-            //     if (motorB.status == 1) {
-            //         statusLightB.animations.play('pluggedIn');
-            //     } else if (motorB.status == 2) {
-            //         statusLightB.animations.play('stalled'); 
-            //     } else if (motorB.status == 0) { //default
-            //         statusLightB.animations.play('unplugged');
-            //     }
-            // }
-            // /* motor C status */
-            // var msg = { Cstatus : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.R)) { msg.Cstatus = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.D)) { msg.Cstatus = 1; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.C)) { msg.Cstatus = 2; }
-            // if (motorC.status == msg.Cstatus) {
-            // } else {
-            //     motorC.status = msg.Cstatus;
-            //     if (motorC.status == 1) {
-            //         statusLightC.animations.play('pluggedIn');
-            //     } else if (motorC.status == 2) {
-            //         statusLightC.animations.play('stalled'); 
-            //     } else if (motorC.status == 0) { //default
-            //         statusLightC.animations.play('unplugged');
-            //     }
-            // }
-            // /* motor D status */
-            // var msg = { Dstatus : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.T)) { msg.Dstatus = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.F)) { msg.Dstatus = 1; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.V)) { msg.Dstatus = 2; }
-            // if (motorD.status == msg.Dstatus) {
-            // } else {
-            //     motorD.status = msg.Dstatus;
-            //     if (motorD.status == 1) {
-            //         statusLightD.animations.play('pluggedIn');
-            //     } else if (motorD.status == 2) {
-            //         statusLightD.animations.play('stalled'); 
-            //     } else if (motorD.status == 0) { //default
-            //         statusLightD.animations.play('unplugged');
-            //     }
-            // }
-            // //=============================================================================
-            // /* sensor 1 status */
-            // var msg = { status1 : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.P)) { msg.status1 = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.L)) { msg.status1 = 1; }
-            // if (sensor1.status == msg.status1) {
-            // } else {
-            //     sensor1.status = msg.status1;
-            //     if (sensor1.status == 1) {
-            //         statusLight1.animations.play('pluggedIn');
-            //     } else if (sensor1.status == 0) { //default
-            //         statusLight1.animations.play('unplugged');
-            //     }
-            // }
-            // /* sensor 2 status */
-            // var msg = { status2 : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.O)) { msg.status2 = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.K)) { msg.status2 = 1; }
-            // if (sensor2.status == msg.status2) {
-            // } else {
-            //     sensor2.status = msg.status2;
-            //     if (sensor2.status == 1) {
-            //         statusLight2.animations.play('pluggedIn');
-            //     } else if (sensor2.status == 0) { //default
-            //         statusLight2.animations.play('unplugged');
-            //     }
-            // }
-            // /* sensor 3 status */
-            // var msg = { status3 : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.I)) { msg.status3 = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.J)) { msg.status3 = 1; }
-            // if (sensor3.status == msg.status3) {
-            // } else {
-            //     sensor3.status = msg.status3;
-            //     if (sensor3.status == 1) {
-            //         statusLight3.animations.play('pluggedIn');
-            //     } else if (sensor3.status == 0) { //default
-            //         statusLight3.animations.play('unplugged');
-            //     }
-            // }
-            // /* sensor 4 status */
-            // var msg = { status4 : 0 }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.U)) { msg.status4 = 0; }
-            // else if (game.input.keyboard.isDown(Phaser.Keyboard.H)) { msg.status4 = 1; }    
-            // if (sensor4.status == msg.status4) {
-            // } else {
-            //     sensor4.status = msg.status4;
-            //     if (sensor4.status == 1) {
-            //         statusLight4.animations.play('pluggedIn');
-            //     } else if (sensor4.status == 0) { //default
-            //         statusLight4.animations.play('unplugged');
-            //     }
-            // }
-
-            //=============================================================================
-            /* IR Sensor */
-
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-            //     game.world.remove(IR.IRDistDisplay);
-            //     IRDist = IRDist + 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     IRDistDisplay = IRDist;
-            //     IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+25, IRDistDisplay.toFixed(2), labelStyle3);
-            // }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-            //     game.world.remove(IR.IRDistDisplay);
-            //     IRDist = IRDist - 0.01; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //     IRDistDisplay = IRDist;
-            //     IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+25, IRDistDisplay.toFixed(2), labelStyle3);
-            // }
-
-            //=============================================================================
-            /* Color Sensor */
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-            //     game.world.remove(color.colorRDisplay);
-            //     game.world.remove(color.colorGDisplay);
-            //     game.world.remove(color.colorBDisplay);
-            //     //game.world.remove(color.colorValueDisplay);
-            //     if (colorR <= 255) {    
-            //         colorR = colorR + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         colorG = colorG + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         colorB = colorB + 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         //colorValue = colorValue + 0.01;
-            //         colorRDisplay = colorR;
-            //         colorGDisplay = colorG;
-            //         colorBDisplay = colorB;
-            //         //colorValueDisplay = colorValue;
-            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-            //     }
-            //     else {
-            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, "255", {font: "16px Arial", fill: "red"});
-            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, "255", {font: "16px Arial", fill: "green"});
-            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, "255", {font: "16px Arial", fill: "blue"});
-            //     }
-            //     //color.colorValueDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorValueDisplay), labelStyle3);
-            // }
-            // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-            //     game.world.remove(color.colorRDisplay);
-            //     game.world.remove(color.colorGDisplay);
-            //     game.world.remove(color.colorBDisplay);
-            //     //game.world.remove(color.colorValueDisplay);
-            //     if (colorR >= 0) {
-            //         colorRDisplay = colorR = colorR - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         colorGDisplay = colorG = colorG - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         colorBDisplay = colorB = colorB - 1; //THIS IS A PLACEHOLDER, AS IT WILL DEPEND ON THE MESSAGE'S CONTENT
-            //         //colorValueDisplay = colorValue = colorValue + 0.01;
-            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, Math.round(colorRDisplay), {font: "16px Arial", fill: "red"});
-            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, Math.round(colorGDisplay), {font: "16px Arial", fill: "green"});
-            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorBDisplay), {font: "16px Arial", fill: "blue"});
-            //         //color.colorValueDisplay = game.add.text(positionColor.x+189, positionColor.y+33, Math.round(colorValueDisplay), labelStyle3);
-            //     }
-            //     else {
-            //         color.colorRDisplay = game.add.text(positionColor.x+40, positionColor.y+33, "0", {font: "16px Arial", fill: "red"});
-            //         color.colorGDisplay = game.add.text(positionColor.x+116, positionColor.y+33, "0", {font: "16px Arial", fill: "green"});
-            //         color.colorBDisplay = game.add.text(positionColor.x+189, positionColor.y+33, "0", {font: "16px Arial", fill: "blue"});
-            //     }
-            // }
-
-            //=============================================================================
-
-
-            /* LCD Screen */
-
-        
-
-        //function render() {
-            //console.log("render");
-        //}
-
-        /*function paused() {
-            console.log("paused");
-        }
-
-        function destroy() {
-            console.log("destroy");
-        }*/
-
-
-
-
-//=======================================================================================================================================
-//=======================================================================================================================================
-
-
-
-
-                      /* Move entire motor ganging box using a button for clicking and dragging */
-            //dragButton = {
-                // gang : game.add.button(positionMotorGang.x+221, positionMotorGang.y+5, 'dragButton', actionDragGang, this)
-            //}
-            // function actionDragGang () {
-            //     // check that it's inside world bounds, so we won't lose the box!
-            //     if (game.input.x + 25 < game.world.width) { //right
-            //         if (game.input.x > 220) { //left
-            //             if (game.input.y + 155 < game.world.height) { //bottom
-            //                 if (game.input.y > 5) { // top
-            //                     dragButton.gang.x = game.input.x;
-            //                     dragButton.gang.y = game.input.y;
-            //                 } else {
-            //                     dragButton.gang.x = game.input.x;
-            //                     dragButton.gang.y = 5;
-            //                 }
-            //             } else {
-            //                 dragButton.gang.x = game.input.x;
-            //                 dragButton.gang.y = game.world.height-155;
-            //             } 
-            //         } else {
-            //             dragButton.gang.x = 220;
-            //             dragButton.gang.y = game.input.y;
-            //         }
-            //     } else {
-            //         dragButton.gang.x = game.world.width-25;
-            //         dragButton.gang.y = game.input.y;
-            //     }
-                    
-            //     // positionMotorGang.x = dragButton.gang.x - 200;
-            //     // positionMotorGang.y = dragButton.y;
-            //     /* update frame position */
-            //     frameMotorGanging.destroy();
-            //     frameMotorGanging = game.add.graphics(0,0);
-            //     frameMotorGanging.lineStyle(1, frameLineColor, 1);
-            //     frameMotorGanging.drawRect(dragButton.gang.x-220, dragButton.gang.y-5, 250, 160);
-            //     /* update checkbox positions */
-            //     checkbox.a1.x = dragButton.gang.x-211, checkbox.a1.y = dragButton.gang.y+27;
-            //     checkbox.a2.x = dragButton.gang.x-105, checkbox.a2.y = dragButton.gang.y+27;
-            //     checkbox.b1.x = dragButton.gang.x-211, checkbox.b1.y = dragButton.gang.y+57;
-            //     checkbox.b2.x = dragButton.gang.x-106, checkbox.b2.y = dragButton.gang.y+57;
-            //     checkbox.c1.x = dragButton.gang.x-211, checkbox.c1.y = dragButton.gang.y+87;
-            //     checkbox.c2.x = dragButton.gang.x-106, checkbox.c2.y = dragButton.gang.y+87;
-            //     checkbox.d1.x = dragButton.gang.x-211, checkbox.d1.y = dragButton.gang.y+117;
-            //     checkbox.d2.x = dragButton.gang.x-106, checkbox.d2.y = dragButton.gang.y+117;
-            //     /* update label positions */
-            //     labelMotorGang.a1.x = dragButton.gang.x-181, labelMotorGang.a1.y = dragButton.gang.y+30;
-            //     labelMotorGang.a2.x = dragButton.gang.x-76, labelMotorGang.a2.y = dragButton.gang.y+30;
-            //     labelMotorGang.b1.x = dragButton.gang.x-181, labelMotorGang.b1.y = dragButton.gang.y+60;
-            //     labelMotorGang.b2.x = dragButton.gang.x-76, labelMotorGang.b2.y = dragButton.gang.y+60;
-            //     labelMotorGang.c1.x = dragButton.gang.x-181, labelMotorGang.c1.y = dragButton.gang.y+90;
-            //     labelMotorGang.c2.x = dragButton.gang.x-76, labelMotorGang.c2.y = dragButton.gang.y+90;
-            //     labelMotorGang.d1.x = dragButton.gang.x-181, labelMotorGang.d1.y = dragButton.gang.y+120;
-            //     labelMotorGang.d2.x = dragButton.gang.x-76, labelMotorGang.d2.y = dragButton.gang.y+120;
-            //     labelMotorGang.g1.x = dragButton.gang.x-211, labelMotorGang.g1.y = dragButton.gang.y;
-            //     labelMotorGang.g2.x = dragButton.gang.x-106, labelMotorGang.g2.y = dragButton.gang.y;
-            // } // end actionDragGang
 

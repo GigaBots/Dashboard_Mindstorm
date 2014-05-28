@@ -91,7 +91,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // speed
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
-        var sliderBarState = {a: "up", b: "up", c: "up", d: "up", g1: "up", g1: "up"}
+        var sliderBarState = {a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up"}
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
@@ -109,9 +109,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
-        var positionMotorGang = { x : 970, y : 66 }
-        var positionMotorGang1 = { x : 575, y: 226 } 
-        var positionMotorGang2 = { x : 575, y: 436 } 
+        var positionGang = { x : 970, y : 66 }
+        var positionGang1 = { x : 575, y: 226 } 
+        var positionGang2 = { x : 575, y: 436 } 
         var checkbox;
         var checkboxStatus;
         var fGangButton, rGangButton;
@@ -157,14 +157,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             a : false, //initially motor A is not in any gang
             b : false,
             c : false,
-            d : false
+            d : false,
+            previousSpeed : 0
         }
         var gang2 = {
             speed : 0,
             a : false, //initially motor A is not in any gang
             b : false,
             c : false,
-            d : false
+            d : false,
+            previousSpeed : 0
         }
 
         /* Sensors */
@@ -492,11 +494,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
-            frameMotorGang1.drawRect(positionMotorGang1.x, positionMotorGang1.y, 370, 200);
+            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y, 370, 200);
 
             frameMotorGang2 = game.add.graphics(0,0);
             frameMotorGang2.lineStyle(1, frameLineColor, 1);
-            frameMotorGang2.drawRect(positionMotorGang2.x, positionMotorGang2.y, 370, 200);
+            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y, 370, 200);
 
             frameDials = game.add.graphics(0,0);
             frameDials.lineStyle(1, frameLineColor, 1);
@@ -544,20 +546,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Ganging motors together */
             labelMotorGang = {
-                // g1 : game.add.text(positionMotorGang.x+10, positionMotorGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
-                // g2 : game.add.text(positionMotorGang.x+115, positionMotorGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
-                a1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
-                a2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
-                b1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+68, "Motor B", labelStyle), 
-                b2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+68, "Motor B", labelStyle), 
-                c1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+103, "Motor C", labelStyle), 
-                c2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+103, "Motor C", labelStyle), 
-                d1 : game.add.text(positionMotorGang1.x+38, positionMotorGang1.y+138, "Motor D", labelStyle), 
-                d2 : game.add.text(positionMotorGang2.x+38, positionMotorGang2.y+138, "Motor D", labelStyle) 
+                // g1 : game.add.text(positionGang.x+10, positionGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
+                // g2 : game.add.text(positionGang.x+115, positionGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
+                a1 : game.add.text(positionGang1.x+38, positionGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
+                a2 : game.add.text(positionGang2.x+38, positionGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
+                b1 : game.add.text(positionGang1.x+38, positionGang1.y+68, "Motor B", labelStyle), 
+                b2 : game.add.text(positionGang2.x+38, positionGang2.y+68, "Motor B", labelStyle), 
+                c1 : game.add.text(positionGang1.x+38, positionGang1.y+103, "Motor C", labelStyle), 
+                c2 : game.add.text(positionGang2.x+38, positionGang2.y+103, "Motor C", labelStyle), 
+                d1 : game.add.text(positionGang1.x+38, positionGang1.y+138, "Motor D", labelStyle), 
+                d2 : game.add.text(positionGang2.x+38, positionGang2.y+138, "Motor D", labelStyle) 
             }
 
-            labelGang1 = game.add.text(positionMotorGang1.x + 10, positionMotorGang1.y + 2, "Motor Gang 1", labelStyle3);
-            labelGang2 = game.add.text(positionMotorGang2.x + 10, positionMotorGang2.y + 2, "Motor Gang 2", labelStyle3);
+            labelGang1 = game.add.text(positionGang1.x + 10, positionGang1.y + 2, "Motor Gang 1", labelStyle3);
+            labelGang2 = game.add.text(positionGang2.x + 10, positionGang2.y + 2, "Motor Gang 2", labelStyle3);
 
 
         /* Buttons */
@@ -677,12 +679,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             // buttons for motor gangs:
             fGangButton = {
-                g1 : game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+32, 'forwardButton'),
-                g2 : game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+32, 'forwardButton')
+                g1 : game.add.button(positionGang1.x+105, positionGang1.y+32, 'forwardButton'),
+                g2 : game.add.button(positionGang2.x+105, positionGang2.y+32, 'forwardButton')
             }
             rGangButton = {
-                g1 : game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+90, 'reverseButton'),
-                g2 : game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+90, 'reverseButton')
+                g1 : game.add.button(positionGang1.x+105, positionGang1.y+90, 'reverseButton'),
+                g2 : game.add.button(positionGang2.x+105, positionGang2.y+90, 'reverseButton')
             }
             
             fGangButton.g1.events.onInputDown.add(fGangButtonDownAction, gang1);
@@ -705,10 +707,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             fGangButton.g2.input.useHandCursor = true;
             rGangButton.g2.input.useHandCursor = true;
 
-            minusButtonG1 = game.add.button(positionMotorGang1.x+105, positionMotorGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
-            plusButtonG1 = game.add.button(positionMotorGang1.x+158, positionMotorGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
-            minusButtonG2 = game.add.button(positionMotorGang2.x+105, positionMotorGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
-            plusButtonG2 = game.add.button(positionMotorGang2.x+158, positionMotorGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
+            minusButtonG1 = game.add.button(positionGang1.x+105, positionGang1.y+148, 'minusButton', actionDecreaseOnClickG1, this, 1, 0, 2, 0);
+            plusButtonG1 = game.add.button(positionGang1.x+158, positionGang1.y+148, 'plusButton', actionIncreaseOnClickG1, this, 1, 0, 2, 0);
+            minusButtonG2 = game.add.button(positionGang2.x+105, positionGang2.y+148, 'minusButton', actionDecreaseOnClickG2, this, 1, 0, 2, 0);
+            plusButtonG2 = game.add.button(positionGang2.x+158, positionGang2.y+148, 'plusButton', actionIncreaseOnClickG2, this, 1, 0, 2, 0);
 
             minusButtonG1.input.useHandCursor = true;
             plusButtonG1.input.useHandCursor = true;
@@ -803,15 +805,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Adding motor-ganging functionality */
             checkbox = {
-                //a1 : game.add.button(positionMotorGang.x, positionMotorGang.y+27, 'checkbox', actionCheckbox, this),
-                a1 : game.add.button(positionMotorGang1.x+10, positionMotorGang1.y+32, 'checkbox', actionCheckboxA1, this),
-                a2 : game.add.button(positionMotorGang2.x+10, positionMotorGang2.y+32, 'checkbox', actionCheckboxA2, this),
-                b1 : game.add.button(positionMotorGang1.x+10, positionMotorGang1.y+67, 'checkbox', actionCheckboxB1, this),
-                b2 : game.add.button(positionMotorGang2.x+10, positionMotorGang2.y+67, 'checkbox', actionCheckboxB2, this),
-                c1 : game.add.button(positionMotorGang1.x+10, positionMotorGang1.y+102, 'checkbox', actionCheckboxC1, this),
-                c2 : game.add.button(positionMotorGang2.x+10, positionMotorGang2.y+102, 'checkbox', actionCheckboxC2, this),
-                d1 : game.add.button(positionMotorGang1.x+10, positionMotorGang1.y+137, 'checkbox', actionCheckboxD1, this),
-                d2 : game.add.button(positionMotorGang2.x+10, positionMotorGang2.y+137, 'checkbox', actionCheckboxD2, this)
+                //a1 : game.add.button(positionGang.x, positionGang.y+27, 'checkbox', actionCheckbox, this),
+                a1 : game.add.button(positionGang1.x+10, positionGang1.y+32, 'checkbox', actionCheckboxA1, this),
+                a2 : game.add.button(positionGang2.x+10, positionGang2.y+32, 'checkbox', actionCheckboxA2, this),
+                b1 : game.add.button(positionGang1.x+10, positionGang1.y+67, 'checkbox', actionCheckboxB1, this),
+                b2 : game.add.button(positionGang2.x+10, positionGang2.y+67, 'checkbox', actionCheckboxB2, this),
+                c1 : game.add.button(positionGang1.x+10, positionGang1.y+102, 'checkbox', actionCheckboxC1, this),
+                c2 : game.add.button(positionGang2.x+10, positionGang2.y+102, 'checkbox', actionCheckboxC2, this),
+                d1 : game.add.button(positionGang1.x+10, positionGang1.y+137, 'checkbox', actionCheckboxD1, this),
+                d2 : game.add.button(positionGang2.x+10, positionGang2.y+137, 'checkbox', actionCheckboxD2, this)
             }
             checkboxStatus = { a1 : 0, a2 : 0, b1 : 0, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked (motors not members of a motor gang)
             // let's initially set the checkbox frames so that they're unchecked and if you hvoer over them, they highlight
@@ -854,6 +856,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
                     gang1.a = false; // motor A is not in gang 1
                 }
+        ///////////// We might want something sorta like this here:
+                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             }
             function actionCheckboxA2 () {
                 if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
@@ -871,6 +875,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
                     gang2.a = false; // motor A is not in gang 2
                 }
+                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
             } 
             function actionCheckboxB1 () {
                 if ( checkboxStatus.b1 === 0 ) {
@@ -887,6 +892,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.b1.setFrames(2,0,1,0);
                    gang1.b = false;
                 }
+                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             }
             function actionCheckboxB2 () {
                 if ( checkboxStatus.b2 === 0 ) { 
@@ -903,6 +909,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.b2.setFrames(2,0,1,0); 
                     gang2.b = false;
                 }
+                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
             }
             function actionCheckboxC1 () {
                 if ( checkboxStatus.c1 === 0 ) {
@@ -919,6 +926,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.c1.setFrames(2,0,1,0);
                     gang1.c = false;
                 }
+                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             }
             function actionCheckboxC2 () {
                 if ( checkboxStatus.c2 === 0 ) { 
@@ -935,6 +943,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.c2.setFrames(2,0,1,0); 
                     gang2.c = false;
                 }
+                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
             }
             function actionCheckboxD1 () {
                 if ( checkboxStatus.d1 === 0 ) {
@@ -951,6 +960,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.d1.setFrames(2,0,1,0); 
                     gang1.d = false;
                 }
+                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             }
             function actionCheckboxD2 () {
                 if ( checkboxStatus.d2 === 0 ) { 
@@ -967,6 +977,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     checkbox.d2.setFrames(2,0,1,0); 
                     gang2.d = false;
                 }
+                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
             }
 
             
@@ -1043,25 +1054,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackG1 = game.add.graphics(0,0);
             sliderTrackG1.beginFill(frameLineColor, 1);
-            sliderTrackG1.drawRect(positionMotorGang1.x+263, positionMotorGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG1 = game.add.button(positionMotorGang1.x+233, positionMotorGang1.y+165, 'sliderBar2', actionDragOnClickG1);
+            sliderTrackG1.drawRect(positionGang1.x+263, positionGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarG1 = game.add.button(positionGang1.x+233, positionGang1.y+165, 'sliderBar2', actionDragOnClickG1);
             sliderBarG1.inputEnabled=true;
             sliderBarG1.input.useHandCursor = true;
             sliderBarG1.input.enableDrag();
             sliderBarG1.input.allowHorizontalDrag=false;
             sliderBarG1.events.onInputUp.add(actionDragOnClickG1);
-            //sliderBarG1.events.onInputDown.add(actionDownOnSlideG1);
+            sliderBarG1.events.onInputDown.add(actionDownOnSlideG1);
 
             sliderTrackG2 = game.add.graphics(0,0);
             sliderTrackG2.beginFill(frameLineColor, 1);
-            sliderTrackG2.drawRect(positionMotorGang2.x+263, positionMotorGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG2 = game.add.button(positionMotorGang2.x+233, positionMotorGang2.y+165, 'sliderBar2', actionDragOnClickG2);
+            sliderTrackG2.drawRect(positionGang2.x+263, positionGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderBarG2 = game.add.button(positionGang2.x+233, positionGang2.y+165, 'sliderBar2', actionDragOnClickG2);
             sliderBarG2.inputEnabled=true;
             sliderBarG2.input.useHandCursor = true;
             sliderBarG2.input.enableDrag();
             sliderBarG2.input.allowHorizontalDrag=false;
             sliderBarG2.events.onInputUp.add(actionDragOnClickG2);
-            //sliderBarG2.events.onInputDown.add(actionDownOnSlideG2);
+            sliderBarG2.events.onInputDown.add(actionDownOnSlideG2);
 
             // Add some labels to the sliders
             sliderLabel = {
@@ -1069,8 +1080,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 b : game.add.text(positionMotorB.x+129, positionMotorB.y+179, "Speed (\xB0/sec)", labelStyle),
                 c : game.add.text(positionMotorC.x+129, positionMotorC.y+179, "Speed (\xB0/sec)", labelStyle),
                 d : game.add.text(positionMotorD.x+129, positionMotorD.y+179, "Speed (\xB0/sec)", labelStyle),
-                g1 : game.add.text(positionMotorGang1.x+229, positionMotorGang1.y+179, "Speed (\xB0/sec)" , labelStyle),
-                g2 : game.add.text(positionMotorGang2.x+229, positionMotorGang2.y+179, "Speed (\xB0/sec)", labelStyle)
+                g1 : game.add.text(positionGang1.x+229, positionGang1.y+179, "Speed (\xB0/sec)" , labelStyle),
+                g2 : game.add.text(positionGang2.x+229, positionGang2.y+179, "Speed (\xB0/sec)", labelStyle)
             }
             for (var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
@@ -1091,13 +1102,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
-                var speedLabelG1Y = positionMotorGang1.y + 162 - 22 * i; //for gang 1
-                var speedLabelG1 = game.add.text(positionMotorGang1.x+308, speedLabelG1Y, speedLabel, labelStyle)
+                var speedLabelG1Y = positionGang1.y + 162 - 22 * i; //for gang 1
+                var speedLabelG1 = game.add.text(positionGang1.x+308, speedLabelG1Y, speedLabel, labelStyle)
             }
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
-                var speedLabelG2Y = positionMotorGang2.y + 162 - 22 * i; //for gang 2
-                var speedLabelG2 = game.add.text(positionMotorGang2.x+308, speedLabelG2Y, speedLabel, labelStyle)
+                var speedLabelG2Y = positionGang2.y + 162 - 22 * i; //for gang 2
+                var speedLabelG2 = game.add.text(positionGang2.x+308, speedLabelG2Y, speedLabel, labelStyle)
             }
 
         /* Status Lights */
@@ -1155,8 +1166,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         
         /* Buttons to drag entire boxes (for motors and motor gangs) */
             dragBoxButton = {
-                g1 : game.add.button(positionMotorGang1.x+339, positionMotorGang1.y+5, 'dragButton', actionDragG1, this),
-                g2 : game.add.button(positionMotorGang2.x+339, positionMotorGang2.y+5, 'dragButton', actionDragG2, this),
+                g1 : game.add.button(positionGang1.x+339, positionGang1.y+5, 'dragButton', actionDragG1, this),
+                g2 : game.add.button(positionGang2.x+339, positionGang2.y+5, 'dragButton', actionDragG2, this),
                 a : game.add.button(positionMotorA.x+239, positionMotorA.y+5, 'dragButton', actionDragA, this),
                 b : game.add.button(positionMotorB.x+239, positionMotorB.y+5, 'dragButton', actionDragB, this),
                 c : game.add.button(positionMotorC.x+239, positionMotorC.y+5, 'dragButton', actionDragC, this),
@@ -1440,10 +1451,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG1.y = sliderBarG1.y + 11; 
             } else {
                 gang1.speed = 0; // just set to min position
-                sliderBarG1.y = positionMotorGang1.y + 165; //and move sliderbar to that position
+                sliderBarG1.y = positionGang1.y + 165; //and move sliderbar to that position
             }
             console.log(gang1.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
         }
         function actionIncreaseOnClickG1() {
             if (gang1.speed <= 650) {
@@ -1451,10 +1462,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG1.y = sliderBarG1.y - 11;
             } else {
                 gang1.speed = 700; //just set to max speed
-                sliderBarG1.y = positionMotorGang1.y + 11; //and move sliderbar to that position
+                sliderBarG1.y = positionGang1.y + 11; //and move sliderbar to that position
             }
             console.log(gang1.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
         }
         function actionDecreaseOnClickG2() {
             if (gang2.speed >= 50) {
@@ -1462,10 +1473,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG2.y = sliderBarG2.y + 11;
             } else {
                 gang2.speed = 0;
-                sliderBarG2.y = positionMotorGang2.y + 165;
+                sliderBarG2.y = positionGang2.y + 165;
             }
             console.log(gang2.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
         }
         function actionIncreaseOnClickG2() {
             if (gang2.speed <= 650) {
@@ -1473,32 +1484,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarG2.y = sliderBarG2.y - 11;
             } else {
                 gang2.speed = 700;
-                sliderBarG2.y = positionMotorGang2.y + 11;
+                sliderBarG2.y = positionGang2.y + 11;
             }
             console.log(gang2.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
         }
         function actionDragOnClickG1() {
-            if (sliderBarG1.y < positionMotorGang1.y+11) {
-                sliderBarG1.y = positionMotorGang1.y+11;
-            } else if (sliderBarG1.y > positionMotorGang1.y+165) {
-                sliderBarG1.y = positionMotorGang1.y+165;
+            if (sliderBarG1.y < positionGang1.y+11) {
+                sliderBarG1.y = positionGang1.y+11;
+            } else if (sliderBarG1.y > positionGang1.y+165) {
+                sliderBarG1.y = positionGang1.y+165;
             }
-            gang1.speed = 700 + (700/154) * (positionMotorGang1.y + 11 - sliderBarG1.y);
+            gang1.speed = 700 + (700/154) * (positionGang1.y + 11 - sliderBarG1.y);
             console.log(gang1.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed });
-            //sliderBarState.g1 = "up";
+            channel.getKeyspace('dashboard').put('g1', { 'speed': gang1.speed,'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            sliderBarState.g1 = "up";
         }
         function actionDragOnClickG2() {
-            if (sliderBarG2.y < positionMotorGang2.y+11) {
-                sliderBarG2.y = positionMotorGang2.y+11;
-            } else if (sliderBarG2.y > positionMotorGang2.y+165) {
-                sliderBarG2.y = positionMotorGang2.y+165;
+            if (sliderBarG2.y < positionGang2.y+11) {
+                sliderBarG2.y = positionGang2.y+11;
+            } else if (sliderBarG2.y > positionGang2.y+165) {
+                sliderBarG2.y = positionGang2.y+165;
             }
-            gang2.speed = 700 + (700/154) * (positionMotorGang2.y + 11 - sliderBarG2.y);
+            gang2.speed = 700 + (700/154) * (positionGang2.y + 11 - sliderBarG2.y);
             console.log(gang2.speed.toFixed(2));
-            //channel.getKeyspace('dashboard').put('g2', { 'speed': gang2.speed });
-            //sliderBarState.g2 = "up";
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
+            sliderBarState.g2 = "up";
         }
 
         function actionDownOnSlideG1() {
@@ -1544,7 +1555,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
     /* Update stuff */
         //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
-/*        function updateGang (key, speed, a, b, c, d) {
+        function updateGang (key, speed, a, b, c, d) {
             if ( key === 'g1' ) {
                 gang1.speed = speed;
                 gang1.a = a;
@@ -1553,31 +1564,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gang1.d = d;
                 sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
                 // need to also update checkboxes based on the new values:
-                if (gang1.a = true) {
+                if (gang1.a === true) {
                     checkboxStatus.a1 = 1; // check it now
                     checkbox.a1.setFrames(1,1,1,0);
-                } else if (gang1.a = false) {
+                } else if (gang1.a === false) {
                     checkboxStatus.a1 = 0; // uncheck it now
                     checkbox.a1.setFrames(2,0,1,0);
                 }
-                if (gang1.b = true) {
+                if (gang1.b === true) {
                     checkboxStatus.b1 = 1; // check it now
                     checkbox.b1.setFrames(1,1,1,0);
-                } else if (gang1.b = false) {
+                } else if (gang1.b === false) {
                     checkboxStatus.b1 = 0; // uncheck it now
                     checkbox.b1.setFrames(2,0,1,0);
                 }
-                if (gang1.c = true) {
+                if (gang1.c === true) {
                     checkboxStatus.c1 = 1; // check it now
                     checkbox.c1.setFrames(1,1,1,0);
-                } else if (gang1.c = false) {
+                } else if (gang1.c === false) {
                     checkboxStatus.c1 = 0; // uncheck it now
                     checkbox.c1.setFrames(2,0,1,0);
                 }
-                if (gang1.d = true) {
+                if (gang1.d === true) {
                     checkboxStatus.d1 = 1; // check it now
                     checkbox.d1.setFrames(1,1,1,0);
-                } else if (gang1.d = false) {
+                } else if (gang1.d === false) {
                     checkboxStatus.d1 = 0; // uncheck it now
                     checkbox.d1.setFrames(2,0,1,0);
                 }
@@ -1588,38 +1599,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gang2.b = b;
                 gang2.c = c;
                 gang2.d = d;
-                sliderBarG2.y = positiongang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
                 // need to also update checkboxes based on the new values:
-                if (gang2.a = true) {
+                if (gang2.a === true) {
                     checkboxStatus.a2 = 1; // check it now
                     checkbox.a2.setFrames(1,1,1,0);
-                } else if (gang2.a = false) {
+                } else if (gang2.a === false) {
                     checkboxStatus.a2 = 0; // uncheck it now
                     checkbox.a2.setFrames(2,0,1,0);
                 }
-                if (gang2.b = true) {
+                if (gang2.b === true) {
                     checkboxStatus.b2 = 1; // check it now
                     checkbox.b2.setFrames(1,1,1,0);
-                } else if (gang2.b = false) {
+                } else if (gang2.b === false) {
                     checkboxStatus.b2 = 0; // uncheck it now
                     checkbox.b2.setFrames(2,0,1,0);
                 }
-                if (gang2.c = true) {
+                if (gang2.c === true) {
                     checkboxStatus.c2 = 1; // check it now
                     checkbox.c2.setFrames(1,1,1,0);
-                } else if (gang2.c = false) {
+                } else if (gang2.c === false) {
                     checkboxStatus.c2 = 0; // uncheck it now
                     checkbox.c2.setFrames(2,0,1,0);
                 }
-                if (gang2.d = true) {
+                if (gang2.d === true) {
                     checkboxStatus.d2 = 1; // check it now
                     checkbox.d2.setFrames(1,1,1,0);
-                } else if (gang2.d = false) {
+                } else if (gang2.d === false) {
                     checkboxStatus.d2 = 0; // uncheck it now
                     checkbox.d2.setFrames(2,0,1,0);
                 }
             }
-        }*/
+        }
 
         /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
@@ -1645,16 +1656,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBarD.y = positionMotorD.y + 11 - (154 / 700) * (speed - 700); 
                 motorD.previousSpeed = speed;
             }
-            /* if ( key === 'g1') {
-                gang1.speed = speed;
-                sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700);
-                gang1.previousSpeed = speed;
-            }
-            if ( key === 'g2') {
-                gang2.speed = speed;
-                sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700);
-                gang2.previousSpeed = speed;
-            }*/
         }
 
         /* Rotation of motor position dials */
@@ -1760,16 +1761,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     updateSpeed(key, val.speed);
                 }
             }
-            /* if ( key === 'g1' ) {
+             if ( key === 'g1' ) {
                 if ( gang1.speed !== val.speed || gang1.a != val.a || gang1.b != val.b || gang1.c != val.c || gang1.d != val.d ) {
+                    // && gang1.previousSpeed !== val.speed 
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
             }
             if ( key === 'g2' ) {
                 if ( gang2.speed !== val.speed || gang2.a != val.a || gang2.b != val.b || gang2.c != val.c || gang2.d != val.d ) {
+                    // && gang2.previousSpeed !== val.speed 
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
-            } */
+            } 
         }
 
         function getDialValues (key, val) {
@@ -1841,16 +1844,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
-            if (sliderBarState.G1 === "up") {
+            if (sliderBarState.g1 === "up") {
                 var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
                 if ( typeof(dashGang1) !== "undefined") {
-                    getDashboardValues('g1', dashGang1);
+        ////////            getDashboardValues('g1', dashGang1);
                 }
             }
-            if (sliderBarState.G2 === "up") {
+            if (sliderBarState.g2 === "up") {
                 var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
                 if ( typeof(dashGang2) !== "undefined") {
-                    getDashboardValues('g2', dashGang2);
+        ////////            getDashboardValues('g2', dashGang2);
                 }
             }
 

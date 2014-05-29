@@ -1411,7 +1411,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxA2 () {
             if ( gang2.a === false ) { //the checkbox is UNCHECKED
@@ -1428,7 +1428,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         } 
         function actionCheckboxB1 () {
             if ( gang1.b === false ) {
@@ -1444,7 +1444,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxB2 () {
             if ( gang2.b === false ) { 
@@ -1460,7 +1460,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxC1 () {
             if ( gang1.c === false ) {
@@ -1477,7 +1477,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxC2 () {
             if ( gang2.c === false ) { 
@@ -1493,7 +1493,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxD1 () {
             if ( gang1.d === false ) {
@@ -1510,7 +1510,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-        console.log ("gang 1 speed: " + gang1.speed + " gang 1 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 1 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxD2 () {
             if ( gang2.d === false ) { 
@@ -1526,7 +1526,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
 
         //=============================================================================
@@ -1563,9 +1563,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
         function updateGang (key, speed, a, b, c, d) {
             if ( key === 'g1' ) {
-                sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-                gang1.speed = speed;
-                // need to also update checkboxes based on the new values:
+                if ( gang1.speed !== speed ) {
+                    sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                    gang1.speed = speed;
+                }
                 if ( gang1.a !== a ) {
                     console.log ( "gang1.a is unequal to g1 a");
                     if (a === true) {
@@ -1603,10 +1604,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                     gang1.d = d;
                 }
+                gang1.previousSpeed = speed;
             }
             if ( key === 'g2' ) {
-                sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-                gang2.speed = speed;
+                if ( gang2.speed !== speed) {
+                    sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                    gang2.speed = speed;
+                }
                 if ( gang2.a !== a ) {
                     console.log ( "gang2.a is unequal to g2 a");
                     if (a === true) {
@@ -1644,6 +1648,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                     gang2.d = d;
                 }
+                gang2.previousSpeed = speed;
             }
         }
 
@@ -1778,14 +1783,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
             if ( key === 'g1' ) {
-                if ( gang1.speed !== val.speed || gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) {
-                    // && gang1.previousSpeed !== val.speed 
+                if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                }
+                } 
+                if ( gang1.previousSpeed !== val.speed && gang1.speed !== val.speed ) { // adjust only only if gang 1 speed changes
+                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+                } 
             }
             if ( key === 'g2' ) {
-                if ( gang2.speed !== val.speed || gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
-                    // && gang2.previousSpeed !== val.speed 
+                if ( gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
+                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+                }
+                if ( gang2.previousSpeed !== val.speed && gang2.speed !== val.speed ) {
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
             } 
@@ -1872,7 +1881,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     getDashboardValues('g2', dashGang2);
                 }
             }
-    //======= Something is inconsistent here, and I can't remember why it was like this...I'll fix it and test it with the robot -John ===========
+    //======= define dashMotor motorData, dashGang and (dialData?) as objects at the beginning of the game ?? -John ==========
+    //======= also, something is inconsistent below, and I can't remember why it was like this...I'll fix it and test it with the robot -John ===========
             //var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined" ) {
@@ -1882,14 +1892,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dialDataB = channel.getKeyspace('dashboard').get('b');
             if ( typeof(dashMotorB) !== "undefined" ) {
                 getDialValues('b', dashMotorB);
+                //getDialValues('b', dialDataB);
             }
             var dialDataC = channel.getKeyspace('dashboard').get('c'); 
             if ( typeof(dashMotorC) !== "undefined" ) {
                 getDialValues('c', dashMotorC);
+                //getDialValues('c', dialDataB);
             }
             var dialDataD = channel.getKeyspace('dashboard').get('d'); 
             if ( typeof(dashMotorD) !== "undefined" ) {
                 getDialValues('d', dashMotorD);
+                //getDialValues('c', dialDataB);
             }
 
              // get text from DialA text area      

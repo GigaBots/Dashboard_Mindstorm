@@ -1816,10 +1816,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dashMotorD);
             }
 
+            // if cursor is over textEditor
+            if ( cursorOverEditor ) {
+                // then disable keyboard shortcuts for controlling motors
+                this.game.input.keyboard.disabled = true;
+            }
+            else {
+                // if the keyboard isn't over textEditor, enable shortcut keys
+                this.game.input.keyboard.disabled = false;
+            }
+
              // get text from DialA text area      
             userDialA = document.getElementById("textSpinA").innerHTML;
             // get text from text editor text area
             theirCode = document.getElementById("theirCode").innerHTML;
+            theirCode = theirCode.replace(/<br>/g, "");
             //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
                 // if DialA text is not a number, output error in error message area
@@ -1841,43 +1852,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
 
                 // evaluate their input code
+                console.log(theirCode);
                 eval(theirCode);
                 // evaluate their DialA number
                 //needleA.angle = parseFloat(userDialA, 10);
                 
             } // end .onclick
 
-            if ( cursorOverEditor ) {
-                this.game.input.keyboard.disabled = true;
-            }
-            else {
-                 this.game.input.keyboard.disabled = false;
-            }
+            
 
         } // end update
 
         $("#textEditor").hover( function () { // code for while hovering over textEditor
             cursorOverEditor = true;
-            console.log(cursorOverEditor);
+            // Access this variable to determine whether or not user is over textEditor or gameWorld
         }, function() { // code for while not hovering over textEditor
             cursorOverEditor = false;
-            console.log(cursorOverEditor);
+
         });
 
     } // end beginGame
 
 
 }); // end require
-
-            
-            // Create text editor for needleA above program
-            print = document.getElementById("textSpinA");// get text in textEditor
-            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(print)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + print);
-            }
-            else { // if it is a number
-                //needleA.angle = needleA.angle + print;
-                //console.log("Success! Parsed printNum value: " + print);
-            }
-

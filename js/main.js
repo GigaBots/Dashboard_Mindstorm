@@ -1830,7 +1830,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             userDialA = document.getElementById("textSpinA").innerHTML;
             // get text from text editor text area
             theirCode = document.getElementById("theirCode").innerHTML;
+            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
             theirCode = theirCode.replace(/<br>/g, "");
+
             //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
                 // if DialA text is not a number, output error in error message area
@@ -1855,7 +1857,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log(theirCode);
                 eval(theirCode);
                 // evaluate their DialA number
-                //needleA.angle = parseFloat(userDialA, 10);
+                needleA.angle = parseFloat(userDialA, 10);
                 
             } // end .onclick
 

@@ -403,6 +403,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
+            game.load.image('space','assets/space.png',960,659); // photo modified from http://www.hdwallsource.com/outer-space-wallpaper-4351.html
         } //end preload
 
     //==============================================================================================================================
@@ -424,9 +425,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBarLine.beginFill(frameLineColor,1);
             titleBarLine.drawRect(0,50,960,1);
 
+            var space = game.add.sprite(0,51,'space');
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,1);
-            backgroundBox.drawRect(0,51,960,1054);
+            backgroundBox.beginFill(0x313233,0.85); // 0.85 opacity
+            backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
@@ -937,21 +939,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for (var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + "";
-             
                 var speedLabelY = { 
                     a : positionMotorA.y+162 - 22 * i,
                     b : positionMotorB.y+162 - 22 * i,
                     c : positionMotorC.y+162 - 22 * i,
                     d : positionMotorD.y+162 - 22 * i,
                 }
-
                 var speedLabelA = game.add.text(positionMotorA.x+210, speedLabelY.a, speedLabel, labelStyle)
                 var speedLabelB = game.add.text(positionMotorB.x+210, speedLabelY.b, speedLabel, labelStyle)
                 var speedLabelC = game.add.text(positionMotorC.x+210, speedLabelY.c, speedLabel, labelStyle)
                 var speedLabelD = game.add.text(positionMotorD.x+210, speedLabelY.d, speedLabel, labelStyle);
-
             }
-
             for ( var i = 0; i <= 7; i++) {
                 var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
                 var speedLabelG1Y = positionGang1.y + 162 - 22 * i; //for gang 1
@@ -1571,7 +1569,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( gang1.a !== a ) {
                     console.log ( "gang1.a is unequal to g1 a");
                     if (a === true) {
-                        checkbox.a1.setFrames(1,1,1,0);
+                        checkbox.a1.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.a1.setFrames(2,0,1,0);
@@ -1580,7 +1578,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang1.b !== b ) {
                     if (b === true) {
-                        checkbox.b1.setFrames(1,1,1,0);
+                        checkbox.b1.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.b1.setFrames(2,0,1,0);
@@ -1589,7 +1587,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang1.c !== c ) {
                     if (c === true) {
-                        checkbox.c1.setFrames(1,1,1,0);
+                        checkbox.c1.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.c1.setFrames(2,0,1,0);
@@ -1598,7 +1596,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang1.d !== d ) {
                     if (d === true) {
-                        checkbox.d1.setFrames(1,1,1,0);
+                        checkbox.d1.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.d1.setFrames(2,0,1,0);
@@ -1612,7 +1610,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( gang2.a !== a ) {
                     console.log ( "gang2.a is unequal to g2 a");
                     if (a === true) {
-                        checkbox.a2.setFrames(1,1,1,0);
+                        checkbox.a2.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.a2.setFrames(2,0,1,0);
@@ -1621,7 +1619,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang2.b !== b ) {
                     if (b === true) {
-                        checkbox.b2.setFrames(1,1,1,0);
+                        checkbox.b2.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.b2.setFrames(2,0,1,0);
@@ -1630,7 +1628,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang2.c !== c ) {
                     if (c === true) {
-                        checkbox.c2.setFrames(1,1,1,0);
+                        checkbox.c2.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.c2.setFrames(2,0,1,0);
@@ -1639,7 +1637,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 if ( gang2.d !== d ) {
                     if (d === true) {
-                        checkbox.d2.setFrames(1,1,1,0);
+                        checkbox.d2.setFrames(1,1,1,1);
                     } 
                     else {
                         checkbox.d2.setFrames(2,0,1,0);
@@ -1874,7 +1872,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     getDashboardValues('g2', dashGang2);
                 }
             }
-
+    //======= Something is inconsistent here, and I can't remember why it was like this...I'll fix it and test it with the robot -John ===========
             //var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dashMotorA) !== "undefined" ) {

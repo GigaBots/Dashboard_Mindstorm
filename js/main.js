@@ -91,7 +91,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // speed
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
-        var sliderBarState = {a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up"}
+        var sliderBarState = { a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up" }
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
@@ -113,7 +113,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionGang1 = { x : 575, y: 226 } 
         var positionGang2 = { x : 575, y: 436 } 
         var checkbox;
-        var checkboxStatus;
         var fGangButton, rGangButton;
 
         var motorA = {
@@ -400,7 +399,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            game.load.image('robotOrangeSm', 'assets/gigabots_logo_color_background_sm.png', 50, 50);
+            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm.png', 48, 48);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 25, 17);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
@@ -435,8 +434,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Title */
-            dashboardTitle = game.add.sprite(72,0,'title');
-            botLogo = game.add.sprite(0,0,'robotOrangeSm');
+            dashboardTitle = game.add.sprite(75,0,'title');
+            botLogo = game.add.sprite(15,1,'gigabotSm');
             poweredBy = game.add.sprite(740,0,'poweredBy');
             var allRightsReserved = game.add.text(15, 665, "All Rights Reserved, TheGigabots.com", labelStyle);
 
@@ -733,8 +732,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( this.d === true) {
                     moveMotor( "d", "f", this.speed );
                 }
-
-                game.input.keyboard.removeKey(Phaser.Keyboard.Q);
             }
             function fGangButtonUpAction() {
                 console.log("onActionUpForwardGang");
@@ -797,7 +794,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             rG2Key.onDown.add(rGangButtonDownAction, gang2);
 
             // stop motor on key up:
-            //fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
+            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
             fG2Key.onUp.add(fGangButtonUpAction, gang2);
 
             rG1Key.onUp.add(rGangButtonUpAction, gang1); // this will stop gang 1
@@ -815,7 +812,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 d1 : game.add.button(positionGang1.x+10, positionGang1.y+137, 'checkbox', actionCheckboxD1, this),
                 d2 : game.add.button(positionGang2.x+10, positionGang2.y+137, 'checkbox', actionCheckboxD2, this)
             }
-            checkboxStatus = { a1 : 0, a2 : 0, b1 : 0, b2 : 0, c1 : 0, c2 : 0, d1 : 0, d2 : 0 } // all initially unchecked (motors not members of a motor gang)
             // let's initially set the checkbox frames so that they're unchecked and if you hvoer over them, they highlight
             checkbox.a1.setFrames(2,0,1,0);
             checkbox.a2.setFrames(2,0,1,0);
@@ -825,10 +821,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             checkbox.c2.setFrames(2,0,1,0);
             checkbox.d1.setFrames(2,0,1,0);
             checkbox.d2.setFrames(2,0,1,0);
-            /*function actionCheckbox () {
-                //console.log(checkboxStatus.this);
-                //console.log(motorPortGang);
-            }*/
 
             /* use hand cursor when hovering over checkboxes */
             checkbox.a1.input.useHandCursor = true;
@@ -839,146 +831,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             checkbox.c2.input.useHandCursor = true;
             checkbox.d1.input.useHandCursor = true;
             checkbox.d2.input.useHandCursor = true;
-
-            function actionCheckboxA1 () {
-                if ( checkboxStatus.a1 === 0 ) { //the checkbox is UNCHECKED
-                    checkboxStatus.a1 = 1; // so check it now
-                    checkbox.a1.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    gang1.a = true; // motor A is in gang 1
-                    if ( checkboxStatus.a2 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
-                        gang2.a = false; // motor A is no longer in gang 2
-                        checkboxStatus.a2 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
-                        checkbox.a2.setFrames(2,0,1,0) // show other box as unchecked
-                    }
-                }
-                else { // the checkbox is CHECKED
-                    checkboxStatus.a1 = 0; // so uncheck it now
-                    checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    gang1.a = false; // motor A is not in gang 1
-                }
-        ///////////// We might want something sorta like this here:
-                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            }
-            function actionCheckboxA2 () {
-                if ( checkboxStatus.a2 === 0 ) { //the checkbox is UNCHECKED
-                    checkboxStatus.a2 = 1; // so check it now
-                    checkbox.a2.setFrames(1,1,1,0); // over frame and out frame should now both show the box checked
-                    gang2.a = true; // motor A is in gang 2
-                    if ( checkboxStatus.a1 === 1 ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked
-                        gang1.a = false; // motor A is no longer in gang 1
-                        checkboxStatus.a1 = 0; // because the motor was checked for the other gang, we must uncheck it from that gang now
-                        checkbox.a1.setFrames(2,0,1,0) // show other box as unchecked
-                    }
-                }
-                else { // the checkbox is CHECKED
-                    checkboxStatus.a2 = 0; // so uncheck it now
-                    checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                    gang2.a = false; // motor A is not in gang 2
-                }
-                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            } 
-            function actionCheckboxB1 () {
-                if ( checkboxStatus.b1 === 0 ) {
-                    checkboxStatus.b1 = 1; 
-                    checkbox.b1.setFrames(1,1,1,0);
-                    gang1.b = true;
-                    if ( checkboxStatus.b2 === 1 ) { 
-                        gang2.b = false;
-                        checkboxStatus.b2 = 0; 
-                        checkbox.b2.setFrames(2,0,1,0);
-                    }
-                } else {
-                    checkboxStatus.b1 = 0; 
-                    checkbox.b1.setFrames(2,0,1,0);
-                   gang1.b = false;
-                }
-                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            }
-            function actionCheckboxB2 () {
-                if ( checkboxStatus.b2 === 0 ) { 
-                    checkboxStatus.b2 = 1; 
-                    checkbox.b2.setFrames(1,1,1,0);
-                    gang2.b = true;
-                    if ( checkboxStatus.b1 === 1 ) {
-                        gang1.b = false;
-                        checkboxStatus.b1 = 0; 
-                        checkbox.b1.setFrames(2,0,1,0);
-                    } 
-                } else {
-                    checkboxStatus.b2 = 0;
-                    checkbox.b2.setFrames(2,0,1,0); 
-                    gang2.b = false;
-                }
-                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            }
-            function actionCheckboxC1 () {
-                if ( checkboxStatus.c1 === 0 ) {
-                    checkboxStatus.c1 = 1; 
-                    checkbox.c1.setFrames(1,1,1,0);
-                    gang1.c = true;
-                    if ( checkboxStatus.c2 === 1 ) { 
-                        gang2.c = false;
-                        checkboxStatus.c2 = 0; 
-                        checkbox.c2.setFrames(2,0,1,0);
-                    }
-                } else {
-                    checkboxStatus.c1 = 0; 
-                    checkbox.c1.setFrames(2,0,1,0);
-                    gang1.c = false;
-                }
-                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            }
-            function actionCheckboxC2 () {
-                if ( checkboxStatus.c2 === 0 ) { 
-                    checkboxStatus.c2 = 1; 
-                    checkbox.c2.setFrames(1,1,1,0);
-                    gang2.c = true;
-                    if ( checkboxStatus.c1 === 1 ) { 
-                        gang1.c = false;
-                        checkboxStatus.c1 = 0; 
-                        checkbox.c1.setFrames(2,0,1,0);
-                    } 
-                } else {
-                    checkboxStatus.c2 = 0;
-                    checkbox.c2.setFrames(2,0,1,0); 
-                    gang2.c = false;
-                }
-                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            }
-            function actionCheckboxD1 () {
-                if ( checkboxStatus.d1 === 0 ) {
-                    checkboxStatus.d1 = 1; 
-                    checkbox.d1.setFrames(1,1,1,0);
-                    gang1.d = true;
-                    if ( checkboxStatus.d2 === 1 ) { 
-                        gang2.d = false;
-                        checkboxStatus.d2 = 0; 
-                        checkbox.d2.setFrames(2,0,1,0);
-                    } 
-                } else { 
-                    checkboxStatus.d1 = 0; 
-                    checkbox.d1.setFrames(2,0,1,0); 
-                    gang1.d = false;
-                }
-                //channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            }
-            function actionCheckboxD2 () {
-                if ( checkboxStatus.d2 === 0 ) { 
-                    checkboxStatus.d2 = 1; 
-                    checkbox.d2.setFrames(1,1,1,0);
-                    gang2.d = true;
-                    if ( checkboxStatus.d1 === 1 ) {
-                        gang1.d = false; 
-                        checkboxStatus.d1 = 0; 
-                        checkbox.d1.setFrames(2,0,1,0);
-                    }
-                } else { 
-                    checkboxStatus.d2 = 0; 
-                    checkbox.d2.setFrames(2,0,1,0); 
-                    gang2.d = false;
-                }
-                //channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            }
 
             
             //======================
@@ -1055,7 +907,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG1 = game.add.graphics(0,0);
             sliderTrackG1.beginFill(frameLineColor, 1);
             sliderTrackG1.drawRect(positionGang1.x+263, positionGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG1 = game.add.button(positionGang1.x+233, positionGang1.y+165, 'sliderBar2', actionDragOnClickG1);
+            sliderBarG1 = game.add.button(positionGang1.x+233, positionGang1.y+165, 'sliderBar2');
             sliderBarG1.inputEnabled=true;
             sliderBarG1.input.useHandCursor = true;
             sliderBarG1.input.enableDrag();
@@ -1066,7 +918,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTrackG2 = game.add.graphics(0,0);
             sliderTrackG2.beginFill(frameLineColor, 1);
             sliderTrackG2.drawRect(positionGang2.x+263, positionGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
-            sliderBarG2 = game.add.button(positionGang2.x+233, positionGang2.y+165, 'sliderBar2', actionDragOnClickG2);
+            sliderBarG2 = game.add.button(positionGang2.x+233, positionGang2.y+165, 'sliderBar2');
             sliderBarG2.inputEnabled=true;
             sliderBarG2.input.useHandCursor = true;
             sliderBarG2.input.enableDrag();
@@ -1212,19 +1064,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             if (motor === 'a') {
-               channel.getKeyspace('dashboard').put('a', { 'speed': speed, 'direction': direction });
+                channel.getKeyspace('dashboard').put('a', { 'speed': speed, 'direction': direction });
+                if ( direction === 'f') {
+                    fButton.a.setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking
+                } else {
+                    rButton.a.setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking
+                }
             }
             if (motor === 'b') {
-               channel.getKeyspace('dashboard').put('b', { 'speed': speed, 'direction': direction });
+                channel.getKeyspace('dashboard').put('b', { 'speed': speed, 'direction': direction });
+                if ( direction === 'f') {
+                    fButton.b.setFrames(2,2,2,2); // show the button as down, in case keyboard button inputs were being used instead of clicking
+                } else {
+                    rButton.b.setFrames(2,2,2,2);
+                }
             }
             if (motor === 'c') {
-               channel.getKeyspace('dashboard').put('c', { 'speed': speed, 'direction': direction });
+                channel.getKeyspace('dashboard').put('c', { 'speed': speed, 'direction': direction });
+                if ( direction === 'f') {
+                    fButton.c.setFrames(2,2,2,2); // show the button as down, in case keyboard button inputs were being used instead of clicking
+                } else {
+                    rButton.c.setFrames(2,2,2,2);
+                }
             }
             if (motor === 'd') {
-               channel.getKeyspace('dashboard').put('d', { 'speed': speed, 'direction': direction });
+                channel.getKeyspace('dashboard').put('d', { 'speed': speed, 'direction': direction });
+                if ( direction === 'f') {
+                    fButton.d.setFrames(2,2,2,2); // show the button as down, in case keyboard button inputs were being used instead of clicking
+                } else {
+                    rButton.d.setFrames(2,2,2,2);
+                }
             }
         }
-
         function stopMotor( motor ) {
             var data = {};
             data.type = "motorStop";
@@ -1233,18 +1104,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.publish( data );
             if (data.port === 'a') {
                 channel.getKeyspace('dashboard').put('a', { 'speed': motorA.speed, 'direction': "stopped" });
+                fButton.a.setFrames(1,0,2,2); // set forward button back to its normal frames (even if it hadn't changed...)
+                rButton.a.setFrames(1,0,2,2); // set reverse button back to its normal frames (even if it hadn't changed...)
             }
             if (data.port === 'b') {
                 channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed, 'direction': "stopped" });
+                fButton.b.setFrames(1,0,2,2);
+                rButton.b.setFrames(1,0,2,2);
             }
             if (data.port === 'c') {
                 channel.getKeyspace('dashboard').put('c', { 'speed': motorC.speed, 'direction': "stopped" });
+                fButton.c.setFrames(1,0,2,2);
+                rButton.c.setFrames(1,0,2,2);
             }
             if (data.port === 'd') {
                 channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed, 'direction': "stopped" });
+                fButton.d.setFrames(1,0,2,2);
+                rButton.d.setFrames(1,0,2,2);
             }
         }
-
 
     /* Button-click functions */
         function actionInputOnClick () {
@@ -1285,7 +1163,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //pause();
         }
 
-        
         //=============================================================================
         /* Plus and Minus Buttons For Increase and Decreasing Motor Speeds (an alternative to clicking and dragging) */
         function actionDecreaseOnClickA() {
@@ -1521,7 +1398,138 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gang2.previousSpeed = gang2.speed;        
         }
 
-
+        function actionCheckboxA1 () {
+            if ( gang1.a === false ) { //the checkbox is UNCHECKED
+                checkbox.a1.setFrames(1,1,1,1); // over frame and out frame should now both show the box checked
+                gang1.a = true; // motor A is in gang 1
+                if ( gang2.a === true ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked, uncheck it now
+                    checkbox.a2.setFrames(2,0,1,0) // show other box as unchecked
+                    gang2.a = false; // motor A is no longer in gang 2
+                }
+            }
+            else { // the checkbox is CHECKED
+                //checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
+                gang1.a = false; // motor A is not in gang 1, so uncheck it now
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxA2 () {
+            if ( gang2.a === false ) { //the checkbox is UNCHECKED
+                checkbox.a2.setFrames(1,1,1,1); // over frame and out frame should now both show the box checked
+                gang2.a = true; // motor A is in gang 2
+                if ( gang1.a === true ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked, uncheck it now
+                    checkbox.a1.setFrames(2,0,1,0) // show other box as unchecked
+                    gang1.a = false; // motor A is no longer in gang 1
+                }
+            }
+            else { // the checkbox is CHECKED
+                checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
+                gang2.a = false; // motor A is not in gang 2, so uncheck it now
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        } 
+        function actionCheckboxB1 () {
+            if ( gang1.b === false ) {
+                checkbox.b1.setFrames(1,1,1,1);
+                gang1.b = true;
+                if ( gang2.b === true ) {
+                    checkbox.b2.setFrames(2,0,1,0);
+                    gang2.b = false;
+                }
+            } else {
+                checkbox.b1.setFrames(2,0,1,0);
+                gang1.b = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxB2 () {
+            if ( gang2.b === false ) { 
+                checkbox.b2.setFrames(1,1,1,1);
+                gang2.b = true;
+                if ( gang1.b === true ) {
+                    checkbox.b1.setFrames(2,0,1,0);
+                    gang1.b = false;
+                } 
+            } else {
+                checkbox.b2.setFrames(2,0,1,0); 
+                gang2.b = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxC1 () {
+            if ( gang1.c === false ) {
+                checkbox.c1.setFrames(1,1,1,0); 
+                gang1.c = true;
+                if ( gang2.c === true ) { 
+                    checkbox.c2.setFrames(2,0,1,0)
+                    gang2.c = false;
+                }
+            }
+            else {
+                checkbox.c1.setFrames(2,0,1,0);
+                gang1.c = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxC2 () {
+            if ( gang2.c === false ) { 
+                checkbox.c2.setFrames(1,1,1,0);
+                gang2.c = true;
+                if ( gang1.c === true ) {
+                    checkbox.c1.setFrames(2,0,1,0);
+                    gang1.c = false;
+                } 
+            } else {
+                checkbox.c2.setFrames(2,0,1,0); 
+                gang2.c = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxD1 () {
+            if ( gang1.d === false ) {
+                checkbox.d1.setFrames(1,1,1,0); 
+                gang1.d = true;
+                if ( gang2.d === true ) { 
+                    checkbox.d2.setFrames(2,0,1,0)
+                    gang2.d = false;
+                }
+            }
+            else {
+                checkbox.d1.setFrames(2,0,1,0);
+                gang1.d = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
+        console.log ("gang 1 speed: " + gang1.speed + " gang 1 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
+        function actionCheckboxD2 () {
+            if ( gang2.d === false ) { 
+                checkbox.d2.setFrames(1,1,1,0);
+                gang2.d = true;
+                if ( gang1.d === true ) {
+                    checkbox.d1.setFrames(2,0,1,0);
+                    gang1.d = false;
+                } 
+            } else {
+                checkbox.d2.setFrames(2,0,1,0); 
+                gang2.d = false;
+            }
+            channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
+        console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+        }
 
         //=============================================================================
     /* Draggable box functions */
@@ -1557,84 +1565,92 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
         function updateGang (key, speed, a, b, c, d) {
             if ( key === 'g1' ) {
-                gang1.speed = speed;
-                gang1.a = a;
-                gang1.b = b;
-                gang1.c = c;
-                gang1.d = d;
                 sliderBarG1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                gang1.speed = speed;
                 // need to also update checkboxes based on the new values:
-                if (gang1.a === true) {
-                    checkboxStatus.a1 = 1; // check it now
-                    checkbox.a1.setFrames(1,1,1,0);
-                } else if (gang1.a === false) {
-                    checkboxStatus.a1 = 0; // uncheck it now
-                    checkbox.a1.setFrames(2,0,1,0);
+                if ( gang1.a !== a ) {
+                    console.log ( "gang1.a is unequal to g1 a");
+                    if (a === true) {
+                        checkbox.a1.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.a1.setFrames(2,0,1,0);
+                    }
+                    gang1.a = a;
                 }
-                if (gang1.b === true) {
-                    checkboxStatus.b1 = 1; // check it now
-                    checkbox.b1.setFrames(1,1,1,0);
-                } else if (gang1.b === false) {
-                    checkboxStatus.b1 = 0; // uncheck it now
-                    checkbox.b1.setFrames(2,0,1,0);
+                if ( gang1.b !== b ) {
+                    if (b === true) {
+                        checkbox.b1.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.b1.setFrames(2,0,1,0);
+                    }
+                    gang1.b = b;
                 }
-                if (gang1.c === true) {
-                    checkboxStatus.c1 = 1; // check it now
-                    checkbox.c1.setFrames(1,1,1,0);
-                } else if (gang1.c === false) {
-                    checkboxStatus.c1 = 0; // uncheck it now
-                    checkbox.c1.setFrames(2,0,1,0);
+                if ( gang1.c !== c ) {
+                    if (c === true) {
+                        checkbox.c1.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.c1.setFrames(2,0,1,0);
+                    }
+                    gang1.c = c;
                 }
-                if (gang1.d === true) {
-                    checkboxStatus.d1 = 1; // check it now
-                    checkbox.d1.setFrames(1,1,1,0);
-                } else if (gang1.d === false) {
-                    checkboxStatus.d1 = 0; // uncheck it now
-                    checkbox.d1.setFrames(2,0,1,0);
+                if ( gang1.d !== d ) {
+                    if (d === true) {
+                        checkbox.d1.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.d1.setFrames(2,0,1,0);
+                    }
+                    gang1.d = d;
                 }
             }
             if ( key === 'g2' ) {
-                gang2.speed = speed;
-                gang2.a = a;
-                gang2.b = b;
-                gang2.c = c;
-                gang2.d = d;
                 sliderBarG2.y = positionGang2.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-                // need to also update checkboxes based on the new values:
-                if (gang2.a === true) {
-                    checkboxStatus.a2 = 1; // check it now
-                    checkbox.a2.setFrames(1,1,1,0);
-                } else if (gang2.a === false) {
-                    checkboxStatus.a2 = 0; // uncheck it now
-                    checkbox.a2.setFrames(2,0,1,0);
+                gang2.speed = speed;
+                if ( gang2.a !== a ) {
+                    console.log ( "gang2.a is unequal to g2 a");
+                    if (a === true) {
+                        checkbox.a2.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.a2.setFrames(2,0,1,0);
+                    }
+                    gang2.a = a;
                 }
-                if (gang2.b === true) {
-                    checkboxStatus.b2 = 1; // check it now
-                    checkbox.b2.setFrames(1,1,1,0);
-                } else if (gang2.b === false) {
-                    checkboxStatus.b2 = 0; // uncheck it now
-                    checkbox.b2.setFrames(2,0,1,0);
+                if ( gang2.b !== b ) {
+                    if (b === true) {
+                        checkbox.b2.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.b2.setFrames(2,0,1,0);
+                    }
+                    gang2.b = b;
                 }
-                if (gang2.c === true) {
-                    checkboxStatus.c2 = 1; // check it now
-                    checkbox.c2.setFrames(1,1,1,0);
-                } else if (gang2.c === false) {
-                    checkboxStatus.c2 = 0; // uncheck it now
-                    checkbox.c2.setFrames(2,0,1,0);
+                if ( gang2.c !== c ) {
+                    if (c === true) {
+                        checkbox.c2.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.c2.setFrames(2,0,1,0);
+                    }
+                    gang2.c = c;
                 }
-                if (gang2.d === true) {
-                    checkboxStatus.d2 = 1; // check it now
-                    checkbox.d2.setFrames(1,1,1,0);
-                } else if (gang2.d === false) {
-                    checkboxStatus.d2 = 0; // uncheck it now
-                    checkbox.d2.setFrames(2,0,1,0);
+                if ( gang2.d !== d ) {
+                    if (d === true) {
+                        checkbox.d2.setFrames(1,1,1,0);
+                    } 
+                    else {
+                        checkbox.d2.setFrames(2,0,1,0);
+                    }
+                    gang2.d = d;
                 }
             }
         }
 
         /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
-        //uncomment the comments when we're ready for the gang dashboard sync feature
             console.log ("updating speed of motor " + key + " to " + speed);
             if ( key === 'a' ) { 
                 motorA.speed = speed;
@@ -1659,7 +1675,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Rotation of motor position dials */
-
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
             if ( key === 'a' ) {
                 t.a2 = game.time.time;
@@ -1673,7 +1688,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else if (direction === 'r') {
                     needleA.angle = needleA.angle - motorA.speed*t.aDelta/1000; //counterclockwise
                 }
-                t.a1 = t.a2; //
+                t.a1 = t.a2; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
             }
             if ( key === 'b' ) {
                 t.b2 = game.time.time;
@@ -1687,6 +1702,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else if (direction === 'r') {
                     needleB.angle = needleB.angle - motorB.speed*t.bDelta/1000;
                 }
+                t.b1 = t.b2;
             }
             if ( key === 'c' ) {
                 t.c2 = game.time.time;
@@ -1700,6 +1716,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else if (direction === 'r') {
                     needleC.angle = needleC.angle - motorC.speed*t.cDelta/1000;
                 }
+                t.c1 = t.c2;
             }
             if ( key === 'd' ) {
                 t.d2 = game.time.time;
@@ -1713,13 +1730,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 else if (direction === 'r') {
                     needleD.angle = needleD.angle - motorD.speed*t.dDelta/1000;
                 }
+                t.d1 = t.d2;
             }
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
-        // Comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
+        // May need to comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
             if ( key === 'a' && typeof(motorData) !== "undefined" ) {
                 if ( motorData.moving === false ) {
-                    needleA.angle = motorData.position; //value published to channel by bot
+                    needleA.angle = motorData.position; //value that was published to channel by bot
                 }
             }
             if ( key === 'b' && typeof(motorData) !== "undefined" ) {
@@ -1761,14 +1779,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     updateSpeed(key, val.speed);
                 }
             }
-             if ( key === 'g1' ) {
-                if ( gang1.speed !== val.speed || gang1.a != val.a || gang1.b != val.b || gang1.c != val.c || gang1.d != val.d ) {
+            if ( key === 'g1' ) {
+                if ( gang1.speed !== val.speed || gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) {
                     // && gang1.previousSpeed !== val.speed 
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
             }
             if ( key === 'g2' ) {
-                if ( gang2.speed !== val.speed || gang2.a != val.a || gang2.b != val.b || gang2.c != val.c || gang2.d != val.d ) {
+                if ( gang2.speed !== val.speed || gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
                     // && gang2.previousSpeed !== val.speed 
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
@@ -1821,57 +1839,58 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* Add something to show the set speed of a motor on all users' dashboards whenever a user adjusts it. Show it on the slider */
             if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
-                if ( typeof(dashMotorA) !== "undefined") {
+                if ( typeof(dashMotorA) !== "undefined" ) {
                     getDashboardValues('a', dashMotorA);
                 }               
             }
             if (sliderBarState.b === "up") {
                 var dashMotorB = channel.getKeyspace('dashboard').get('b');
-                if ( typeof(dashMotorB) !== "undefined") {
+                if ( typeof(dashMotorB) !== "undefined" ) {
                     getDashboardValues('b', dashMotorB);
                 }
             }
             if (sliderBarState.c === "up") {
                 var dashMotorC = channel.getKeyspace('dashboard').get('c'); 
-                if ( typeof(dashMotorC) !== "undefined") {
+                if ( typeof(dashMotorC) !== "undefined" ) {
                     getDashboardValues('c', dashMotorC);
                 }
             }
             if (sliderBarState.d === "up") {
                 var dashMotorD = channel.getKeyspace('dashboard').get('d'); 
-                if ( typeof(dashMotorD) !== "undefined") {
+                if ( typeof(dashMotorD) !== "undefined" ) {
                     getDashboardValues('d', dashMotorD);
                 }
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
             if (sliderBarState.g1 === "up") {
                 var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
-                if ( typeof(dashGang1) !== "undefined") {
-        ////////            getDashboardValues('g1', dashGang1);
+                if ( typeof(dashGang1) !== "undefined" ) {
+                    getDashboardValues('g1', dashGang1);
                 }
             }
             if (sliderBarState.g2 === "up") {
                 var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
-                if ( typeof(dashGang2) !== "undefined") {
-        ////////            getDashboardValues('g2', dashGang2);
+                if ( typeof(dashGang2) !== "undefined" ) {
+                    getDashboardValues('g2', dashGang2);
                 }
             }
 
+            //var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
-            if ( typeof(dashMotorA) !== "undefined") {
-                //var tA2 = game.time.time;
+            if ( typeof(dashMotorA) !== "undefined" ) {
                 getDialValues('a', dashMotorA);
+                //getDialValues('a', dialDataA);
             }
             var dialDataB = channel.getKeyspace('dashboard').get('b');
-            if ( typeof(dashMotorB) !== "undefined") {
+            if ( typeof(dashMotorB) !== "undefined" ) {
                 getDialValues('b', dashMotorB);
             }
             var dialDataC = channel.getKeyspace('dashboard').get('c'); 
-            if ( typeof(dashMotorC) !== "undefined") {
+            if ( typeof(dashMotorC) !== "undefined" ) {
                 getDialValues('c', dashMotorC);
             }
             var dialDataD = channel.getKeyspace('dashboard').get('d'); 
-            if ( typeof(dashMotorD) !== "undefined") {
+            if ( typeof(dashMotorD) !== "undefined" ) {
                 getDialValues('d', dashMotorD);
             }
 

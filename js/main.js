@@ -292,18 +292,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setMotorInfo( key, val ) {
             if( key === 'a') {
                 motorA.status =1;
-                needleA.angle = val.position; // THE ERROR WE GET HERE IS BECAUSE THE NEEDLE VARIABLES DON'T GET THEIR SPRITES UNTIL LATER
+                //if ( typeof(needleA) !== "undefined" ) {
+                    needleA.angle = val.position; // THE ERROR WE GET HERE IS BECAUSE THE NEEDLE VARIABLES DON'T GET THEIR SPRITES UNTIL LATER
+                //}
                 if ( val.moving ) { // WE SHOULD ADDRESS THIS ERROR AFTER WE GET OTHER THINGS WORKING AND THEN START USING A NEEDLE OBJECT, WE MIGHT HAVE TO DO SOME REARRANGING
                     motorA.status =1;
-                    statusLightA.animations.play('pluggedIn');
+                    //if ( typeof (statusLightA) !== "undefined" ) {
+                        statusLightA.animations.play('pluggedIn');
+                    //}
                 }
                 else if ( val.stalled ) {
                     motorA.status =2;
-                    statusLightA.animations.play('stalled');
+                    //if ( typeof (statusLightA) !== "undefined" ) {
+                        statusLightA.animations.play('stalled');
+                    //}
                 } 
                 else {
                     motorA.status =0;
-                    statusLightA.animations.play('unplugged');
+                    //if ( typeof (statusLightA) !== "undefined" ) {
+                        statusLightA.animations.play('unplugged');
+                    //}
                 } 
                 // is there a way to handle simply whether or not there is a motor plugged into a port?
                     //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged') when there is not a motor plugged into port A, for example

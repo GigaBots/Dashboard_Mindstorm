@@ -102,14 +102,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var needleA, needleB, needleC, needleD;
         var frameDials;
         var positionDial = { x : 674, y : 136 }
-        var t = {a1 : 0, a2 : 0, aDelta : 0, b1 : 0 , b2 : 0, bDelta : 0, c1 : 0, c2 : 0, cDelta : 0, d1 : 0, d2 : 0, dDelta : 0}
-        var tapprox = 30; 
-
-        /* Big Bang Keyspace Variables */
-        var dashMotor = { 'a' : 0, 'b' : 0, 'c' : 0, 'd' : 0 }
-        var motorData = { 'a' : 0, 'b' : 0, 'c' : 0, 'd' : 0 }
-        var dialData = { 'a' : 0, 'b' : 0, 'c' : 0, 'd' : 0 }
-        var dashGang = { 'g1' : 0, 'g2' : 0 }
+        var t1 = { a : 0, b : 0, c : 0, d : 0 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
@@ -1679,61 +1672,62 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Rotation of motor position dials */
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
+            var tapprox = 30;
             if ( key === 'a' ) {
-                t.a2 = game.time.time;
-                t.aDelta = t.a2 - t.a1; //change in time in milliseconds
-                if (t.aDelta >= 80) {
-                    t.aDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+                var t2a = game.time.time;
+                var taDelta = t2a - t1.a; //change in time in milliseconds
+                if (taDelta >= 80) {
+                    taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
                 }
                 if (direction === 'f') {
-                    needleA.angle = needleA.angle + motorA.speed*t.aDelta/1000; //clockwise
+                    needleA.angle = needleA.angle + motorA.speed*taDelta/1000; //clockwise
                 }
                 else if (direction === 'r') {
-                    needleA.angle = needleA.angle - motorA.speed*t.aDelta/1000; //counterclockwise
+                    needleA.angle = needleA.angle - motorA.speed*taDelta/1000; //counterclockwise
                 }
-                t.a1 = t.a2; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
+                t1.a = t2a; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
             }
             if ( key === 'b' ) {
-                t.b2 = game.time.time;
-                t.bDelta = t.b2 - t.b1;
-                if (t.bDelta >= 80) {
-                    t.bDelta = tapprox; 
+                var t2b = game.time.time;
+                var tbDelta = t2b - t1.b;
+                if (tbDelta >= 80) {
+                    tbDelta = tapprox; 
                 }                
                 if (direction === 'f') {
-                    needleB.angle = needleB.angle + motorB.speed*t.bDelta/1000;
+                    needleB.angle = needleB.angle + motorB.speed*tbDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleB.angle = needleB.angle - motorB.speed*t.bDelta/1000;
+                    needleB.angle = needleB.angle - motorB.speed*tbDelta/1000;
                 }
-                t.b1 = t.b2;
+                t1.b = t2b;
             }
             if ( key === 'c' ) {
-                t.c2 = game.time.time;
-                t.cDelta = t.c2 - t.c1;
-                if (t.cDelta >= 80) {
-                    t.cDelta = tapprox; 
+                var t2c = game.time.time;
+                var tcDelta = t2c - t1.c;
+                if (tcDelta >= 80) {
+                    tcDelta = tapprox; 
                 } 
                 if (direction === 'f') {
-                    needleC.angle = needleC.angle + motorC.speed*t.cDelta/1000;
+                    needleC.angle = needleC.angle + motorC.speed*tcDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleC.angle = needleC.angle - motorC.speed*t.cDelta/1000;
+                    needleC.angle = needleC.angle - motorC.speed*tcDelta/1000;
                 }
-                t.c1 = t.c2;
+                t1.c = t2c;
             }
             if ( key === 'd' ) {
-                t.d2 = game.time.time;
-                t.dDelta = t.d2 - t.d1;
-                if (t.dDelta >= 80) {
-                    t.dDelta = tapprox; 
+                var t2d = game.time.time;
+                var tdDelta = t2d - t1.d;
+                if (tdDelta >= 80) {
+                    tdDelta = tapprox; 
                 } 
                 if (direction === 'f') {
-                    needleD.angle = needleD.angle + motorD.speed*t.dDelta/1000;
+                    needleD.angle = needleD.angle + motorD.speed*tdDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleD.angle = needleD.angle - motorD.speed*t.dDelta/1000;
+                    needleD.angle = needleD.angle - motorD.speed*tdDelta/1000;
                 }
-                t.d1 = t.d2;
+                t1.d = t2d;
             }
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
@@ -1806,8 +1800,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     moveDial ('a', val.direction); //smooth-ish linear interpolation
                 } else if ( val.direction === "stopped" ) {
                     channel.getKeyspace('dashboard').put('a', { 'speed': motorA.speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
-                    motorData.a = channel.channelData.get('a');
-                    updateDial ('a', motorData.a); // update at the next second to the value in the message sent by the bot
+                    var motorDataA = channel.channelData.get('a');
+                    updateDial ('a', motorDataA); // update at the next second to the value in the message sent by the bot
                 }
             }
             if ( key === 'b' ) {
@@ -1815,8 +1809,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     moveDial ('b', val.direction);
                 } else if ( val.direction === "stopped" ) {
                     channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed }); 
-                    motorData.b = channel.channelData.get('b');
-                    updateDial ('b', motorData.b); 
+                    var motorDataB = channel.channelData.get('b');
+                    updateDial ('b', motorDataB); 
                 }
             }
             if ( key === 'c' ) {
@@ -1824,8 +1818,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     moveDial ('c', val.direction); 
                 } else if ( val.direction === "stopped" ) {
                     channel.getKeyspace('dashboard').put('c', { 'speed': motorC.speed }); 
-                    motorData.c = channel.channelData.get('c');
-                    updateDial ('c', motorData.c); 
+                    var motorDataC = channel.channelData.get('c');
+                    updateDial ('c', motorDataC); 
                 }
             }
             if ( key === 'd' ) {
@@ -1833,8 +1827,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     moveDial ('d', val.direction);
                 } else if ( val.direction === "stopped" ) {
                     channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed }); 
-                    motorData.d = channel.channelData.get('d');
-                    updateDial ('d', motorData.d);
+                    var motorDataD = channel.channelData.get('d');
+                    updateDial ('d', motorDataD);
                 }
             }
         }
@@ -1845,58 +1839,58 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
             /* Add something to show the set speed of a motor on all users' dashboards whenever a user adjusts it. Show it on the slider */
             if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
-                dashMotor.a = channel.getKeyspace('dashboard').get('a'); 
-                if ( typeof(dashMotor.a) !== "undefined" ) {
-                    getDashboardValues('a', dashMotor.a);
+                var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
+                if ( typeof(dashMotorA) !== "undefined" ) {
+                    getDashboardValues('a', dashMotorA);
                 }               
             }
             if (sliderBarState.b === "up") {
-                dashMotor.b = channel.getKeyspace('dashboard').get('b');
-                if ( typeof(dashMotor.b) !== "undefined" ) {
-                    getDashboardValues('b', dashMotor.b);
+                var dashMotorB = channel.getKeyspace('dashboard').get('b');
+                if ( typeof(dashMotorB) !== "undefined" ) {
+                    getDashboardValues('b', dashMotorB);
                 }
             }
             if (sliderBarState.c === "up") {
-                dashMotor.c = channel.getKeyspace('dashboard').get('c'); 
-                if ( typeof(dashMotor.c) !== "undefined" ) {
-                    getDashboardValues('c', dashMotor.c);
+                var dashMotorC = channel.getKeyspace('dashboard').get('c'); 
+                if ( typeof(dashMotorC) !== "undefined" ) {
+                    getDashboardValues('c', dashMotorC);
                 }
             }
             if (sliderBarState.d === "up") {
-                dashMotor.d = channel.getKeyspace('dashboard').get('d'); 
-                if ( typeof(dashMotor.d) !== "undefined" ) {
-                    getDashboardValues('d', dashMotor.d);
+                var dashMotorD = channel.getKeyspace('dashboard').get('d'); 
+                if ( typeof(dashMotorD) !== "undefined" ) {
+                    getDashboardValues('d', dashMotorD);
                 }
             }
             // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
             if (sliderBarState.g1 === "up") {
-                dashGang.g1 = channel.getKeyspace('dashboard').get('g1'); 
-                if ( typeof(dashGang.g1) !== "undefined" ) {
-                    getDashboardValues('g1', dashGang.g1);
+                var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
+                if ( typeof(dashGang1) !== "undefined" ) {
+                    getDashboardValues('g1', dashGang1);
                 }
             }
             if (sliderBarState.g2 === "up") {
-                dashGang.g2 = channel.getKeyspace('dashboard').get('g2'); 
-                if ( typeof(dashGang.g2) !== "undefined" ) {
-                    getDashboardValues('g2', dashGang.g2);
+                var dashGang2 = channel.getKeyspace('dashboard').get('g2'); 
+                if ( typeof(dashGang2) !== "undefined" ) {
+                    getDashboardValues('g2', dashGang2);
                 }
             }
-    //======= define dashMotor motorData, dashGang and (dialData?) as objects at the beginning of the game ?? -John ==========
-            dialData.a = channel.getKeyspace('dashboard').get('a'); 
-            if ( typeof(dialData.a) !== "undefined" ) {
-                getDialValues('a', dialData.a);
+
+            var dialDataA = channel.getKeyspace('dashboard').get('a'); 
+            if ( typeof(dialDataA) !== "undefined" ) {
+                getDialValues('a', dialDataA);
             }
-            dialData.b = channel.getKeyspace('dashboard').get('b');
-            if ( typeof(dialData.b) !== "undefined" ) {
-                getDialValues('b', dialData.b);
+            var dialDataB = channel.getKeyspace('dashboard').get('b');
+            if ( typeof(dialDataB) !== "undefined" ) {
+                getDialValues('b', dialDataB);
             }
-            dialData.c = channel.getKeyspace('dashboard').get('c'); 
-            if ( typeof(dialData.c) !== "undefined" ) {
-                getDialValues('c', dialData.c);
+            var dialDataC = channel.getKeyspace('dashboard').get('c'); 
+            if ( typeof(dialDataC) !== "undefined" ) {
+                getDialValues('c', dialDataC);
             }
-            dialData.d = channel.getKeyspace('dashboard').get('d'); 
+            var dialDataD = channel.getKeyspace('dashboard').get('d'); 
             if ( typeof(dialDataD) !== "undefined" ) {
-                getDialValues('d', dialData.d);
+                getDialValues('d', dialDataD);
             }
 
              // get text from DialA text area      

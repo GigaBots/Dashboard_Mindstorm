@@ -1948,7 +1948,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // evaluate their input code
                 eval(theirCode);
 
-
+/*
 ============================================
                 // store theirCode in an array to be accessed if they press the up key
                 codeArray[i] = theirCode;
@@ -1958,10 +1958,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 // evaluate their DialA number
                 needleA.angle = parseFloat(userDialA, 10);
-============================================== 
+============================================== */
             } // end .onclick
 
-<<<<<<< HEAD
+
             
 
 
@@ -1972,9 +1972,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log(codeArray[2]);
 */
 
-            
-=======
->>>>>>> FETCH_HEAD
         } // end update
         /*
         function pause() {

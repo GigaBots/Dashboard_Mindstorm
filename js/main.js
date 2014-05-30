@@ -251,6 +251,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var codeError;
         var clicked = false;
         var cursorOverEditor;
+        // array for textEditor code inputs to be stored
+        var codeArray = [];
+        var i = 0;
 
         //===================================================
 
@@ -1854,20 +1857,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
 
                 // evaluate their input code
-                console.log(theirCode);
                 eval(theirCode);
+
+
+============================================
+                // store theirCode in an array to be accessed if they press the up key
+                codeArray[i] = theirCode;
+                i = i + 1;
+                if (i===2) {
+                    console.log(codeArray[0]);
+                }
                 // evaluate their DialA number
                 needleA.angle = parseFloat(userDialA, 10);
-                
+============================================== 
             } // end .onclick
 
             
 
+
+            // When up on keyboard is pressed
+            /*if (game.input.keyboard.(Phaser.Keyboard.UP)) {
+                $("#textEditor").
+                // place code from previous input (stored in codeArray) in textEditor
+                console.log(codeArray[2]);
+*/
+
+            
         } // end update
 
         $("#textEditor").hover( function () { // code for while hovering over textEditor
             cursorOverEditor = true;
             // Access this variable to determine whether or not user is over textEditor or gameWorld
+
         }, function() { // code for while not hovering over textEditor
             cursorOverEditor = false;
 

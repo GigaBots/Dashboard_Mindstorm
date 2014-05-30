@@ -427,7 +427,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             var space = game.add.sprite(0,51,'space');
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,0.85); // 0.85 opacity
+            backgroundBox.beginFill(0x313233,0.73); // 0.73 opacity
             backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
 
             backgroundBottom = game.add.graphics(0,0);

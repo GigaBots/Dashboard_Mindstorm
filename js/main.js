@@ -61,13 +61,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var frameMotorStatus, labelMotorStatus = "Motors";
         var positionMotorStatus = { x : 541, y : 66 }
         var frameSensorStatus, labelSensorStatus = "Sensors";
-        var positionSensorStatus = { x : 681, y : 66}
-        
+        var positionSensorStatus = { x : 681, y : 66}        
         var labelMotorStatus;
-
         var labelMotors = { a : "A", b : "B", c : "C", d : "D" }
         var labelSensors = { e : "1", f : "2", g : "3", h : "4" }
-        
         var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
         var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
 
@@ -83,12 +80,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionMotorD = { x : 295, y : 436 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
-        // forward and reverse
+        /* Forward and reverse */
         var fButton;
         var rButton;
         var directionA = 1, directionB = 1, directionC = 1, directionD = 1, directionG1 = 1, directionG2 = 1; // forward = 1, reverse = -1
 
-        // speed
+        /* Speed */
         var sliderLabel;
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
         var sliderBarState = { a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up" }
@@ -98,14 +95,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var speed;
         var speedRange = [0, 100, 200, 300, 400, 500, 600, 700];
 
-        // rotation position         
+        /* Rotational position */    
         var labelRotation = "Motor Rotational Positions";
         var dialA, dialB, dialC, dialD;
         var labelDial = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D" }
         var needleA, needleB, needleC, needleD;
         var frameDials;
         var positionDial = { x : 674, y : 136 }
-        var t = {a1 : 0, a2 : 0, aDelta : 0, b1 : 0 , b2 : 0, bDelta : 0, c1 : 0, c2 : 0, cDelta : 0, d1 : 0, d2 : 0, dDelta : 0}
+        var t1 = { a : 0, b : 0, c : 0, d : 0 }
+
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var labelMotorGang;
@@ -588,14 +586,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
             /* set different frames for buttons out, over, down, and up */
-            fButton.a.setFrames(1,0,2,2);
-            rButton.a.setFrames(1,0,2,2);
-            fButton.b.setFrames(1,0,2,2);
-            rButton.b.setFrames(1,0,2,2);
-            fButton.c.setFrames(1,0,2,2);
-            rButton.c.setFrames(1,0,2,2);
-            fButton.d.setFrames(1,0,2,2);
-            rButton.d.setFrames(1,0,2,2);
+            fButton.a.setFrames(1,0,2,0);
+            rButton.a.setFrames(1,0,2,0);
+            fButton.b.setFrames(1,0,2,0);
+            rButton.b.setFrames(1,0,2,0);
+            fButton.c.setFrames(1,0,2,0);
+            rButton.c.setFrames(1,0,2,0);
+            fButton.d.setFrames(1,0,2,0);
+            rButton.d.setFrames(1,0,2,0);
 
             /* change cursor to a hand when hovering over the buttons */
             fButton.a.input.useHandCursor = true;
@@ -726,15 +724,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function fGangButtonDownAction () {
                 console.log("onActionDownForwardGang"); 
                 if ( this.a === true) {
+                    motorA.previousSpeed = motorA.speed = this.speed;
                     moveMotor( "a", "f", this.speed );
                 }
                 if ( this.b === true) {
+                    motorB.previousSpeed = motorB.speed = this.speed;
                     moveMotor( "b", "f", this.speed );
                 }
                 if ( this.c === true) {
+                    motorC.previousSpeed = motorC.speed = this.speed;
                     moveMotor( "c", "f", this.speed );
                 }
                 if ( this.d === true) {
+                    motorD.previousSpeed = motorD.speed = this.speed;
                     moveMotor( "d", "f", this.speed );
                 }
             }
@@ -757,15 +759,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function rGangButtonDownAction () {
                 console.log("onActionDownReverseGang"); 
                 if ( this.a === true) {
+                    motorA.previousSpeed = motorA.speed = this.speed;
                     moveMotor( "a", "r", this.speed );
                 }
                 if ( this.b === true) {
+                    motorB.previousSpeed = motorB.speed = this.speed;
                     moveMotor( "b", "r", this.speed );
                 }
                 if ( this.c === true) {
+                    motorC.previousSpeed = motorC.speed = this.speed;
                     moveMotor( "c", "r", this.speed );
                 }
                 if ( this.d === true) {
+                    motorD.previousSpeed = motorD.speed = this.speed;
                     moveMotor( "d", "r", this.speed );
                 }
             }
@@ -1105,47 +1111,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.publish( data );
             if (data.port === 'a') {
                 channel.getKeyspace('dashboard').put('a', { 'speed': motorA.speed, 'direction': "stopped" });
-                fButton.a.setFrames(1,0,2,2); // set forward button back to its normal frames (even if it hadn't changed...)
-                rButton.a.setFrames(1,0,2,2); // set reverse button back to its normal frames (even if it hadn't changed...)
+                fButton.a.setFrames(1,0,2,0); // set forward button back to its normal frames (even if it hadn't changed...)
+                rButton.a.setFrames(1,0,2,0); // set reverse button back to its normal frames (even if it hadn't changed...)
             }
             if (data.port === 'b') {
                 channel.getKeyspace('dashboard').put('b', { 'speed': motorB.speed, 'direction': "stopped" });
-                fButton.b.setFrames(1,0,2,2);
-                rButton.b.setFrames(1,0,2,2);
+                fButton.b.setFrames(1,0,2,0);
+                rButton.b.setFrames(1,0,2,0);
             }
             if (data.port === 'c') {
                 channel.getKeyspace('dashboard').put('c', { 'speed': motorC.speed, 'direction': "stopped" });
-                fButton.c.setFrames(1,0,2,2);
-                rButton.c.setFrames(1,0,2,2);
+                fButton.c.setFrames(1,0,2,0);
+                rButton.c.setFrames(1,0,2,0);
             }
             if (data.port === 'd') {
                 channel.getKeyspace('dashboard').put('d', { 'speed': motorD.speed, 'direction': "stopped" });
-                fButton.d.setFrames(1,0,2,2);
-                rButton.d.setFrames(1,0,2,2);
+                fButton.d.setFrames(1,0,2,0);
+                rButton.d.setFrames(1,0,2,0);
             }
         }
 
     /* Button-click functions */
-        function actionInputOnClick () {
-            game.world.remove(screenMessage.messageDisplay1); // remove any messages present
-            game.world.remove(screenMessage.messageDisplay2);
-            game.world.remove(screenMessage.messageDisplay3);
-            messageDisplay = prompt("What would you like to display on the GigaBot's LCD screen?");
-
-            var messageDisplay1 = messageDisplay.substring(0,20);
-            var messageDisplay2 = messageDisplay.substring(20,40);
-            var messageDisplay3 = messageDisplay.substring(40,60);
-
-            if ( messageDisplay.length > 60 ) {
-                alert("Sorry, too many characters! The following will be displayed on the screen: \n \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3);
-            }
-            screenMessage.messageDisplay1 = game.add.text(positionScreen.x+13, positionScreen.y+37, messageDisplay1, messageStyle);
-            screenMessage.messageDisplay2 = game.add.text(positionScreen.x+13, positionScreen.y+51, messageDisplay2, messageStyle);
-            screenMessage.messageDisplay3 = game.add.text(positionScreen.x+13, positionScreen.y+65, messageDisplay3, messageStyle);
-
-            //screenMessage.messageDisplay1 = game.add.text(positionScreen.x+13, positionScreen.y+33, messageDisplay1, messageStyle);
-        }
-
         function actionResumeOnClick () {
             // resume receiving data?
             dashboardStatus = 1;
@@ -1162,6 +1148,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             pauseButton.input.useHandCursor = false;
             resumeButton.input.useHandCursor = true;
             //pause();
+        }
+        function actionInputOnClick () {
+            game.world.remove(screenMessage.messageDisplay1); // remove any messages present
+            game.world.remove(screenMessage.messageDisplay2);
+            game.world.remove(screenMessage.messageDisplay3);
+            messageDisplay = prompt("What would you like to display on the GigaBot's LCD screen?");
+            var messageDisplay1 = messageDisplay.substring(0,20);
+            var messageDisplay2 = messageDisplay.substring(20,40);
+            var messageDisplay3 = messageDisplay.substring(40,60);
+            if ( messageDisplay.length > 60 ) {
+                alert("Sorry, too many characters! The following will be displayed on the screen: \n \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3);
+            }
+            screenMessage.messageDisplay1 = game.add.text(positionScreen.x+13, positionScreen.y+37, messageDisplay1, messageStyle);
+            screenMessage.messageDisplay2 = game.add.text(positionScreen.x+13, positionScreen.y+51, messageDisplay2, messageStyle);
+            screenMessage.messageDisplay3 = game.add.text(positionScreen.x+13, positionScreen.y+65, messageDisplay3, messageStyle);
         }
 
         //=============================================================================
@@ -1447,7 +1448,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxB2 () {
             if ( gang2.b === false ) { 
@@ -1463,7 +1463,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxC1 () {
             if ( gang1.c === false ) {
@@ -1480,7 +1479,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxC2 () {
             if ( gang2.c === false ) { 
@@ -1496,7 +1494,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxD1 () {
             if ( gang1.d === false ) {
@@ -1513,7 +1510,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 1 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
         function actionCheckboxD2 () {
             if ( gang2.d === false ) { 
@@ -1529,7 +1525,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace('dashboard').put('g1', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
             channel.getKeyspace('dashboard').put('g2', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
         }
 
         //=============================================================================
@@ -1571,7 +1566,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     gang1.speed = speed;
                 }
                 if ( gang1.a !== a ) {
-                    console.log ( "gang1.a is unequal to g1 a");
                     if (a === true) {
                         checkbox.a1.setFrames(1,1,1,1);
                     } 
@@ -1615,7 +1609,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     gang2.speed = speed;
                 }
                 if ( gang2.a !== a ) {
-                    console.log ( "gang2.a is unequal to g2 a");
                     if (a === true) {
                         checkbox.a2.setFrames(1,1,1,1);
                     } 
@@ -1682,61 +1675,62 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Rotation of motor position dials */
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
+            var tapprox = 30;
             if ( key === 'a' ) {
-                t.a2 = game.time.time;
-                t.aDelta = t.a2 - t.a1; //change in time in milliseconds
-                if (t.aDelta >= 80) {
-                    t.aDelta = 28; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+                var t2a = game.time.time;
+                var taDelta = t2a - t1.a; //change in time in milliseconds
+                if (taDelta >= 80) {
+                    taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
                 }
                 if (direction === 'f') {
-                    needleA.angle = needleA.angle + motorA.speed*t.aDelta/1000; //clockwise
+                    needleA.angle = needleA.angle + motorA.speed*taDelta/1000; //clockwise
                 }
                 else if (direction === 'r') {
-                    needleA.angle = needleA.angle - motorA.speed*t.aDelta/1000; //counterclockwise
+                    needleA.angle = needleA.angle - motorA.speed*taDelta/1000; //counterclockwise
                 }
-                t.a1 = t.a2; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
+                t1.a = t2a; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
             }
             if ( key === 'b' ) {
-                t.b2 = game.time.time;
-                t.bDelta = t.b2 - t.b1;
-                if (t.bDelta >= 80) {
-                    t.bDelta = 28; 
+                var t2b = game.time.time;
+                var tbDelta = t2b - t1.b;
+                if (tbDelta >= 80) {
+                    tbDelta = tapprox; 
                 }                
                 if (direction === 'f') {
-                    needleB.angle = needleB.angle + motorB.speed*t.bDelta/1000;
+                    needleB.angle = needleB.angle + motorB.speed*tbDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleB.angle = needleB.angle - motorB.speed*t.bDelta/1000;
+                    needleB.angle = needleB.angle - motorB.speed*tbDelta/1000;
                 }
-                t.b1 = t.b2;
+                t1.b = t2b;
             }
             if ( key === 'c' ) {
-                t.c2 = game.time.time;
-                t.cDelta = t.c2 - t.c1;
-                if (t.cDelta >= 80) {
-                    t.cDelta = 28; 
+                var t2c = game.time.time;
+                var tcDelta = t2c - t1.c;
+                if (tcDelta >= 80) {
+                    tcDelta = tapprox; 
                 } 
                 if (direction === 'f') {
-                    needleC.angle = needleC.angle + motorC.speed*t.cDelta/1000;
+                    needleC.angle = needleC.angle + motorC.speed*tcDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleC.angle = needleC.angle - motorC.speed*t.cDelta/1000;
+                    needleC.angle = needleC.angle - motorC.speed*tcDelta/1000;
                 }
-                t.c1 = t.c2;
+                t1.c = t2c;
             }
             if ( key === 'd' ) {
-                t.d2 = game.time.time;
-                t.dDelta = t.d2 - t.d1;
-                if (t.dDelta >= 80) {
-                    t.dDelta = 28; 
+                var t2d = game.time.time;
+                var tdDelta = t2d - t1.d;
+                if (tdDelta >= 80) {
+                    tdDelta = tapprox; 
                 } 
                 if (direction === 'f') {
-                    needleD.angle = needleD.angle + motorD.speed*t.dDelta/1000;
+                    needleD.angle = needleD.angle + motorD.speed*tdDelta/1000;
                 }
                 else if (direction === 'r') {
-                    needleD.angle = needleD.angle - motorD.speed*t.dDelta/1000;
+                    needleD.angle = needleD.angle - motorD.speed*tdDelta/1000;
                 }
-                t.d1 = t.d2;
+                t1.d = t2d;
             }
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
@@ -1884,7 +1878,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     getDashboardValues('g2', dashGang2);
                 }
             }
-    //======= define dashMotor motorData, dashGang and (dialData?) as objects at the beginning of the game ?? -John ==========
+
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
             if ( typeof(dialDataA) !== "undefined" ) {
                 getDialValues('a', dialDataA);

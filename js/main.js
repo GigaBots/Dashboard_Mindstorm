@@ -1882,27 +1882,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
     //======= define dashMotor motorData, dashGang and (dialData?) as objects at the beginning of the game ?? -John ==========
-    //======= also, something is inconsistent below, and I can't remember why it was like this...I'll fix it and test it with the robot -John ===========
-            //var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
             var dialDataA = channel.getKeyspace('dashboard').get('a'); 
-            if ( typeof(dashMotorA) !== "undefined" ) {
-                getDialValues('a', dashMotorA);
-                //getDialValues('a', dialDataA);
+            if ( typeof(dialDataA) !== "undefined" ) {
+                getDialValues('a', dialDataA);
             }
             var dialDataB = channel.getKeyspace('dashboard').get('b');
-            if ( typeof(dashMotorB) !== "undefined" ) {
-                getDialValues('b', dashMotorB);
-                //getDialValues('b', dialDataB);
+            if ( typeof(dialDataB) !== "undefined" ) {
+                getDialValues('b', dialDataB);
             }
             var dialDataC = channel.getKeyspace('dashboard').get('c'); 
-            if ( typeof(dashMotorC) !== "undefined" ) {
-                getDialValues('c', dashMotorC);
-                //getDialValues('c', dialDataB);
+            if ( typeof(dialDataC) !== "undefined" ) {
+                getDialValues('c', dialDataC);
             }
             var dialDataD = channel.getKeyspace('dashboard').get('d'); 
-            if ( typeof(dashMotorD) !== "undefined" ) {
-                getDialValues('d', dashMotorD);
-                //getDialValues('c', dialDataB);
+            if ( typeof(dialDataD) !== "undefined" ) {
+                getDialValues('d', dialDataD);
             }
 
              // get text from DialA text area      

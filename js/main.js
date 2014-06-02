@@ -2067,9 +2067,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                  // get text from DialA text area      
                 userDialA = document.getElementById("textSpinA").innerHTML;
                 // get text from text editor text area
-                theirCode = document.getElementById("theirCode").innerHTML;
+                theirCode = document.getElementById("theirCode").textContent;
                 // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-                theirCode = theirCode.replace(/<br>/g, "");
+                console.log(theirCode);
 
                 // if DialA text is not a number, output error in error message area
                 if (isNaN(parseFloat(userDialA, 10))) {
@@ -2087,6 +2087,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // if input code is not able to be run, display console's error message to user in text editor area
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+
                 }
 
 
@@ -2122,22 +2123,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
                     //Maneuver back through previous input code
-                    console.log("Mother fuckin up key!");
                     if (indexArray != 0) {
                         indexArray=indexArray-1;
                         console.log("Let's maneuver up through previous codes!");
-                        
-                        document.getElementById("theirCode").innerHTML = codeArray[indexArray];
+                        document.getElementById("theirCode").innerText = codeArray[indexArray];
                         
                     }
                 break;
                 // If down key is pressed
                 case 40: // down
                     // Maneuver forward through newer code input
-                    console.log("Mother fuckin' down!!!!");
                     if (indexArray != i-1) {
                         indexArray=indexArray+1;
-                        document.getElementById("theirCode").innerHTML = codeArray[indexArray];
+                        document.getElementById("theirCode").innerText = codeArray[indexArray];
                     }
                 break;
                 default: return; // exit this handler for other keys

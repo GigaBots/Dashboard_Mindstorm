@@ -2083,13 +2083,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 this.game.input.keyboard.disabled = false;
             }
 
-             // get text from DialA text area      
-            userDialA = document.getElementById("textSpinA").innerHTML;
-            // get text from text editor text area
-            theirCode = document.getElementById("theirCode").innerHTML;
-            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-            theirCode = theirCode.replace(/<br>/g, "");
-
 
             //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
@@ -2128,9 +2121,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 indexArray = i;
             } // end .onclick
 
-                // evaluate their input code
-                eval(theirCode);
-            }
 
         } // end update
 

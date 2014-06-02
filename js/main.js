@@ -51,7 +51,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
-        var backgound, spaceBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
+        var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
 
         var dragBoxButton;
 
@@ -73,11 +73,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusButton;
         var frameStatus;
         var positionStatus = { x : 15, y : 66 }
-        var labelStatus, labelStatusDisplay = "running..."; // initially running
+        var labelStatus, statusDisplay = "running..."; // initially running
+        var startStop;
+        var status = {
+            statusDisplay : "running..."
+        }
 
         /* Bot selector */
         var frameBotSelector;
-        var positionBotSelector = { x : 97, y : 66 }
+        var positionBotSelector = { x : 89, y : 66 }
         var labelBotSelector = "Robot";
         var labelBot;
         var checkboxBot;
@@ -420,7 +424,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('space','assets/space_background.gif',960,659); // photo modified from http://www.hdwallsource.com/outer-space-wallpaper-4351.html
+            game.load.image('uiBackground','assets/ui_background.gif',960,659); // photo modified from http://www.hdwallsource.com/outer-space-wallpaper-4351.html
+            game.load.spritesheet('startStop','assets/buttons/start_stop_button.png', 27,27);
         } //end preload
 
     //==============================================================================================================================
@@ -429,6 +434,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.game.stage.disableVisibilityChange = true;    
 
             game.world.setBounds(0, 0, gameBoundX, gameBoundY);
+            game.input.onDown.add(function () {
+                if ( this.game.paused ) {
+                    this.game.paused = false;
+                    dashboardStatus = 1;
+                    game.world.remove(status.statusDisplay);
+                    labelStatusDisplay = "running...";
+                    status.statusDisplay = game.add.text(positionStatus.x+6, positionStatus.y+29, labelStatusDisplay, labelStyle);
+                    startStop.setFrames(0,1,0,0);
+                }
+            }, this);
 
         /* Background/canvas stuff */
             game.stage.backgroundColor = '#C8C8C8';
@@ -440,9 +455,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBarLine.beginFill(frameLineColor,1);
             titleBarLine.drawRect(0,50,960,1);
 
-            spaceBackground = game.add.sprite(0,51,'space');
+            uiBackground = game.add.sprite(0,51,'uiBackground');
+            
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,0.5); // opacity
+            backgroundBox.beginFill(0x313233,0.1); // opacity
             backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
 
             bottomLine = game.add.graphics(0,0);
@@ -473,12 +489,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameStatus = game.add.graphics(0,0);
             frameStatus.lineStyle(1, frameLineColor, 1);
             frameStatus.beginFill(frameFill,frameOpacity);
-            frameStatus.drawRect(positionStatus.x, positionStatus.y, 72, 50);
+            frameStatus.drawRect(positionStatus.x, positionStatus.y, 64, 50);
 
             frameBotSelector = game.add.graphics(0,0);
             frameBotSelector.lineStyle(1, frameLineColor, 1);
             frameBotSelector.beginFill(frameFill,frameOpacity);
-            frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 110, 50);
+            frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 118, 50);
 
             frameMotor = {
                 a : game.add.graphics(0,0),
@@ -561,8 +577,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+39, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
-            labelStatus =  game.add.text(positionStatus.x+10, positionStatus.y+28, labelStatusDisplay, labelStyle);
-
+            status.statusDisplay =  game.add.text(positionStatus.x+6, positionStatus.y+29, statusDisplay, labelStyle);
+            
             labelBotSelector = game.add.text(positionBotSelector.x+28, positionBotSelector.y+2, labelBotSelector, labelStyle3);
             labelBot = {
                 bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
@@ -616,11 +632,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Buttons */
-            // Add button for resuming all motors at their current settings, after having paused them
-            //resumeButton = game.add.button(15, 66, 'resumeButton', actionResumeOnClick, this);
-            //resumeButton.setFrames(3,3,3,3); // initially the dashboard will already be active, so make the Resume not appear usable
-            //pauseButton = game.add.button(111, 66, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
-            //pauseButton.input.useHandCursor = true;
+            startStop = game.add.button(positionStatus.x+19, positionStatus.y+4, 'startStop', actionStartStopOnClick);
+            startStop.setFrames(0,1,0,0);
 
             /* Select which robot to control */  // ======This will probably work for now, until we extend this project later on
             checkboxBot = {
@@ -1283,22 +1296,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
     /* Button-click functions */
-        function actionResumeOnClick () {
-            // resume receiving data?
-            dashboardStatus = 1;
-            resumeButton.setFrames(3,3,3,3);
-            pauseButton.setFrames(1,0,2,0);
-            resumeButton.input.useHandCursor = false;
-            pauseButton.input.useHandCursor = true;
-        }
-        function actionPauseOnClick () {
-            // pause receiving data?
-            dashboardStatus = 0;
-            pauseButton.setFrames(3,3,3,3);
-            resumeButton.setFrames(1,0,2,0);
-            pauseButton.input.useHandCursor = false;
-            resumeButton.input.useHandCursor = true;
-            //pause();
+
+        function actionStartStopOnClick () {
+            if ( dashboardStatus === 1 ) {
+                startStop.setFrames(0,0,0,0);
+                dashboardStatus = 0;
+                game.paused = true;
+                game.world.remove(status.statusDisplay);
+                labelStatusDisplay = "stopped";
+                status.statusDisplay = game.add.text(positionStatus.x+8, positionStatus.y+29, labelStatusDisplay, labelStyle);
+            } else {
+                startStop.setFrames(0,1,0,0);
+                dashboardStatus = 1;
+                game.paused = false;
+            }
+            
         }
         function actionInputOnClick () {
             game.world.remove(screenMessage.messageDisplay1); // remove any messages present
@@ -2050,6 +2062,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             userDialA = document.getElementById("textSpinA").innerHTML;
             // get text from text editor text area
             theirCode = document.getElementById("theirCode").innerHTML;
+            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
+            theirCode = theirCode.replace(/<br>/g, "");
+
             //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
                 // if DialA text is not a number, output error in error message area
@@ -2072,10 +2087,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
                 // evaluate their input code
                 eval(theirCode);
-                // evaluate their DialA number
-                //needleA.angle = parseFloat(userDialA, 10);
-                
-            } // end .onclick
+            }
+
 
             if ( cursorOverEditor ) {
                 this.game.input.keyboard.disabled = true; // allow users to type in the text editor, w/o affecting dashboard keyboard controls
@@ -2103,15 +2116,4 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 }); // end require
 
-            
-            // Create text editor for needleA above program
-            print = document.getElementById("textSpinA");// get text in textEditor
-            //printNum = parseFloat(print.innerHTML, 10); // translate text into numeric format if possible
-            if (isNaN(print)) { // if it's NotaNumber
-                console.log("Not a number. Attempted parsed value: " + print);
-            }
-            else { // if it is a number
-                //needleA.angle = needleA.angle + print;
-                //console.log("Success! Parsed printNum value: " + print);
-            }
 

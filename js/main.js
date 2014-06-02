@@ -1830,6 +1830,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var taDelta = t2a - t1.a; //change in time in milliseconds
                 if (taDelta >= 50) {
                     taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+                // instead of using tapprox; 
                 }
                 if (direction === 'f') {
                     needleA.angle = needleA.angle + motorA.speed*taDelta/1000; //clockwise

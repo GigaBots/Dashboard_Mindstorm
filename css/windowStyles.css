@@ -17,6 +17,31 @@ body {
 	clear: both;
 }
 
+/*.wrapper {
+   display: table;
+   padding: 0;
+   width: 100%;
+   height: 100%;
+   position: absolute;
+}
+.container {
+   display: table-cell;
+   vertical-align: middle;
+}
+.canvas-container {
+   position: relative;
+   max-width: 960px;
+   min-width: 320px;
+   margin: 0 auto;
+}
+#gameWorld {
+   width: 100%;
+   height: auto;
+   background-color: gray;
+}
+*/
+
+
 #textEditor {
 	background-color: #313233;
 	color: #C8C8C8;

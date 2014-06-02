@@ -74,14 +74,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var frameStatus;
         var positionStatus = { x : 15, y : 66 }
         var labelStatus, statusDisplay = "running..."; // initially running
-        var startStop;
         var status = {
             statusDisplay : "running..."
+        }
+        var resume = {
+            messageDisplay : 0,
+            resumeOverlay : 0
         }
 
         /* Bot selector */
         var frameBotSelector;
-        var positionBotSelector = { x : 89, y : 66 }
+        var positionBotSelector = { x : 97, y : 66 }
         var labelBotSelector = "Robot";
         var labelBot;
         var checkboxBot;
@@ -407,8 +410,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
-            //game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
-            //game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
             game.load.spritesheet('checkbox','assets/buttons/gigabot_dashboard_checkbox_spritesheet.png', 21, 21);
@@ -424,8 +425,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('uiBackground','assets/ui_background.gif',960,659); // photo modified from http://www.hdwallsource.com/outer-space-wallpaper-4351.html
-            game.load.spritesheet('startStop','assets/buttons/start_stop_button.png', 27,27);
+            game.load.image('uiBackground','assets/ui_background.gif',960,659);
+            game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
+            game.load.image('resume','assets/resume_message.png',502,49);
         } //end preload
 
     //==============================================================================================================================
@@ -440,8 +442,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     dashboardStatus = 1;
                     game.world.remove(status.statusDisplay);
                     labelStatusDisplay = "running...";
-                    status.statusDisplay = game.add.text(positionStatus.x+6, positionStatus.y+29, labelStatusDisplay, labelStyle);
-                    startStop.setFrames(0,1,0,0);
+                    status.statusDisplay = game.add.text(positionStatus.x+9, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                    statusButton.setFrames(1,0,0,0);
+                    resume.resumeMessageDisplay.destroy();
+                    resume.resumeOverlay.destroy();
                 }
             }, this);
 
@@ -458,7 +462,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             uiBackground = game.add.sprite(0,51,'uiBackground');
             
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,0.1); // opacity
+            backgroundBox.beginFill(0x313233,0.05); // opacity
             backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
 
             bottomLine = game.add.graphics(0,0);
@@ -489,12 +493,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameStatus = game.add.graphics(0,0);
             frameStatus.lineStyle(1, frameLineColor, 1);
             frameStatus.beginFill(frameFill,frameOpacity);
-            frameStatus.drawRect(positionStatus.x, positionStatus.y, 64, 50);
+            frameStatus.drawRect(positionStatus.x, positionStatus.y, 72, 50);
 
             frameBotSelector = game.add.graphics(0,0);
             frameBotSelector.lineStyle(1, frameLineColor, 1);
             frameBotSelector.beginFill(frameFill,frameOpacity);
-            frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 118, 50);
+            frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 110, 50);
 
             frameMotor = {
                 a : game.add.graphics(0,0),
@@ -577,13 +581,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+39, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
-            status.statusDisplay =  game.add.text(positionStatus.x+6, positionStatus.y+29, statusDisplay, labelStyle);
+            status.statusDisplay =  game.add.text(positionStatus.x+9, positionStatus.y+30, statusDisplay, labelStyle);
             
-            labelBotSelector = game.add.text(positionBotSelector.x+28, positionBotSelector.y+2, labelBotSelector, labelStyle3);
+            labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
             labelBot = {
                 bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
-                bot2 : game.add.text(positionBotSelector.x+63, positionBotSelector.y+26, "2", labelStyle),
-                bot3 : game.add.text(positionBotSelector.x+98, positionBotSelector.y+26, "3", labelStyle)
+                bot2 : game.add.text(positionBotSelector.x+62, positionBotSelector.y+26, "2", labelStyle),
+                bot3 : game.add.text(positionBotSelector.x+96, positionBotSelector.y+26, "3", labelStyle)
             }
 
             labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, labelStyle2);
@@ -632,14 +636,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Buttons */
-            startStop = game.add.button(positionStatus.x+19, positionStatus.y+4, 'startStop', actionStartStopOnClick);
-            startStop.setFrames(0,1,0,0);
+            statusButton = game.add.button(positionStatus.x+5, positionStatus.y+5, 'statusButton', actionStopOnClick);
+            statusButton.setFrames(1,0,0,0);
+            statusButton.input.useHandCursor = true;
 
             /* Select which robot to control */  // ======This will probably work for now, until we extend this project later on
             checkboxBot = {
                 bot1 : game.add.button(positionBotSelector.x+7, positionBotSelector.y+24, 'checkbox', actionCheckboxBot1, this),
-                bot2 : game.add.button(positionBotSelector.x+41, positionBotSelector.y+24, 'checkbox', actionCheckboxBot2, this),
-                bot3 : game.add.button(positionBotSelector.x+75, positionBotSelector.y+24, 'checkbox', actionCheckboxBot3, this),
+                bot2 : game.add.button(positionBotSelector.x+40, positionBotSelector.y+24, 'checkbox', actionCheckboxBot2, this),
+                bot3 : game.add.button(positionBotSelector.x+73, positionBotSelector.y+24, 'checkbox', actionCheckboxBot3, this),
             }
             checkboxBot.bot1.setFrames(1,1,1,0);
             checkboxBot.bot2.setFrames(2,0,1,0);
@@ -1297,16 +1302,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     /* Button-click functions */
 
-        function actionStartStopOnClick () {
+        function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
-                startStop.setFrames(0,0,0,0);
+                statusButton.setFrames(2,2,2,2);
                 dashboardStatus = 0;
                 game.paused = true;
                 game.world.remove(status.statusDisplay);
                 labelStatusDisplay = "stopped";
-                status.statusDisplay = game.add.text(positionStatus.x+8, positionStatus.y+29, labelStatusDisplay, labelStyle);
+                status.statusDisplay = game.add.text(positionStatus.x+12, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                resume.resumeOverlay = game.add.graphics(0,0);
+                resume.resumeOverlay.beginFill(0x00000,0.45);
+                resume.resumeOverlay.drawRect(0,51,960,659);
+                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
+                this.game.input.keyboard.disabled = true;
             } else {
-                startStop.setFrames(0,1,0,0);
+                statusButton.setFrames(1,0,0,0);
                 dashboardStatus = 1;
                 game.paused = false;
             }
@@ -2098,10 +2108,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         } // end update
-        /*
-        function pause() {
-        } // end pause
-        */
 
         $("#textEditor").hover( function () { // code for while hovering over textEditor
             cursorOverEditor = true;

@@ -37,7 +37,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //render: render,
             //paused: paused,
             //destroy: destroy
-        });
+        }, true); // final "true" value notes that background should be transparent
 
         var gameBoundX = 960, gameBoundY = 710;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
@@ -48,7 +48,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
         var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
-        var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
+        var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.8;
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
         var dragBoxButton;
 
@@ -426,7 +426,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('uiBackground','assets/ui_background.gif',960,659);
+            //game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
         } //end preload
@@ -451,7 +451,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }, this);
 
         /* Background/canvas stuff */
-            game.stage.backgroundColor = '#C8C8C8';
+ /*         game.stage.backgroundColor = '#C8C8C8';
             titleBox = game.add.graphics(0,0);
             titleBox.beginFill(0xFFFFFF,1);
             titleBox.drawRect(0,0,960,60);
@@ -472,7 +472,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,651,960, 73);
+            backgroundBottom.drawRect(0,651,960, 73); */
+
 
         /* Title */
             dashboardTitle = game.add.sprite(75,0,'title');

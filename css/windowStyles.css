@@ -3,6 +3,8 @@
 
 body { 
 	margin: 0px;
+	background-image: url("../assets/background-space.png");
+
 }
 
 #gameWorld {	

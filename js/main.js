@@ -37,7 +37,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //render: render,
             //paused: paused,
             //destroy: destroy
-        });
+        }, true); // final "true" value notes that background should be transparent
 
         var gameBoundX = 960, gameBoundY = 710;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
@@ -45,10 +45,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var labelStyle2 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
+<<<<<<< HEAD
         var labelStyle4 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var labelStyle5 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
         var messageStyle = { font: "14px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
+=======
+        var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
+        var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
+        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
+        var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.8;
+>>>>>>> Cole
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
         var dragBoxButton;
 
@@ -432,7 +439,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('uiBackground','assets/ui_background.gif',960,659);
+            //game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
@@ -459,7 +466,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }, this);
 
         /* Background/canvas stuff */
-            game.stage.backgroundColor = '#C8C8C8';
+ /*         game.stage.backgroundColor = '#C8C8C8';
             titleBox = game.add.graphics(0,0);
             titleBox.beginFill(0xFFFFFF,1);
             titleBox.drawRect(0,0,960,60);
@@ -480,7 +487,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,651,960, 73);
+            backgroundBottom.drawRect(0,651,960, 73); */
+
 
         /* Title */
             dashboardTitle = game.add.sprite(75,0,'title');
@@ -2133,55 +2141,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dialDataD);
             }
 
-
-
-            /* TEXT EDITOR STUFF */
-
-
-            //  on click of submit button ...
-            document.getElementById("subButton").onclick = function() {
-            
-                 // get text from DialA text area      
-                userDialA = document.getElementById("textSpinA").innerHTML;
-                // get text from text editor text area
-                theirCode = document.getElementById("theirCode").textContent;
-                // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-                console.log(theirCode);
-
-                // if DialA text is not a number, output error in error message area
-                if (isNaN(parseFloat(userDialA, 10))) {
-                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
-                }
-                // remove error message if previously had an error but then fixed it
-                else {
-                    document.getElementById("errorMsg").innerHTML = "";
-                }
-
-                // try to evalate user's input code in text editor area. Will evaluate if possible.
-                try {
-                    eval(theirCode);
-                }
-                // if input code is not able to be run, display console's error message to user in text editor area
-                catch(err) {
-                    document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
-                }
-
-                // store theirCode in an array to be accessed if they press the up key
-                codeArray[i] = theirCode;
-                // evaluate their DialA number
-                needleA.angle = parseFloat(userDialA, 10);
-                i = i + 1;
-                indexArray = i;
-            } // end .onclick
-
         } // end update
+
+        // Text editor
+        // When the Submit button is clicked
+        document.getElementById("subButton").onclick = function() {
+              
+            // get text from text editor text area
+            theirCode = document.getElementById("theirCode").textContent;
+            console.log("The user's code is: " + theirCode);
+
+            // try to evalate user's input code in text editor area. Will evaluate if possible.
+            try {
+                eval(theirCode);
+            }
+            // if input code is not able to be run, display console's error message to user in text editor area
+            catch(err) {
+                document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+
+            }
+
+            // store theirCode in an array to be accessed if they press the up key
+            codeArray[i] = theirCode;
+            i = i + 1;
+            indexArray = i;
+        } // end .onclick
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
+            console.log("true");
         }
         function enableKeyboard() {
             game.input.keyboard.disabled = false;
+            console.log("False");
         }
 
         $("#textEditor").hover( function () { // hovering over textEditor
@@ -2201,9 +2193,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     //Maneuver back through previous input code
                     if (indexArray != 0) {
                         indexArray=indexArray-1;
-                        console.log("Let's maneuver up through previous codes!");
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
-                        
                     }
                 break;
                 // If down key is pressed

@@ -2090,8 +2090,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
                 }
 
-
-
                 // store theirCode in an array to be accessed if they press the up key
                 codeArray[i] = theirCode;
                 // evaluate their DialA number

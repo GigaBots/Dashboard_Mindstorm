@@ -66,7 +66,10 @@ body {
 #subButton {
 	position: absolute;
 	bottom: 2px;
-	left: 2px;
+	left: 6px;
+	background: transparent;
+	border-radius: 5px;
+	color: #C8C8C8;
 }
 #errorMsg {
 	position: absolute;

@@ -275,6 +275,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var i = 0;
         // element to determine which code to display for "up" and "down" presses
         var indexArray = i;
+        // user's code if uses "up" arrow but didn't hit submit before doing so.
+        var tempCode;
 
         //===================================================
 
@@ -2162,11 +2164,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
-            console.log("true");
         }
         function enableKeyboard() {
             game.input.keyboard.disabled = false;
-            console.log("False");
         }
 
         $("#textEditor").hover( function () { // hovering over textEditor
@@ -2183,8 +2183,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             switch(e.which) {
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
-                    //Maneuver back through previous input code
+                    // If at the last element in the array
+                    if (indexArray === i) {
+                        tempCode = document.getElementById("theirCode").innerHTML;
+                    }
+                    // If not at the first element of the array
                     if (indexArray != 0) {
+                        //Maneuver back through previous input code
                         indexArray=indexArray-1;
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
                     }
@@ -2192,9 +2197,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // If down key is pressed
                 case 40: // down
                     // Maneuver forward through newer code input
-                    if (indexArray != i-1) {
+                    if (indexArray != i) {
                         indexArray=indexArray+1;
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
+                    }
+                    if (indexArray === i) {
+                        document.getElementById("theirCode").innerHTML = tempCode; 
                     }
                 break;
                 default: return; // exit this handler for other keys

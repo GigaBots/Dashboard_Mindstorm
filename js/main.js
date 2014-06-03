@@ -453,7 +453,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     dashboardStatus = 1;
                     game.world.remove(status.statusDisplay);
                     labelStatusDisplay = "running...";
-                    status.statusDisplay = game.add.text(positionStatus.x+9, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                    status.statusDisplay = game.add.text(positionStatus.x+5, positionStatus.y+30, labelStatusDisplay, labelStyle);
                     statusButton.setFrames(1,0,0,0);
                     resume.resumeMessageDisplay.destroy();
                     resume.resumeOverlay.destroy();
@@ -596,7 +596,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+39, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
-            status.statusDisplay =  game.add.text(positionStatus.x+9, positionStatus.y+30, statusDisplay, labelStyle);
+            status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+30, statusDisplay, labelStyle);
             
             //labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
             //labelBot = {
@@ -661,7 +661,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.events.onInputDown.add(actionDropdown);
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
-            bot.nameDisplay = game.add.text(positionBotSelector.x+9, positionBotSelector.y+30, botName, labelStyle);
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
 
             function actionDropdown() {
                 var numBots = botArray.length;
@@ -690,7 +690,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     console.log("new");
                     botName = botArray[this];
                     game.world.remove(bot.nameDisplay);
-                    bot.nameDisplay = game.add.text(positionBotSelector.x+9, positionBotSelector.y+30, botName, labelStyle);
+                    bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
                 }
                 robotNumber = this;
                 botDropdown.input.start();
@@ -1382,7 +1382,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.paused = true;
                 game.world.remove(status.statusDisplay);
                 labelStatusDisplay = "stopped";
-                status.statusDisplay = game.add.text(positionStatus.x+12, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                status.statusDisplay = game.add.text(positionStatus.x+5, positionStatus.y+30, labelStatusDisplay, labelStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
                 resume.resumeOverlay.drawRect(0,51,960,599);

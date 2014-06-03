@@ -2073,49 +2073,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
             //  on click of submit button ...
-            document.getElementById("subButton").onclick = function() {
-            
-                 // get text from DialA text area      
-                userDialA = document.getElementById("textSpinA").innerHTML;
-                // get text from text editor text area
-                theirCode = document.getElementById("theirCode").textContent;
-                // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-                console.log(theirCode);
 
-                // if DialA text is not a number, output error in error message area
-                if (isNaN(parseFloat(userDialA, 10))) {
-                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
-                }
-                // remove error message if previously had an error but then fixed it
-                else {
-                    document.getElementById("errorMsg").innerHTML = "";
-                }
-
-                // try to evalate user's input code in text editor area. Will evaluate if possible.
-                try {
-                    eval(theirCode);
-                }
-                // if input code is not able to be run, display console's error message to user in text editor area
-                catch(err) {
-                    document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
-                }
-
-                // store theirCode in an array to be accessed if they press the up key
-                codeArray[i] = theirCode;
-                // evaluate their DialA number
-                needleA.angle = parseFloat(userDialA, 10);
-                i = i + 1;
-                indexArray = i;
-            } // end .onclick
 
         } // end update
+        document.getElementById("subButton").onclick = function() {
+              
+            // get text from text editor text area
+            theirCode = document.getElementById("theirCode").textContent;
+            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
+            console.log("The user's code is: " + theirCode);
+
+            // try to evalate user's input code in text editor area. Will evaluate if possible.
+            try {
+                eval(theirCode);
+            }
+            // if input code is not able to be run, display console's error message to user in text editor area
+            catch(err) {
+                document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+
+            }
+
+            // store theirCode in an array to be accessed if they press the up key
+            codeArray[i] = theirCode;
+            i = i + 1;
+            indexArray = i;
+        } // end .onclick
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
+            console.log("true");
         }
         function enableKeyboard() {
             game.input.keyboard.disabled = false;
+            console.log("False");
         }
 
         $("#textEditor").hover( function () { // hovering over textEditor

@@ -7,6 +7,21 @@ body {
 
 }
 
+#rights {
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+	font-size: 12px;
+	color: #A3A3A3;
+	margin: 3px auto 5px auto;
+	position: relative;
+	padding-top: 5px;
+	padding-bottom: 10px;
+	text-align: center;
+}
+#rights a {
+	color: #A3A3A3;
+	text-decoration: none;
+}
+
 #gameWorld {	
 	display: block;
 	vertical-align: baseline;
@@ -14,7 +29,7 @@ body {
 	padding: 0;
 	border: 0;
 	width: 960px;
-	height: 710px;
+	height: 643px;
 	overflow: hidden;
 	clear: both;
 }
@@ -47,10 +62,13 @@ body {
 #textEditor {
 	background-color: #313233;
 	color: #C8C8C8;
-	width: 950px;
-	height: 150px;
+	width: 918px;
+	height: 200px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
-	border-radius: 10px;
+	border-radius: 1px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #656565;
 	margin: 3px auto 5px auto;
 	font-size: 12px;
 	position: relative;
@@ -59,6 +77,7 @@ body {
 }
 
 #label {
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 	text-align: center;
 	margin: 0;
 

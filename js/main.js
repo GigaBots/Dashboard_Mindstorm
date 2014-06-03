@@ -30,7 +30,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     function beginGame(client, channel) {
         /* === Dashboard control panel stuff === */
-        var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
+        var game = new Phaser.Game(960, 640, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -39,7 +39,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
 
-        var gameBoundX = 960, gameBoundY = 710;
+        var gameBoundX = 960, gameBoundY = 640;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -428,10 +428,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm.png', 48, 48);
+            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm_on_dark.png', 48, 48);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
-            game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
-            game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
+            game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
+            game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
             //game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
@@ -484,10 +484,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Title */
-            dashboardTitle = game.add.sprite(75,0,'title');
-            botLogo = game.add.sprite(15,1,'gigabotSm');
-            poweredBy = game.add.sprite(740,0,'poweredBy');
-            allRightsReserved = game.add.text(15, 670, "All Rights Reserved, TheGigabots.com", labelStyle);
+            //dashboardTitle = game.add.sprite(75,0,'title');
+            dashboardTitle = game.add.sprite(75,8,'title');
+            //botLogo = game.add.sprite(15,1,'gigabotSm');
+            botLogo = game.add.sprite(15,9,'gigabotSm');
+            //poweredBy = game.add.sprite(740,0,'poweredBy');
+            poweredBy = game.add.sprite(740,8,'poweredBy');
+            //allRightsReserved = game.add.text(15, 670, "All Rights Reserved, TheGigabots.com", labelStyle);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);

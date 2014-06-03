@@ -45,9 +45,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var labelStyle2 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
-        var labelStyle4 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc", fontWeight: "italic" }
-        var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
-        var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
+        var labelStyle4 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
+        var labelStyle5 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
+        var messageStyle = { font: "14px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
         var dragBoxButton;
@@ -82,10 +82,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Bot selector */
         var frameBotSelector;
         var positionBotSelector = { x : 97, y : 66 }
-        var labelBotSelector = "Robot";
-        var labelBot;
-        var checkboxBot;
-        var robotNumber = 1;
+        var robotNumber = 0;
+        var botDropdown, dropdownBox;
+        var dropHighlight = { 1 : 0 }
+        var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
+        var botLabels = new Array();
+        var botName = 'Gigabot Prime';
+        var bot = {
+            nameDisplay : 0
+        }
+        var droppedDown = false;
        
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -429,6 +435,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
+            game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
+            game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png',151,25);
         } //end preload
 
     //==============================================================================================================================
@@ -584,12 +592,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             status.statusDisplay =  game.add.text(positionStatus.x+9, positionStatus.y+30, statusDisplay, labelStyle);
             
-            labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
-            labelBot = {
-                bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
-                bot2 : game.add.text(positionBotSelector.x+62, positionBotSelector.y+26, "2", labelStyle),
-                bot3 : game.add.text(positionBotSelector.x+96, positionBotSelector.y+26, "3", labelStyle)
-            }
+            //labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
+            //labelBot = {
+            //    bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
+            //    bot2 : game.add.text(positionBotSelector.x+62, positionBotSelector.y+26, "2", labelStyle),
+            //    bot3 : game.add.text(positionBotSelector.x+96, positionBotSelector.y+26, "3", labelStyle)
+            //}
 
             labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, labelStyle2);
             labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+2, labelMotor.b, labelStyle2);
@@ -641,54 +649,112 @@ require(['BrowserBigBangClient'], function (bigbang) {
             statusButton.setFrames(1,0,0,0);
             statusButton.input.useHandCursor = true;
 
-            /* Select which robot to control */  // ======This will probably work for now, until we extend this project later on
-            checkboxBot = {
-                bot1 : game.add.button(positionBotSelector.x+7, positionBotSelector.y+24, 'checkbox', actionCheckboxBot1, this),
-                bot2 : game.add.button(positionBotSelector.x+40, positionBotSelector.y+24, 'checkbox', actionCheckboxBot2, this),
-                bot3 : game.add.button(positionBotSelector.x+73, positionBotSelector.y+24, 'checkbox', actionCheckboxBot3, this),
-            }
-            checkboxBot.bot1.setFrames(1,1,1,0);
-            checkboxBot.bot2.setFrames(2,0,1,0);
-            checkboxBot.bot3.setFrames(2,0,1,0);
-            checkboxBot.bot1.input.useHandCursor = true;
-            checkboxBot.bot2.input.useHandCursor = true;
-            checkboxBot.bot3.input.useHandCursor = true;
-            function actionCheckboxBot1 () {
-                if ( robotNumber !== 1 ) {
-                    if (robotNumber === 2 ) {
-                        checkboxBot.bot2.setFrames(2,0,1,0);
-                    } else if ( robotNumber === 3 ) {
-                        checkboxBot.bot3.setFrames(2,0,1,0);
-                    }
-                    robotNumber = 1;
-                    checkboxBot.bot1.setFrames(1,1,1,0);
-                    console.log("Robot number " + robotNumber + " selected");
+            /* Select which robot to control */
+            botDropdown = game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown');
+            //botDropdown.events.onInputOver.add(actionDropdown);
+            botDropdown.events.onInputDown.add(actionDropdown);
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            bot.nameDisplay = game.add.text(positionBotSelector.x+9, positionBotSelector.y+30, botName, labelStyle);
+
+            function actionDropdown() {
+                var numBots = botArray.length;
+                botDropdown.setFrames(2,2,2,2);
+                droppedDown = true;
+                dropdownBox = game.add.graphics(0,0);
+                dropdownBox.beginFill(0xFFFFFF,0.8);
+                dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+                for ( var j = 0; j < numBots; j++ ) {
+                    dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+                    dropHighlight[j].setFrames(0,2,1,2);
+                    botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botArray[j], labelStyle5);
+                    dropHighlight[j].events.onInputDown.add(actionSelectBot, j);
+                    dropHighlight[j].input.useHandCursor = true;
                 }
+                botDropdown.input.stop();
             }
-            function actionCheckboxBot2 () {
-                if ( robotNumber !== 2 ) {
-                    if (robotNumber === 1 ) {
-                        checkboxBot.bot1.setFrames(2,0,1,0);
-                    } else if ( robotNumber === 3 ) {
-                        checkboxBot.bot3.setFrames(2,0,1,0);
-                    }
-                    robotNumber = 2;
-                    checkboxBot.bot2.setFrames(1,1,1,0);
-                    console.log("Robot number " + robotNumber + " selected");
+            function actionSelectBot() {
+                console.log("selected " + botArray[this] + " (bot number " + this + ")");
+                dropdownBox.destroy();
+                for ( var j = 0; j < botArray.length; j++) {
+                    botLabels[j].destroy();
+                    dropHighlight[j].destroy();
                 }
-            }
-            function actionCheckboxBot3 () {
-                if ( robotNumber !== 3 ) {
-                    if (robotNumber === 1 ) {
-                        checkboxBot.bot1.setFrames(2,0,1,0);
-                    } else if ( robotNumber === 2 ) {
-                        checkboxBot.bot2.setFrames(2,0,1,0);
-                    }
-                    robotNumber = 3;
-                    checkboxBot.bot3.setFrames(1,1,1,0);
-                    console.log("Robot number " + robotNumber + " selected");
+                if ( robotNumber !== this ) {
+                    console.log("new");
+                    botName = botArray[this];
+                    game.world.remove(bot.nameDisplay);
+                    bot.nameDisplay = game.add.text(positionBotSelector.x+9, positionBotSelector.y+30, botName, labelStyle);
                 }
+                robotNumber = this;
+                botDropdown.input.start();
+                botDropdown.setFrames(1,0,2,0);
+                botDropdown.input.useHandCursor = true;
+                droppedDown = false;
+                //console.dir(this);
             }
+            // function actionNoBotSelection () {
+            //     console.log("no selection");
+            //     //if ( droppedDown === true ) {
+            //     for ( var j = 0; j < botArray.length; j++) {
+            //         dropdownBox.destroy();
+            //         botLabels[j].destroy();
+            //         dropHighlight[j].destroy();
+            //     }
+            //     botDropdown.input.start();
+            //     botDropdown.setFrames(1,0,2,0);
+            //     droppedDown = false;
+            //     //}
+            // }
+
+            // CHECKBOX STUFF ==> To Be Deleted Soon...
+            // checkboxBot = {
+            //     bot1 : game.add.button(positionBotSelector.x+7, positionBotSelector.y-24, 'checkbox', actionCheckboxBot1, this),
+            //     bot2 : game.add.button(positionBotSelector.x+40, positionBotSelector.y-24, 'checkbox', actionCheckboxBot2, this),
+            //     bot3 : game.add.button(positionBotSelector.x+73, positionBotSelector.y-24, 'checkbox', actionCheckboxBot3, this),
+            // }
+            // checkboxBot.bot1.setFrames(1,1,1,0);
+            // checkboxBot.bot2.setFrames(2,0,1,0);
+            // checkboxBot.bot3.setFrames(2,0,1,0);
+            // checkboxBot.bot1.input.useHandCursor = true;
+            // checkboxBot.bot2.input.useHandCursor = true;
+            // checkboxBot.bot3.input.useHandCursor = true;
+            // function actionCheckboxBot1 () {
+            //     if ( robotNumber !== 1 ) {
+            //         if (robotNumber === 2 ) {
+            //             checkboxBot.bot2.setFrames(2,0,1,0);
+            //         } else if ( robotNumber === 3 ) {
+            //             checkboxBot.bot3.setFrames(2,0,1,0);
+            //         }
+            //         robotNumber = 1;
+            //         checkboxBot.bot1.setFrames(1,1,1,0);
+            //         console.log("Robot number " + robotNumber + " selected");
+            //     }
+            // }
+            // function actionCheckboxBot2 () {
+            //     if ( robotNumber !== 2 ) {
+            //         if (robotNumber === 1 ) {
+            //             checkboxBot.bot1.setFrames(2,0,1,0);
+            //         } else if ( robotNumber === 3 ) {
+            //             checkboxBot.bot3.setFrames(2,0,1,0);
+            //         }
+            //         robotNumber = 2;
+            //         checkboxBot.bot2.setFrames(1,1,1,0);
+            //         console.log("Robot number " + robotNumber + " selected");
+            //     }
+            // }
+            // function actionCheckboxBot3 () {
+            //     if ( robotNumber !== 3 ) {
+            //         if (robotNumber === 1 ) {
+            //             checkboxBot.bot1.setFrames(2,0,1,0);
+            //         } else if ( robotNumber === 2 ) {
+            //             checkboxBot.bot2.setFrames(2,0,1,0);
+            //         }
+            //         robotNumber = 3;
+            //         checkboxBot.bot3.setFrames(1,1,1,0);
+            //         console.log("Robot number " + robotNumber + " selected");
+            //     }
+            // }
 
             // Forward button object and reverse button object
             fButton = {
@@ -1200,10 +1266,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dialD = game.add.sprite(positionDial.x+207, positionDial.y+23, 'dialFace');
 
             labelRotation = game.add.text(positionDial.x+10, positionDial.y+2, labelRotation, labelStyle3);
-            labelDial.a = game.add.text(positionDial.x+32, positionDial.y+45, 'A', labelStyle5);
-            labelDial.b = game.add.text(positionDial.x+97, positionDial.y+45, 'B', labelStyle5);
-            labelDial.c = game.add.text(positionDial.x+162, positionDial.y+45, 'C', labelStyle5);
-            labelDial.d = game.add.text(positionDial.x+227, positionDial.y+45, 'D', labelStyle5);
+            labelDial.a = game.add.text(positionDial.x+32, positionDial.y+45, 'A', labelStyle4);
+            labelDial.b = game.add.text(positionDial.x+97, positionDial.y+45, 'B', labelStyle4);
+            labelDial.c = game.add.text(positionDial.x+162, positionDial.y+45, 'C', labelStyle4);
+            labelDial.d = game.add.text(positionDial.x+227, positionDial.y+45, 'D', labelStyle4);
 
             needleA = game.add.sprite(positionDial.x+38, positionDial.y+49, 'needle');
             needleA.anchor.setTo(0.495, 0.92);

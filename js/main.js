@@ -1385,7 +1385,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 status.statusDisplay = game.add.text(positionStatus.x+5, positionStatus.y+30, labelStatusDisplay, labelStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                resume.resumeOverlay.drawRect(0,51,960,599);
+                // resume.resumeOverlay.drawRect(0,51,960,599);
+                resume.resumeOverlay.drawRect(15,66,930,583);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
             } else {

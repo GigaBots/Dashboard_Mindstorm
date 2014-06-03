@@ -26,9 +26,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         else {
             console.log("CONNECT FAILURE.");
         }
-    });
-
-    
+    });    
 
     function beginGame(client, channel) {
         /* === Dashboard control panel stuff === */
@@ -51,8 +49,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle5 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
-        var backgound, spaceBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
-
+        var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
         var dragBoxButton;
 
         // positions of different units are the upper left x & y coordinates of their frames
@@ -73,7 +70,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusButton;
         var frameStatus;
         var positionStatus = { x : 15, y : 66 }
-        var labelStatus, labelStatusDisplay = "running..."; // initially running
+        var labelStatus, statusDisplay = "running..."; // initially running
+        var status = {
+            statusDisplay : "running..."
+        }
+        var resume = {
+            messageDisplay : 0,
+            resumeOverlay : 0
+        }
 
         /* Bot selector */
         var frameBotSelector;
@@ -260,7 +264,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var theirCode;
         var codeError;
         var clicked = false;
-        var cursorOverEditor;
         // array for textEditor code inputs to be stored
         var codeArray = [];
         var i = 0;
@@ -408,8 +411,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
-            //game.load.spritesheet('resumeButton','assets/buttons/gigabot_dashboard_button_resume_spritesheet.png', 97, 49);
-            //game.load.spritesheet('pauseButton','assets/buttons/gigabot_dashboard_button_pause_spritesheet.png', 97, 49);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
             game.load.spritesheet('reverseButton','assets/buttons/gigabot_dashboard_button_reverse_spritesheet.png', 97, 49);
             game.load.spritesheet('checkbox','assets/buttons/gigabot_dashboard_checkbox_spritesheet.png', 21, 21);
@@ -425,15 +426,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('space','assets/space_background.gif',960,659); // photo modified from http://www.hdwallsource.com/outer-space-wallpaper-4351.html
+            game.load.image('uiBackground','assets/ui_background.gif',960,659);
+            game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
+            game.load.image('resume','assets/resume_message.png',502,49);
         } //end preload
 
     //==============================================================================================================================
         function create() {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = true;    
-
+            game.input.keyboard.disabled = false;
             game.world.setBounds(0, 0, gameBoundX, gameBoundY);
+            game.input.onDown.add(function () {
+                if ( this.game.paused ) {
+                    this.game.paused = false;
+                    dashboardStatus = 1;
+                    game.world.remove(status.statusDisplay);
+                    labelStatusDisplay = "running...";
+                    status.statusDisplay = game.add.text(positionStatus.x+9, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                    statusButton.setFrames(1,0,0,0);
+                    resume.resumeMessageDisplay.destroy();
+                    resume.resumeOverlay.destroy();
+                }
+            }, this);
 
         /* Background/canvas stuff */
             game.stage.backgroundColor = '#C8C8C8';
@@ -445,9 +460,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             titleBarLine.beginFill(frameLineColor,1);
             titleBarLine.drawRect(0,50,960,1);
 
-            spaceBackground = game.add.sprite(0,51,'space');
+            uiBackground = game.add.sprite(0,51,'uiBackground');
+            
             backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,0.5); // opacity
+            backgroundBox.beginFill(0x313233,0.05); // opacity
             backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
 
             bottomLine = game.add.graphics(0,0);
@@ -566,13 +582,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+39, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
-            labelStatus =  game.add.text(positionStatus.x+10, positionStatus.y+28, labelStatusDisplay, labelStyle);
-
-            labelBotSelector = game.add.text(positionBotSelector.x+28, positionBotSelector.y+2, labelBotSelector, labelStyle3);
+            status.statusDisplay =  game.add.text(positionStatus.x+9, positionStatus.y+30, statusDisplay, labelStyle);
+            
+            labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
             labelBot = {
                 bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
-                bot2 : game.add.text(positionBotSelector.x+63, positionBotSelector.y+26, "2", labelStyle),
-                bot3 : game.add.text(positionBotSelector.x+98, positionBotSelector.y+26, "3", labelStyle)
+                bot2 : game.add.text(positionBotSelector.x+62, positionBotSelector.y+26, "2", labelStyle),
+                bot3 : game.add.text(positionBotSelector.x+96, positionBotSelector.y+26, "3", labelStyle)
             }
 
             labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, labelStyle2);
@@ -621,17 +637,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         /* Buttons */
-            // Add button for resuming all motors at their current settings, after having paused them
-            //resumeButton = game.add.button(15, 66, 'resumeButton', actionResumeOnClick, this);
-            //resumeButton.setFrames(3,3,3,3); // initially the dashboard will already be active, so make the Resume not appear usable
-            //pauseButton = game.add.button(111, 66, 'pauseButton', actionPauseOnClick, this, 1, 0, 2, 0);
-            //pauseButton.input.useHandCursor = true;
+            statusButton = game.add.button(positionStatus.x+5, positionStatus.y+5, 'statusButton', actionStopOnClick);
+            statusButton.setFrames(1,0,0,0);
+            statusButton.input.useHandCursor = true;
 
             /* Select which robot to control */  // ======This will probably work for now, until we extend this project later on
             checkboxBot = {
                 bot1 : game.add.button(positionBotSelector.x+7, positionBotSelector.y+24, 'checkbox', actionCheckboxBot1, this),
-                bot2 : game.add.button(positionBotSelector.x+41, positionBotSelector.y+24, 'checkbox', actionCheckboxBot2, this),
-                bot3 : game.add.button(positionBotSelector.x+75, positionBotSelector.y+24, 'checkbox', actionCheckboxBot3, this),
+                bot2 : game.add.button(positionBotSelector.x+40, positionBotSelector.y+24, 'checkbox', actionCheckboxBot2, this),
+                bot3 : game.add.button(positionBotSelector.x+73, positionBotSelector.y+24, 'checkbox', actionCheckboxBot3, this),
             }
             checkboxBot.bot1.setFrames(1,1,1,0);
             checkboxBot.bot2.setFrames(2,0,1,0);
@@ -1288,22 +1302,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
     /* Button-click functions */
-        function actionResumeOnClick () {
-            // resume receiving data?
-            dashboardStatus = 1;
-            resumeButton.setFrames(3,3,3,3);
-            pauseButton.setFrames(1,0,2,0);
-            resumeButton.input.useHandCursor = false;
-            pauseButton.input.useHandCursor = true;
-        }
-        function actionPauseOnClick () {
-            // pause receiving data?
-            dashboardStatus = 0;
-            pauseButton.setFrames(3,3,3,3);
-            resumeButton.setFrames(1,0,2,0);
-            pauseButton.input.useHandCursor = false;
-            resumeButton.input.useHandCursor = true;
-            //pause();
+
+        function actionStopOnClick () {
+            if ( dashboardStatus === 1 ) {
+                statusButton.setFrames(2,2,2,2);
+                dashboardStatus = 0;
+                game.paused = true;
+                game.world.remove(status.statusDisplay);
+                labelStatusDisplay = "stopped";
+                status.statusDisplay = game.add.text(positionStatus.x+12, positionStatus.y+30, labelStatusDisplay, labelStyle);
+                resume.resumeOverlay = game.add.graphics(0,0);
+                resume.resumeOverlay.beginFill(0x00000,0.45);
+                resume.resumeOverlay.drawRect(0,51,960,599);
+                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
+                this.game.input.keyboard.disabled = true;
+            } else {
+                statusButton.setFrames(1,0,0,0);
+                dashboardStatus = 1;
+                game.paused = false;
+            }
+            
         }
         function actionInputOnClick () {
             game.world.remove(screenMessage.messageDisplay1); // remove any messages present
@@ -1835,6 +1853,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var taDelta = t2a - t1.a; //change in time in milliseconds
                 if (taDelta >= 50) {
                     taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+                // instead of using tapprox; 
                 }
                 if (direction === 'f') {
                     needleA.angle = needleA.angle + motorA.speed*taDelta/1000; //clockwise
@@ -1992,9 +2011,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function update() {
             /* DASHBOARD STUFF */
-            // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
-            // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
-            /* Add something to show the set speed of a motor on all users' dashboards whenever a user adjusts it. Show it on the slider */
+                // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
+                // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
             if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
                 if ( typeof(dashMotorA) !== "undefined" ) {
@@ -2019,7 +2037,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     getDashboardValues('d', dashMotorD);
                 }
             }
-            // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
             if (sliderBarState.g1 === "up") {
                 var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
                 if ( typeof(dashGang1) !== "undefined" ) {
@@ -2050,15 +2067,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dialDataD);
             }
 
-            // if cursor is over textEditor
-            if ( cursorOverEditor ) {
-                // then disable keyboard shortcuts for controlling motors
-                this.game.input.keyboard.disabled = true;
-            }
-            else {
-                // if the keyboard isn't over textEditor, enable shortcut keys
-                this.game.input.keyboard.disabled = false;
-            }
+
+
+            /* TEXT EDITOR STUFF */
 
 
             //  on click of submit button ...
@@ -2098,20 +2109,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 indexArray = i;
             } // end .onclick
 
-
         } // end update
-        /*
-        function pause() {
-        } // end pause
-        */
-        $("#textEditor").hover( function () { // code for while hovering over textEditor
-            cursorOverEditor = true;
-            // Access this variable to determine whether or not user is over textEditor or gameWorld
 
-        }, function() { // code for while not hovering over textEditor
-            cursorOverEditor = false;
+        function disableKeyboard() {
+            game.input.keyboard.disabled = true;
+        }
+        function enableKeyboard() {
+            game.input.keyboard.disabled = false;
+        }
 
+        $("#textEditor").hover( function () { // hovering over textEditor
+            disableKeyboard();
+        }, function() { // not hovering over textEditor
+            enableKeyboard();
         });
+        
 
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed
@@ -2143,5 +2155,5 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     } // end beginGame
 
-
 }); // end require
+

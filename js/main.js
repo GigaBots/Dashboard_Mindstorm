@@ -2156,14 +2156,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
             }
 
             // store theirCode in an array to be accessed if they press the up key
             codeArray[i] = theirCode;
             i = i + 1;
             indexArray = i;
+            // Change height of textEditor depending on how many previous lines of code have been submitted
+            editorHeight(i);
         } // end .onclick
+
+        function editorHeight(elements) {
+            if (elements > 5) {
+                $("#textEditor").height(elements * 30);    
+            }
+        }
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;

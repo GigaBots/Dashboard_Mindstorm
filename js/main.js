@@ -30,16 +30,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     function beginGame(client, channel) {
         /* === Dashboard control panel stuff === */
-        var game = new Phaser.Game(960, 710, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
+        var game = new Phaser.Game(960, 640, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
             //render: render,
             //paused: paused,
             //destroy: destroy
-        });
+        }, true); // final "true" value notes that background should be transparent
 
-        var gameBoundX = 960, gameBoundY = 710;
+        var gameBoundX = 960, gameBoundY = 640;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -48,7 +48,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle4 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var labelStyle5 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
         var messageStyle = { font: "14px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
-        var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
+        var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.8;
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
         var dragBoxButton;
 
@@ -275,6 +275,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var i = 0;
         // element to determine which code to display for "up" and "down" presses
         var indexArray = i;
+        // user's code if uses "up" arrow but didn't hit submit before doing so.
+        var tempCode;
 
         //===================================================
 
@@ -428,11 +430,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
-            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm.png', 48, 48);
+            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm_on_dark.png', 48, 48);
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
-            game.load.image('title','assets/gigabot_dashboard_title_4.png', 400, 50);
-            game.load.image('poweredBy','assets/powered_by_big_bang.png', 205, 50);
-            game.load.image('uiBackground','assets/ui_background.gif',960,659);
+            game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
+            game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
+            //game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
@@ -459,7 +461,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }, this);
 
         /* Background/canvas stuff */
-            game.stage.backgroundColor = '#C8C8C8';
+ /*         game.stage.backgroundColor = '#C8C8C8';
             titleBox = game.add.graphics(0,0);
             titleBox.beginFill(0xFFFFFF,1);
             titleBox.drawRect(0,0,960,60);
@@ -480,13 +482,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             backgroundBottom = game.add.graphics(0,0);
             backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,651,960, 73);
+            backgroundBottom.drawRect(0,651,960, 73); */
+
 
         /* Title */
-            dashboardTitle = game.add.sprite(75,0,'title');
-            botLogo = game.add.sprite(15,1,'gigabotSm');
-            poweredBy = game.add.sprite(740,0,'poweredBy');
-            allRightsReserved = game.add.text(15, 670, "All Rights Reserved, TheGigabots.com", labelStyle);
+            //dashboardTitle = game.add.sprite(75,0,'title');
+            dashboardTitle = game.add.sprite(75,8,'title');
+            //botLogo = game.add.sprite(15,1,'gigabotSm');
+            botLogo = game.add.sprite(15,9,'gigabotSm');
+            //poweredBy = game.add.sprite(740,0,'poweredBy');
+            poweredBy = game.add.sprite(740,8,'poweredBy');
+            //allRightsReserved = game.add.text(15, 670, "All Rights Reserved, TheGigabots.com", labelStyle);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);
@@ -1379,7 +1385,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 status.statusDisplay = game.add.text(positionStatus.x+5, positionStatus.y+30, labelStatusDisplay, labelStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                resume.resumeOverlay.drawRect(0,51,960,599);
+                // resume.resumeOverlay.drawRect(0,51,960,599);
+                resume.resumeOverlay.drawRect(15,66,930,583);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
             } else {
@@ -2133,49 +2140,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dialDataD);
             }
 
-
-
-            /* TEXT EDITOR STUFF */
-
-
-            //  on click of submit button ...
-            document.getElementById("subButton").onclick = function() {
-            
-                 // get text from DialA text area      
-                userDialA = document.getElementById("textSpinA").innerHTML;
-                // get text from text editor text area
-                theirCode = document.getElementById("theirCode").textContent;
-                // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-                console.log(theirCode);
-
-                // if DialA text is not a number, output error in error message area
-                if (isNaN(parseFloat(userDialA, 10))) {
-                    document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
-                }
-                // remove error message if previously had an error but then fixed it
-                else {
-                    document.getElementById("errorMsg").innerHTML = "";
-                }
-
-                // try to evalate user's input code in text editor area. Will evaluate if possible.
-                try {
-                    eval(theirCode);
-                }
-                // if input code is not able to be run, display console's error message to user in text editor area
-                catch(err) {
-                    document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
-                }
-
-                // store theirCode in an array to be accessed if they press the up key
-                codeArray[i] = theirCode;
-                // evaluate their DialA number
-                needleA.angle = parseFloat(userDialA, 10);
-                i = i + 1;
-                indexArray = i;
-            } // end .onclick
-
         } // end update
+
+        // Text editor
+        // When the Submit button is clicked
+        document.getElementById("subButton").onclick = function() {
+              
+            // get text from text editor text area
+            theirCode = document.getElementById("theirCode").textContent;
+            console.log("The user's code is: " + theirCode);
+
+            // try to evalate user's input code in text editor area. Will evaluate if possible.
+            try {
+                eval(theirCode);
+            }
+            // if input code is not able to be run, display console's error message to user in text editor area
+            catch(err) {
+                document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+
+            }
+
+            // store theirCode in an array to be accessed if they press the up key
+            codeArray[i] = theirCode;
+            i = i + 1;
+            indexArray = i;
+        } // end .onclick
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
@@ -2198,20 +2187,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             switch(e.which) {
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
-                    //Maneuver back through previous input code
+                    // If at the last element in the array
+                    if (indexArray === i) {
+                        tempCode = document.getElementById("theirCode").innerHTML;
+                    }
+                    // If not at the first element of the array
                     if (indexArray != 0) {
+                        //Maneuver back through previous input code
                         indexArray=indexArray-1;
-                        console.log("Let's maneuver up through previous codes!");
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
-                        
                     }
                 break;
                 // If down key is pressed
                 case 40: // down
                     // Maneuver forward through newer code input
-                    if (indexArray != i-1) {
+                    if (indexArray != i) {
                         indexArray=indexArray+1;
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
+                    }
+                    if (indexArray === i) {
+                        document.getElementById("theirCode").innerHTML = tempCode; 
                     }
                 break;
                 default: return; // exit this handler for other keys

@@ -2067,20 +2067,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dialDataD);
             }
 
-
-
-            /* TEXT EDITOR STUFF */
-
-
-            //  on click of submit button ...
-
-
         } // end update
+
+        // Text editor
+        // When the Submit button is clicked
         document.getElementById("subButton").onclick = function() {
               
             // get text from text editor text area
             theirCode = document.getElementById("theirCode").textContent;
-            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
             console.log("The user's code is: " + theirCode);
 
             // try to evalate user's input code in text editor area. Will evaluate if possible.
@@ -2125,9 +2119,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     //Maneuver back through previous input code
                     if (indexArray != 0) {
                         indexArray=indexArray-1;
-                        console.log("Let's maneuver up through previous codes!");
                         document.getElementById("theirCode").innerText = codeArray[indexArray];
-                        
                     }
                 break;
                 // If down key is pressed

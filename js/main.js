@@ -26,9 +26,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         else {
             console.log("CONNECT FAILURE.");
         }
-    });
-
-    
+    });    
 
     function beginGame(client, channel) {
         /* === Dashboard control panel stuff === */
@@ -52,7 +50,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var messageStyle = { font: "14px Lucida Console, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.65;
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
-
         var dragBoxButton;
 
         // positions of different units are the upper left x & y coordinates of their frames
@@ -267,7 +264,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var theirCode;
         var codeError;
         var clicked = false;
-        var cursorOverEditor;
 
         //===================================================
 
@@ -434,7 +430,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function create() {
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = true;    
-
+            game.input.keyboard.disabled = false;
             game.world.setBounds(0, 0, gameBoundX, gameBoundY);
             game.input.onDown.add(function () {
                 if ( this.game.paused ) {
@@ -2010,9 +2006,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function update() {
             /* DASHBOARD STUFF */
-            // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
-            // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
-            /* Add something to show the set speed of a motor on all users' dashboards whenever a user adjusts it. Show it on the slider */
+                // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
+                // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
             if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotorA = channel.getKeyspace('dashboard').get('a'); 
                 if ( typeof(dashMotorA) !== "undefined" ) {
@@ -2037,7 +2032,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     getDashboardValues('d', dashMotorD);
                 }
             }
-            // NEXT, WE CAN ADD A SIMILAR FEATURE FOR THE 2 MOTORS GANGS, TO HANDLE THEIR CURRENT SPEEDS (+/- BUTTONS AND SLIDERS) AND THE MOTORS THEY CURRENT CONTAIN (CHECKBOXES)
             if (sliderBarState.g1 === "up") {
                 var dashGang1 = channel.getKeyspace('dashboard').get('g1'); 
                 if ( typeof(dashGang1) !== "undefined" ) {
@@ -2068,7 +2062,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 getDialValues('d', dialDataD);
             }
 
-             // get text from DialA text area      
+
+            /* TEXT EDITOR STUFF */
+
+            // get text from DialA text area      
             userDialA = document.getElementById("textSpinA").innerHTML;
             // get text from text editor text area
             theirCode = document.getElementById("theirCode").innerHTML;
@@ -2099,22 +2096,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 eval(theirCode);
             }
 
-
-            if ( cursorOverEditor ) {
-                this.game.input.keyboard.disabled = true; // allow users to type in the text editor, w/o affecting dashboard keyboard controls
-            }
-            else {
-                this.game.input.keyboard.disabled = false; // allow users to again control the dashboard with the keyboard, w/o typing in the text editor
-            }
-
         } // end update
 
-        $("#textEditor").hover( function () { // code for while hovering over textEditor
-            cursorOverEditor = true;
-            console.log(cursorOverEditor);
-        }, function() { // code for while not hovering over textEditor
-            cursorOverEditor = false;
-            console.log(cursorOverEditor);
+        function disableKeyboard() {
+            game.input.keyboard.disabled = true;
+        }
+        function enableKeyboard() {
+            game.input.keyboard.disabled = false;
+        }
+
+        $("#textEditor").hover( function () { // hovering over textEditor
+            disableKeyboard();
+        }, function() { // not hovering over textEditor
+            enableKeyboard();
         });
 
     } // end beginGame

@@ -264,6 +264,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var theirCode;
         var codeError;
         var clicked = false;
+        // array for textEditor code inputs to be stored
+        var codeArray = [];
+        var i = 0;
+        // element to determine which code to display for "up" and "down" presses
+        var indexArray = i;
 
         //===================================================
 
@@ -2063,17 +2068,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
 
+
             /* TEXT EDITOR STUFF */
 
-            // get text from DialA text area      
-            userDialA = document.getElementById("textSpinA").innerHTML;
-            // get text from text editor text area
-            theirCode = document.getElementById("theirCode").innerHTML;
-            // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
-            theirCode = theirCode.replace(/<br>/g, "");
 
             //  on click of submit button ...
             document.getElementById("subButton").onclick = function() {
+            
+                 // get text from DialA text area      
+                userDialA = document.getElementById("textSpinA").innerHTML;
+                // get text from text editor text area
+                theirCode = document.getElementById("theirCode").textContent;
+                // if user entered multiple lines, remove "<br>" tags that are read from the .innerHTML method
+                console.log(theirCode);
+
                 // if DialA text is not a number, output error in error message area
                 if (isNaN(parseFloat(userDialA, 10))) {
                     document.getElementById("errorMsg").innerHTML = userDialA + " is not a number";
@@ -2083,18 +2091,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     document.getElementById("errorMsg").innerHTML = "";
                 }
 
-                // try to evalate user's input code in text editor area
+                // try to evalate user's input code in text editor area. Will evaluate if possible.
                 try {
                     eval(theirCode);
                 }
                 // if input code is not able to be run, display console's error message to user in text editor area
                 catch(err) {
                     document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+
                 }
 
-                // evaluate their input code
-                eval(theirCode);
-            }
+                // store theirCode in an array to be accessed if they press the up key
+                codeArray[i] = theirCode;
+                // evaluate their DialA number
+                needleA.angle = parseFloat(userDialA, 10);
+                i = i + 1;
+                indexArray = i;
+            } // end .onclick
 
         } // end update
 
@@ -2110,10 +2123,37 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }, function() { // not hovering over textEditor
             enableKeyboard();
         });
+        
+
+        // Handling up and down arrow key event to maneuver through user's previously input code.
+        // When a key is pressed
+        $(document).keydown(function(e) {
+            // detect which key it is
+            switch(e.which) {
+                // If up key is pressed (keycode number 38) then
+                case 38: // up
+                    //Maneuver back through previous input code
+                    if (indexArray != 0) {
+                        indexArray=indexArray-1;
+                        console.log("Let's maneuver up through previous codes!");
+                        document.getElementById("theirCode").innerText = codeArray[indexArray];
+                        
+                    }
+                break;
+                // If down key is pressed
+                case 40: // down
+                    // Maneuver forward through newer code input
+                    if (indexArray != i-1) {
+                        indexArray=indexArray+1;
+                        document.getElementById("theirCode").innerText = codeArray[indexArray];
+                    }
+                break;
+                default: return; // exit this handler for other keys
+            }
+            e.preventDefault(); // prevent the default action (scroll / move caret)
+        });
 
     } // end beginGame
 
-
 }); // end require
-
 

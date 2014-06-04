@@ -31,8 +31,9 @@
 	
  	<div id="textEditor">
 		<p id="label">Gigabots Console<br><br></p>
-		<span class="Editable" id="theirCode" contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></span>
-		<button id="subButton">Run</button>
+		<p id="previousCode"></p>
+		<p id="currentCode" class="Editable"  contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></p>
+		<button id="runButton">Run</button>
 		<div id="errorMsg"></div>
 	</div>
 	<div id="footer-wrap">

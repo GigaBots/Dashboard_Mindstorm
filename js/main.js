@@ -267,7 +267,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* === Text editor stuff === */
         var userType;
         var userNum;
-        var theirCode;
+        var currentCode;
         var codeError;
         var clicked = false;
         // array for textEditor code inputs to be stored
@@ -2144,40 +2144,57 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         // Text editor
         // When the Submit button is clicked
-        document.getElementById("subButton").onclick = function() {
-              
+        document.getElementById("runButton").onclick = function() {
             // get text from text editor text area
-            theirCode = document.getElementById("theirCode").textContent;
-            console.log("The user's code is: " + theirCode);
+            currentCode = document.getElementById("currentCode").textContent;
+            console.log("The user's code is: " + currentCode);
 
             // try to evalate user's input code in text editor area. Will evaluate if possible.
             try {
-                eval(theirCode);
+                eval(currentCode);
             }
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
             }
 
-            // store theirCode in an array to be accessed if they press the up key
-            codeArray[i] = theirCode;
+            // store currentCode in an array to be accessed if they press the up key
+            codeArray[i] = currentCode;
+            editorContent(i);
             i = i + 1;
             indexArray = i;
+            // Change height of textEditor depending on how many previous lines of code have been submitted
+            
         } // end .onclick
+
+        function editorContent(elements) {
+            /* if (elements > 5) {
+                // Extend textEditor height if there are several elements that need to be displayed above current code element
+                $("#textEditor").height(elements * 30);    */
+            var j = 0
+            var text = ""
+            for (j; j <= elements; j++) {
+                text += codeArray[j] + "<br>";
+            };
+            document.getElementById("previousCode").innerHTML = text;
+        }
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
+            console.log(true);
         }
         function enableKeyboard() {
             game.input.keyboard.disabled = false;
+            console.log(false);
         }
 
-        $("#textEditor").hover( function () { // hovering over textEditor
+        $("#textEditor").click( function () { // hovering over textEditor
             disableKeyboard();
-        }, function() { // not hovering over textEditor
+        });
+        $("#gameWorld").click( function () { // hovering over textEditor
             enableKeyboard();
         });
+
         
 
         // Handling up and down arrow key event to maneuver through user's previously input code.
@@ -2185,17 +2202,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         $(document).keydown(function(e) {
             // detect which key it is
             switch(e.which) {
+
+//============= Display previous codes in array above current code ========
+
+
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
                     // If at the last element in the array
                     if (indexArray === i) {
-                        tempCode = document.getElementById("theirCode").innerHTML;
+                        tempCode = document.getElementById("currentCode").innerHTML;
                     }
                     // If not at the first element of the array
                     if (indexArray != 0) {
                         //Maneuver back through previous input code
                         indexArray=indexArray-1;
-                        document.getElementById("theirCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerText = codeArray[indexArray];
                     }
                 break;
                 // If down key is pressed
@@ -2203,10 +2224,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     // Maneuver forward through newer code input
                     if (indexArray != i) {
                         indexArray=indexArray+1;
-                        document.getElementById("theirCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerText = codeArray[indexArray];
                     }
                     if (indexArray === i) {
-                        document.getElementById("theirCode").innerHTML = tempCode; 
+                        document.getElementById("currentCode").innerHTML = tempCode; 
                     }
                 break;
                 default: return; // exit this handler for other keys

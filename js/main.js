@@ -272,9 +272,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var clicked = false;
         // array for textEditor code inputs to be stored
         var codeArray = [];
-        var i = 0;
+        var iterationNum = 0;
         // element to determine which code to display for "up" and "down" presses
-        var indexArray = i;
+        var indexArray = iterationNum;
         // user's code if uses "up" arrow but didn't hit submit before doing so.
         var tempCode;
 
@@ -2145,13 +2145,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // Text editor
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
-            // get text from text editor text area
-            currentCode = document.getElementById("currentCode").textContent;
-            console.log("The user's code is: " + currentCode);
+            // get text along with formatting from text editor text area
+            var formatCode = document.getElementById("currentCode").innerHTML;
+            // get plain text w/o format from text editor
+            var evalCode = document.getElementById("currentCode").innerText;
 
             // try to evalate user's input code in text editor area. Will evaluate if possible.
             try {
-                eval(currentCode);
+                eval(evalCode);
             }
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
@@ -2159,26 +2160,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
             // store currentCode in an array to be accessed if they press the up key
-            codeArray[i] = currentCode;
-            editorContent(i);
-            i = i + 1;
-            indexArray = i;
+            codeArray[iterationNum] = formatCode;
+            editorContent(iterationNum);
+            iterationNum = iterationNum + 1;
+            indexArray = iterationNum
             // Change height of textEditor depending on how many previous lines of code have been submitted
             
         } // end .onclick
 
-        function editorContent(elements) {
-            /* if (elements > 5) {
-                // Extend textEditor height if there are several elements that need to be displayed above current code element
-                $("#textEditor").height(elements * 30);    */
-            var j = 0
-            var text = ""
-            for (j; j <= elements; j++) {
-                text += codeArray[j] + "<br>";
+        function editorContent(elementNum) {
+            var secIterator = 0
+            var prevText = ""
+            for (secIterator; secIterator <= elementNum; secIterator++) {
+                prevText += codeArray[secIterator] + "<br>";
+                console.log("secIterator = " + secIterator + " and codeArray[secIterator] = " + codeArray[secIterator]);
             };
-            document.getElementById("previousCode").innerHTML = text;
+            document.getElementById("previousCode").innerHTML = prevText;
+            document.getElementById("currentCode").innerHTML = "";
+            $("#currentCode").focus();
         }
-
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
             console.log(true);
@@ -2209,24 +2209,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
                     // If at the last element in the array
-                    if (indexArray === i) {
+                    if (indexArray === iterationNum) {
                         tempCode = document.getElementById("currentCode").innerHTML;
                     }
                     // If not at the first element of the array
                     if (indexArray != 0) {
                         //Maneuver back through previous input code
                         indexArray=indexArray-1;
-                        document.getElementById("currentCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
                     }
                 break;
                 // If down key is pressed
                 case 40: // down
                     // Maneuver forward through newer code input
-                    if (indexArray != i) {
+                    if (indexArray != iterationNum) {
                         indexArray=indexArray+1;
-                        document.getElementById("currentCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
                     }
-                    if (indexArray === i) {
+                    if (indexArray === iterationNum) {
                         document.getElementById("currentCode").innerHTML = tempCode; 
                     }
                 break;

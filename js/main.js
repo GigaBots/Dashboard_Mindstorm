@@ -2145,13 +2145,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // Text editor
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
-            // get text from text editor text area
-            currentCode = document.getElementById("currentCode").textContent;
-            console.log("The user's code is: " + currentCode);
+            // get text along with formatting from text editor text area
+            var formatCode = document.getElementById("currentCode").innerHTML;
+            // get plain text w/o format from text editor
+            var evalCode = document.getElementById("currentCode").innerText;
 
             // try to evalate user's input code in text editor area. Will evaluate if possible.
             try {
-                eval(currentCode);
+                eval(evalCode);
             }
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
@@ -2159,7 +2160,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
             // store currentCode in an array to be accessed if they press the up key
-            codeArray[i] = currentCode;
+            codeArray[i] = formatCode;
             editorContent(i);
             i = i + 1;
             indexArray = i;
@@ -2168,17 +2169,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } // end .onclick
 
         function editorContent(elements) {
-            /* if (elements > 5) {
-                // Extend textEditor height if there are several elements that need to be displayed above current code element
-                $("#textEditor").height(elements * 30);    */
             var j = 0
             var text = ""
             for (j; j <= elements; j++) {
                 text += codeArray[j] + "<br>";
             };
             document.getElementById("previousCode").innerHTML = text;
+            document.getElementById("currentCode").innerHTML = "";
+            $("#currentCode").focus();
         }
-
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
             console.log(true);
@@ -2216,7 +2215,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if (indexArray != 0) {
                         //Maneuver back through previous input code
                         indexArray=indexArray-1;
-                        document.getElementById("currentCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
                     }
                 break;
                 // If down key is pressed
@@ -2224,7 +2223,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     // Maneuver forward through newer code input
                     if (indexArray != i) {
                         indexArray=indexArray+1;
-                        document.getElementById("currentCode").innerText = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
                     }
                     if (indexArray === i) {
                         document.getElementById("currentCode").innerHTML = tempCode; 

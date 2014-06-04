@@ -79,18 +79,23 @@ body {
 	background-color: #313233;
 	color: #C8C8C8;
 	opacity: 0.95;
+	overflow: auto;
+	min-height: 180px;
 	width: 918px;
-	height: 240px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 1px;
 	border-style: solid;
 	border-width: 2px;
 	border-color: #656565;
-	margin: 3px auto 15px auto;
+	margin: 3px auto 0 auto;
 	font-size: 12px;
 	position: relative;
 	padding-left: 5px;
 	padding-right: 5px;
+}
+#previousCode {
+	overflow: auto;
+	max-height: 100px;
 }
 
 #currentCode {
@@ -107,10 +112,17 @@ body {
 	margin: 0;
 
 }
+
+/* Run button to align with textEditor */
 #runButton {
-	position: absolute;
-	bottom: 2px;
-	left: 6px;
+    left: -moz-calc(50% - 466px);
+    left: -webkit-calc(50% - 466px);
+    left: calc(50% - 466px);
+}
+#runButton {
+	position: relative;
+	top: 2px;
+	bottom: 40px;
 	background: transparent;
 	border-radius: 5px;
 	color: #C8C8C8;

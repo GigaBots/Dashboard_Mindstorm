@@ -19,17 +19,21 @@ body {
     height:100%;
 }
 
-#rights {
+#footer-wrap { background:
+	#1F1F1F; }
+
+#footer {
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 	font-size: 12px;
 	color: #A3A3A3;
-	margin: 3px auto 5px auto;
+	margin: 0px auto 0px auto;
 	position: relative;
-	padding-top: 5px;
-	padding-bottom: 10px;
+	padding-top: 2px;
+	padding-bottom: 8px;
 	text-align: center;
 }
-#rights a {
+
+#footer a {
 	color: #A3A3A3;
 	text-decoration: none;
 }
@@ -82,7 +86,7 @@ body {
 	border-style: solid;
 	border-width: 2px;
 	border-color: #656565;
-	margin: 3px auto 5px auto;
+	margin: 3px auto 15px auto;
 	font-size: 12px;
 	position: relative;
 	padding-left: 5px;
@@ -93,6 +97,7 @@ body {
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 	font-size: 16px;
 	text-align: left;
+	padding-top: 2px;
 	padding-left: 2px;
 	margin: 0;
 

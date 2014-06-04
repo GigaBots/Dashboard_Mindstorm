@@ -2168,6 +2168,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function editorHeight(elements) {
             if (elements > 5) {
+                // Extend textEditor height if there are several elements that need to be displayed above current code element
                 $("#textEditor").height(elements * 30);    
             }
         }
@@ -2191,6 +2192,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         $(document).keydown(function(e) {
             // detect which key it is
             switch(e.which) {
+
+============= Display previous codes in array above current code ========
+
+
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
                     // If at the last element in the array

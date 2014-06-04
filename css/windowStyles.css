@@ -76,13 +76,18 @@ body {
 	padding-right: 5px;
 }
 
+#currentCode {
+	overflow: auto;
+	max-height: 100px;
+}
+
 #label {
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 	text-align: center;
 	margin: 0;
 
 }
-#subButton {
+#runButton {
 	position: absolute;
 	bottom: 2px;
 	left: 6px;

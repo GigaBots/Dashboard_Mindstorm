@@ -50,10 +50,6 @@ body {
 	overflow: auto;
 	min-height: 180px;
 	width: 918px;
-<<<<<<< HEAD
-	height: 200px;
-=======
->>>>>>> Cole
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 1px;
 	border-style: solid;
@@ -87,11 +83,6 @@ body {
 
 /* Run button to align with textEditor */
 #runButton {
-<<<<<<< HEAD
-	position: absolute;
-	bottom: 2px;
-	left: 2px;
-=======
     left: -moz-calc(50% - 466px);
     left: -webkit-calc(50% - 466px);
     left: calc(50% - 466px);
@@ -99,8 +90,7 @@ body {
 #runButton {
 	position: relative;
 	top: 2px;
-	bottom: 40px;
->>>>>>> Cole
+	bottom: 2px;
 	background: transparent;
 	border-radius: 1px;
 	color: #C8C8C8;

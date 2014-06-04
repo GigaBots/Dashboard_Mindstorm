@@ -9,37 +9,37 @@
 	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
 </head>
 <body>
-<!-- 	<div class="wrapper">
-	  <div class="container">
-	    <div class="canvas-container">
-	      	<canvas id="gameWorld" width="960" height="710">
-				<script src="js/phaser.min.js"></script>
-				<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
-				<script src="js/jquery.min.js"></script>
-			</canvas>
-	    </div>
-	  </div>
-	</div> -->
-	<div id="background">
-    	<img src="assets/Mars-Surface-from-Space-6.png" class="stretch" alt="" />
-	</div>
-	<div id="gameWorld">
-		<script src="js/phaser.min.js"></script>
-		<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
-		<script src="js/jquery.min.js"></script>
-	</div>
-	
- 	<div id="textEditor">
-		<p id="label">Gigabots Console<br></p>
-		<p id="previousCode"></p>
-		<p id="currentCode" class="Editable"  contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></p>
-		<div id="errorMsg"></div>
-	</div>
-	<button id="runButton">Run</button>
-	<div id="footer-wrap">
-		<div id = "footer"> 
-			<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
+	<div class="content" -webkit-overflow-scrolling: touch>
+	<!-- 	<div class="wrapper">
+		  <div class="container">
+		    <div class="canvas-container">
+		      	<canvas id="gameWorld" width="960" height="710">
+					<script src="js/phaser.min.js"></script>
+					<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+					<script src="js/jquery.min.js"></script>
+				</canvas>
+		    </div>
+		  </div>
+		</div> -->
+		<div id="background">
+	    	<img src="assets/mars_gradient_background.gif" class="stretch" alt="" />
 		</div>
+		<div id="gameWorld">
+			<script src="js/phaser.min.js"></script>
+			<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+			<script src="js/jquery.min.js"></script>
+		</div>
+		
+	 	<div id="textEditor">
+			<p id="label">Gigabots Console<br><br></p>
+			<p id="previousCode"></p>
+			<p id="currentCode" class="Editable"  contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></p>
+			<div id="errorMsg"></div>
+		</div>			
+		<button id="runButton">Run</button>
 	</div>
+	<footer> 
+		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
+	</footer>
 </body>
 </html>

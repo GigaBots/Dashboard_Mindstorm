@@ -1,8 +1,15 @@
 /* Layout
 ================================= */
+html {
+  height: 100%;
+}
 
 body { 
-	margin: 0px;
+  position: relative;
+  margin: 0;
+  padding-bottom: 40px;
+  min-height: 100%;
+  overflow-y: scroll; /* always show scroll bar --> maybe this will workd for android */
 }
 
 #background {
@@ -19,23 +26,9 @@ body {
     height:100%;
 }
 
-#footer-wrap { background:
-	#1F1F1F; }
-
-#footer {
-	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
-	font-size: 12px;
-	color: #A3A3A3;
-	margin: 0px auto 0px auto;
-	position: relative;
-	padding-top: 2px;
-	padding-bottom: 8px;
-	text-align: center;
-}
-
-#footer a {
-	color: #A3A3A3;
-	text-decoration: none;
+.content {
+  margin: 0 auto;
+  width: 100%;
 }
 
 #gameWorld {	
@@ -49,31 +42,6 @@ body {
 	overflow: hidden;
 	clear: both;
 }
-
-/*.wrapper {
-   display: table;
-   padding: 0;
-   width: 100%;
-   height: 100%;
-   position: absolute;
-}
-.container {
-   display: table-cell;
-   vertical-align: middle;
-}
-.canvas-container {
-   position: relative;
-   max-width: 960px;
-   min-width: 320px;
-   margin: 0 auto;
-}
-#gameWorld {
-   width: 100%;
-   height: auto;
-   background-color: gray;
-}
-*/
-
 
 #textEditor {
 	background-color: #313233;
@@ -122,9 +90,9 @@ body {
 #runButton {
 	position: relative;
 	top: 2px;
-	bottom: 40px;
+	bottom: 2px;
 	background: transparent;
-	border-radius: 5px;
+	border-radius: 1px;
 	color: #C8C8C8;
 }
 #errorMsg {
@@ -139,3 +107,60 @@ body {
         content:attr(placeholder);
         font-style: italic;
 }
+
+footer {
+	background: #1F1F1F; 
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	padding: 2px 0 2px 0;
+	text-align: center;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+	font-size: 12px;
+	color: #A3A3A3;
+}
+
+footer a {
+	color: #A3A3A3;
+	text-decoration: none;
+}
+
+
+/* scroll bar */
+::-WebKit-scrollbar {
+	-WebKit-appearance: none;
+	width: 13px;
+}
+
+::-WebKit-scrollbar-thumb {
+	border-radius: 8px;
+	background-color: rgba(0,0,0,.5);
+	-WebKit-box-shadow: 0 0 1px rgba(49,50,51,.5);
+}
+
+
+
+
+/*.wrapper {
+   display: table;
+   padding: 0;
+   width: 100%;
+   height: 100%;
+   position: absolute;
+}
+.container {
+   display: table-cell;
+   vertical-align: middle;
+}
+.canvas-container {
+   position: relative;
+   max-width: 960px;
+   min-width: 320px;
+   margin: 0 auto;
+}
+#gameWorld {
+   width: 100%;
+   height: auto;
+   background-color: gray;
+}
+*/

@@ -2157,14 +2157,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
-
             }
 
             // store theirCode in an array to be accessed if they press the up key
             codeArray[i] = theirCode;
             i = i + 1;
             indexArray = i;
+            // Change height of textEditor depending on how many previous lines of code have been submitted
+            editorHeight(i);
         } // end .onclick
+
+        function editorHeight(elements) {
+            if (elements > 5) {
+                // Extend textEditor height if there are several elements that need to be displayed above current code element
+                $("#textEditor").height(elements * 30);    
+            }
+        }
 
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
@@ -2185,6 +2193,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         $(document).keydown(function(e) {
             // detect which key it is
             switch(e.which) {
+
+============= Display previous codes in array above current code ========
+
+
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
                     // If at the last element in the array

@@ -14,7 +14,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
-           client.subscribe("bot", function( err, c) {
+           client.subscribe("newBot", function( err, c) {
               if(!err) {
                   beginGame(client,c);
               }
@@ -38,6 +38,82 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
+
+
+        var getKeyspaceButton;
+
+        // function makeRobotUser(key,val,botClientId) {
+        //     if ( key === 'robot' ) {
+        //         console.log('is it a robot?');
+        //         if ( typeof(val) !== 'undefined' ) {
+        //             console.log('val is defined');
+        //             if ( val.imTotallyARobot === 'yup' ) {
+        //                 botArray.push('bot');
+        //             }
+        //         }
+        //     }
+        // }
+
+        // channel.onSubscribers( function(joined) {
+        //     var robotUser = channel.getKeyspace(joined).get('robot');
+        //     makeRobotUser('robot',robotUser,joined);
+        //     console.log(joined);
+        // });
+
+        // function makeRobotUser(key,val,botClientId) {
+        //     if ( key === 'robot' ) {
+        //         console.log('is it a robot?');
+        //         if ( typeof(val) !== 'undefined' ) {
+        //             console.log('val is defined');
+        //             if ( val.imTotallyARobot === 'yup' ) {
+        //                 botArray.push('bot');
+        //             }
+        //         }
+        //     }
+        // }
+
+        channel.onSubscribers( function(joined) {
+            makeRobotUser(joined);
+            //var robotUser = channel.getKeyspace(joined).get('robot');
+            //makeRobotUser('robot',robotUser,joined);
+            console.log(joined);
+        });
+
+        function makeRobotUser(joined) {
+            channel.getKeyspace(joined).onValue(function(key,val) {
+                if ( key === 'robot' ) {
+                    console.log('is it a robot?');
+                    makebotuser('robot', val, joined);
+                    // if ( val.imTotallyARobot === 'yup' ) {
+                    //     console.log('tis a robot');
+                    //     botArray.push(joined);
+                    // }
+                }
+            },
+            function(key,val) {
+                if ( key === 'robot' ) {
+                    console.log('is it a robot?');
+                    makebotuser('robot', val, joined);
+                    // if ( val.imTotallyARobot === 'yup' ) {
+                    //     console.log('tis a robot');
+                    //     botArray.push(joined);
+                    // }
+                }
+            },
+            function(key) {
+
+            }
+            );
+        }
+
+        function makebotuser(key,val,joined) {
+            console.log('key = ' + key);
+            console.log('val = ' + val);
+            if ( val.imTotallyARobot === 'yup' ) {
+                console.log('tis a robot');
+                botArray.push(joined);
+            }
+        }
 
         var gameBoundX = 960, gameBoundY = 640;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
@@ -85,7 +161,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var robotNumber = 0;
         var botDropdown, dropdownBox;
         var dropHighlight = { 1 : 0 }
-        var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
+        var botArray = new Array();
+        //var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
         var botLabels = new Array();
         var botName = 'Gigabot Prime';
         var bot = {
@@ -280,13 +357,68 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        channel.channelData.onValue(function (key, val) {
+        // channel.channelData.onValue(function (key, val) {
+        //     //console.log("Add:" + key +"->"+JSON.stringify(val) );
+        //     if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+        //         setMotorInfo(key, val);
+        //     }
+        //     else if ( key === 'touchSensor') {
+        //         setTouchSensor(val);
+        //     }
+        //     else if ( key === 'power') {
+        //         setBatterySensor(val);
+        //     }
+        //     else if ( key === 'distance') {
+        //         setUltrasonicSensor(val);
+        //     }
+
+        // }, function (key, val) {
+        //     //console.log("Update:" + key +"->"+JSON.stringify(val));
+        //     if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+        //         setMotorInfo(key, val);
+        //     }
+        //     else if ( key === 'touchSensor') {
+        //         setTouchSensor(val);
+        //     }
+        //     else if ( key === 'power') {
+        //         setBatterySensor(val);
+        //     }
+        //     else if ( key === 'distance') {
+        //         setUltrasonicSensor(val);
+        //     }
+
+        // }, function (key) {
+        //     //console.log("Delete:" + key);
+        // });
+
+        
+        var robotId = 'd622e827-8c3e-4ca1-9459-57d371c71215'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
+
+        channel.getKeyspace(robotId).onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
-            else if ( key === 'touchSensor') {
-                setTouchSensor(val);
+            else if ( key === 'S1' ) {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                    setIRSensor(val);
+                }
+
+            }
+            else if ( key === 'S2') {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                    setTouchSensor(val);
+                }
+
+            }
+            else if ( key === 'S3' ) {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                    setIRSensor(val);
+                }
+
             }
             else if ( key === 'power') {
                 setBatterySensor(val);
@@ -300,8 +432,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
-            else if ( key === 'touchSensor') {
-                setTouchSensor(val);
+            else if ( key === 'S1' ) {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                    setIRSensor(val);
+                }
+
+            }
+            else if ( key === 'S2') {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                    setTouchSensor(val);
+                }
+
+            }
+            else if ( key === 'S3' ) {
+                
+                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                    setIRSensor(val);
+                }
+
             }
             else if ( key === 'power') {
                 setBatterySensor(val);
@@ -377,7 +527,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
-            if( val.touched ) {
+            if( val.values[0] === 1 ) {
                 touchIndicator.animations.play('pressed');
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
@@ -389,6 +539,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
 
+        function setIRSensor( val ) {
+            game.world.remove(IR.IRDistDisplay);
+            IRDist = val.values[0];
+            IRDistDisplay = IRDist;
+            IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+22, IRDistDisplay.toFixed(2), labelStyle3);
+        }
+
+        function setUltrasonicSensor( val ) {
+            ultrasonicDist = val.distance;
+            game.world.remove(ultrasonic.ultrasonicDistDisplay);
+            ultrasonicDistDisplay = ultrasonicDist;
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
+        }
+
+        // THIS NEEDS BE HOOKED UP DIFFERENTLY BECAUSE THE BATTERY ISN'T TREATED LIKE A SENSOR ANYMORE, IT'S DATA WITHIN THE 'robot' KEY
         function setBatterySensor( val ) {
             batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
@@ -407,13 +572,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
                 }
             }
-        }
-
-        function setUltrasonicSensor( val ) {
-            ultrasonicDist = val.distance;
-            game.world.remove(ultrasonic.ultrasonicDistDisplay);
-            ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
 
     //==============================================================================================================================
@@ -443,6 +601,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     //==============================================================================================================================
         function create() {
+            
+            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
+
+
+
+
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = true;    
             game.input.keyboard.disabled = false;
@@ -1324,6 +1488,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } // end create 
         //=============================================================================
 
+        function actionGetKeyspace() {
+            var keys = channel.getKeyspace(robotId).keys();
+            console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
+            var isRobot = channel.getKeyspace(robotId).get('robot');
+            console.log(isRobot); //Object {imTotallyARobot: "yup"} 
+            var ma = channel.getKeyspace(robotId).get('a');
+            console.log(ma); //Object {port: "a", position: 161, stalled: false, moving: false}
+            var mb = channel.getKeyspace(robotId).get('b');
+            console.log(mb);
+            var mc = channel.getKeyspace(robotId).get('c');
+            console.log(mc);
+            var md = channel.getKeyspace(robotId).get('d');
+            console.log(md);
+            var s1 = channel.getKeyspace(robotId).get('S1');
+            console.log(s1); //Object {port: "S1", mode: "Distance", values: Array[1]}
+            var s2 = channel.getKeyspace(robotId).get('S2');
+            console.log(s2);
+        }
+
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( motor, direction, speed ) {
             var data = {};
@@ -2142,6 +2325,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end update
 
+
+
+        function disableKeyboard() {
+            game.input.keyboard.disabled = true;
+        }
+        function enableKeyboard() {
+            game.input.keyboard.disabled = false;
+        }
+
+        $("#textEditor").hover( function () { // hovering over textEditor
+            disableKeyboard();
+        }, function() { // not hovering over textEditor
+            enableKeyboard();
+        });
+        
         // Text editor
         // When the Submit button is clicked
         document.getElementById("subButton").onclick = function() {
@@ -2165,20 +2363,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             i = i + 1;
             indexArray = i;
         } // end .onclick
-
-        function disableKeyboard() {
-            game.input.keyboard.disabled = true;
-        }
-        function enableKeyboard() {
-            game.input.keyboard.disabled = false;
-        }
-
-        $("#textEditor").hover( function () { // hovering over textEditor
-            disableKeyboard();
-        }, function() { // not hovering over textEditor
-            enableKeyboard();
-        });
-        
 
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed

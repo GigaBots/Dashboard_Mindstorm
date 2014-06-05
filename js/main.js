@@ -2145,6 +2145,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // Text editor
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
+            
+            // clear old error message so as to re-evaluate new code
+            document.getElementById("errorMsg").innerHTML = "";
+
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
@@ -2164,7 +2168,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             editorContent(iterationNum);
             iterationNum = iterationNum + 1;
             indexArray = iterationNum
-            // Change height of textEditor depending on how many previous lines of code have been submitted
+
+            $("html").scrollTop($("html")[0].scrollHeight)
+
             
         } // end .onclick
 
@@ -2173,9 +2179,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var prevText = ""
             for (secIterator; secIterator <= elementNum; secIterator++) {
                 prevText += codeArray[secIterator] + "<br>";
-                console.log("secIterator = " + secIterator + " and codeArray[secIterator] = " + codeArray[secIterator]);
             };
+            // Display all previous code (from array) in previousCode area
             document.getElementById("previousCode").innerHTML = prevText;
+            // scroll to bottom of previousCode text (showing last input)
+            $("#previousCode").scrollTop($("#previousCode")[0].scrollHeight)
+            // clear currentCode to validate that code was submitted
             document.getElementById("currentCode").innerHTML = "";
             $("#currentCode").focus();
         }
@@ -2208,8 +2217,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
-                    // If at the last element in the array
+                    // If at the last element in the array and they press up
                     if (indexArray === iterationNum) {
+                        // Remember their unsubmitted code in a tempCode variable so in case they want to return what they previously wrote
                         tempCode = document.getElementById("currentCode").innerHTML;
                     }
                     // If not at the first element of the array
@@ -2233,6 +2243,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 default: return; // exit this handler for other keys
             }
             e.preventDefault(); // prevent the default action (scroll / move caret)
+            // move to of code in currentCode
+            $("#currentCode").scrollTop($("#currentCode")[0].scrollHeight);
         });
 
     } // end beginGame

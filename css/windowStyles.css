@@ -70,7 +70,7 @@ body {
 }
 #runButton {
 	position: relative;
-	top: 2px;
+	top: 5px;
 	bottom: 2px;
 	background: transparent;
 	border-radius: 1px;
@@ -92,7 +92,7 @@ body {
         font-style: italic;
 }
 .content {
-	padding-bottom: 40px;
+	padding-bottom: 50px;
 	height: 100%
 }
 #footer {
@@ -112,11 +112,6 @@ body {
 	color: #A3A3A3;
 }
 
-@media screen and (min-height: 860px) {
-	#footer {
-		
-	}
-}
 
 /* scroll bar */
 ::-WebKit-scrollbar {

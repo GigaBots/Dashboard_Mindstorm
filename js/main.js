@@ -73,46 +73,34 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // }
 
         channel.onSubscribers( function(joined) {
-            makeRobotUser(joined);
+            subscribeBotUser(joined);
             //var robotUser = channel.getKeyspace(joined).get('robot');
             //makeRobotUser('robot',robotUser,joined);
             console.log(joined);
         });
 
-        function makeRobotUser(joined) {
+        function subscribeBotUser(joined) {
             channel.getKeyspace(joined).onValue(function(key,val) {
                 if ( key === 'robot' ) {
-                    console.log('is it a robot?');
-                    makebotuser('robot', val, joined);
-                    // if ( val.imTotallyARobot === 'yup' ) {
-                    //     console.log('tis a robot');
-                    //     botArray.push(joined);
-                    // }
+                    addBot('robot', val, joined);
                 }
             },
             function(key,val) {
                 if ( key === 'robot' ) {
-                    console.log('is it a robot?');
-                    makebotuser('robot', val, joined);
-                    // if ( val.imTotallyARobot === 'yup' ) {
-                    //     console.log('tis a robot');
-                    //     botArray.push(joined);
-                    // }
+                    addBot('robot', val, joined);
                 }
             },
             function(key) {
-
+            //
             }
             );
         }
 
-        function makebotuser(key,val,joined) {
+        function addBot( key, val, joined) {
+            if ( key === 'robot' ) {}
             console.log('key = ' + key);
-            console.log('val = ' + val);
-            if ( val.imTotallyARobot === 'yup' ) {
-                console.log('tis a robot');
-                botArray.push(joined);
-            }
+            console.log('val = ' + val.ev3.name);
+            botArray.push(val.ev3.name);
         }
 
         var gameBoundX = 960, gameBoundY = 640;
@@ -169,6 +157,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             nameDisplay : 0
         }
         var droppedDown = false;
+
+        //var botMap = Array.prototype.map;
+        var botMap = new Map();
        
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -391,37 +382,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //     //console.log("Delete:" + key);
         // });
 
-        
-        var robotId = 'd622e827-8c3e-4ca1-9459-57d371c71215'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
+        //var robotId = botArray[robotNumber];
+        var robotId = '6ae9ef10-8ea4-4afc-92a6-a5ac5049569b'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
 
         channel.getKeyspace(robotId).onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
-            else if ( key === 'S1' ) {
+            else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                 
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                     setIRSensor(val);
                 }
-
-            }
-            else if ( key === 'S2') {
-                
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                     setTouchSensor(val);
                 }
 
             }
-            else if ( key === 'S3' ) {
-                
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
-                    setIRSensor(val);
-                }
-
-            }
-            else if ( key === 'power') {
-                setBatterySensor(val);
+            else if ( key === 'robot' ) {
+                //if ( val.ev3 === 'ev3') {
+                    setBatterySensor(val.ev3.power);
+                //}
             }
             else if ( key === 'distance') {
                 setUltrasonicSensor(val);
@@ -432,29 +414,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
-            else if ( key === 'S1' ) {
+            else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                 
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                     setIRSensor(val);
                 }
-
-            }
-            else if ( key === 'S2') {
-                
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                     setTouchSensor(val);
                 }
 
             }
-            else if ( key === 'S3' ) {
-                
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
-                    setIRSensor(val);
-                }
-
-            }
-            else if ( key === 'power') {
-                setBatterySensor(val);
+            else if ( key === 'robot') {
+                //if ( val.ev3 === 'ev3') {
+                    setBatterySensor(val.ev3.power);
+                //}
             }
             else if ( key === 'distance') {
                 setUltrasonicSensor(val);
@@ -555,7 +528,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         // THIS NEEDS BE HOOKED UP DIFFERENTLY BECAUSE THE BATTERY ISN'T TREATED LIKE A SENSOR ANYMORE, IT'S DATA WITHIN THE 'robot' KEY
         function setBatterySensor( val ) {
-            batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
+            batteryLevel = (val.voltage - 5.5) / (9 - 5); //9 V battery (6 AAs), and the robot dies below about 5.5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();

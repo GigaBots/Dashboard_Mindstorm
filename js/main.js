@@ -108,26 +108,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var robotNumber = 0;
         var botDropdown, dropdownBox;
         var dropHighlight = { 1 : 0 }
-        var botArray = new Array();
-        //var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
         var botLabels = new Array();
         var botId = "";
-        var botName;
+        var botName = 'Select a robot!';
         var bot = {
-            nameDisplay : 0
+            nameDisplay : ""
         }
         var droppedDown = false;
 
         var botStore = {
-            "1a2b3c4d-e5f6g7h8" : {
-                "name" : "goodbot"
-            },
-            "5e6f7g8h-a1b2c3d4" : {
-                "name" : "greatbot"
-            },
-            "e5f6g7h8-a1b2c3d4" : {
-                "name" : "superbot"
-            }
+            "1a2b3c4d-e5f6g7h8" : "goodbot",
+            "5e6f7g8h-a1b2c3d4" : "greatbot"
+            // "1a2b3c4d-e5f6g7h8" : {
+            //     "name" : "goodbot"
+            // },
+            // "5e6f7g8h-a1b2c3d4" : {
+            //     "name" : "greatbot"
+            // },
+            // "e5f6g7h8-a1b2c3d4" : {
+            //     "name" : "superbot"
+            // }
         }
       
         /* Individual motor controls and feedback */
@@ -317,88 +317,50 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        // channel.channelData.onValue(function (key, val) {
-        //     //console.log("Add:" + key +"->"+JSON.stringify(val) );
-        //     if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-        //         setMotorInfo(key, val);
-        //     }
-        //     else if ( key === 'touchSensor') {
-        //         setTouchSensor(val);
-        //     }
-        //     else if ( key === 'power') {
-        //         setBatterySensor(val);
-        //     }
-        //     else if ( key === 'distance') {
-        //         setUltrasonicSensor(val);
-        //     }
+        function listenToBot() { // this is called once the user selects a bot
 
-        // }, function (key, val) {
-        //     //console.log("Update:" + key +"->"+JSON.stringify(val));
-        //     if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-        //         setMotorInfo(key, val);
-        //     }
-        //     else if ( key === 'touchSensor') {
-        //         setTouchSensor(val);
-        //     }
-        //     else if ( key === 'power') {
-        //         setBatterySensor(val);
-        //     }
-        //     else if ( key === 'distance') {
-        //         setUltrasonicSensor(val);
-        //     }
-
-        // }, function (key) {
-        //     //console.log("Delete:" + key);
-        // });
-
-        //var botId = botArray[robotNumber];
-        //var mybotId = 'e0fefc3e-ba1e-40ab-ad51-de18f520f047'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
-
-
-        function listenToBot() {
-
-        channel.getKeyspace(botId).onValue(function (key, val) {
-            //console.log("Add:" + key +"->"+JSON.stringify(val) );
-            if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-                setMotorInfo(key, val);
-            }
-            else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
-                    setIRSensor(val);
+            channel.getKeyspace(botId).onValue(function (key, val) {
+                //console.log("Add:" + key +"->"+JSON.stringify(val) );
+                if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                    setMotorInfo(key, val);
                 }
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
-                    setTouchSensor(val);
+                else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
+                    if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                        setIRSensor(val);
+                    }
+                    if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                        setTouchSensor(val);
+                    }
                 }
-            }
-            else if ( key === 'robot' ) {
-                setBatterySensor(val.ev3.power);
-            }
-            else if ( key === 'distance') {
-                setUltrasonicSensor(val);
-            }
-
-        }, function (key, val) {
-            //console.log("Update:" + key +"->"+JSON.stringify(val));
-            if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-                setMotorInfo(key, val);
-            }
-            else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
-                    setIRSensor(val);
-                }
-                if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
-                    setTouchSensor(val);
-                }
-            }
-            else if ( key === 'robot') {
+                else if ( key === 'robot' ) {
                     setBatterySensor(val.ev3.power);
-            }
-            else if ( key === 'distance') {
-                setUltrasonicSensor(val);
-            }
-        }, function (key) {
-            //console.log("Delete:" + key);
-        });
+                }
+                else if ( key === 'distance') {
+                    setUltrasonicSensor(val);
+                }
+
+            }, function (key, val) {
+                //console.log("Update:" + key +"->"+JSON.stringify(val));
+                if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                    setMotorInfo(key, val);
+                }
+                else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
+                    if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                        setIRSensor(val);
+                    }
+                    if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                        setTouchSensor(val);
+                    }
+                }
+                else if ( key === 'robot') {
+                        setBatterySensor(val.ev3.power);
+                }
+                else if ( key === 'distance') {
+                    setUltrasonicSensor(val);
+                }
+            }, function (key) {
+                //console.log("Delete:" + key);
+            });
 
         }
 
@@ -420,9 +382,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var j=0;
             for ( var key in botStore ) {
                 var obj = botStore[key];
-                //console.log(key);
                 var name = botStore[key];
-                console.log(key);
                 dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
                 dropHighlight[j].setFrames(0,2,1,2);
                 dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
@@ -440,14 +400,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
-
             botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
             botName = botStore[this];
+            listenToBot(); // start listening to the bot that was just selected
 
             game.world.remove(bot.nameDisplay);
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-            listenToBot();
-
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
@@ -592,10 +550,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     //==============================================================================================================================
         function create() {
             
-            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
-
-
-
+//            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
 
             //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
             this.game.stage.disableVisibilityChange = true;    

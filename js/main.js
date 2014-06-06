@@ -114,10 +114,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var bot = {
             nameDisplay : ""
         }
-
         var botStore = { //formated as:
             // client id (GUID) : bot name
         }
+        var dropdown;
       
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -517,10 +517,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 j++;
             }
             botDropdown.input.stop();
+            dropdown = {
+                noBotSelection : game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown')
+            }
+            dropdown.noBotSelection.events.onInputDown.add(actionNoBotSelection);
+            dropdown.noBotSelection.setFrames(2,2,2,2);
+            dropdown.noBotSelection.input.useHandCursor = true;
         }
         function actionSelectBot() {
             console.log("selected bot with clientId " + this + " and name " + botStore[this]);
             dropdownBox.destroy();
+            dropdown.noBotSelection.destroy();
             var numBots = Object.size(botStore);
             for ( var j = 0; j < numBots; j++ ) {
                 botLabels[j].destroy();
@@ -533,6 +540,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
             getInitialBatteryLevel();
             game.world.remove(bot.nameDisplay);
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+            botDropdown.input.start();
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            //droppedDown = false;
+        }
+        function actionNoBotSelection() {
+            dropdownBox.destroy();
+            dropdown.noBotSelection.destroy();
+            var numBots = Object.size(botStore);
+            for ( var j = 0; j < numBots; j++ ) {
+                botLabels[j].destroy();
+                dropHighlight[j].destroy();
+            }
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
@@ -778,7 +798,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Select which robot to control */
             botDropdown = game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown');
-            //botDropdown.events.onInputOver.add(actionDropdown);
             botDropdown.events.onInputDown.add(actionDropdown);
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
@@ -797,6 +816,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     droppedDown = false;
             //     //}
             // }
+
 
             // Forward button object and reverse button object
             fButton = {

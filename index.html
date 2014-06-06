@@ -9,37 +9,27 @@
 	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
 </head>
+
 <body>
-<!-- 	<div class="wrapper">
-	  <div class="container">
-	    <div class="canvas-container">
-	      	<canvas id="gameWorld" width="960" height="710">
-				<script src="js/phaser.min.js"></script>
-				<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
-				<script src="js/jquery.min.js"></script>
-			</canvas>
-	    </div>
-	  </div>
-	</div> -->
-	<div id="background">
-    	<img src="assets/mars_gradient_background.gif" class="stretch" alt="" />
-	</div>
-	<div id="gameWorld">
-		<script src="js/phaser.min.js"></script>
-		<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
-		<script src="js/jquery.min.js"></script>
-	</div>
-	
- 	<div id="textEditor">
-		<p id="label">Gigabots Console<br><br></p>
-		<span class="Editable" id="theirCode" contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></span>
-		<button id="subButton">Run</button>
-		<div id="errorMsg"></div>
-	</div>
-	<div id="footer-wrap">
-		<div id = "footer"> 
-			<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
+	<div class="content" -webkit-overflow-scrolling: touch>
+		<div id="gameWorld">
+			<script src="js/phaser.min.js"></script>
+			<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
+			<script src="js/jquery.min.js"></script>
 		</div>
+		
+	 	<div id="textEditor">
+			<p id="label">Gigabots Console<br></p>
+			<p id="previousCode"></p>
+			<p id="currentCode" contentEditable="true" placeholder="Type your JavaScript code here! For example: moveMotor('a', 'f', 200);"></p>
+			<div id="errorMsg"></div>
+		</div>			
+		<button id="runButton">Run</button>
+	</div>
+	<div id="footer"> <!-- Footer remains locked to bottom of screen if entirety of content is within viewport. Otherwise remains locked to bottom of content -->
+		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
 	</div>
 </body>
+
+
 </html>

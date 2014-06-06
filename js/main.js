@@ -270,8 +270,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var currentCode;
         var codeError;
         var clicked = false;
-        // array for textEditor code inputs to be stored
-        var codeArray = [];
+        // array for textEditor code inputs to be stored, first dimension is input, second is output
+        var codeArray = [,];
         var iterationNum = 0;
         // element to determine which code to display for "up" and "down" presses
         var indexArray = iterationNum;
@@ -2161,10 +2161,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+                codeArray[iterationNum,1] = err.message;
             }
 
             // store currentCode in an array to be accessed if they press the up key
-            codeArray[iterationNum] = formatCode;
+            codeArray[iterationNum,0] = formatCode;
             editorContent(iterationNum);
             iterationNum = iterationNum + 1;
             indexArray = iterationNum
@@ -2175,13 +2176,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } // end .onclick
 
         function editorContent(elementNum) {
-            var secIterator = 0
-            var prevText = ""
+            var secIterator = 0;
+            var prevText = "";
+            var prevError = "";
+            // Create prevText which has all inputs within it
             for (secIterator; secIterator <= elementNum; secIterator++) {
-                prevText += codeArray[secIterator] + "<br>";
+                prevText += codeArray[secIterator,0] + "<br>";
+                prevError += codeArray[secIterator,1] + "<br>";
             };
+            console.log(prevText);
             // Display all previous code (from array) in previousCode area
-            document.getElementById("previousCode").innerHTML = prevText;
+            document.getElementById("previousCode").innerHTML = prevText + prevError;
             // scroll to bottom of previousCode text (showing last input)
             $("#previousCode").scrollTop($("#previousCode")[0].scrollHeight)
             // clear currentCode to validate that code was submitted

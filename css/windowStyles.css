@@ -52,6 +52,7 @@ body {
 	max-height: 100px;
 	background-color: #606060;
 	outline: none;
+	margin-bottom: 22px;
 }
 
 #label {
@@ -79,11 +80,9 @@ body {
 	color: #C8C8C8;
 }
 
-
-
 #errorMsg {
 	position: absolute;
-	bottom: 25px;
+	bottom: 5px;
 	left: 5px;
 	color: red;
 }
@@ -93,8 +92,9 @@ body {
         content:attr(placeholder);
         font-style: italic;
 }
+
 .content {
-	padding-bottom: 50px;
+	padding-bottom: 50px; /* This should be the same as the footer height */
 	height: 100%
 }
 #footer {
@@ -105,7 +105,7 @@ body {
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 	font-size: 12px;
 	color: #A3A3A3;
-	height: 40px;
+	height: 40px; /* Should be same as bottom padding on content */
 	bottom: 0;
 
 }

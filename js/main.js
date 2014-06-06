@@ -74,8 +74,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         channel.onSubscribers( function(joined) {
             subscribeBotUser(joined);
-            //var robotUser = channel.getKeyspace(joined).get('robot');
-            //makeRobotUser('robot',robotUser,joined);
             console.log(joined);
         });
 
@@ -96,11 +94,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             );
         }
 
-        function addBot( key, val, joined) {
-            if ( key === 'robot' ) {}
-            console.log('key = ' + key);
-            console.log('val = ' + val.ev3.name);
-            botArray.push(val.ev3.name);
+        function addBot( key, val, joined ) {
+            if ( key === 'robot' ) {
+                //console.log("joined: " + joined + " " + val.ev3.name);
+                botStore[joined] = { 
+                    name : val.ev3.name 
+                }
+            }
+            //botArray.push(val.ev3.name);
         }
 
         var gameBoundX = 960, gameBoundY = 640;
@@ -152,15 +153,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var botArray = new Array();
         //var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
         var botLabels = new Array();
-        var botName = 'Gigabot Prime';
+        var botId = 0;
+        var botName;
         var bot = {
             nameDisplay : 0
         }
         var droppedDown = false;
 
         //var botMap = Array.prototype.map;
-        var botMap = new Map();
-       
+        //var botMap = new Map();
+        var botStore = {
+            "1234-abcd" : {
+                "name" : "john"
+            },
+            "efgh-5678" : {
+                "name" : "bot"
+            }
+        }
+
+      
         /* Individual motor controls and feedback */
         var frameMotor;
         var positionMotorA = { x : 15, y : 226 }
@@ -382,10 +393,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //     //console.log("Delete:" + key);
         // });
 
-        //var robotId = botArray[robotNumber];
-        var robotId = '6ae9ef10-8ea4-4afc-92a6-a5ac5049569b'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
+        //var botId = botArray[robotNumber];
+        //var mybotId = 'e0fefc3e-ba1e-40ab-ad51-de18f520f047'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
 
-        channel.getKeyspace(robotId).onValue(function (key, val) {
+        //if (typeof(botId) !== 'undefined' && botId !== 0) {
+        channel.getKeyspace(botId).onValue(function (key, val) {
+            console.log(botId);
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
@@ -401,15 +414,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             }
             else if ( key === 'robot' ) {
-                //if ( val.ev3 === 'ev3') {
-                    setBatterySensor(val.ev3.power);
-                //}
+                setBatterySensor(val.ev3.power);
             }
             else if ( key === 'distance') {
                 setUltrasonicSensor(val);
             }
 
         }, function (key, val) {
+            console.log(botId);
+
             //console.log("Update:" + key +"->"+JSON.stringify(val));
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
@@ -436,7 +449,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }, function (key) {
             //console.log("Delete:" + key);
         });
+        //}
 
+        Object.size = function(obj) { // get size of an object
+            var size = 0, key;
+            for (key in obj) {
+                if(obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+        };
+
+        function actionDropdown() {
+            var numBots = Object.size(botStore);
+            botDropdown.setFrames(2,2,2,2);
+            droppedDown = true;
+            dropdownBox = game.add.graphics(0,0);
+            dropdownBox.beginFill(0xFFFFFF,0.8);
+            dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+            var j=0;
+            for ( var key in botStore ) {
+                var obj = botStore[key];
+                console.log(key);
+                dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+                dropHighlight[j].setFrames(0,2,1,2);
+                dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
+                dropHighlight[j].input.useHandCursor = true;
+                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, obj.name, labelStyle5);
+                j++;
+            }
+            botDropdown.input.stop();
+        }
+        function actionSelectBot() {
+            console.log("selected bot with clientId " + this + " and name " + botStore[this].name);
+            dropdownBox.destroy();
+            var numBots = Object.size(botStore);
+            for ( var j = 0; j < numBots; j++ ) {
+                botLabels[j].destroy();
+                dropHighlight[j].destroy();
+            }
+            //if ( botId !== this ) {
+                //console.log("new");
+                botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
+                console.log(botId);
+                botName = botStore[this].name;
+                console.log(botName);
+                game.world.remove(bot.nameDisplay);
+                bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+            //}
+            botDropdown.input.start();
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            droppedDown = false;
+            //console.dir(this);
+        }
 
         //quick and dirty for now
         function setMotorInfo( key, val ) {
@@ -528,7 +593,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         // THIS NEEDS BE HOOKED UP DIFFERENTLY BECAUSE THE BATTERY ISN'T TREATED LIKE A SENSOR ANYMORE, IT'S DATA WITHIN THE 'robot' KEY
         function setBatterySensor( val ) {
-            batteryLevel = (val.voltage - 5.5) / (9 - 5); //9 V battery (6 AAs), and the robot dies below about 5.5V
+            batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -800,42 +865,42 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.useHandCursor = true;
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
 
-            function actionDropdown() {
-                var numBots = botArray.length;
-                botDropdown.setFrames(2,2,2,2);
-                droppedDown = true;
-                dropdownBox = game.add.graphics(0,0);
-                dropdownBox.beginFill(0xFFFFFF,0.8);
-                dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
-                for ( var j = 0; j < numBots; j++ ) {
-                    dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
-                    dropHighlight[j].setFrames(0,2,1,2);
-                    botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botArray[j], labelStyle5);
-                    dropHighlight[j].events.onInputDown.add(actionSelectBot, j);
-                    dropHighlight[j].input.useHandCursor = true;
-                }
-                botDropdown.input.stop();
-            }
-            function actionSelectBot() {
-                console.log("selected " + botArray[this] + " (bot number " + this + ")");
-                dropdownBox.destroy();
-                for ( var j = 0; j < botArray.length; j++) {
-                    botLabels[j].destroy();
-                    dropHighlight[j].destroy();
-                }
-                if ( robotNumber !== this ) {
-                    console.log("new");
-                    botName = botArray[this];
-                    game.world.remove(bot.nameDisplay);
-                    bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-                }
-                robotNumber = this;
-                botDropdown.input.start();
-                botDropdown.setFrames(1,0,2,0);
-                botDropdown.input.useHandCursor = true;
-                droppedDown = false;
-                //console.dir(this);
-            }
+            // function actionDropdown() {
+            //     var numBots = botArray.length;
+            //     botDropdown.setFrames(2,2,2,2);
+            //     droppedDown = true;
+            //     dropdownBox = game.add.graphics(0,0);
+            //     dropdownBox.beginFill(0xFFFFFF,0.8);
+            //     dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+            //     for ( var j = 0; j < numBots; j++ ) {
+            //         dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+            //         dropHighlight[j].setFrames(0,2,1,2);
+            //         botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botArray[j], labelStyle5);
+            //         dropHighlight[j].events.onInputDown.add(actionSelectBot, j);
+            //         dropHighlight[j].input.useHandCursor = true;
+            //     }
+            //     botDropdown.input.stop();
+            // }
+            // function actionSelectBot() {
+            //     console.log("selected " + botArray[this] + " (bot number " + this + ")");
+            //     dropdownBox.destroy();
+            //     for ( var j = 0; j < botArray.length; j++) {
+            //         botLabels[j].destroy();
+            //         dropHighlight[j].destroy();
+            //     }
+            //     if ( robotNumber !== this ) {
+            //         console.log("new");
+            //         botName = botArray[this];
+            //         game.world.remove(bot.nameDisplay);
+            //         bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+            //     }
+            //     robotNumber = this;
+            //     botDropdown.input.start();
+            //     botDropdown.setFrames(1,0,2,0);
+            //     botDropdown.input.useHandCursor = true;
+            //     droppedDown = false;
+            //     //console.dir(this);
+            // }
             // function actionNoBotSelection () {
             //     console.log("no selection");
             //     //if ( droppedDown === true ) {
@@ -848,55 +913,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //     botDropdown.setFrames(1,0,2,0);
             //     droppedDown = false;
             //     //}
-            // }
-
-            // CHECKBOX STUFF ==> To Be Deleted Soon...
-            // checkboxBot = {
-            //     bot1 : game.add.button(positionBotSelector.x+7, positionBotSelector.y-24, 'checkbox', actionCheckboxBot1, this),
-            //     bot2 : game.add.button(positionBotSelector.x+40, positionBotSelector.y-24, 'checkbox', actionCheckboxBot2, this),
-            //     bot3 : game.add.button(positionBotSelector.x+73, positionBotSelector.y-24, 'checkbox', actionCheckboxBot3, this),
-            // }
-            // checkboxBot.bot1.setFrames(1,1,1,0);
-            // checkboxBot.bot2.setFrames(2,0,1,0);
-            // checkboxBot.bot3.setFrames(2,0,1,0);
-            // checkboxBot.bot1.input.useHandCursor = true;
-            // checkboxBot.bot2.input.useHandCursor = true;
-            // checkboxBot.bot3.input.useHandCursor = true;
-            // function actionCheckboxBot1 () {
-            //     if ( robotNumber !== 1 ) {
-            //         if (robotNumber === 2 ) {
-            //             checkboxBot.bot2.setFrames(2,0,1,0);
-            //         } else if ( robotNumber === 3 ) {
-            //             checkboxBot.bot3.setFrames(2,0,1,0);
-            //         }
-            //         robotNumber = 1;
-            //         checkboxBot.bot1.setFrames(1,1,1,0);
-            //         console.log("Robot number " + robotNumber + " selected");
-            //     }
-            // }
-            // function actionCheckboxBot2 () {
-            //     if ( robotNumber !== 2 ) {
-            //         if (robotNumber === 1 ) {
-            //             checkboxBot.bot1.setFrames(2,0,1,0);
-            //         } else if ( robotNumber === 3 ) {
-            //             checkboxBot.bot3.setFrames(2,0,1,0);
-            //         }
-            //         robotNumber = 2;
-            //         checkboxBot.bot2.setFrames(1,1,1,0);
-            //         console.log("Robot number " + robotNumber + " selected");
-            //     }
-            // }
-            // function actionCheckboxBot3 () {
-            //     if ( robotNumber !== 3 ) {
-            //         if (robotNumber === 1 ) {
-            //             checkboxBot.bot1.setFrames(2,0,1,0);
-            //         } else if ( robotNumber === 2 ) {
-            //             checkboxBot.bot2.setFrames(2,0,1,0);
-            //         }
-            //         robotNumber = 3;
-            //         checkboxBot.bot3.setFrames(1,1,1,0);
-            //         console.log("Robot number " + robotNumber + " selected");
-            //     }
             // }
 
             // Forward button object and reverse button object
@@ -958,7 +974,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* forward button actions */
             function fButtonDownAction () {
                 console.log("onActionDownForward"); 
-                moveMotor( this.port, "f", this.speed );
+                moveMotor( botId, this.port, "f", this.speed );
                 if ( this.port === 'a' ) {
                     fButton.a.setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking
                 }
@@ -974,7 +990,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             function fButtonUpAction() {
                 console.log("onActionUpForward");
-                stopMotor( this.port ); 
+                stopMotor( botId, this.port ); 
                 if ( this.port === 'a' ) {
                     fButton.a.setFrames(1,0,2,0); // show the forward button as up (normal position)
                 }
@@ -991,7 +1007,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* reverse buttons actions*/
             function rButtonDownAction () {
                 console.log("onActionDownReverse"); 
-                moveMotor( this.port, "r", this.speed );
+                moveMotor( botId, this.port, "r", this.speed );
                 if ( this.port === 'a' ) {
                     rButton.a.setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking
                 }
@@ -1007,7 +1023,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             function rButtonUpAction() {
                 console.log("onActionUpReverse");
-                stopMotor( this.port );
+                stopMotor( botId, this.port );
                 if ( this.port === 'a' ) {
                     rButton.a.setFrames(1,0,2,0); // show the reverse button as up (normal position)
                 }
@@ -1101,19 +1117,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log("onActionDownForwardGang"); 
                 if ( this.a === true) {
                     motorA.previousSpeed = motorA.speed = this.speed;
-                    moveMotor( "a", "f", this.speed );
+                    moveMotor( botId, "a", "f", this.speed );
                 }
                 if ( this.b === true) {
                     motorB.previousSpeed = motorB.speed = this.speed;
-                    moveMotor( "b", "f", this.speed );
+                    moveMotor( botId, "b", "f", this.speed );
                 }
                 if ( this.c === true) {
                     motorC.previousSpeed = motorC.speed = this.speed;
-                    moveMotor( "c", "f", this.speed );
+                    moveMotor( botId, "c", "f", this.speed );
                 }
                 if ( this.d === true) {
                     motorD.previousSpeed = motorD.speed = this.speed;
-                    moveMotor( "d", "f", this.speed );
+                    moveMotor( botId, "d", "f", this.speed );
                 }
                 if ( this === gang1 ) {
                     fGangButton.g1.setFrames(2,2,2,2); //forward button as down
@@ -1125,16 +1141,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function fGangButtonUpAction() {
                 console.log("onActionUpForwardGang");
                 if ( this.a === true) {
-                    stopMotor("a");
+                    stopMotor(botId, "a");
                 }
                 if ( this.b === true) {
-                    stopMotor("b");
+                    stopMotor(botId, "b");
                 }
                 if ( this.c === true) {
-                    stopMotor("c");
+                    stopMotor(botId, "c");
                 }
                 if ( this.d === true) {
-                    stopMotor("d");
+                    stopMotor(botId, "d");
                 }
                 if ( this === gang1 ) {
                     fGangButton.g1.setFrames(1,0,2,0); //forward button as up
@@ -1148,19 +1164,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 console.log("onActionDownReverseGang"); 
                 if ( this.a === true) {
                     motorA.previousSpeed = motorA.speed = this.speed;
-                    moveMotor( "a", "r", this.speed );
+                    moveMotor( botId, "a", "r", this.speed );
                 }
                 if ( this.b === true) {
                     motorB.previousSpeed = motorB.speed = this.speed;
-                    moveMotor( "b", "r", this.speed );
+                    moveMotor( botId, "b", "r", this.speed );
                 }
                 if ( this.c === true) {
                     motorC.previousSpeed = motorC.speed = this.speed;
-                    moveMotor( "c", "r", this.speed );
+                    moveMotor( botId, "c", "r", this.speed );
                 }
                 if ( this.d === true) {
                     motorD.previousSpeed = motorD.speed = this.speed;
-                    moveMotor( "d", "r", this.speed );
+                    moveMotor( botId, "d", "r", this.speed );
                 }
                 if ( this === gang1 ) {
                     rGangButton.g1.setFrames(2,2,2,2); //reverse button as down
@@ -1172,16 +1188,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             function rGangButtonUpAction() {
                 console.log("onActionUpReverseGang");
                 if ( this.a === true) {
-                    stopMotor("a");
+                    stopMotor(botId, "a");
                 }
                 if ( this.b === true) {
-                    stopMotor("b");
+                    stopMotor(botId, "b");
                 }
                 if ( this.c === true) {
-                    stopMotor("c");
+                    stopMotor(botId, "c");
                 }
                 if ( this.d === true) {
-                    stopMotor("d");
+                    stopMotor(botId, "d");
                 }
                 if ( this === gang1 ) {
                     rGangButton.g1.setFrames(1,0,2,0); //reverse button as up
@@ -1372,33 +1388,33 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Status Lights */
             statusLightA = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+26, 'statusLight');
-            statusLightA.animations.add('unplugged', [0], 1);
+            statusLightA.animations.add('unplugged', [3], 1);
             statusLightA.animations.add('pluggedIn', [1], 1);
             statusLightA.animations.add('stalled', [2], 1);
             statusLightB = game.add.sprite(positionMotorStatus.x+42, positionMotorStatus.y+26, 'statusLight');
-            statusLightB.animations.add('unplugged', [0], 1);
+            statusLightB.animations.add('unplugged', [3], 1);
             statusLightB.animations.add('pluggedIn', [1], 1);
             statusLightB.animations.add('stalled', [2], 1);
             statusLightC = game.add.sprite(positionMotorStatus.x+72, positionMotorStatus.y+26, 'statusLight');
-            statusLightC.animations.add('unplugged', [0], 1);
+            statusLightC.animations.add('unplugged', [3], 1);
             statusLightC.animations.add('pluggedIn', [1], 1);
             statusLightC.animations.add('stalled', [2], 1);
             statusLightD = game.add.sprite(positionMotorStatus.x+102, positionMotorStatus.y+26, 'statusLight');
-            statusLightD.animations.add('unplugged', [0], 1);
+            statusLightD.animations.add('unplugged', [3], 1);
             statusLightD.animations.add('pluggedIn', [1], 1);
             statusLightD.animations.add('stalled', [2], 1);
 
             statusLight1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+26, 'statusLight');
-            statusLight1.animations.add('unplugged', [0], 1);
+            statusLight1.animations.add('unplugged', [3], 1);
             statusLight1.animations.add('pluggedIn', [1], 1);
             statusLight2 = game.add.sprite(positionSensorStatus.x+42, positionSensorStatus.y+26, 'statusLight');
-            statusLight2.animations.add('unplugged', [0], 1);
+            statusLight2.animations.add('unplugged', [3], 1);
             statusLight2.animations.add('pluggedIn', [1], 1);
             statusLight3 = game.add.sprite(positionSensorStatus.x+72, positionSensorStatus.y+26, 'statusLight');
-            statusLight3.animations.add('unplugged', [0], 1);
+            statusLight3.animations.add('unplugged', [3], 1);
             statusLight3.animations.add('pluggedIn', [1], 1);
             statusLight4 = game.add.sprite(positionSensorStatus.x+102, positionSensorStatus.y+26, 'statusLight');
-            statusLight4.animations.add('unplugged', [0], 1);
+            statusLight4.animations.add('unplugged', [3], 1);
             statusLight4.animations.add('pluggedIn', [1], 1);
 
         /* Rotational position dials and needles for motors */
@@ -1462,34 +1478,89 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //=============================================================================
 
         function actionGetKeyspace() {
-            var keys = channel.getKeyspace(robotId).keys();
+            var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
-            var isRobot = channel.getKeyspace(robotId).get('robot');
+            var isRobot = channel.getKeyspace(botId).get('robot');
             console.log(isRobot); //Object {imTotallyARobot: "yup"} 
-            var ma = channel.getKeyspace(robotId).get('a');
+            var ma = channel.getKeyspace(botId).get('a');
             console.log(ma); //Object {port: "a", position: 161, stalled: false, moving: false}
-            var mb = channel.getKeyspace(robotId).get('b');
+            var mb = channel.getKeyspace(botId).get('b');
             console.log(mb);
-            var mc = channel.getKeyspace(robotId).get('c');
+            var mc = channel.getKeyspace(botId).get('c');
             console.log(mc);
-            var md = channel.getKeyspace(robotId).get('d');
+            var md = channel.getKeyspace(botId).get('d');
             console.log(md);
-            var s1 = channel.getKeyspace(robotId).get('S1');
+            var s1 = channel.getKeyspace(botId).get('S1');
             console.log(s1); //Object {port: "S1", mode: "Distance", values: Array[1]}
-            var s2 = channel.getKeyspace(robotId).get('S2');
+            var s2 = channel.getKeyspace(botId).get('S2');
             console.log(s2);
         }
 
+        // Object.size = function(obj) { // get size of an object
+        //     var size = 0, key;
+        //     for (key in obj) {
+        //         if(obj.hasOwnProperty(key)) size++;
+        //     }
+        //     return size;
+        // };
+
+        // function actionDropdown() {
+        //     var numBots = Object.size(botStore);
+        //     botDropdown.setFrames(2,2,2,2);
+        //     droppedDown = true;
+        //     dropdownBox = game.add.graphics(0,0);
+        //     dropdownBox.beginFill(0xFFFFFF,0.8);
+        //     dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+        //     var j=0;
+        //     for ( var key in botStore ) {
+        //         var obj = botStore[key];
+        //         console.log(key);
+        //         dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+        //         dropHighlight[j].setFrames(0,2,1,2);
+        //         dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
+        //         dropHighlight[j].input.useHandCursor = true;
+        //         botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, obj.name, labelStyle5);
+        //         j++;
+        //     }
+        //     botDropdown.input.stop();
+        // }
+        // function actionSelectBot() {
+        //     console.log("selected bot with clientId " + this + " and name " + botStore[this].name);
+        //     dropdownBox.destroy();
+        //     var numBots = Object.size(botStore);
+        //     for ( var j = 0; j < numBots; j++ ) {
+        //         botLabels[j].destroy();
+        //         dropHighlight[j].destroy();
+        //     }
+        //     //if ( botId !== this ) {
+        //         //console.log("new");
+        //         botId = botId.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
+        //         console.log(botId);
+        //         botName = botStore[this].name;
+        //         console.log(botName);
+        //         game.world.remove(bot.nameDisplay);
+        //         bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+        //     //}
+        //     botDropdown.input.start();
+        //     botDropdown.setFrames(1,0,2,0);
+        //     botDropdown.input.useHandCursor = true;
+        //     droppedDown = false;
+        //     //console.dir(this);
+        // }
+
     /* Motor communication with Robot via messages to Big Bang channel */
-        function moveMotor( motor, direction, speed ) {
+        //         function moveMotor( recipient, motor, direction, speed ) {
+        function moveMotor( recipient, motor, direction, speed ) {
             var data = {};
             data.type = "motorStart";
+            data.recipient = recipient;
             data.port = motor;
             data.dir = direction;
             data.speed = speed;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             if (motor === 'a') {
+//NEED TO INCORPORATE THE BOT CLIENT IDS INTO KEYSPACES HERE:
                 channel.getKeyspace('dashboard').put('a', { 'speed': speed, 'direction': direction });
                 // if ( direction === 'f') {
                 //     fButton.a.setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking
@@ -1507,8 +1578,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 channel.getKeyspace('dashboard').put('d', { 'speed': speed, 'direction': direction });
             }
         }
-        function stopMotor( motor ) {
+        function stopMotor( recipient, motor ) {
             var data = {};
+            data.recipient = recipient;
             data.type = "motorStop";
             data.port = motor;
             console.log( "sending " + JSON.stringify(data));

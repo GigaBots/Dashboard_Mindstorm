@@ -163,11 +163,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //var botMap = Array.prototype.map;
         //var botMap = new Map();
         var botStore = {
-            "1234-abcd" : {
-                "name" : "john"
+            "1a2b3c4d-e5f6g7h8" : {
+                "name" : "goodbot"
             },
-            "efgh-5678" : {
-                "name" : "bot"
+            "5e6f7g8h-a1b2c3d4" : {
+                "name" : "greatbot"
+            },
+            "e5f6g7h8-a1b2c3d4" : {
+                "name" : "superbot"
             }
         }
 
@@ -398,20 +401,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //if (typeof(botId) !== 'undefined' && botId !== 0) {
         channel.getKeyspace(botId).onValue(function (key, val) {
-            console.log(botId);
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
-                
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                     setIRSensor(val);
                 }
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                     setTouchSensor(val);
                 }
-
             }
             else if ( key === 'robot' ) {
                 setBatterySensor(val.ev3.power);
@@ -421,31 +421,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         }, function (key, val) {
-            console.log(botId);
-
             //console.log("Update:" + key +"->"+JSON.stringify(val));
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                 setMotorInfo(key, val);
             }
             else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
-                
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                     setIRSensor(val);
                 }
                 if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                     setTouchSensor(val);
                 }
-
             }
             else if ( key === 'robot') {
-                //if ( val.ev3 === 'ev3') {
                     setBatterySensor(val.ev3.power);
-                //}
             }
             else if ( key === 'distance') {
                 setUltrasonicSensor(val);
             }
-
         }, function (key) {
             //console.log("Delete:" + key);
         });
@@ -458,7 +451,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             return size;
         };
-
         function actionDropdown() {
             var numBots = Object.size(botStore);
             botDropdown.setFrames(2,2,2,2);
@@ -469,7 +461,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var j=0;
             for ( var key in botStore ) {
                 var obj = botStore[key];
-                console.log(key);
+                //console.log(key);
                 dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
                 dropHighlight[j].setFrames(0,2,1,2);
                 dropHighlight[j].events.onInputDown.add(actionSelectBot, key);

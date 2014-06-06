@@ -70,6 +70,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelStyle3 = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc"}
         var labelStyle4 = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
         var labelStyle5 = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
+        var labelStyle6 = { font: "italic 13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#ff5000" }
         var messageStyle = { font: "14px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
         var frameLineColor = 0xa3a3a3, frameFill = 0x313233, frameOpacity = 0.8;
         var backgound, uiBackground, backgroundBox, backgroundBottom, titleBox, titleBarLine, bottomLine;
@@ -110,7 +111,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
         var botId = "";
-        var botName = 'Select a robot!';
+        var botName = 'Select a robot';
         var bot = {
             nameDisplay : ""
         }
@@ -801,22 +802,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.events.onInputDown.add(actionDropdown);
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
-            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-
-            // function actionNoBotSelection () {
-            //     console.log("no selection");
-            //     //if ( droppedDown === true ) {
-            //     for ( var j = 0; j < botArray.length; j++) {
-            //         dropdownBox.destroy();
-            //         botLabels[j].destroy();
-            //         dropHighlight[j].destroy();
-            //     }
-            //     botDropdown.input.start();
-            //     botDropdown.setFrames(1,0,2,0);
-            //     droppedDown = false;
-            //     //}
-            // }
-
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle6);
 
             // Forward button object and reverse button object
             fButton = {

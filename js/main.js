@@ -270,8 +270,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var currentCode;
         var codeError;
         var clicked = false;
-        // array for textEditor code inputs to be stored
-        var codeArray = [];
+        // array for textEditor code inputs to be stored, first dimension is input, second is output
+        var codeArray = [,];
         var iterationNum = 0;
         // element to determine which code to display for "up" and "down" presses
         var indexArray = iterationNum;
@@ -2145,6 +2145,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // Text editor
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
+            
+            // clear old error message so as to re-evaluate new code
+            document.getElementById("errorMsg").innerHTML = "";
+
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
@@ -2157,25 +2161,35 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // if input code is not able to be run, display console's error message to user in text editor area
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
+                codeArray[iterationNum,1] = err.message;
             }
 
             // store currentCode in an array to be accessed if they press the up key
-            codeArray[iterationNum] = formatCode;
+            codeArray[iterationNum,0] = formatCode;
             editorContent(iterationNum);
             iterationNum = iterationNum + 1;
             indexArray = iterationNum
-            // Change height of textEditor depending on how many previous lines of code have been submitted
+
+            $("html").scrollTop($("html")[0].scrollHeight)
+
             
         } // end .onclick
 
         function editorContent(elementNum) {
-            var secIterator = 0
-            var prevText = ""
+            var secIterator = 0;
+            var prevText = "";
+            var prevError = "";
+            // Create prevText which has all inputs within it
             for (secIterator; secIterator <= elementNum; secIterator++) {
-                prevText += codeArray[secIterator] + "<br>";
-                console.log("secIterator = " + secIterator + " and codeArray[secIterator] = " + codeArray[secIterator]);
+                prevText += codeArray[secIterator,0] + "<br>";
+                prevError += codeArray[secIterator,1] + "<br>";
             };
-            document.getElementById("previousCode").innerHTML = prevText;
+            console.log(prevText);
+            // Display all previous code (from array) in previousCode area
+            document.getElementById("previousCode").innerHTML = prevText + prevError;
+            // scroll to bottom of previousCode text (showing last input)
+            $("#previousCode").scrollTop($("#previousCode")[0].scrollHeight)
+            // clear currentCode to validate that code was submitted
             document.getElementById("currentCode").innerHTML = "";
             $("#currentCode").focus();
         }
@@ -2208,8 +2222,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
-                    // If at the last element in the array
+                    // If at the last element in the array and they press up
                     if (indexArray === iterationNum) {
+                        // Remember their unsubmitted code in a tempCode variable so in case they want to return what they previously wrote
                         tempCode = document.getElementById("currentCode").innerHTML;
                     }
                     // If not at the first element of the array
@@ -2233,6 +2248,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 default: return; // exit this handler for other keys
             }
             e.preventDefault(); // prevent the default action (scroll / move caret)
+            // move to of code in currentCode
+            $("#currentCode").scrollTop($("#currentCode")[0].scrollHeight);
         });
 
     } // end beginGame

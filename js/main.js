@@ -105,8 +105,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Bot selector */
         var frameBotSelector;
         var positionBotSelector = { x : 97, y : 66 }
-        var robotNumber = 0;
         var botDropdown, dropdownBox;
+        //var droppedDown = false;
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
         var botId = "";
@@ -114,20 +114,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var bot = {
             nameDisplay : ""
         }
-        var droppedDown = false;
 
-        var botStore = {
-            //"1a2b3c4d-e5f6g7h8" : "goodbot",
-            //"5e6f7g8h-a1b2c3d4" : "greatbot"
-            // "1a2b3c4d-e5f6g7h8" : {
-            //     "name" : "goodbot"
-            // },
-            // "5e6f7g8h-a1b2c3d4" : {
-            //     "name" : "greatbot"
-            // },
-            // "e5f6g7h8-a1b2c3d4" : {
-            //     "name" : "superbot"
-            // }
+        var botStore = { //formated as:
+            // client id (GUID) : bot name
         }
       
         /* Individual motor controls and feedback */
@@ -265,13 +254,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var frameColor;
         var positionColor = { x : 217, y : 136 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
-        var colorR = 255, colorG = 255, colorB = 255, colorValue = 100000, colorName = "White", lightIntensity = 0; //THESE ARE PLACEHOLDERS FOR NOW
+        var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
         var color = {
-            colorRDisplay : 0,
-            colorGDisplay : 0,
-            colorBDisplay : 0,
-            colorValueDisplay : 0,
-            colorNameDisplay : 0,
+            r : 0,
+            g : 0,
+            b : 0,
+            value : 0,
+            name : '',
+            lightIntensity : 0
+        }
+        var color = {
+            rDisplay : 0,
+            gDisplay : 0,
+            bDisplay : 0,
+            valueDisplay : 0,
+            nameDisplay : '',
             lightIntensity : 0
         }
 
@@ -296,7 +293,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionScreen = { x : 15, y : 126 }
         var labelScreen = "LCD Screen";
         var screenMessage = {
-            messageDisplay1 : "Hello GigaBot!", // this is a placeholder
+            messageDisplay1 : "",
             messageDisplay2 : "",
             messageDisplay3 : ""
         }
@@ -321,19 +318,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             channel.getKeyspace(botId).onValue(function (key, val) {
                 //console.log("Add:" + key +"->"+JSON.stringify(val) );
-                if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                     setMotorInfo(key, val);
                 }
                 else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                     if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         setIRSensor(val);
                     }
-                    if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                         setTouchSensor(val);
+                    }
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
+                        setColorSensor(val);
                     }
                 }
                 else if ( key === 'robot' ) {
-                    setBatterySensor(val.ev3.power);
+                    setBatteryLevel(val.ev3.power);
                 }
                 else if ( key === 'distance') {
                     setUltrasonicSensor(val);
@@ -341,19 +341,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             }, function (key, val) {
                 //console.log("Update:" + key +"->"+JSON.stringify(val));
-                if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                     setMotorInfo(key, val);
                 }
                 else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                     if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         setIRSensor(val);
                     }
-                    if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                         setTouchSensor(val);
+                    }
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
+                        setColorSensor(val);
                     }
                 }
                 else if ( key === 'robot') {
-                        setBatterySensor(val.ev3.power);
+                        setBatteryLevel(val.ev3.power);
                 }
                 else if ( key === 'distance') {
                     setUltrasonicSensor(val);
@@ -362,55 +365,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //console.log("Delete:" + key);
             });
 
-        }
-
-        Object.size = function(obj) { // get size of an object
-            var size = 0, key;
-            for (key in obj) {
-                if(obj.hasOwnProperty(key)) size++;
-            }
-            return size;
-        };
-        function actionDropdown() {
-            var numBots = Object.size(botStore);
-            botDropdown.setFrames(2,2,2,2);
-            droppedDown = true;
-            dropdownBox = game.add.graphics(0,0);
-            dropdownBox.beginFill(0xFFFFFF,0.8);
-            dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
-
-            var j=0;
-            for ( var key in botStore ) {
-                var obj = botStore[key];
-                var name = botStore[key];
-                dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
-                dropHighlight[j].setFrames(0,2,1,2);
-                dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
-                dropHighlight[j].input.useHandCursor = true;
-                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, name, labelStyle5);
-                j++;
-            }
-            botDropdown.input.stop();
-        }
-        function actionSelectBot() {
-            console.log("selected bot with clientId " + this + " and name " + botStore[this]);
-            dropdownBox.destroy();
-            var numBots = Object.size(botStore);
-            for ( var j = 0; j < numBots; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-            botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-            botName = botStore[this];
-            listenToBot(); // start listening to the bot that was just selected
-
-            game.world.remove(bot.nameDisplay);
-            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-            droppedDown = false;
-            //console.dir(this);
         }
 
         //quick and dirty for now
@@ -438,8 +392,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         statusLightA.animations.play('unplugged');
                     //}
                 } 
-                // is there a way to handle simply whether or not there is a motor plugged into a port?
-                    //we want to be able to have motorA.status == 0 and statusLightA.animations.play('unplugged') when there is not a motor plugged into port A, for example
             }
             else if (key === 'b') {
                 motorB.status =1;
@@ -475,34 +427,49 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
-            if( val.values[0] === 1 ) {
-                touchIndicator.animations.play('pressed');
-                game.world.remove(touch.touchCountDisplay);
-                touchCount++;
-                touchCountDisplay = touchCount;
-                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
-            }
-            else {
-                touchIndicator.animations.play('up');
-            }
+                if( val.values[0] === 1 ) {
+                    touchIndicator.animations.play('pressed');
+                    game.world.remove(touch.touchCountDisplay);
+                    touchCount++;
+                    touchCountDisplay = touchCount;
+                    touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
+                    channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount });
+                }
+                else {
+                    touchIndicator.animations.play('up');
+                }
         }
 
+        function setColorSensor( val ) {
+            game.world.remove(color.rDisplay);
+            game.world.remove(color.gDisplay);
+            game.world.remove(color.bDisplay);
+            //game.world.remove(color.valueDisplay);
+            //game.world.remove(color.nameDisplay);
+            //game.world.remove(color.lightIntensityDisplay);
+            color.r = val.values[0];
+            color.g = val.values[1];
+            color.b = val.values[2];
+            colorRDisplay = color.r;
+            colorGDisplay = color.g;
+            colorBDisplay = color.b;
+            color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+22, colorRDisplay.toFixed(5), labelStyle3);
+            color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+22, colorGDisplay.toFixed(1), labelStyle3);
+            color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+22, colorBDisplay.toFixed(1), labelStyle3);
+        }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
             IRDist = val.values[0];
             IRDistDisplay = IRDist;
             IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+22, IRDistDisplay.toFixed(2), labelStyle3);
         }
-
         function setUltrasonicSensor( val ) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
             ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+22, ultrasonicDistDisplay.toFixed(1), labelStyle3);
         }
-
-        // THIS NEEDS BE HOOKED UP DIFFERENTLY BECAUSE THE BATTERY ISN'T TREATED LIKE A SENSOR ANYMORE, IT'S DATA WITHIN THE 'robot' KEY
-        function setBatterySensor( val ) {
+        function setBatteryLevel( val ) {
             batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             if (batteryLevel <= 0.15) { // for almost-dead battery!
                 if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
@@ -518,6 +485,92 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0x808080, 1); // make fill grey
                     batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                }
+            }
+            channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : batteryLevel });
+        }
+
+        /* Bot selection */
+        Object.size = function(obj) { // get size of an object
+            var size = 0, key;
+            for (key in obj) {
+                if(obj.hasOwnProperty(key)) size++;
+            }
+            return size;
+        };
+        function actionDropdown() {
+            var numBots = Object.size(botStore);
+            botDropdown.setFrames(2,2,2,2);
+            //droppedDown = true;
+            dropdownBox = game.add.graphics(0,0);
+            dropdownBox.beginFill(0xFFFFFF,0.8);
+            dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+            var j =0;
+            for ( var key in botStore ) {
+                var obj = botStore[key];
+                var name = botStore[key];
+                dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+                dropHighlight[j].setFrames(0,2,1,2);
+                dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
+                dropHighlight[j].input.useHandCursor = true;
+                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, name, labelStyle5);
+                j++;
+            }
+            botDropdown.input.stop();
+        }
+        function actionSelectBot() {
+            console.log("selected bot with clientId " + this + " and name " + botStore[this]);
+            dropdownBox.destroy();
+            var numBots = Object.size(botStore);
+            for ( var j = 0; j < numBots; j++ ) {
+                botLabels[j].destroy();
+                dropHighlight[j].destroy();
+            }
+            botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
+            botName = botStore[this];
+            listenToBot(); // start listening to the bot that was just selected
+            getInitialTouchCount();
+            getInitialBatteryLevel();
+            game.world.remove(bot.nameDisplay);
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+            botDropdown.input.start();
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            //droppedDown = false;
+        }
+
+        /* Initialization of touch sensor display and battery display on dashboard */
+        function getInitialTouchCount() {
+            var touchCountData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
+            setInitialTouchCount('touchDash', touchCountData);
+        }
+        function setInitialTouchCount( key, val ) {
+            game.world.remove(touch.touchCountDisplay);
+            touchCount = touchCountDisplay = val.touchCount;
+            touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
+        }
+        function getInitialBatteryLevel() {
+            var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
+            setInitialBatteryLevel('batteryDash', batteryLevelData);
+        }
+        function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's ben calculated in a dashboard somewhere)
+            if ( typeof(val) !== 'undefined' ) {
+                batteryLevel = val.batteryLevel;
+                if (batteryLevel <= 0.15) { // for almost-dead battery!
+                    if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
+                        batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                    }
+                }
+                else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
+                    if(batteryLevel > 0.1) { //lower boundary limit
+                        batteryLevelFill.destroy();
+                        batteryLevelFill = game.add.graphics(0,0);
+                        batteryLevelFill.beginFill(0x808080, 1); // make fill grey
+                        batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                    }
                 }
             }
         }
@@ -540,7 +593,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
-            //game.load.image('uiBackground','assets/ui_background.gif',960,659);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
@@ -548,12 +600,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         } //end preload
 
     //==============================================================================================================================
-        function create() {
-            
-            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
+        function create() {            
+//            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
 
-            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.game.stage.disableVisibilityChange = true;    
+            this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
             game.world.setBounds(0, 0, gameBoundX, gameBoundY);
             game.input.onDown.add(function () {
@@ -569,39 +619,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }, this);
 
-        /* Background/canvas stuff */
- /*         game.stage.backgroundColor = '#C8C8C8';
-            titleBox = game.add.graphics(0,0);
-            titleBox.beginFill(0xFFFFFF,1);
-            titleBox.drawRect(0,0,960,60);
-
-            titleBarLine = game.add.graphics(0,0);
-            titleBarLine.beginFill(frameLineColor,1);
-            titleBarLine.drawRect(0,50,960,1);
-
-            uiBackground = game.add.sprite(0,51,'uiBackground');
-            
-            backgroundBox = game.add.graphics(0,0);
-            backgroundBox.beginFill(0x313233,0.05); // opacity
-            backgroundBox.drawRect(0,51,960,659); // 710 - 51 = 659
-
-            bottomLine = game.add.graphics(0,0);
-            bottomLine.beginFill(0x313233,1);
-            bottomLine.drawRect(0,650,960,1);
-
-            backgroundBottom = game.add.graphics(0,0);
-            backgroundBottom.beginFill(0x1f1f1f,1);
-            backgroundBottom.drawRect(0,651,960, 73); */
-
-
         /* Title */
-            //dashboardTitle = game.add.sprite(75,0,'title');
             dashboardTitle = game.add.sprite(75,8,'title');
-            //botLogo = game.add.sprite(15,1,'gigabotSm');
             botLogo = game.add.sprite(15,9,'gigabotSm');
-            //poweredBy = game.add.sprite(740,0,'poweredBy');
             poweredBy = game.add.sprite(740,8,'poweredBy');
-            //allRightsReserved = game.add.text(15, 670, "All Rights Reserved, TheGigabots.com", labelStyle);
 
         /* Frames */
             frameMotorStatus = game.add.graphics(0,0);
@@ -706,13 +727,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+39, labelSensors.h, labelStyle);
 
             status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+30, statusDisplay, labelStyle);
-            
-            //labelBotSelector = game.add.text(positionBotSelector.x+30, positionBotSelector.y+2, labelBotSelector, labelStyle3);
-            //labelBot = {
-            //    bot1 : game.add.text(positionBotSelector.x+28, positionBotSelector.y+26, "1", labelStyle),
-            //    bot2 : game.add.text(positionBotSelector.x+62, positionBotSelector.y+26, "2", labelStyle),
-            //    bot3 : game.add.text(positionBotSelector.x+96, positionBotSelector.y+26, "3", labelStyle)
-            //}
 
             labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, labelStyle2);
             labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+2, labelMotor.b, labelStyle2);
@@ -743,8 +757,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Ganging motors together */
             labelMotorGang = {
-                // g1 : game.add.text(positionGang.x+10, positionGang.y+5, "Motor Gang 1", labelStyle3), // gang 1
-                // g2 : game.add.text(positionGang.x+115, positionGang.y+5, "Motor Gang 2", labelStyle3), // gang 2
                 a1 : game.add.text(positionGang1.x+38, positionGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
                 a2 : game.add.text(positionGang2.x+38, positionGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
                 b1 : game.add.text(positionGang1.x+38, positionGang1.y+75, "Motor B", labelStyle), 
@@ -772,42 +784,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.useHandCursor = true;
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
 
-            // function actionDropdown() {
-            //     var numBots = botArray.length;
-            //     botDropdown.setFrames(2,2,2,2);
-            //     droppedDown = true;
-            //     dropdownBox = game.add.graphics(0,0);
-            //     dropdownBox.beginFill(0xFFFFFF,0.8);
-            //     dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
-            //     for ( var j = 0; j < numBots; j++ ) {
-            //         dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
-            //         dropHighlight[j].setFrames(0,2,1,2);
-            //         botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botArray[j], labelStyle5);
-            //         dropHighlight[j].events.onInputDown.add(actionSelectBot, j);
-            //         dropHighlight[j].input.useHandCursor = true;
-            //     }
-            //     botDropdown.input.stop();
-            // }
-            // function actionSelectBot() {
-            //     console.log("selected " + botArray[this] + " (bot number " + this + ")");
-            //     dropdownBox.destroy();
-            //     for ( var j = 0; j < botArray.length; j++) {
-            //         botLabels[j].destroy();
-            //         dropHighlight[j].destroy();
-            //     }
-            //     if ( robotNumber !== this ) {
-            //         console.log("new");
-            //         botName = botArray[this];
-            //         game.world.remove(bot.nameDisplay);
-            //         bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-            //     }
-            //     robotNumber = this;
-            //     botDropdown.input.start();
-            //     botDropdown.setFrames(1,0,2,0);
-            //     botDropdown.input.useHandCursor = true;
-            //     droppedDown = false;
-            //     //console.dir(this);
-            // }
             // function actionNoBotSelection () {
             //     console.log("no selection");
             //     //if ( droppedDown === true ) {
@@ -1385,6 +1361,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //=============================================================================
 
         function actionGetKeyspace() {
+        // this is to query the current bot's keyspace, for testing
             console.log("Getting Keyspace Info for Bot...");
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
@@ -1400,10 +1377,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var md = channel.getKeyspace(botId).get('d');
             console.log(md);
             var s1 = channel.getKeyspace(botId).get('S1');
-            console.log(s1); //Object {port: "S1", mode: "Distance", values: Array[1]}
+            console.log(s1); //Object {sensorType: "lejos.hardware.sensor.EV3IRSensor", port: "S1", mode: "Distance", values: Array[1]}
             var s2 = channel.getKeyspace(botId).get('S2');
-            console.log(s2);
-            console.log("Dashboard Info from Robot")
+            console.log(s2); //Object {sensorType: "lejos.hardware.sensor.EV3TouchSensor", port: "S2", mode: "Touch", values: Array[1]}
+            var s3 = channel.getKeyspace(botId).get('S3');
+            console.log(s3); //Object {sensorType: "lejos.hardware.sensor.EV3ColorSensor", port: "S3", mode: "RGB", values: Array[3]}
+            var s4 = channel.getKeyspace(botId).get('S4');
+            console.log(s4);
+            console.log("Dashboard Info from Robot:")
             var da = channel.getKeyspace(botId).get('aDash');
             console.log(da);
             var db = channel.getKeyspace(botId).get('bDash');
@@ -1416,63 +1397,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(dg1);
             var dg2 = channel.getKeyspace(botId).get('g2Dash');
             console.log(dg2);
-
+            var dt = channel.getKeyspace(botId).get('touchDash');
+            console.log(dt);
+            var dbl = channel.getKeyspace(botId).get('batteryDash');
+            console.log(dbl);
         }
 
-        // Object.size = function(obj) { // get size of an object
-        //     var size = 0, key;
-        //     for (key in obj) {
-        //         if(obj.hasOwnProperty(key)) size++;
-        //     }
-        //     return size;
-        // };
-
-        // function actionDropdown() {
-        //     var numBots = Object.size(botStore);
-        //     botDropdown.setFrames(2,2,2,2);
-        //     droppedDown = true;
-        //     dropdownBox = game.add.graphics(0,0);
-        //     dropdownBox.beginFill(0xFFFFFF,0.8);
-        //     dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
-        //     var j=0;
-        //     for ( var key in botStore ) {
-        //         var obj = botStore[key];
-        //         console.log(key);
-        //         dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
-        //         dropHighlight[j].setFrames(0,2,1,2);
-        //         dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
-        //         dropHighlight[j].input.useHandCursor = true;
-        //         botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, obj.name, labelStyle5);
-        //         j++;
-        //     }
-        //     botDropdown.input.stop();
-        // }
-        // function actionSelectBot() {
-        //     console.log("selected bot with clientId " + this + " and name " + botStore[this].name);
-        //     dropdownBox.destroy();
-        //     var numBots = Object.size(botStore);
-        //     for ( var j = 0; j < numBots; j++ ) {
-        //         botLabels[j].destroy();
-        //         dropHighlight[j].destroy();
-        //     }
-        //     //if ( botId !== this ) {
-        //         //console.log("new");
-        //         botId = botId.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-        //         console.log(botId);
-        //         botName = botStore[this].name;
-        //         console.log(botName);
-        //         game.world.remove(bot.nameDisplay);
-        //         bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-        //     //}
-        //     botDropdown.input.start();
-        //     botDropdown.setFrames(1,0,2,0);
-        //     botDropdown.input.useHandCursor = true;
-        //     droppedDown = false;
-        //     //console.dir(this);
-        // }
-
     /* Motor communication with Robot via messages to Big Bang channel */
-        //         function moveMotor( recipient, motor, direction, speed ) {
         function moveMotor( recipient, motor, direction, speed ) {
             var data = {};
             data.type = "motorStart";
@@ -1483,13 +1414,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             if (motor === 'a') {
-//NEED TO INCORPORATE THE BOT CLIENT IDS INTO KEYSPACES HERE:
                 channel.getKeyspace(botId).put('aDash', { 'speed': speed, 'direction': direction });
-                // if ( direction === 'f') {
-                //     fButton.a.setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking
-                // } else {
-                //     rButton.a.setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking
-                // }
             }
             if (motor === 'b') {
                 channel.getKeyspace(botId).put('bDash', { 'speed': speed, 'direction': direction });
@@ -1510,8 +1435,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.publish( data );
             if (data.port === 'a') {
                 channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed, 'direction': "stopped" });
-                // fButton.a.setFrames(1,0,2,0); // set forward button back to its normal frames (even if it hadn't changed...)
-                // rButton.a.setFrames(1,0,2,0); // set reverse button back to its normal frames (even if it hadn't changed...)
             }
             if (data.port === 'b') {
                 channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed, 'direction': "stopped" });
@@ -1524,8 +1447,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
 
-    /* Button-click functions */
-
+    /* Button-click functions (most of them anyway...) */
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
                 statusButton.setFrames(2,2,2,2);
@@ -1537,7 +1459,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
                 // resume.resumeOverlay.drawRect(0,51,960,599);
-                resume.resumeOverlay.drawRect(15,66,930,583);
+                resume.resumeOverlay.drawRect(14,66,932,571);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
             } else {
@@ -2347,11 +2269,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function disableKeyboard() {
             game.input.keyboard.disabled = true;
-            console.log(true);
         }
         function enableKeyboard() {
             game.input.keyboard.disabled = false;
-            console.log(false);
         }
 
         $("#textEditor").click( function () { // hovering over textEditor
@@ -2361,8 +2281,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             enableKeyboard();
         });
 
-        
-        
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed
         $(document).keydown(function(e) {

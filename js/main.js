@@ -12,6 +12,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     var client = new bigbang.client.BrowserBigBangClient();
 
+    var botStore = {};
+
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
            client.subscribe("newBot", function( err, c) {
@@ -42,67 +44,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         var getKeyspaceButton;
 
-        // function makeRobotUser(key,val,botClientId) {
-        //     if ( key === 'robot' ) {
-        //         console.log('is it a robot?');
-        //         if ( typeof(val) !== 'undefined' ) {
-        //             console.log('val is defined');
-        //             if ( val.imTotallyARobot === 'yup' ) {
-        //                 botArray.push('bot');
-        //             }
-        //         }
-        //     }
-        // }
-
-        // channel.onSubscribers( function(joined) {
-        //     var robotUser = channel.getKeyspace(joined).get('robot');
-        //     makeRobotUser('robot',robotUser,joined);
-        //     console.log(joined);
-        // });
-
-        // function makeRobotUser(key,val,botClientId) {
-        //     if ( key === 'robot' ) {
-        //         console.log('is it a robot?');
-        //         if ( typeof(val) !== 'undefined' ) {
-        //             console.log('val is defined');
-        //             if ( val.imTotallyARobot === 'yup' ) {
-        //                 botArray.push('bot');
-        //             }
-        //         }
-        //     }
-        // }
 
         channel.onSubscribers( function(joined) {
-            subscribeBotUser(joined);
-            console.log(joined);
-        });
+           // subscribeBotUser(joined);
+            console.log('join ' + joined);
 
-        function subscribeBotUser(joined) {
-            channel.getKeyspace(joined).onValue(function(key,val) {
-                if ( key === 'robot' ) {
-                    addBot('robot', val, joined);
-                }
-            },
-            function(key,val) {
-                if ( key === 'robot' ) {
-                    addBot('robot', val, joined);
-                }
-            },
-            function(key) {
-            //
-            }
-            );
-        }
+            var roboInfo = channel.getKeyspace(joined).get('robot');
 
-        function addBot( key, val, joined ) {
-            if ( key === 'robot' ) {
-                //console.log("joined: " + joined + " " + val.ev3.name);
-                botStore[joined] = { 
-                    name : val.ev3.name 
-                }
+            if( roboInfo ) {
+                botStore[joined] = roboInfo.ev3.name;
             }
-            //botArray.push(val.ev3.name);
-        }
+            channel.getKeyspace(joined).on('robot', function(val) {
+                botStore[joined] = val.ev3.name;
+            });
+        }, function(left) {
+            console.log("leave " + left);
+            delete botStore[left];
+         });
 
         var gameBoundX = 960, gameBoundY = 640;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
@@ -153,15 +111,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var botArray = new Array();
         //var botArray = ['Gigabot Prime', 'Robot 2', 'Robot 3', 'Bot 4' ];
         var botLabels = new Array();
-        var botId = 0;
+        var botId = "";
         var botName;
         var bot = {
             nameDisplay : 0
         }
         var droppedDown = false;
 
-        //var botMap = Array.prototype.map;
-        //var botMap = new Map();
         var botStore = {
             "1a2b3c4d-e5f6g7h8" : {
                 "name" : "goodbot"
@@ -173,7 +129,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 "name" : "superbot"
             }
         }
-
       
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -399,7 +354,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //var botId = botArray[robotNumber];
         //var mybotId = 'e0fefc3e-ba1e-40ab-ad51-de18f520f047'; // THIS WILl BE CHANGED BASED ON WHICH BOT THE USER CHOOSES
 
-        //if (typeof(botId) !== 'undefined' && botId !== 0) {
+
+        function listenToBot() {
+
         channel.getKeyspace(botId).onValue(function (key, val) {
             //console.log("Add:" + key +"->"+JSON.stringify(val) );
             if( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -442,7 +399,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }, function (key) {
             //console.log("Delete:" + key);
         });
-        //}
+
+        }
 
         Object.size = function(obj) { // get size of an object
             var size = 0, key;
@@ -458,36 +416,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dropdownBox = game.add.graphics(0,0);
             dropdownBox.beginFill(0xFFFFFF,0.8);
             dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+
             var j=0;
             for ( var key in botStore ) {
                 var obj = botStore[key];
                 //console.log(key);
+                var name = botStore[key];
+                console.log(key);
                 dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
                 dropHighlight[j].setFrames(0,2,1,2);
                 dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
                 dropHighlight[j].input.useHandCursor = true;
-                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, obj.name, labelStyle5);
+                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, name, labelStyle5);
                 j++;
             }
             botDropdown.input.stop();
         }
         function actionSelectBot() {
-            console.log("selected bot with clientId " + this + " and name " + botStore[this].name);
+            console.log("selected bot with clientId " + this + " and name " + botStore[this]);
             dropdownBox.destroy();
             var numBots = Object.size(botStore);
             for ( var j = 0; j < numBots; j++ ) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
-            //if ( botId !== this ) {
-                //console.log("new");
-                botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-                console.log(botId);
-                botName = botStore[this].name;
-                console.log(botName);
-                game.world.remove(bot.nameDisplay);
-                bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
-            //}
+
+            botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
+            botName = botStore[this];
+
+            game.world.remove(bot.nameDisplay);
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+30, botName, labelStyle);
+            listenToBot();
+
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;

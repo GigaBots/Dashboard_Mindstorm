@@ -32,7 +32,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     function beginGame(client, channel) {
         /* === Dashboard control panel stuff === */
-        var game = new Phaser.Game(960, 640, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
+        var game = new Phaser.Game(960, 646, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -62,7 +62,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             delete botStore[left];
          });
 
-        var gameBoundX = 960, gameBoundY = 640;
+        var gameBoundX = 960, gameBoundY = 646;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -124,8 +124,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var frameMotor;
         var positionMotorA = { x : 15, y : 226 }
         var positionMotorB = { x : 295, y : 226 }
-        var positionMotorC = { x : 15, y : 436 }
-        var positionMotorD = { x : 295, y : 436 }
+        var positionMotorC = { x : 15, y : 439 }
+        var positionMotorD = { x : 295, y : 439 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
         /* Forward and reverse */
@@ -158,7 +158,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelMotorGang;
         var positionGang = { x : 970, y : 66 }
         var positionGang1 = { x : 575, y: 226 } 
-        var positionGang2 = { x : 575, y: 436 } 
+        var positionGang2 = { x : 575, y: 439 } 
         var checkbox;
         var fGangButton, rGangButton;
 
@@ -169,7 +169,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             position : 0,
             gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
             stalled: false,
-            previousSpeed : 0
+            previousSpeed : 0,
+            speedDisplay : ''
         }
         var motorB = {
             port: 'b',
@@ -675,19 +676,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameMotor.a.lineStyle(1, frameLineColor, 1);
             frameMotor.a.beginFill(frameFill,frameOpacity);
-            frameMotor.a.drawRect(positionMotorA.x, positionMotorA.y, 270, 200);
+            frameMotor.a.drawRect(positionMotorA.x, positionMotorA.y, 270, 203);
 
             frameMotor.b.lineStyle(1, frameLineColor, 1);
             frameMotor.b.beginFill(frameFill,frameOpacity);
-            frameMotor.b.drawRect(positionMotorB.x, positionMotorB.y, 270, 200);
+            frameMotor.b.drawRect(positionMotorB.x, positionMotorB.y, 270, 203);
 
             frameMotor.c.lineStyle(1, frameLineColor, 1);
             frameMotor.c.beginFill(frameFill,frameOpacity);
-            frameMotor.c.drawRect(positionMotorC.x, positionMotorC.y, 270, 200);
+            frameMotor.c.drawRect(positionMotorC.x, positionMotorC.y, 270, 203);
 
             frameMotor.d.lineStyle(1, frameLineColor, 1);
             frameMotor.d.beginFill(frameFill,frameOpacity);
-            frameMotor.d.drawRect(positionMotorD.x, positionMotorD.y, 270, 200);
+            frameMotor.d.drawRect(positionMotorD.x, positionMotorD.y, 270, 203);
 
             frameTouch = game.add.graphics(0,0);
             frameTouch.lineStyle(1, frameLineColor, 1);
@@ -722,12 +723,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
             frameMotorGang1.beginFill(frameFill,frameOpacity);
-            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y, 370, 200);
+            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y, 370, 203);
 
             frameMotorGang2 = game.add.graphics(0,0);
             frameMotorGang2.lineStyle(1, frameLineColor, 1);
             frameMotorGang2.beginFill(frameFill,frameOpacity);
-            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y, 370, 200);
+            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y, 370, 203);
 
             frameDials = game.add.graphics(0,0);
             frameDials.lineStyle(1, frameLineColor, 1);
@@ -1329,14 +1330,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             needleD.anchor.setTo(0.495, 0.92);
         
         /* Buttons to drag entire boxes (for motors and motor gangs) */
-            dragBoxButton = {
-                g1 : game.add.button(positionGang1.x+341, positionGang1.y+5, 'dragButton', actionDragG1, this),
-                g2 : game.add.button(positionGang2.x+341, positionGang2.y+5, 'dragButton', actionDragG2, this),
-                a : game.add.button(positionMotorA.x+241, positionMotorA.y+5, 'dragButton', actionDragA, this),
-                b : game.add.button(positionMotorB.x+241, positionMotorB.y+5, 'dragButton', actionDragB, this),
-                c : game.add.button(positionMotorC.x+241, positionMotorC.y+5, 'dragButton', actionDragC, this),
-                d : game.add.button(positionMotorD.x+241, positionMotorD.y+5, 'dragButton', actionDragD, this)
-            }
+            // dragBoxButton = {
+            //     g1 : game.add.button(positionGang1.x+341, positionGang1.y+5, 'dragButton', actionDragG1, this),
+            //     g2 : game.add.button(positionGang2.x+341, positionGang2.y+5, 'dragButton', actionDragG2, this),
+            //     a : game.add.button(positionMotorA.x+241, positionMotorA.y+5, 'dragButton', actionDragA, this),
+            //     b : game.add.button(positionMotorB.x+241, positionMotorB.y+5, 'dragButton', actionDragB, this),
+            //     c : game.add.button(positionMotorC.x+241, positionMotorC.y+5, 'dragButton', actionDragC, this),
+            //     d : game.add.button(positionMotorD.x+241, positionMotorD.y+5, 'dragButton', actionDragD, this)
+            // }
 
         /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+23, 'touchIndicator');
@@ -1458,7 +1459,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
                 // resume.resumeOverlay.drawRect(0,51,960,599);
-                resume.resumeOverlay.drawRect(14,66,932,571);
+                resume.resumeOverlay.drawRect(14,66,932,577);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
             } else {
@@ -1588,6 +1589,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.getKeyspace(botId).put('aDash', { 'speed' : motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
             sliderBarState.a = "up";
             console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
+            var motorASpeedDisplay = motorA.speed.toFixed(0);
+            //game.world.remove(motorA.speedDisplay);
+            //motorA.speedDisplay = game.add.text(positionMotorA.x+235, sliderBarA.y-3, motorASpeedDisplay + " ", labelStyle6);
         }
         function actionDragOnClickB() {
             if (sliderBarB.y < positionMotorB.y+11) {

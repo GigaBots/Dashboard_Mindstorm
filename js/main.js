@@ -118,7 +118,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // client id (GUID) : bot name
         }
         var dropdown;
-      
+
         /* Individual motor controls and feedback */
         var frameMotor;
         var positionMotorA = { x : 15, y : 226 }
@@ -314,12 +314,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        function listenToBot() { // this is called once the user selects a bot
+        function listenToBot(robotClientId) { // this is called once the user selects a bot
 
-            channel.getKeyspace(botId).onValue(function (key, val) {
+            channel.getKeyspace(robotClientId).onValue(function (key, val) {
                 //console.log("Add:" + key +"->"+JSON.stringify(val) );
+                if ( robotClientId !== botId) {
+                    return 0;
+                }
                 if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-                    setMotorInfo(key, val);
+                    setMotorInfo( key, val);
                 }
                 else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                     if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
@@ -341,6 +344,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             }, function (key, val) {
                 //console.log("Update:" + key +"->"+JSON.stringify(val));
+                if ( robotClientId !== botId) {
+                    return 0;
+                }
                 if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
                     setMotorInfo(key, val);
                 }
@@ -545,9 +551,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
+
             botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
             botName = botStore[this];
-            listenToBot(); // start listening to the bot that was just selected
+            listenToBot(botId); // start listening to the bot that was just selected
             getInitialTouchCount();
             getInitialBatteryLevel();
             game.world.remove(bot.nameDisplay);
@@ -2199,6 +2206,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* DASHBOARD STUFF */
                 // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
                 // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
+            
             if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotorA = channel.getKeyspace(botId).get('aDash'); 
                 if ( typeof(dashMotorA) !== "undefined" ) {

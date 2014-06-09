@@ -14,6 +14,36 @@ body {
   min-height: 100%;
 }
 
+#progressBar {
+	width: 400px;
+	height: 22px;
+	border: 1px solid #111;
+	background-color: #292929;
+}
+#progressBar div {
+	height: 100%;
+    color: #fff;
+    text-align: right;
+    line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #0099ff;
+}
+.big-green {
+	border-radius: 10px;
+	padding: 5px;
+	background: #000924;
+	border: 1px solid #111;
+	box-shadow: 0 2px 3px #333;
+}
+
+.big-green div {
+	background: #1cc300 url(type_4.gif) top right;
+	border-radius: 6px;
+	box-shadow: 0 5px 5px #ccc inset;
+	text-indent: 99999px;
+	overflow: hidden;
+}
+
 #gameWorld {	
 	display: block;
 	vertical-align: baseline;

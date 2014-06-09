@@ -1,3 +1,8 @@
+function updateBar (progress, $element) {
+    var progressBarWidth = progress * $element.width() / 100;
+    $element.find('div').animate({ width: progressBarWidth }, 500).html(progress + "%&nbsp;");
+}
+
 require.config({
     baseUrl: 'js',
         // set baseURL to 'js' when bbclient.min.js is in the folder entitled 'js' along with main.js, phaser.min.js, and require.js
@@ -31,6 +36,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     });    
 
     function beginGame(client, channel) {
+        updateBar(50, $("#progressBar"));
         /* === Dashboard control panel stuff === */
         var game = new Phaser.Game(960, 646, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
@@ -40,8 +46,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
-
-
+        console.log("Beginning of beginGame");
         var getKeyspaceButton;
 
 
@@ -598,6 +603,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
     //==============================================================================================================================
+       
+
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
@@ -620,8 +627,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
             game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png',151,25);
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
-            game.load.image('batteryOutline','assets/battery_outline.png',110,22);
+            game.load.image('batteryOutline','assets/battery_outline.png',110,22);            
+            updateBar(100,$("#progressBar"))
         } //end preload
+
 
     //==============================================================================================================================
         function create() {            

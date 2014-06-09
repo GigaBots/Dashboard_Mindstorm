@@ -118,6 +118,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // client id (GUID) : bot name
         }
         var dropdown;
+        var botIndex = 0;
 
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -314,11 +315,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        function listenToBot(robotClientId) { // this is called once the user selects a bot
+        function listenToBot(robotClientId, selectionIndex) { // this is called once the user selects a bot
 
             channel.getKeyspace(robotClientId).onValue(function (key, val) {
                 //console.log("Add:" + key +"->"+JSON.stringify(val) );
-                if ( robotClientId !== botId) {
+                if ( robotClientId !== botId ) {
+                    return 0;
+                }
+                if ( selectionIndex < botIndex ) {
                     return 0;
                 }
                 if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -344,7 +348,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             }, function (key, val) {
                 //console.log("Update:" + key +"->"+JSON.stringify(val));
-                if ( robotClientId !== botId) {
+                if ( robotClientId !== botId ) {
+                    return 0;
+                }
+                if ( selectionIndex < botIndex ) {
                     return 0;
                 }
                 if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
@@ -362,7 +369,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                 }
                 else if ( key === 'robot') {
-                        setBatteryLevel(val.ev3.power);
+                    setBatteryLevel(val.ev3.power);
                 }
                 else if ( key === 'distance') {
                     setUltrasonicSensor(val);
@@ -445,17 +452,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
-                if( val.values[0] === 1 ) {
-                    touchIndicator.animations.play('pressed');
-                    game.world.remove(touch.touchCountDisplay);
-                    touchCount++;
-                    touchCountDisplay = touchCount;
-                    touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
-                    channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount });
-                }
-                else {
-                    touchIndicator.animations.play('up');
-                }
+            console.log("touch sensor 1: " + touchCount);
+            if( val.values[0] === 1 ) {
+                touchIndicator.animations.play('pressed');
+                game.world.remove(touch.touchCountDisplay);
+                touchCount++;
+                touchCountDisplay = touchCount;
+                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
+                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount });
+            }
+            else {
+                touchIndicator.animations.play('up');
+            }
+            console.log("touch sensor 2: " + touchCount + "\n");
         }
 
         function setColorSensor( val ) {
@@ -554,9 +563,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
             botName = botStore[this];
-            listenToBot(botId); // start listening to the bot that was just selected
-            getInitialTouchCount();
-            getInitialBatteryLevel();
+            botIndex++;
+            listenToBot(botId, botIndex); // start listening to the bot that was just selected
+            getInitialTouchCount(botId);
+            getInitialBatteryLevel(botId);
             game.world.remove(bot.nameDisplay);
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+33, botName, labelStyle);
             botDropdown.input.start();
@@ -582,7 +592,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Initialization of touch sensor display and battery display on dashboard */
-        function getInitialTouchCount() {
+        function getInitialTouchCount(robotClientId) {
             var touchCountData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
             setInitialTouchCount('touchDash', touchCountData);
         }
@@ -592,8 +602,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 touchCount = touchCountDisplay = val.touchCount;
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
             }
+            console.log("initial touch count set to " + touchCount);
         }
-        function getInitialBatteryLevel() {
+        function getInitialBatteryLevel(robotClientId) {
             var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
             setInitialBatteryLevel('batteryDash', batteryLevelData);
         }

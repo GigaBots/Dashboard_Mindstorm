@@ -6,6 +6,8 @@ html {
 
 body { 
   background-image: url("../assets/mars_gradient_background.gif");
+  background-position: center;
+  background-attachment: fixed;
   position: relative;
   margin: 0;
   overflow-y: scroll; /* always show scroll bar --> maybe this will workd for android */
@@ -36,7 +38,7 @@ body {
 	border-style: solid;
 	border-width: 2px;
 	border-color: #656565;
-	margin: 3px auto 0 auto;
+	margin: 2px auto 0 auto;
 	font-size: 12px;
 	position: relative;
 	padding-left: 5px;

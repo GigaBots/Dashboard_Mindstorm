@@ -67,19 +67,24 @@ body {
 
 }
 
-/* Run button to align with textEditor */
-#runButton {
-    left: -moz-calc(50% - 466px);
-    left: -webkit-calc(50% - 466px);
-    left: calc(50% - 466px);
-}
-#runButton {
+/* Run and Repository buttons to align with textEditor */
+.editorButtons {
 	position: relative;
 	top: 5px;
 	bottom: 2px;
 	background: transparent;
 	border-radius: 1px;
 	color: #C8C8C8;
+}
+#runButton {
+    left: -moz-calc(50% - 466px);
+    left: -webkit-calc(50% - 466px);
+    left: calc(50% - 466px);
+}
+#repoButton {
+	left: -moz-calc(50% - 455px);
+	left: -webkit-calc(50% - 455px);
+	left: calc(50% - 455px);
 }
 
 #errorMsg {

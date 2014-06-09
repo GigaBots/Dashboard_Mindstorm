@@ -452,19 +452,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
-            console.log("touch sensor 1: " + touchCount);
             if( val.values[0] === 1 ) {
                 touchIndicator.animations.play('pressed');
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
                 touchCountDisplay = touchCount;
-                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
+                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount });
             }
             else {
                 touchIndicator.animations.play('up');
             }
-            console.log("touch sensor 2: " + touchCount + "\n");
         }
 
         function setColorSensor( val ) {
@@ -480,9 +478,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             colorRDisplay = color.r;
             colorGDisplay = color.g;
             colorBDisplay = color.b;
-            //color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+22, colorRDisplay.toFixed(1), labelStyle3);
-            //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+22, colorGDisplay.toFixed(1), labelStyle3);
-            //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+22, colorBDisplay.toFixed(1), labelStyle3);
+            color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24, colorRDisplay.toFixed(0), labelStyle3);
+            //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), labelStyle3);
+            //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), labelStyle3);
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -498,22 +496,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function setBatteryLevel( val ) {
             batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
-            if (batteryLevel <= 0.15) { // for almost-dead battery!
-                if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
+            if ( batteryLevel <= 0.15 ) { // for almost-dead battery!
+                if( batteryLevel > -0.01 ) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0xFF0000, 1); // make the fill red!
                     batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16);
                 }
             }
-            else if (batteryLevel <= 1.01) { //upper boundary limit, with a little safety net for inaccuracy/error
-                if(batteryLevel > 0.1) { //lower boundary limit
+            else if ( batteryLevel <= 1.01 ) { //upper boundary limit, with a little safety net for inaccuracy/error
+                if( batteryLevel > 0.1 ) { //lower boundary limit
                     batteryLevelFill.destroy();
                     batteryLevelFill = game.add.graphics(0,0);
                     batteryLevelFill.beginFill(0x808080, 1); // make fill grey
                     batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16);
                 }
             }
+
             channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : batteryLevel });
         }
 
@@ -600,7 +599,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.world.remove(touch.touchCountDisplay);
             if ( typeof(val) !== "undefined" ) {
                 touchCount = touchCountDisplay = val.touchCount;
-                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+22, touchCountDisplay, labelStyle3);
+                touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
             }
             console.log("initial touch count set to " + touchCount);
         }
@@ -692,6 +691,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     statusButton.setFrames(1,0,0,0);
                     resume.resumeMessageDisplay.destroy();
                     resume.resumeOverlay.destroy();
+                    botIndex--; // //this is part of a little hack, to resume the channel.getKeyspace.onValue function after we resume, so we don't update anything (like we do to deal with selecting the same bot multiple times)
                 }
             }, this);
 
@@ -812,8 +812,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+2, labelMotor.d, labelStyle2);
 
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, labelStyle3);
-            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+25, labelTouched, labelStyle);
-            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+25, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
             labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50, labelBumpCount, labelStyle);
 
             labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
@@ -825,8 +825,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelUltrasonicUnits = game.add.text(positionUltrasonic.x+118, positionUltrasonic.y+27, labelUltrasonicUnits, labelStyle);
 
             labelColor = game.add.text(positionColor.x+10, positionColor.y+2, labelColor, labelStyle3);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+25, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+106, positionColor.y+25, labelColorName, labelStyle);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27, labelColorValue, labelStyle);
+            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27, labelColorName, labelStyle);
             labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50, labelIntensity, labelStyle);
 
             labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+2, labelBattery, labelStyle3);
@@ -1395,7 +1395,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // }
 
         /* Touch Sensor */
-            touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+23, 'touchIndicator');
+            touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+25, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
 
@@ -1417,7 +1417,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing
-            console.log("Getting Keyspace Info for Bot...");
+            console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
             console.log("Bot Info from Robot:");
@@ -1517,6 +1517,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 resume.resumeOverlay.drawRect(14,66,932,577);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
+                botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)
             } else {
                 statusButton.setFrames(1,0,0,0);
                 dashboardStatus = 1;
@@ -2214,6 +2215,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function update() {
+            if ( botId === '') { // don't do anything when we're not dealing with a particular bot
+                return 0;
+            }
             /* DASHBOARD STUFF */
                 // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
                 // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 

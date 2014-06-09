@@ -105,20 +105,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Bot selector */
         var frameBotSelector;
         var positionBotSelector = { x : 97, y : 66 }
-        var botDropdown, dropdownBox;
-        //var droppedDown = false;
+        var botDropdown, dropdownBox, dropdown;
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
-        var botId = "";
-        var botName = 'Select a robot ';
+        var botId = "", botIndex = 0, botName = 'Select a robot ';
         var bot = {
             nameDisplay : ""
         }
         var botStore = { //formated as:
             // client id (GUID) : bot name
-        }
-        var dropdown;
-        var botIndex = 0;
+        } 
 
         /* Individual motor controls and feedback */
         var frameMotor;
@@ -233,12 +229,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Touch sensor */
         var press = 0; // 0 = not pressed, 1 = pressed
-        var touchCount = 0, bumpCount = 0; //count total touches or bumps
+        var touchCount = 0, bumpCount = 0, touchTime = 0; //count total touches or bumps
         var touch = {
          touchCountDisplay : 0 //display number of total presses
         }
         var bump = {
-         bumpCountDisplay : 0 //display number of total presses
+         bumpCountDisplay : 0 //display number of total bumps
+        }
+        var time = {
+            touchTimeDisplay : 0 //display total time
         }
         var frameTouch;
         var positionTouch = { x : 443, y : 133 }
@@ -385,27 +384,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setMotorInfo( key, val ) {
             if( key === 'a') {
                 motorA.status =1;
-                //if ( typeof(needleA) !== "undefined" ) {
-                    needleA.angle = val.position; // THE ERROR WE GET HERE IS BECAUSE THE NEEDLE VARIABLES DON'T GET THEIR SPRITES UNTIL LATER
-                //}
-                if ( val.moving ) { // WE SHOULD ADDRESS THIS ERROR AFTER WE GET OTHER THINGS WORKING AND THEN START USING A NEEDLE OBJECT, WE MIGHT HAVE TO DO SOME REARRANGING
-                    motorA.status =1;
-                    //if ( typeof (statusLight.a) !== "undefined" ) {
-                        statusLight.a.animations.play('pluggedIn');
-                    //}
+                needleA.angle = val.position;
+                if( !val.stalled ) {
+                    statusLight.a.animations.play('pluggedIn');
+                } else {
+                    motorB.status =2;
+                    statusLight.a.animations.play('stalled');
                 }
-                else if ( val.stalled ) {
-                    motorA.status =2;
-                    //if ( typeof (statusLight.a) !== "undefined" ) {
-                        statusLight.a.animations.play('stalled');
-                    //}
-                } 
-                else {
-                    motorA.status =0;
-                    //if ( typeof (statusLight.a) !== "undefined" ) {
-                        statusLight.a.animations.play('unplugged');
-                    //}
-                } 
             }
             else if (key === 'b') {
                 motorB.status =1;
@@ -428,19 +413,41 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
             else if( key === 'd')  {
-                motorD.status =1;
-                needleD.angle = val.position; // in update function now
-                if ( val.stalled ) {
-                    statusLight.d.animations.play('stalled');
+                //motorD.status =1;
+                //if ( typeof(needleD) !== "undefined" ) {
+                    needleD.angle = val.position;
+                //}
+                if ( val.moving ) {
+                    motorD.status =1;
+                    //if ( typeof (statusLight.d) !== "undefined" ) {
+                        statusLight.d.animations.play('pluggedIn');
+                    //}
+                }
+                else if ( val.stalled ) {
+                    motorD.status =2;
+                    //if ( typeof (statusLight.d) !== "undefined" ) {
+                        statusLight.d.animations.play('stalled');
+                    //}
                 } 
                 else {
-                    if (motorD.status === "unplugged" ) {
+                    motorD.status =0;
+                    //if ( typeof (statusLight.d) !== "undefined" ) {
                         statusLight.d.animations.play('unplugged');
-                    }
-                    else {
-                        statusLight.d.animations.play('pluggedIn');
-                    }
-                }
+                    //}
+                } 
+                // motorD.status =1;
+                // needleD.angle = val.position; // in update function now
+                // if ( val.stalled ) {
+                //     statusLight.d.animations.play('stalled');
+                // } 
+                // else {
+                //     if (motorD.status === "unplugged" ) {
+                //         statusLight.d.animations.play('unplugged');
+                //     }
+                //     else {
+                //         statusLight.d.animations.play('pluggedIn');
+                //     }
+                // }
                 // if( !val.stalled ) {
                 //     statusLight.d.animations.play('pluggedIn');
                 // } else {
@@ -527,7 +534,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionDropdown() {
             var numBots = Object.size(botStore);
             botDropdown.setFrames(2,2,2,2);
-            //droppedDown = true;
             dropdownBox = game.add.graphics(0,0);
             dropdownBox.beginFill(0xFFFFFF,0.8);
             dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
@@ -574,6 +580,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //droppedDown = false;
 
             //getInitialMotorStatus();
+            setInitialDashboardSettings(botId);
 
         }
         function actionNoBotSelection() {
@@ -607,7 +614,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
             setInitialBatteryLevel('batteryDash', batteryLevelData);
         }
-        function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's ben calculated in a dashboard somewhere)
+        function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
             if ( typeof(val) !== 'undefined' ) {
                 batteryLevel = val.batteryLevel;
                 if (batteryLevel <= 0.15) { // for almost-dead battery!
@@ -628,8 +635,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
+        function setInitialDashboardSettings(robotClientId) { // if the bot has just been connected and has no dashboard settings in its keyspace
+            var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
+            if (typeof(dashMotorA) === 'undefined') { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
+                // set all dashboard settings to a default of 0 and unganged in the new bot's keyspace
+                channel.getKeyspace(botId).put('aDash', { 'speed': 0, 'direction': "stopped" });
+                channel.getKeyspace(botId).put('bDash', { 'speed': 0, 'direction': "stopped" });
+                channel.getKeyspace(botId).put('cDash', { 'speed': 0, 'direction': "stopped" });
+                channel.getKeyspace(botId).put('dDash', { 'speed': 0, 'direction': "stopped" });
+                channel.getKeyspace(botId).put('g1Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
+                channel.getKeyspace(botId).put('g2Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
+                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 0 });                
+                channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });
+                channel.getKeyspace(botId).put('a', { 'port': "a", 'position': 0, 'stalled': false, 'moving': false });
+                channel.getKeyspace(botId).put('b', { 'port': "b", 'position': 0, 'stalled': false, 'moving': false });
+                channel.getKeyspace(botId).put('c', { 'port': "c", 'position': 0, 'stalled': false, 'moving': false });
+                channel.getKeyspace(botId).put('d', { 'port': "d", 'position': 0, 'stalled': false, 'moving': false });
+            }
+        }
 
-
+        //EXPERIMENTING...
         function getInitialMotorStatus() {
             var currentPosD = needleD.angle;
             moveMotor(botId,'d','f',1);
@@ -2176,6 +2201,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function getDialValues (key, val) {
+            
             if ( key === 'aDash' ) {
                 if ( val.direction === 'f' || val.direction === 'r' ) {
                     moveDial ('aDash', val.direction); //smooth-ish linear interpolation
@@ -2215,7 +2241,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function update() {
-            if ( botId === '') { // don't do anything when we're not dealing with a particular bot
+            if ( botId === '' ) { // don't do anything when we're not dealing with a particular bot
                 return 0;
             }
             /* DASHBOARD STUFF */

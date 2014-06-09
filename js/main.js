@@ -138,6 +138,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sliderBarA, sliderBarB, sliderBarC, sliderBarD, sliderBarG1, sliderBarG2;
         var sliderBarState = { a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up" }
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
+        var sliderIncrements = { a : '', b : '', c : '', d : '', g1 : '', g2 : ''}
         var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
         var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
         var speed;
@@ -283,11 +284,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Battery level sensor */
-        var frameBattery;
+        var frameBattery, labelBattery = "Battery Level", batteryOutline, batteryLevel = 1; //initialize the level at 100% (or, 1)
         var positionBattery = { x : 821, y : 66 }
-        var labelBattery = "Battery Level";
-        var batteryLevel = 1; //initialize the level at 100% (or, 1);
-        var batteryLevelBox, batteryLevelFill, batteryShape;
 
         /* LCD Screen */
         var frameScreen, LCDScreenBox;
@@ -605,7 +603,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
-            game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 13);
+            game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 14);
             game.load.image('sliderBar2','assets/gigabot_dashboard_slider_bar_2.png', 65, 13);
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
@@ -618,6 +616,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
             game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png',151,25);
+            game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
+            game.load.image('batteryOutline','assets/battery_outline.png',110,22);
         } //end preload
 
     //==============================================================================================================================
@@ -1178,7 +1178,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Click and drag motor speed setting & display */
             sliderTrackA = game.add.graphics(0,0);
             sliderTrackA.beginFill(frameLineColor, 1);
-            sliderTrackA.drawRect(positionMotorA.x+163, positionMotorA.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.a = game.add.sprite(positionMotorA.x+138, positionMotorA.y+16, 'sliderIncrements');
             sliderBarA = game.add.button(positionMotorA.x+133, positionMotorA.y+165, 'sliderBar');
             sliderBarA.inputEnabled=true;
             sliderBarA.input.useHandCursor = true;
@@ -1189,7 +1189,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackB = game.add.graphics(0,0);
             sliderTrackB.beginFill(frameLineColor, 1);
-            sliderTrackB.drawRect(positionMotorB.x+163, positionMotorB.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.b = game.add.sprite(positionMotorB.x+138, positionMotorB.y+16, 'sliderIncrements');
             sliderBarB = game.add.button(positionMotorB.x+133, positionMotorB.y+165, 'sliderBar');
             sliderBarB.inputEnabled=true;
             sliderBarB.input.useHandCursor = true;
@@ -1200,7 +1200,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         
             sliderTrackC = game.add.graphics(0,0);
             sliderTrackC.beginFill(frameLineColor, 1);
-            sliderTrackC.drawRect(positionMotorC.x+163, positionMotorC.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.c = game.add.sprite(positionMotorC.x+138, positionMotorC.y+16, 'sliderIncrements');
             sliderBarC = game.add.button(positionMotorC.x+133, positionMotorC.y+165, 'sliderBar');
             sliderBarC.inputEnabled=true;
             sliderBarC.input.useHandCursor = true;
@@ -1211,7 +1211,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackD = game.add.graphics(0,0);
             sliderTrackD.beginFill(frameLineColor, 1);
-            sliderTrackD.drawRect(positionMotorD.x+163, positionMotorD.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.d = game.add.sprite(positionMotorD.x+138, positionMotorD.y+16, 'sliderIncrements');
             sliderBarD = game.add.button(positionMotorD.x+133, positionMotorD.y+165, 'sliderBar');
             sliderBarD.inputEnabled=true;
             sliderBarD.input.useHandCursor = true;
@@ -1222,7 +1222,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackG1 = game.add.graphics(0,0);
             sliderTrackG1.beginFill(frameLineColor, 1);
-            sliderTrackG1.drawRect(positionGang1.x+263, positionGang1.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.g1 = game.add.sprite(positionGang1.x+238, positionGang1.y+16, 'sliderIncrements');
             sliderBarG1 = game.add.button(positionGang1.x+233, positionGang1.y+165, 'sliderBar2');
             sliderBarG1.inputEnabled=true;
             sliderBarG1.input.useHandCursor = true;
@@ -1233,7 +1233,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             sliderTrackG2 = game.add.graphics(0,0);
             sliderTrackG2.beginFill(frameLineColor, 1);
-            sliderTrackG2.drawRect(positionGang2.x+263, positionGang2.y+16, 2, 156); //every 10% increase in motor speed will be a 16px difference
+            sliderIncrements.g2 = game.add.sprite(positionGang2.x+238, positionGang2.y+16, 'sliderIncrements');
             sliderBarG2 = game.add.button(positionGang2.x+233, positionGang2.y+165, 'sliderBar2');
             sliderBarG2.inputEnabled=true;
             sliderBarG2.input.useHandCursor = true;
@@ -1344,17 +1344,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator.animations.add('pressed', [1], 1);
 
         /* Battery Level Sensor */
-            batteryLevelBox = game.add.graphics(0,0);
-            batteryLevelBox.beginFill(0xD8D8D8, 0.8);
-            batteryLevelBox.lineStyle(1.5, frameLineColor, 1);
-            batteryLevelBox.drawRect(positionBattery.x+10, positionBattery.y+31, 102, 18);
-
-            batteryLevelShape = game.add.graphics(0,0);
-            batteryLevelShape.beginFill(frameLineColor, 1);
-            batteryLevelShape.drawRect(positionBattery.x+112, positionBattery.y+36, 4, 8);
+            batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+29, 'batteryOutline');
 
             batteryLevelFill = game.add.graphics(0,0);
-            batteryLevelFill.beginFill(0x313233, 0.85);
+            batteryLevelFill.beginFill(0xa3a3a3, 1);
             batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
 
         /* LCD Screen */

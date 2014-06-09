@@ -86,8 +86,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelMotorStatus;
         var labelMotors = { a : "A", b : "B", c : "C", d : "D" }
         var labelSensors = { e : "1", f : "2", g : "3", h : "4" }
-        var statusMotorA, statusMotorB, statusMotorC, statusMotorD, statusSensor1,statusSensor2, statusSensor3, statusSensor4;
-        var statusLightA, statusLightB, statusLightC, statusLightD, statusLight1, statusLight2, statusLight3, statusLight4;
+        var statusLight = { a : '', b : '', c : '', d : '', s1 : '', s2 : '', s3 : '', s4 : '' }
 
         /* Play/stop button and status */
         var dashboardStatus = 1; // 1 = 'running/resumed', 0 = 'stopped/paused'
@@ -111,7 +110,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
         var botId = "";
-        var botName = 'Select a robot';
+        var botName = 'Select a robot ';
         var bot = {
             nameDisplay : ""
         }
@@ -215,6 +214,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             d : false,
             previousSpeed : 0
         }
+        
 
         /* Sensors */
         var sensor1 = {
@@ -376,20 +376,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //}
                 if ( val.moving ) { // WE SHOULD ADDRESS THIS ERROR AFTER WE GET OTHER THINGS WORKING AND THEN START USING A NEEDLE OBJECT, WE MIGHT HAVE TO DO SOME REARRANGING
                     motorA.status =1;
-                    //if ( typeof (statusLightA) !== "undefined" ) {
-                        statusLightA.animations.play('pluggedIn');
+                    //if ( typeof (statusLight.a) !== "undefined" ) {
+                        statusLight.a.animations.play('pluggedIn');
                     //}
                 }
                 else if ( val.stalled ) {
                     motorA.status =2;
-                    //if ( typeof (statusLightA) !== "undefined" ) {
-                        statusLightA.animations.play('stalled');
+                    //if ( typeof (statusLight.a) !== "undefined" ) {
+                        statusLight.a.animations.play('stalled');
                     //}
                 } 
                 else {
                     motorA.status =0;
-                    //if ( typeof (statusLightA) !== "undefined" ) {
-                        statusLightA.animations.play('unplugged');
+                    //if ( typeof (statusLight.a) !== "undefined" ) {
+                        statusLight.a.animations.play('unplugged');
                     //}
                 } 
             }
@@ -397,30 +397,30 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 motorB.status =1;
                 needleB.angle = val.position;
                 if( !val.stalled ) {
-                    statusLightB.animations.play('pluggedIn');
+                    statusLight.b.animations.play('pluggedIn');
                 } else {
                     motorB.status =2;
-                    statusLightB.animations.play('stalled');
+                    statusLight.b.animations.play('stalled');
                 }
             }
             else if( key === 'c') {
                 motorC.status =1;
                 needleC.angle = val.position;
                 if( !val.stalled ) {
-                    statusLightC.animations.play('pluggedIn');
+                    statusLight.c.animations.play('pluggedIn');
                 } else {
                     motorC.status =2;
-                    statusLightC.animations.play('stalled');
+                    statusLight.c.animations.play('stalled');
                 }
             }
             else if( key === 'd')  {
                 motorD.status =1;
                 needleD.angle = val.position; // in update function now
                 if( !val.stalled ) {
-                    statusLightD.animations.play('pluggedIn');
+                    statusLight.d.animations.play('pluggedIn');
                 } else {
                     motorD.status =2;
-                    statusLightD.animations.play('stalled');
+                    statusLight.d.animations.play('stalled');
                 }
             }
         }
@@ -591,7 +591,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         batteryLevelFill.destroy();
                         batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1); // make fill grey
-                        batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+32, Math.round(batteryLevel*100), 16);
+                        batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16);
                     }
                 }
             }
@@ -1280,35 +1280,35 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         /* Status Lights */
-            statusLightA = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+24, 'statusLight');
-            statusLightA.animations.add('unplugged', [3], 1);
-            statusLightA.animations.add('pluggedIn', [1], 1);
-            statusLightA.animations.add('stalled', [2], 1);
-            statusLightB = game.add.sprite(positionMotorStatus.x+42, positionMotorStatus.y+24, 'statusLight');
-            statusLightB.animations.add('unplugged', [3], 1);
-            statusLightB.animations.add('pluggedIn', [1], 1);
-            statusLightB.animations.add('stalled', [2], 1);
-            statusLightC = game.add.sprite(positionMotorStatus.x+72, positionMotorStatus.y+24, 'statusLight');
-            statusLightC.animations.add('unplugged', [3], 1);
-            statusLightC.animations.add('pluggedIn', [1], 1);
-            statusLightC.animations.add('stalled', [2], 1);
-            statusLightD = game.add.sprite(positionMotorStatus.x+102, positionMotorStatus.y+24, 'statusLight');
-            statusLightD.animations.add('unplugged', [3], 1);
-            statusLightD.animations.add('pluggedIn', [1], 1);
-            statusLightD.animations.add('stalled', [2], 1);
+            statusLight.a = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+24, 'statusLight');
+            statusLight.a.animations.add('unplugged', [3], 1);
+            statusLight.a.animations.add('pluggedIn', [1], 1);
+            statusLight.a.animations.add('stalled', [2], 1);
+            statusLight.b = game.add.sprite(positionMotorStatus.x+42, positionMotorStatus.y+24, 'statusLight');
+            statusLight.b.animations.add('unplugged', [3], 1);
+            statusLight.b.animations.add('pluggedIn', [1], 1);
+            statusLight.b.animations.add('stalled', [2], 1);
+            statusLight.c = game.add.sprite(positionMotorStatus.x+72, positionMotorStatus.y+24, 'statusLight');
+            statusLight.c.animations.add('unplugged', [3], 1);
+            statusLight.c.animations.add('pluggedIn', [1], 1);
+            statusLight.c.animations.add('stalled', [2], 1);
+            statusLight.d = game.add.sprite(positionMotorStatus.x+102, positionMotorStatus.y+24, 'statusLight');
+            statusLight.d.animations.add('unplugged', [3], 1);
+            statusLight.d.animations.add('pluggedIn', [1], 1);
+            statusLight.d.animations.add('stalled', [2], 1);
 
-            statusLight1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+24, 'statusLight');
-            statusLight1.animations.add('unplugged', [3], 1);
-            statusLight1.animations.add('pluggedIn', [1], 1);
-            statusLight2 = game.add.sprite(positionSensorStatus.x+42, positionSensorStatus.y+24, 'statusLight');
-            statusLight2.animations.add('unplugged', [3], 1);
-            statusLight2.animations.add('pluggedIn', [1], 1);
-            statusLight3 = game.add.sprite(positionSensorStatus.x+72, positionSensorStatus.y+24, 'statusLight');
-            statusLight3.animations.add('unplugged', [3], 1);
-            statusLight3.animations.add('pluggedIn', [1], 1);
-            statusLight4 = game.add.sprite(positionSensorStatus.x+102, positionSensorStatus.y+24, 'statusLight');
-            statusLight4.animations.add('unplugged', [3], 1);
-            statusLight4.animations.add('pluggedIn', [1], 1);
+            statusLight.s1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+24, 'statusLight');
+            statusLight.s1.animations.add('unplugged', [3], 1);
+            statusLight.s1.animations.add('pluggedIn', [1], 1);
+            statusLight.s2 = game.add.sprite(positionSensorStatus.x+42, positionSensorStatus.y+24, 'statusLight');
+            statusLight.s2.animations.add('unplugged', [3], 1);
+            statusLight.s2.animations.add('pluggedIn', [1], 1);
+            statusLight.s3 = game.add.sprite(positionSensorStatus.x+72, positionSensorStatus.y+24, 'statusLight');
+            statusLight.s3.animations.add('unplugged', [3], 1);
+            statusLight.s3.animations.add('pluggedIn', [1], 1);
+            statusLight.s4 = game.add.sprite(positionSensorStatus.x+102, positionSensorStatus.y+24, 'statusLight');
+            statusLight.s4.animations.add('unplugged', [3], 1);
+            statusLight.s4.animations.add('pluggedIn', [1], 1);
 
         /* Rotational position dials and needles for motors */
 
@@ -1351,7 +1351,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+27, 'batteryOutline');
 
             batteryLevelFill = game.add.graphics(0,0);
-            batteryLevelFill.beginFill(0xa3a3a3, 1);
+            batteryLevelFill.beginFill(0x808080, 1);
             batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
 
         /* LCD Screen */

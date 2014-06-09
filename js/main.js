@@ -214,7 +214,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             d : false,
             previousSpeed : 0
         }
-        
+
 
         /* Sensors */
         var sensor1 = {
@@ -362,6 +362,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     setUltrasonicSensor(val);
                 }
             }, function (key) {
+                console.log("bot " + botId + " left");
                 //console.log("Delete:" + key);
             });
 
@@ -416,12 +417,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             else if( key === 'd')  {
                 motorD.status =1;
                 needleD.angle = val.position; // in update function now
-                if( !val.stalled ) {
-                    statusLight.d.animations.play('pluggedIn');
-                } else {
-                    motorD.status =2;
+                if ( val.stalled ) {
                     statusLight.d.animations.play('stalled');
+                } 
+                else {
+                    if (motorD.status === "unplugged" ) {
+                        statusLight.d.animations.play('unplugged');
+                    }
+                    else {
+                        statusLight.d.animations.play('pluggedIn');
+                    }
                 }
+                // if( !val.stalled ) {
+                //     statusLight.d.animations.play('pluggedIn');
+                // } else {
+                //     motorD.status =2;
+                //     statusLight.d.animations.play('stalled');
+                // }
             }
         }
 
@@ -453,7 +465,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             colorRDisplay = color.r;
             colorGDisplay = color.g;
             colorBDisplay = color.b;
-            color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+22, colorRDisplay.toFixed(1), labelStyle3);
+            //color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+22, colorRDisplay.toFixed(1), labelStyle3);
             //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+22, colorGDisplay.toFixed(1), labelStyle3);
             //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+22, colorBDisplay.toFixed(1), labelStyle3);
         }
@@ -544,6 +556,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
             //droppedDown = false;
+
+            //getInitialMotorStatus();
+
         }
         function actionNoBotSelection() {
             dropdownBox.destroy();
@@ -597,6 +612,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
 
+
+        function getInitialMotorStatus() {
+            var currentPosD = needleD.angle;
+            moveMotor(botId,'d','f',1);
+            if (currentPosD === needleD.angle) {
+                statusLight.d.animations.play('unplugged');
+                motorD.status = "unplugged";
+            } 
+            else {
+                statusLight.d.animations.play('pluggedIn');
+                motorD.status = "pluggedIn";
+            }
+            moveMotor(botId,'d','r',1);
+            moveMotor(botId,'d','f',0);
+        }
+
     //==============================================================================================================================
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
@@ -621,11 +652,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png',151,25);
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
             game.load.image('batteryOutline','assets/battery_outline.png',110,22);
+            game.load.image('testingButton','assets/buttons/testing_button.png',100,50);
         } //end preload
 
     //==============================================================================================================================
-        function create() {            
-//            getKeyspaceButton = game.add.button(400,10,'highlighter', actionGetKeyspace);
+        function create() {          
+            /* this button is for testing. it's invisible and in the upper right corner */  
+            getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
+            //=============
 
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;

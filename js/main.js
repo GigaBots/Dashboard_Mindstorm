@@ -125,6 +125,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         var botStore = { //formated as:
             // client id (GUID) : bot name
+            'fakeBot' : 'fakeBot'
         } 
 
         /* Individual motor controls and feedback */
@@ -518,13 +519,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.world.remove(IR.IRDistDisplay);
             IRDist = val.values[0];
             IRDistDisplay = IRDist;
-            IR.IRDistDisplay = game.add.text(positionIR.x+71, positionIR.y+24, IRDistDisplay.toFixed(2), dataOutputStyle);
+            IR.IRDistDisplay = game.add.text(positionIR.x+69, positionIR.y+24, IRDistDisplay.toFixed(2), dataOutputStyle);
         }
         function setUltrasonicSensor( val ) {
             ultrasonicDist = val.distance;
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+71, positionUltrasonic.y+24, ultrasonicDistDisplay.toFixed(1), dataOutputStyle);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+69, positionUltrasonic.y+24, ultrasonicDistDisplay.toFixed(1), dataOutputStyle);
         }
         function setBatteryLevel( val ) {
             batteryLevel = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V

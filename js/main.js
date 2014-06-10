@@ -731,8 +731,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
-            game.load.image('sliderBar','assets/gigabot_dashboard_slider_bar.png', 65, 14);
-            game.load.image('sliderBar2','assets/gigabot_dashboard_slider_bar_2.png', 65, 13);
+            game.load.image('sliderBar','assets/buttons/gigabot_dashboard_slider_bar.png', 65, 14);
+            game.load.image('sliderBar2','assets/buttons/gigabot_dashboard_slider_bar_2.png', 65, 14);
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);

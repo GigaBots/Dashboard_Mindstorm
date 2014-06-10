@@ -1,6 +1,9 @@
 function updateBar (progress, $element) {
     var progressBarWidth = progress * $element.width() / 100;
-    $element.find('div').animate({ width: progressBarWidth }, 500).html(progress + "%&nbsp;");
+    $element.find('div').animate({ width: progressBarWidth }, 0).html(progress + "%&nbsp;");
+    if (progress === 100) {
+        $("#progressBar").remove();
+    }
 }
 
 require.config({
@@ -11,7 +14,7 @@ require.config({
         "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
     }
 });
-
+updateBar(24, $("#progressBar")) ;
 
 require(['BrowserBigBangClient'], function (bigbang) {
 
@@ -33,10 +36,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         else {
             console.log("CONNECT FAILURE.");
         }
-    });    
+    });
+    updateBar(59, $("#progressBar"));    
 
     function beginGame(client, channel) {
-        updateBar(50, $("#progressBar"));
+
         /* === Dashboard control panel stuff === */
         var game = new Phaser.Game(960, 646, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
@@ -46,7 +50,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
-        console.log("Beginning of beginGame");
+        updateBar(78, $("#progressBar"));
         var getKeyspaceButton;
 
 
@@ -316,7 +320,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var indexArray = iterationNum;
         // user's code if uses "up" arrow but didn't hit submit before doing so.
         var tempCode;
-
         //===================================================
 
         function listenToBot(robotClientId, selectionIndex) { // this is called once the user selects a bot
@@ -384,7 +387,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             });
 
         }
-
+        updateBar(92,$("#progressBar"));
         //quick and dirty for now
         function setMotorInfo( key, val ) {
             if( key === 'a') {
@@ -461,7 +464,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // }
             }
         }
-
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
             if( val.values[0] === 1 ) {
@@ -700,19 +702,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('botDropdown','assets/buttons/gigabot_dashboard_button_dropdown.png',101,25);
             game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png',151,25);
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
-<<<<<<< HEAD
-            game.load.image('batteryOutline','assets/battery_outline.png',110,22);            
-            updateBar(100,$("#progressBar"))
-=======
             game.load.image('batteryOutline','assets/battery_outline.png',110,22);
             game.load.image('testingButton','assets/buttons/testing_button.png',100,50);
->>>>>>> master
+
         } //end preload
 
 
     //==============================================================================================================================
         function create() {          
-            /* this button is for testing. it's invisible and in the upper right corner */  
+            /* this button is for testing. it's invisible and in the upper right corner */   
+            updateBar(100, $("#progressBar")); 
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
             //=============
 

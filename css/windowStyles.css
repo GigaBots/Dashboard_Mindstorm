@@ -14,6 +14,29 @@ body {
   min-height: 100%;
 }
 
+#progressBar {
+	margin: 15% auto;
+	width: 600px;
+	height: 22px;
+	background-color: #292929;
+	box-shadow: 0 2px 3px #333;	
+	border-radius: 10px;
+	padding: 5px;
+	border: 1px solid #111;
+}
+#progressBar div {
+	height: 100%;
+	color: #000;
+    text-align: right;
+    line-height: 22px; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #111;
+    background: #7E430C;
+	border-radius: 6px;
+	box-shadow: 0 5px 5px #ccc inset;
+	overflow: hidden;
+}
+
 #gameWorld {	
 	display: block;
 	vertical-align: baseline;
@@ -67,19 +90,24 @@ body {
 
 }
 
-/* Run button to align with textEditor */
-#runButton {
-    left: -moz-calc(50% - 466px);
-    left: -webkit-calc(50% - 466px);
-    left: calc(50% - 466px);
-}
-#runButton {
+/* Run and Repository buttons to align with textEditor */
+.editorButtons {
 	position: relative;
 	top: 5px;
 	bottom: 2px;
 	background: transparent;
 	border-radius: 1px;
 	color: #C8C8C8;
+}
+#runButton {
+    left: -moz-calc(50% - 466px);
+    left: -webkit-calc(50% - 466px);
+    left: calc(50% - 466px);
+}
+#repoButton {
+	left: -moz-calc(50% - 455px);
+	left: -webkit-calc(50% - 455px);
+	left: calc(50% - 455px);
 }
 
 #errorMsg {

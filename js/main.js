@@ -42,7 +42,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     function beginGame(client, channel) {
 
         /* === Dashboard control panel stuff === */
-        var game = new Phaser.Game(960, 646, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
+        var game = new Phaser.Game(960, 650, Phaser.AUTO, "gameWorld", { // 960 x 700 fits alright horizontally on an iPhone 4 and an iPad 
             preload: preload, //Since this is likely the small phone screen anyone would be using, it's important to consider, since we currently have the issue of not scrolling about the Phaser game world window
             create: create,
             update: update,
@@ -71,7 +71,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             delete botStore[left];
          });
 
-        var gameBoundX = 960, gameBoundY = 646;
+        var gameBoundX = 960, gameBoundY = 650;
         var bbLogo, botLogo, dashboardTitle, allRightsReserved;
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
@@ -129,10 +129,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Individual motor controls and feedback */
         var frameMotor;
-        var positionMotorA = { x : 15, y : 226 }
-        var positionMotorB = { x : 295, y : 226 }
-        var positionMotorC = { x : 15, y : 439 }
-        var positionMotorD = { x : 295, y : 439 }
+        var positionMotorA = { x : 15, y : 228 } //just moved this down 2
+        var positionMotorB = { x : 295, y : 228 }
+        var positionMotorC = { x : 15, y : 443 } //just moved this down 4
+        var positionMotorD = { x : 295, y : 443 }
         var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
 
         /* Forward and reverse */
@@ -163,8 +163,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
         var positionGang = { x : 970, y : 66 }
-        var positionGang1 = { x : 575, y: 226 } 
-        var positionGang2 = { x : 575, y: 439 } 
+        var positionGang1 = { x : 575, y: 228 } 
+        var positionGang2 = { x : 575, y: 443 } 
         var checkbox;
         var fGangButton, rGangButton;
 
@@ -723,8 +723,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
     //==============================================================================================================================
-       
-
         function preload() {
             game.load.spritesheet('statusLight', 'assets/gigabot_dashboard_status_lights_spritesheet.png', 14, 14);
             game.load.spritesheet('forwardButton','assets/buttons/gigabot_dashboard_button_forward_spritesheet.png', 97, 49);
@@ -749,9 +747,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
             game.load.image('batteryOutline','assets/battery_outline.png',110,22);
             game.load.image('testingButton','assets/buttons/testing_button.png',100,50);
-
         } //end preload
-
 
     //==============================================================================================================================
         function create() {          
@@ -812,19 +808,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             frameMotor.a.lineStyle(1, frameLineColor, 1);
             frameMotor.a.beginFill(frameFill,frameOpacity);
-            frameMotor.a.drawRect(positionMotorA.x, positionMotorA.y, 270, 203);
+            frameMotor.a.drawRect(positionMotorA.x, positionMotorA.y-2, 270, 205); //this is temporarily y-2 (until we do some rearranging of the motor)
 
             frameMotor.b.lineStyle(1, frameLineColor, 1);
             frameMotor.b.beginFill(frameFill,frameOpacity);
-            frameMotor.b.drawRect(positionMotorB.x, positionMotorB.y, 270, 203);
+            frameMotor.b.drawRect(positionMotorB.x, positionMotorB.y-2, 270, 205);
 
             frameMotor.c.lineStyle(1, frameLineColor, 1);
             frameMotor.c.beginFill(frameFill,frameOpacity);
-            frameMotor.c.drawRect(positionMotorC.x, positionMotorC.y, 270, 203);
+            frameMotor.c.drawRect(positionMotorC.x, positionMotorC.y-2, 270, 205);
 
             frameMotor.d.lineStyle(1, frameLineColor, 1);
             frameMotor.d.beginFill(frameFill,frameOpacity);
-            frameMotor.d.drawRect(positionMotorD.x, positionMotorD.y, 270, 203);
+            frameMotor.d.drawRect(positionMotorD.x, positionMotorD.y-2, 270, 205);
 
             frameTouch = game.add.graphics(0,0);
             frameTouch.lineStyle(1, frameLineColor, 1);
@@ -859,12 +855,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
             frameMotorGang1.beginFill(frameFill,frameOpacity);
-            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y, 370, 203);
+            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y-2, 370, 205);
 
             frameMotorGang2 = game.add.graphics(0,0);
             frameMotorGang2.lineStyle(1, frameLineColor, 1);
             frameMotorGang2.beginFill(frameFill,frameOpacity);
-            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y, 370, 203);
+            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y-2, 370, 205);
 
             frameDials = game.add.graphics(0,0);
             frameDials.lineStyle(1, frameLineColor, 1);
@@ -888,10 +884,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+33, botName, selectBotStyle);
 
-            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y+2, labelMotor.a, largeTitleStyle);
-            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y+2, labelMotor.b, largeTitleStyle);
-            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y+2, labelMotor.c, largeTitleStyle);
-            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y+2, labelMotor.d, largeTitleStyle);
+            labelMotor.a = game.add.text(positionMotorA.x+10, positionMotorA.y, labelMotor.a, largeTitleStyle);
+            labelMotor.b = game.add.text(positionMotorB.x+10, positionMotorB.y, labelMotor.b, largeTitleStyle);
+            labelMotor.c = game.add.text(positionMotorC.x+10, positionMotorC.y, labelMotor.c, largeTitleStyle);
+            labelMotor.d = game.add.text(positionMotorD.x+10, positionMotorD.y, labelMotor.d, largeTitleStyle);
 
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, smallTitleStyle);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
@@ -919,8 +915,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Ganging motors together */
             labelMotorGang = {
-                g1: game.add.text(positionGang1.x+10, positionGang1.y+2, "Motor Gang 1", largeTitleStyle),
-                g2: game.add.text(positionGang2.x+10, positionGang2.y+2, "Motor Gang 2", largeTitleStyle),
+                g1: game.add.text(positionGang1.x+10, positionGang1.y, "Motor Gang 1", largeTitleStyle),
+                g2: game.add.text(positionGang2.x+10, positionGang2.y, "Motor Gang 2", largeTitleStyle),
                 a1 : game.add.text(positionGang1.x+38, positionGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
                 a2 : game.add.text(positionGang2.x+38, positionGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
                 b1 : game.add.text(positionGang1.x+38, positionGang1.y+75, "Motor B", labelStyle), 
@@ -1597,7 +1593,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
                 // resume.resumeOverlay.drawRect(0,51,960,599);
-                resume.resumeOverlay.drawRect(14,66,932,577);
+                resume.resumeOverlay.drawRect(14,66,932,581);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
                 botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)

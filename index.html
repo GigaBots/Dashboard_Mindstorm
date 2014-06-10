@@ -11,6 +11,7 @@
 </head>
 
 <body>
+	<div id="progressBar"><div></div></div>
 	<div class="content" -webkit-overflow-scrolling: touch>
 		<div id="gameWorld">
 			<script src="js/phaser.min.js"></script>
@@ -24,7 +25,10 @@
 			<p id="currentCode" contentEditable="true" placeholder="Type your JavaScript code here!"></p>
 			<div id="errorMsg"></div>
 		</div>			
-		<button id="runButton">Run</button>
+		<button class="editorButtons" id="runButton">Run</button>
+		<a href="https://github.com/GigaBots/Dashboard_Mindstorm" target="_tab">
+			<button class="editorButtons" id="repoButton">Repositories</button>
+		</a>
 	</div>
 	<div id="footer"> <!-- Footer remains locked to bottom of screen if entirety of content is within viewport. Otherwise remains locked to bottom of content -->
 		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>

@@ -570,7 +570,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 dropHighlight[j].setFrames(0,2,1,2);
                 dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
                 dropHighlight[j].input.useHandCursor = true;
-                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, name, dropdownStyle);
+                if ( name.length < 20 ) {
+                    var botNameDropdown = name;
+                }
+                else {
+                    var botNameDropdown = name.slice(0, 19);
+                }
+                botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botNameDropdown, dropdownStyle);
                 j++;
             }
             botDropdown.input.stop();
@@ -598,7 +604,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             getInitialTouchData(botId);
             getInitialBatteryLevel(botId);
             game.world.remove(bot.nameDisplay);
-            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+33, botName, statusStyle);
+            if ( botName.length > 15 ) {
+                var botNameDisplay = botName.slice(0, 15);
+            }
+            else {
+                var botNameDisplay = botName;
+            }
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+33, botNameDisplay, statusStyle);
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;

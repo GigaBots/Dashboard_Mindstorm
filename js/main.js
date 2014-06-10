@@ -241,8 +241,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         var frameTouch;
         var positionTouch = { x : 443, y : 133 }
-        var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ";
+        var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ", labelTouchTime = "Total Time Pressed: ", labelTouchTimeUnits = "sec";
         var touchIndicator;
+        var t1Touch;
 
         /* IR sensor */
         var frameIR;
@@ -460,14 +461,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
             if( val.values[0] === 1 ) {
+                t1Touch = game.time.time;
                 touchIndicator.animations.play('pressed');
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
-                touchCountDisplay = touchCount;
+                touchCountDisplay = (touchCount.toString());
+                var countLength = touchCountDisplay.length;
+                if ( countLength > 4 ) {
+                    var position = countLength - 4; 
+                    touchCountDisplay = touchCountDisplay.substring(position,position+4); //limit the number of characters displayed
+                }
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
-                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount });
+                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });
             }
             else {
+                t2 = game.time.time;
+                touchTime = touchTime + (t2 - t1Touch)/1000; // current total touch time plus delta t (in seconds)
+                game.world.remove(touch.touchTimeDisplay);
+                var touchTimeDisplay = touchTime.toFixed(2);
+                touch.touchTimeDisplay = game.add.text(positionTouch.x+126, positionTouch.y+47, touchTimeDisplay, labelStyle3);
+                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });                
                 touchIndicator.animations.play('up');
             }
         }
@@ -570,7 +583,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botName = botStore[this];
             botIndex++;
             listenToBot(botId, botIndex); // start listening to the bot that was just selected
-            getInitialTouchCount(botId);
+            getInitialTouchData(botId);
             getInitialBatteryLevel(botId);
             game.world.remove(bot.nameDisplay);
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+33, botName, labelStyle);
@@ -598,17 +611,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Initialization of touch sensor display and battery display on dashboard */
-        function getInitialTouchCount(robotClientId) {
-            var touchCountData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
-            setInitialTouchCount('touchDash', touchCountData);
+        function getInitialTouchData(robotClientId) {
+            var touchData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
+            setInitialTouchData('touchDash', touchData);
         }
-        function setInitialTouchCount( key, val ) {
+        function setInitialTouchData( key, val ) {
             game.world.remove(touch.touchCountDisplay);
+            game.world.remove(touch.touchTimeDisplay);
             if ( typeof(val) !== "undefined" ) {
-                touchCount = touchCountDisplay = val.touchCount;
+                touchCount = val.touchCount;
+                touchCountDisplay = (touchCount.toString());
+                var countLength = touchCountDisplay.length;
+                if ( countLength > 4 ) {
+                    var position = countLength - 4; 
+                    touchCountDisplay = touchCountDisplay.substring(position,position+4); //limit the number of characters displayed
+                }
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
+                touchTime = val.touchTime;
+                touchTimeDisplay = touchTime.toFixed(2);
+                touch.touchTimeDisplay = game.add.text(positionTouch.x+126, positionTouch.y+47, touchTimeDisplay, labelStyle3);                
             }
-            console.log("initial touch count set to " + touchCount);
+            //console.log("initial touch count set to " + touchCount + " and total time pressed to " + touchTime);
         }
         function getInitialBatteryLevel(robotClientId) {
             var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
@@ -638,14 +661,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setInitialDashboardSettings(robotClientId) { // if the bot has just been connected and has no dashboard settings in its keyspace
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
             if (typeof(dashMotorA) === 'undefined') { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
-                // set all dashboard settings to a default of 0 and unganged in the new bot's keyspace
+                console.log("initializing keyspace and dashboard settings for the newly connected bot...");
+                // set all dashboard settings to defaults of 0, unganged, stopped, etc in the new bot's keyspace
                 channel.getKeyspace(botId).put('aDash', { 'speed': 0, 'direction': "stopped" });
                 channel.getKeyspace(botId).put('bDash', { 'speed': 0, 'direction': "stopped" });
                 channel.getKeyspace(botId).put('cDash', { 'speed': 0, 'direction': "stopped" });
                 channel.getKeyspace(botId).put('dDash', { 'speed': 0, 'direction': "stopped" });
                 channel.getKeyspace(botId).put('g1Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
                 channel.getKeyspace(botId).put('g2Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
-                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 0 });                
+                channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 0, 'touchTime' : 0 });                
                 channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });
                 channel.getKeyspace(botId).put('a', { 'port': "a", 'position': 0, 'stalled': false, 'moving': false });
                 channel.getKeyspace(botId).put('b', { 'port': "b", 'position': 0, 'stalled': false, 'moving': false });
@@ -654,7 +678,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
 
-        //EXPERIMENTING...
+        //EXPERIMENTING...trying to show motor statuses correctly
         function getInitialMotorStatus() {
             var currentPosD = needleD.angle;
             moveMotor(botId,'d','f',1);
@@ -815,13 +839,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameDials.drawRect(positionDial.x, positionDial.y, 271, 83);
 
         /* Labels */
-            labelMotorStatus = game.add.text(positionMotorStatus.x+37, positionMotorStatus.y+2, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2, labelMotorStatus, labelStyle3); //label at top of box indicating status of motor ports
             labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37, labelMotors.a, labelStyle);
             labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37, labelMotors.b, labelStyle);
             labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37, labelMotors.c, labelStyle);
             labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37, labelMotors.d, labelStyle);
 
-            labelSensorStatus = game.add.text(positionSensorStatus.x+33, positionSensorStatus.y+2, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
+            labelSensorStatus = game.add.text(positionSensorStatus.x+10, positionSensorStatus.y+2, labelSensorStatus, labelStyle3); //label at top of box indicating status of motor ports
             label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+37, labelSensors.e, labelStyle);
             label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+37, labelSensors.f, labelStyle);
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+37, labelSensors.g, labelStyle);
@@ -839,7 +863,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, labelStyle3);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
             labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
-            labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50, labelBumpCount, labelStyle);
+            //labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50, labelBumpCount, labelStyle);
+            labelTouchTime = game.add.text(positionTouch.x+10, positionTouch.y+50, labelTouchTime, labelStyle);
+            labelTouchTimeUnits = game.add.text(positionTouch.x+179, positionTouch.y+50, labelTouchTimeUnits, labelStyle);
 
             labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
             labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27, labelIRDist, labelStyle);
@@ -1423,6 +1449,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+25, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
+            touchIndicator.animations.play('up');
 
         /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+27, 'batteryOutline');

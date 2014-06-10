@@ -465,11 +465,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 touchIndicator.animations.play('pressed');
                 game.world.remove(touch.touchCountDisplay);
                 touchCount++;
-                touchCountDisplay = (touchCount.toString());
-                var countLength = touchCountDisplay.length;
-                if ( countLength > 4 ) {
-                    var position = countLength - 4; 
-                    touchCountDisplay = touchCountDisplay.substring(position,position+4); //limit the number of characters displayed
+                var touchCountDisplay = touchCount.toString();
+                if ( touchCountDisplay.length > 4 ) {
+                    touchCountDisplay = touchCountDisplay.slice(touchCountDisplay.length-4, touchCountDisplay.length);
                 }
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });
@@ -478,8 +476,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 t2 = game.time.time;
                 touchTime = touchTime + (t2 - t1Touch)/1000; // current total touch time plus delta t (in seconds)
                 game.world.remove(touch.touchTimeDisplay);
-                var touchTimeDisplay = touchTime.toFixed(2);
-                touch.touchTimeDisplay = game.add.text(positionTouch.x+126, positionTouch.y+47, touchTimeDisplay, labelStyle3);
+                var touchTimeDisplay = (touchTime.toFixed(2)).toString();
+                if ( touchTimeDisplay.length > 6 ) {
+                    touchTimeDisplay = touchTimeDisplay.slice(touchTimeDisplay.length-6, touchTimeDisplay.length);
+                }
+                if ( touchTimeDisplay.length > 7 ) {
+                    touchTimeDisplay = touchTimeDisplay.slice(touchTimeDisplay.length-7, touchTimeDisplay.length-3);
+                }               
+                touch.touchTimeDisplay = game.add.text(positionTouch.x+125, positionTouch.y+47, touchTimeDisplay, labelStyle3);
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });                
                 touchIndicator.animations.play('up');
             }
@@ -620,16 +624,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.world.remove(touch.touchTimeDisplay);
             if ( typeof(val) !== "undefined" ) {
                 touchCount = val.touchCount;
-                touchCountDisplay = (touchCount.toString());
-                var countLength = touchCountDisplay.length;
-                if ( countLength > 4 ) {
-                    var position = countLength - 4; 
-                    touchCountDisplay = touchCountDisplay.substring(position,position+4); //limit the number of characters displayed
+                var touchCountDisplay = touchCount.toString();
+                if ( touchCountDisplay.length > 4 ) {
+                    touchCountDisplay = touchCountDisplay.slice(touchCountDisplay.length-4, touchCountDisplay.length);
                 }
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24, touchCountDisplay, labelStyle3);
                 touchTime = val.touchTime;
-                touchTimeDisplay = touchTime.toFixed(2);
-                touch.touchTimeDisplay = game.add.text(positionTouch.x+126, positionTouch.y+47, touchTimeDisplay, labelStyle3);                
+                var touchTimeDisplay = (touchTime.toFixed(2)).toString();
+                if ( touchTimeDisplay.length > 6 ) {
+                    touchTimeDisplay = touchTimeDisplay.slice(touchTimeDisplay.length-6, touchTimeDisplay.length);
+                }
+                if ( touchTimeDisplay.length > 7 ) {
+                    touchTimeDisplay = touchTimeDisplay.slice(touchTimeDisplay.length-7, touchTimeDisplay.length-3);
+                } 
+                touch.touchTimeDisplay = game.add.text(positionTouch.x+125, positionTouch.y+47, touchTimeDisplay, labelStyle3);                
             }
             //console.log("initial touch count set to " + touchCount + " and total time pressed to " + touchTime);
         }
@@ -865,7 +873,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
             //labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50, labelBumpCount, labelStyle);
             labelTouchTime = game.add.text(positionTouch.x+10, positionTouch.y+50, labelTouchTime, labelStyle);
-            labelTouchTimeUnits = game.add.text(positionTouch.x+179, positionTouch.y+50, labelTouchTimeUnits, labelStyle);
+            labelTouchTimeUnits = game.add.text(positionTouch.x+180, positionTouch.y+50, labelTouchTimeUnits, labelStyle);
 
             labelIR = game.add.text(positionIR.x+10, positionIR.y+2, labelIR, labelStyle3);
             labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27, labelIRDist, labelStyle);

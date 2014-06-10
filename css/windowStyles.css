@@ -27,13 +27,14 @@ body {
 #progressBar div {
 	height: 100%;
 	color: #000;
-    text-align: right;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+    text-align: center;
     line-height: 22px; /* same as #progressBar height if we want text middle aligned */
     width: 0;
     background-color: #111;
     background: #7E430C;
 	border-radius: 6px;
-	box-shadow: 0 5px 5px #ccc inset;
+	box-shadow: 0 4px 4px #ccc inset;
 	overflow: hidden;
 }
 

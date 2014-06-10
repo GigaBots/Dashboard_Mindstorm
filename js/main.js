@@ -499,21 +499,40 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setColorSensor( val ) {
-            game.world.remove(color.rDisplay);
-            game.world.remove(color.gDisplay);
-            game.world.remove(color.bDisplay);
-            //game.world.remove(color.valueDisplay);
-            //game.world.remove(color.nameDisplay);
-            //game.world.remove(color.lightIntensityDisplay);
-            color.r = val.values[0];
-            color.g = val.values[1];
-            color.b = val.values[2];
-            colorRDisplay = color.r;
-            colorGDisplay = color.g;
-            colorBDisplay = color.b;
-            color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24, colorRDisplay.toFixed(0), dataOutputStyle);
-            //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), dataOutputStyle);
-            //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), dataOutputStyle);
+            if (val.mode === "RGB") {
+                game.world.remove(color.rDisplay);
+                game.world.remove(color.gDisplay);
+                game.world.remove(color.bDisplay);
+                //game.world.remove(color.valueDisplay);
+                //game.world.remove(color.nameDisplay);
+                //game.world.remove(color.lightIntensityDisplay);
+                color.r = val.values[0];
+                color.g = val.values[1];
+                color.b = val.values[2];
+                colorRDisplay = color.r;
+                colorGDisplay = color.g;
+                colorBDisplay = color.b;
+                color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24, colorRDisplay.toFixed(0), dataOutputStyle);
+                //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), dataOutputStyle);
+                //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), dataOutputStyle);
+            }
+            if (val.mode === "ColorID") {
+                var colorNameDisplay;
+                var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
+                //var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
+                game.world.remove(color.nameDisplay);
+                if (val.value[0] === /* Depends on output */) {
+                    colorNameDisplay = "Red";
+                    colorOutputStyle.fill = #F00;
+                }
+                else if (val.value[1] === ) {
+                    colorNameDisplay = "Green";
+                    colorOutputStyle.fill = #0F0;
+                }
+
+                colorNameDisplay = // Figure out how to retrieve name from 
+                color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24,colorNameDisplay, colorOutputStyle);
+            }
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);

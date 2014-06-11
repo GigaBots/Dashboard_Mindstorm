@@ -501,23 +501,91 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function setColorSensor( val ) {
-            //game.world.remove(color.nameDisplay);
-
-            //game.world.remove(color.rDisplay);
-            //game.world.remove(color.gDisplay);
-            //game.world.remove(color.bDisplay);
-            //game.world.remove(color.valueDisplay);
-            //game.world.remove(color.nameDisplay);
-            //game.world.remove(color.lightIntensityDisplay);
-            //color.r = val.values[0];
-            //color.g = val.values[1];
-            //color.b = val.values[2];
-            //colorRDisplay = color.r;
-            //colorGDisplay = color.g;
-            //colorBDisplay = color.b;
-            //color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24, colorRDisplay.toFixed(0), dataOutputStyle);
-            //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), dataOutputStyle);
-            //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), dataOutputStyle);
+            if (val.mode === "RGB") {
+                game.world.remove(color.rDisplay);
+                game.world.remove(color.gDisplay);
+                game.world.remove(color.bDisplay);
+                //game.world.remove(color.valueDisplay);
+                //game.world.remove(color.nameDisplay);
+                //game.world.remove(color.lightIntensityDisplay);
+                color.r = val.values[0];
+                color.g = val.values[1];
+                color.b = val.values[2];
+                colorRDisplay = color.r;
+                colorGDisplay = color.g;
+                colorBDisplay = color.b;
+                color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24, colorRDisplay.toFixed(0), dataOutputStyle);
+                //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), dataOutputStyle);
+                //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), dataOutputStyle);
+            }
+            
+            /* After determining output of ColorID sensor, use if statements to implement output into dashboard
+            else if (val.mode === "ColorID") {
+                var colorNameDisplay;
+                var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
+                game.world.remove(color.nameDisplay);
+                if (val.value[1] === 0)) {
+                    colorNameDisplay = "Red";
+                    colorOutputStyle.fill = #F00;
+                }
+                else if (val.value[1] === 1) {
+                    colorNameDisplay = "Green";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 2) {
+                    colorNameDisplay = "Blue";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 3) {
+                    colorNameDisplay = "Yellow";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 4) {
+                    colorNameDisplay = "Magenta";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 5) {
+                    colorNameDisplay = "Orange";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 6) {
+                    colorNameDisplay = "White";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 7) {
+                    colorNameDisplay = "Black";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 8) {
+                    colorNameDisplay = "Pink";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 9) {
+                    colorNameDisplay = "Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 10) {
+                    colorNameDisplay = "Light Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 11) {
+                    colorNameDisplay = "Dark Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 12) {
+                    colorNameDisplay = "Cyan";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 13) {
+                    colorNameDisplay = "Brown";
+                    colorOutputStyle.fill = #0F0;
+                }
+                velse if (val.value[1] === -1) {
+                    colorNameDisplay = "N/A";
+                    colorOutputStyle.fill = #0F0;
+                }
+                color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24,colorNameDisplay, colorOutputStyle);
+            } */
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -2568,7 +2636,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             try {
                 eval(evalCode);
             }
-            // if input code is not able to be run, display console's error message to user in text editor area
+            // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
                 codeArray[iterationNum,1] = err.message;

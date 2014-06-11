@@ -518,24 +518,72 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             
             /* After determining output of ColorID sensor, use if statements to implement output into dashboard
-            if (val.mode === "ColorID") {
+            else if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
-                //var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
                 game.world.remove(color.nameDisplay);
-                if (val.value[0] === /* Depends on output */ /*) {
+                if (val.value[1] === 0)) {
                     colorNameDisplay = "Red";
                     colorOutputStyle.fill = #F00;
                 }
-                else if (val.value[1] === ) {
+                else if (val.value[1] === 1) {
                     colorNameDisplay = "Green";
                     colorOutputStyle.fill = #0F0;
                 }
-
-                colorNameDisplay = // Figure out how to retrieve name from 
+                else if (val.value[1] === 2) {
+                    colorNameDisplay = "Blue";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 3) {
+                    colorNameDisplay = "Yellow";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 4) {
+                    colorNameDisplay = "Magenta";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 5) {
+                    colorNameDisplay = "Orange";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 6) {
+                    colorNameDisplay = "White";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 7) {
+                    colorNameDisplay = "Black";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 8) {
+                    colorNameDisplay = "Pink";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 9) {
+                    colorNameDisplay = "Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 10) {
+                    colorNameDisplay = "Light Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 11) {
+                    colorNameDisplay = "Dark Gray";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 12) {
+                    colorNameDisplay = "Cyan";
+                    colorOutputStyle.fill = #0F0;
+                }
+                else if (val.value[1] === 13) {
+                    colorNameDisplay = "Brown";
+                    colorOutputStyle.fill = #0F0;
+                }
+                velse if (val.value[1] === -1) {
+                    colorNameDisplay = "N/A";
+                    colorOutputStyle.fill = #0F0;
+                }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24,colorNameDisplay, colorOutputStyle);
-            }
-            */
+            } */
 
 
 

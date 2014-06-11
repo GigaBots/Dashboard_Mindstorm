@@ -516,12 +516,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24, colorGDisplay.toFixed(0), dataOutputStyle);
                 //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24, colorBDisplay.toFixed(0), dataOutputStyle);
             }
+            
+            /* After determining output of ColorID sensor, use if statements to implement output into dashboard
             if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
                 //var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
                 game.world.remove(color.nameDisplay);
-                if (val.value[0] === /* Depends on output */) {
+                if (val.value[0] === /* Depends on output */ /*) {
                     colorNameDisplay = "Red";
                     colorOutputStyle.fill = #F00;
                 }
@@ -533,6 +535,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 colorNameDisplay = // Figure out how to retrieve name from 
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24,colorNameDisplay, colorOutputStyle);
             }
+            */
+
+
+
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -2395,7 +2401,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             try {
                 eval(evalCode);
             }
-            // if input code is not able to be run, display console's error message to user in text editor area
+            // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
                 document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
                 codeArray[iterationNum,1] = err.message;

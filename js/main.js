@@ -815,8 +815,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('minusButton','assets/buttons/gigabot_dashboard_button_minus_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/gigabot_dashboard_button_plus_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/gigabot_dashboard_touch_sensor_spritesheet.png', 21, 21);
-            game.load.image('sliderBar','assets/buttons/gigabot_dashboard_slider_bar.png', 65, 20);
-            game.load.image('sliderBar2','assets/buttons/gigabot_dashboard_slider_bar_2.png', 65, 20);
+            game.load.image('sliderBar','assets/buttons/gigabot_dashboard_slider_bar.png', 72, 24);
+            game.load.image('sliderBar2','assets/buttons/gigabot_dashboard_slider_bar_2.png', 72, 24);
             game.load.image('needle','assets/gigabot_dashboard_needle.png', 5, 26);
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
@@ -1111,12 +1111,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             function actionConfigDirections () {
                 console.log("flipping directions for motor " + this.port);
-                if (this.directionSwitched === false ) {
-                    this.directionSwitched = true;
-                    var letter = this.port;
-                } else {
-                    this.directionSwitched = false;
-                }
+                if ( this.directionSwitched === false ) this.directionSwitched = true;
+                else this.directionSwitched = false;
+                
                 if ( this.port === 'a' ) {
                     motorA.directionSwitched = this.directionSwitched;
                     channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed, 'directionSwitched': this.directionSwitched });
@@ -1666,50 +1663,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end create 
         //=============================================================================
-
-        function actionGetKeyspace() {
-        // this is to query the current bot's keyspace, for testing
-            console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
-            var keys = channel.getKeyspace(botId).keys();
-            console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
-            console.log("Bot Info from Robot:");
-            var isRobot = channel.getKeyspace(botId).get('robot');
-            console.log(isRobot); //Object {imTotallyARobot: "yup"} 
-            var ma = channel.getKeyspace(botId).get('a');
-            console.log(ma); //Object {port: "a", position: 161, stalled: false, moving: false}
-            var mb = channel.getKeyspace(botId).get('b');
-            console.log(mb);
-            var mc = channel.getKeyspace(botId).get('c');
-            console.log(mc);
-            var md = channel.getKeyspace(botId).get('d');
-            console.log(md);
-            var s1 = channel.getKeyspace(botId).get('S1');
-            console.log(s1); //Object {sensorType: "lejos.hardware.sensor.EV3IRSensor", port: "S1", mode: "Distance", values: Array[1]}
-            var s2 = channel.getKeyspace(botId).get('S2');
-            console.log(s2); //Object {sensorType: "lejos.hardware.sensor.EV3TouchSensor", port: "S2", mode: "Touch", values: Array[1]}
-            var s3 = channel.getKeyspace(botId).get('S3');
-            console.log(s3); //Object {sensorType: "lejos.hardware.sensor.EV3ColorSensor", port: "S3", mode: "RGB", values: Array[3]}
-            var s4 = channel.getKeyspace(botId).get('S4');
-            console.log(s4);
-            console.log("Dashboard Info from Robot:")
-            var da = channel.getKeyspace(botId).get('aDash');
-            console.log(da);
-            var db = channel.getKeyspace(botId).get('bDash');
-            console.log(db);
-            var dc = channel.getKeyspace(botId).get('cDash');
-            console.log(dc);
-            var dd = channel.getKeyspace(botId).get('dDash');
-            console.log(dd);
-            var dg1 = channel.getKeyspace(botId).get('g1Dash');
-            console.log(dg1);
-            var dg2 = channel.getKeyspace(botId).get('g2Dash');
-            console.log(dg2);
-            var dt = channel.getKeyspace(botId).get('touchDash');
-            console.log(dt);
-            var dbl = channel.getKeyspace(botId).get('batteryDash');
-            console.log(dbl);
-        }
-
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( recipient, motor, direction, speed, switched ) {
             var data = {};
@@ -2227,6 +2180,49 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //
         }
 
+        function actionGetKeyspace() {
+        // this is to query the current bot's keyspace, for testing
+            console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
+            var keys = channel.getKeyspace(botId).keys();
+            console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
+            console.log("Bot Info from Robot:");
+            var isRobot = channel.getKeyspace(botId).get('robot');
+            console.log(isRobot); //Object {imTotallyARobot: "yup"} 
+            var ma = channel.getKeyspace(botId).get('a');
+            console.log(ma); //Object {port: "a", position: 161, stalled: false, moving: false}
+            var mb = channel.getKeyspace(botId).get('b');
+            console.log(mb);
+            var mc = channel.getKeyspace(botId).get('c');
+            console.log(mc);
+            var md = channel.getKeyspace(botId).get('d');
+            console.log(md);
+            var s1 = channel.getKeyspace(botId).get('S1');
+            console.log(s1); //Object {sensorType: "lejos.hardware.sensor.EV3IRSensor", port: "S1", mode: "Distance", values: Array[1]}
+            var s2 = channel.getKeyspace(botId).get('S2');
+            console.log(s2); //Object {sensorType: "lejos.hardware.sensor.EV3TouchSensor", port: "S2", mode: "Touch", values: Array[1]}
+            var s3 = channel.getKeyspace(botId).get('S3');
+            console.log(s3); //Object {sensorType: "lejos.hardware.sensor.EV3ColorSensor", port: "S3", mode: "RGB", values: Array[3]}
+            var s4 = channel.getKeyspace(botId).get('S4');
+            console.log(s4);
+            console.log("Dashboard Info from Robot:")
+            var da = channel.getKeyspace(botId).get('aDash');
+            console.log(da);
+            var db = channel.getKeyspace(botId).get('bDash');
+            console.log(db);
+            var dc = channel.getKeyspace(botId).get('cDash');
+            console.log(dc);
+            var dd = channel.getKeyspace(botId).get('dDash');
+            console.log(dd);
+            var dg1 = channel.getKeyspace(botId).get('g1Dash');
+            console.log(dg1);
+            var dg2 = channel.getKeyspace(botId).get('g2Dash');
+            console.log(dg2);
+            var dt = channel.getKeyspace(botId).get('touchDash');
+            console.log(dt);
+            var dbl = channel.getKeyspace(botId).get('batteryDash');
+            console.log(dbl);
+        }
+
     //==============================================================================================================================
     /* Update stuff */
         //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
@@ -2523,7 +2519,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 } 
-                if ( gang1.previousSpeed !== val.speed && gang1.speed !== val.speed ) { // adjust only only if gang 1 speed changes
+                else if ( gang1.previousSpeed !== val.speed && gang1.speed !== val.speed ) { // adjust only only if gang 1 speed changes
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 } 
             }
@@ -2531,7 +2527,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
-                if ( gang2.previousSpeed !== val.speed && gang2.speed !== val.speed ) {
+                else if ( gang2.previousSpeed !== val.speed && gang2.speed !== val.speed ) {
                     updateGang(key, val.speed, val.a, val.b, val.c, val.d);
                 }
             } 

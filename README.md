@@ -9,6 +9,7 @@ Version 2.0.1 - Released June 9th, 2014
 * Follow on [Twitter] (https://twitter.com/TheGigabots)
 * Join developers on [Github] (#)
 
+![div](http://thegigabots.com/wp-content/uploads/2014/04/hi_mozilla.jpg)
 
 
 #Instructions for Use
@@ -17,8 +18,7 @@ Use the web app with a Mindstorm robot running the leJOS firmware with the Big B
 
 
 
-## Phaser
-====================
+# Phaser
 The main.js file utilizes the [Phaser Framework] (www.phaser.io). Phaser is intended for multiplay 2D online game creation. This was chosen primarily because it utilizes an fast and efficient refresh rate, rendering realtime data communication in Big Bang in a smooth manner. The entire dashboard panel is placed in a <canvas> element. For this reason, no individual component within the canvas can be altered through CSS or jQuery, beacuse each relies on identification of classes or id's. Thus, all stylistic effects for buttons, fonts, colors, are controlled within the main.js file preceding the state definitions.
 A Phaser Framework relies on a succession of different states to create the dashboard and update the dashboard as needed. The states used in this program:
 	*Preload - Loads the necessary assets to be used in the dashboard. Primarily, this is in the form of images, such as the background, and sprites.

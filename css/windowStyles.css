@@ -20,8 +20,8 @@ body {
 	height: 22px;
 	background-color: #292929;
 	box-shadow: 0 2px 3px #333;	
-	border-radius: 10px;
-	padding: 5px;
+	border-radius: 11px;
+	padding: 2px;
 	border: 1px solid #111;
 }
 #progressBar div {
@@ -33,8 +33,8 @@ body {
     width: 0;
     background-color: #111;
     background: #7E430C;
-	border-radius: 6px;
-	box-shadow: 0 4px 4px #ccc inset;
+	border-radius: 8px;
+	box-shadow: 0 3px 5px #ccc inset;
 	overflow: hidden;
 }
 

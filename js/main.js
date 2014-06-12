@@ -2637,50 +2637,69 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end update
 
+// ====================================
+        // textEditor
 
-        // Text editor
+        // When the latest click is within the dashboard, enable the hotkeys
+        // When the latest click is within the textEditor, disable the hotkeys s.t. user can use all letters when typing
+        $("#textEditor").click( function () { // hovering over textEditor
+            disableKeyboard();
+        });
+        function disableKeyboard() {
+            game.input.keyboard.disabled = true;
+        }
+        $("#gameWorld").click( function () { // hovering over textEditor
+            enableKeyboard();
+        });
+        function enableKeyboard() {
+            game.input.keyboard.disabled = false;
+        }
+
+
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
-            
-            // clear old error message so as to re-evaluate new code
-            document.getElementById("errorMsg").innerHTML = "";
 
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
-
             // try to evalate user's input code in text editor area. Will evaluate if possible.
             try {
-                eval(evalCode);
+                codeArray[iterationNum,1] = eval(evalCode);
             }
             // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
-                document.getElementById("errorMsg").innerHTML = "Error: " + err.message;
                 codeArray[iterationNum,1] = err.message;
             }
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray[iterationNum,0] = formatCode;
-            editorContent(iterationNum);
-            iterationNum = iterationNum + 1;
-            indexArray = iterationNum
+=================================================
+// Perhaps use (for) loop to store values, log values sequentially. Haven't tampered with anything outside of this yet. Still need to work on both (editorContent) and up/down maneuvering if need be.
 
-            $("html").scrollTop($("html")[0].scrollHeight)
+            // what does this do?
+            document.getElementById("previousCode").innerHTML+= codeArray[iterationNum,0];
+            $( "#previousCode" ).after( '<div style="text-align:right; color:red">' +  codeArray[iterationNum,1] + '</div>');
+            console.log(codeArray[iterationNum,1]);
+            // after submitted, move to next element number
+            iterationNum = iterationNum + 1;
+            indexArray = iterationNum;
+
+
+==============================================
+            $("html").scrollTop($("html")[0].scrollHeight);
 
             
         } // end .onclick
 
         function editorContent(elementNum) {
-            var secIterator = 0;
-            var prevText = "";
-            var prevError = "";
+            var maneuverIterator = 0;
+
             // Create prevText which has all inputs within it
-            for (secIterator; secIterator <= elementNum; secIterator++) {
-                prevText += codeArray[secIterator,0] + "<br>";
-                prevError += codeArray[secIterator,1] + "<br>";
+            for (maneuverIterator; maneuverIterator <= elementNum; maneuverIterator++) {
+                prevText += codeArray[maneuverIterator,0] + "<br>";
+                prevError += codeArray[maneuverIterator,1] + "<br>";
             };
-            console.log(prevText);
             // Display all previous code (from array) in previousCode area
             document.getElementById("previousCode").innerHTML = prevText + prevError;
             // scroll to bottom of previousCode text (showing last input)
@@ -2689,19 +2708,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             document.getElementById("currentCode").innerHTML = "";
             $("#currentCode").focus();
         }
-        function disableKeyboard() {
-            game.input.keyboard.disabled = true;
-        }
-        function enableKeyboard() {
-            game.input.keyboard.disabled = false;
-        }
-
-        $("#textEditor").click( function () { // hovering over textEditor
-            disableKeyboard();
-        });
-        $("#gameWorld").click( function () { // hovering over textEditor
-            enableKeyboard();
-        });
+        
 
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed

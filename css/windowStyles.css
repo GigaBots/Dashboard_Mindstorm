@@ -111,7 +111,7 @@ body {
 	left: calc(50% - 455px);
 }
 
-#errorMsg {
+#outputMsg {
 	position: absolute;
 	bottom: 5px;
 	left: 5px;

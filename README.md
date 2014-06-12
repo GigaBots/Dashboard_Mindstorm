@@ -5,7 +5,7 @@ A JavaScript web app for controlling LEGO Mindstorm Robots from a computer, phon
 By Jonathan Wagner, John DiBaggio, and Cole Bittel
 Version 2.0.1 - Released June 9th, 2014
 
-* View the [Official Website] (www.thegigabots.com)
+* View the [Official Website] (https://www.thegigabots.com)
 * Follow on [Twitter] (https://twitter.com/TheGigabots)
 * Join developers on [Github] (#)
 

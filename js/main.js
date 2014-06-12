@@ -159,7 +159,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var frameSensorStatus, labelSensorStatus = "Sensors";
         var positionSensorStatus = { x : 681, y : 66}        
         var labelMotorStatus;
-        var labelMotors = { a : "A", b : "B", c : "C", d : "D" }
         var labelSensors = { e : "1", f : "2", g : "3", h : "4" }
         var statusLight = { a : '', b : '', c : '', d : '', s1 : '', s2 : '', s3 : '', s4 : '' }
 
@@ -1017,15 +1016,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 labelMotors[ numbers[i] ] = game.add.text(positionMotors[ numbers[i] ].x+10, positionMotors[ numbers[i] ].y, motors[ numbers[i] ].name, largeTitleStyle );
             }
 
-
-
-
         /* Labels */
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2, labelMotorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
-            labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37, labelMotors.a, labelStyle);
-            labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37, labelMotors.b, labelStyle);
-            labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37, labelMotors.c, labelStyle);
-            labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37, labelMotors.d, labelStyle);
+            labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37, 'A', labelStyle);
+            labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37, 'B', labelStyle);
+            labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37, 'C', labelStyle);
+            labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37, 'D', labelStyle);
 
             labelSensorStatus = game.add.text(positionSensorStatus.x+10, positionSensorStatus.y+2, labelSensorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
             label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+37, labelSensors.e, labelStyle);
@@ -1711,38 +1707,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelDial.c = game.add.text(positionDial.x+162, positionDial.y+45, 'C', dialLabelStyle);
             labelDial.d = game.add.text(positionDial.x+227, positionDial.y+45, 'D', dialLabelStyle);
 
-            // needles[letter] = game.add.sprite(positionDial.x+38, positionDial.y+50, 'needle');
-            // needles[letter].anchor.setTo(0.495, 0.92);
-            
-            //needles['a'] = game.add.sprite(positionDial.x+38, positionDial.y+50, 'needle');
-            //needles['a'].anchor.setTo(0.495, 0.92);
-            //console.log(needles[letter]);
-            // for ( i = 0; i<4; i++ ) {
-            //     needles[i] = new RotationNeedle (game, i);
-            // }
 
-            //
             for ( var i = 1; i <= numMotors; i++ ) {
                 var motorPort = numbers[i];
                 needles[motorPort] = new RotationNeedle (game, motorPort , letters[motorPort]);
             }
-
-            // needles['b'] = game.add.sprite(positionDial.x+103, positionDial.y+50, 'needle');
-            // needles['b'].anchor.setTo(0.495, 0.92);
-            // needles['c'] = game.add.sprite(positionDial.x+168, positionDial.y+50, 'needle');
-            // needles['c'].anchor.setTo(0.495, 0.92);
-            // needles['d'] = game.add.sprite(positionDial.x+233, positionDial.y+50, 'needle');
-            // needles['d'].anchor.setTo(0.495, 0.92);
-        
-        /* Buttons to drag entire boxes (for motors and motor gangs) */
-            // dragBoxButton = {
-            //     g1 : game.add.button(positionGang1.x+341, positionGang1.y+5, 'dragButton', actionDragG1, this),
-            //     g2 : game.add.button(positionGang2.x+341, positionGang2.y+5, 'dragButton', actionDragG2, this),
-            //     a : game.add.button(positionMotors['a'].x+241, positionMotors['a'].y+5, 'dragButton', actionDragA, this),
-            //     b : game.add.button(positionMotors['b'].x+241, positionMotors['b'].y+5, 'dragButton', actionDragB, this),
-            //     c : game.add.button(positionMotors['c'].x+241, positionMotors['c'].y+5, 'dragButton', actionDragC, this),
-            //     d : game.add.button(positionMotors['d'].x+241, positionMotors['d'].y+5, 'dragButton', actionDragD, this)
-            // }
 
         } // end create 
         //=============================================================================
@@ -2236,35 +2205,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
         }
 
-        //=============================================================================
-    /* Draggable box functions */
-        function actionDragG1() {
-            console.log("not hooked up yet");
-            //
-        }
-        function actionDragG2() {
-            console.log("not hooked up yet");
-            //
-        }
-        function actionDragA() {
-            console.log("not hooked up yet");
-            //
-        }
-        function actionDragB() {
-            console.log("not hooked up yet");
-            //
-        }
-        function actionDragC() {
-            console.log("not hooked up yet");
-            //
-        }
-        function actionDragD() {
-            console.log("not hooked up yet");
-            //
-        }
+    //=============================================================================
 
         function actionGetKeyspace() {
-        // this is to query the current bot's keyspace, for testing
+        // this is to query the current bot's keyspace, for testing/debugging
             console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]

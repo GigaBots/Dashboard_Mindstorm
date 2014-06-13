@@ -131,12 +131,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         Motor.prototype.constructor = Motor;
 
-
         // for ( var i = 1; i <= numMotors; i++ ) {
         //     motors[ numbers[i] ] = new Motor(game, numbers[i] );
         //     labelMotors[ numbers[i] ] = game.add.text(positionMotors[ numbers[i] ].x+10, positionMotors[ numbers[i] ].y, motors[ numbers[i].name ]);
         // }
-            //console.dir(motors);
+        // console.dir(motors);
 
         /* Motor Forward Button */
         var forwardButtons = {}
@@ -203,10 +202,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             Phaser.Button.call ( this, game, positionMotors[motor].x+158, positionMotors[motor].y+165, 'sliderBar' );
             this.events.onInputDown.add( changeSpeedSlideActionDown, motors[motor] );
             this.events.onInputUp.add( changeSpeedSlideActionUp, motors[motor] );
-            this.inputEnabled=true;
+            this.inputEnabled = true;
             this.input.useHandCursor = true;
             this.input.enableDrag();
-            this.input.allowHorizontalDrag=false;
+            this.input.allowHorizontalDrag = false;
             this.setFrames(1,0,2,0);
             this.motor = motor;
             this.state = 'up';
@@ -215,6 +214,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         SliderBar.prototype = Object.create(Phaser.Button.prototype);
         SliderBar.prototype.constructor = SliderBar;
+        var sliderTracks = {}
+        var sliderSpeedLabels = {}
+        var sliderSpeedIncrements = {}
+        var currentSpeedLabels = {}
+
+        /* Motor Switch Directions Checkbox (Button) */
+        var directionChecks = {}
+        DirectionCheckbox = function ( game, motor ) {
+            Phaser.Button.call ( this, game, positionMotors[motor].x+10, positionMotors[motor].y+148, 'checkbox' );
+            this.events.onInputDown.add( configDirectionsAction, motors[motor] );
+            this.input.useHandCursor = true;
+            this.setFrames(2,0,1,0);
+            this.motor = motor;
+            this.name = 'switch direction button ' + motor;
+            game.add.existing(this);
+        }
+        DirectionCheckbox.prototype = Object.create(Phaser.Button.prototype);
+        DirectionCheckbox.prototype.constructor = DirectionCheckbox;
+        var directionConfigLabels = {}
 
         /* Motor rotational position needle */
         var needles = {}
@@ -274,10 +292,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Individual motor controls and feedback */
         var frameMotor;
 
-        var labelMotor = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D"}
-        var labelSwitchDirections = "Switch Directions", labelCurrentSpeed = "Current Speed:";
-        var fButton, rButton, switchButton;
-
         /* Speed */
         var sliderLabel;
         var sliderBarState = { a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up" }
@@ -293,13 +307,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Rotational position */    
         var labelRotation = "Motor Rotational Positions";
-        var dialA, dialB, dialC, dialD;
-        var labelDial = { a : "Motor A", b : "Motor B", c : "Motor C", d : "Motor D" }
-        
-        
-
-
-        var frameDials;
+        var frameDials;        
         var positionDial = { x : 674, y : 133 }
         var t1 = { a : 0, b : 0, c : 0, d : 0 }
 
@@ -1109,18 +1117,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34, botName, selectBotStyle);
 
-            labelSwitchDirections.a = game.add.text(positionMotors['a'].x+38, positionMotors['a'].y+150, labelSwitchDirections, labelStyle);
-            labelSwitchDirections.b = game.add.text(positionMotors['b'].x+38, positionMotors['b'].y+150, labelSwitchDirections, labelStyle);
-            labelSwitchDirections.c = game.add.text(positionMotors['c'].x+38, positionMotors['c'].y+150, labelSwitchDirections, labelStyle);
-            labelSwitchDirections.d = game.add.text(positionMotors['d'].x+38, positionMotors['d'].y+150, labelSwitchDirections, labelStyle);
-
-            labelCurrentSpeed.a = game.add.text(positionMotors['a'].x+10, positionMotors['a'].y+179, labelCurrentSpeed, labelStyle);
-            labelCurrentSpeed.b = game.add.text(positionMotors['b'].x+10, positionMotors['b'].y+179, labelCurrentSpeed, labelStyle);
-            labelCurrentSpeed.c = game.add.text(positionMotors['c'].x+10, positionMotors['c'].y+179, labelCurrentSpeed, labelStyle);
-            labelCurrentSpeed.d = game.add.text(positionMotors['d'].x+10, positionMotors['d'].y+179, labelCurrentSpeed, labelStyle);
-            labelCurrentSpeed.g1 = game.add.text(positionGang1.x+101, positionGang1.y+179, labelCurrentSpeed, labelStyle);
-            labelCurrentSpeed.g2 = game.add.text(positionGang2.x+101, positionGang2.y+179, labelCurrentSpeed, labelStyle);
-
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, smallTitleStyle);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
             labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
@@ -1227,159 +1223,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             checkbox.d2.input.useHandCursor = true;
             
             //======================
-            /* Configure motor directions */
-            switchButton = {
-                a : game.add.button( positionMotors['a'].x+10, positionMotors['a'].y+148, 'checkbox', actionConfigDirections, motorA ),
-                b : game.add.button( positionMotors['b'].x+10, positionMotors['b'].y+148, 'checkbox', actionConfigDirections, motorB ),
-                c : game.add.button( positionMotors['c'].x+10, positionMotors['c'].y+148, 'checkbox', actionConfigDirections, motorC ),
-                d : game.add.button( positionMotors['d'].x+10, positionMotors['d'].y+148, 'checkbox', actionConfigDirections, motorD )
-            }
-
-            switchButton.a.input.useHandCursor = true;
-            switchButton.b.input.useHandCursor = true;
-            switchButton.c.input.useHandCursor = true;
-            switchButton.d.input.useHandCursor = true;
-
-            switchButton.a.setFrames(2,0,1,0);
-            switchButton.b.setFrames(2,0,1,0);
-            switchButton.c.setFrames(2,0,1,0);
-            switchButton.d.setFrames(2,0,1,0);
-
-            function actionConfigDirections () {
-                console.log("flipping directions for motor " + this.port);
-                if ( this.directionSwitched === false ) this.directionSwitched = true;
-                else this.directionSwitched = false;
-                
-                if ( this.port === 'a' ) {
-                    motorA.directionSwitched = this.directionSwitched;
-                    channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed, 'directionSwitched': this.directionSwitched });
-                    if ( this.directionSwitched === false ) switchButton.a.setFrames(2,0,1,0);
-                    else switchButton.a.setFrames(1,1,1,0);
-                }
-                if ( this.port === 'b' ) {
-                    motorB.directionSwitched = this.directionSwitched;
-                    channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed, 'directionSwitched': this.directionSwitched });
-                    if ( this.directionSwitched === false ) switchButton.b.setFrames(2,0,1,0);
-                    else switchButton.b.setFrames(1,1,1,0);
-                }
-                if ( this.port === 'c' ) {
-                    motorC.directionSwitched = this.directionSwitched;
-                    channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed, 'directionSwitched': this.directionSwitched });
-                    if ( this.directionSwitched === false ) switchButton.c.setFrames(2,0,1,0);
-                    else switchButton.c.setFrames(1,1,1,0);
-                }
-                if ( this.port === 'd' ) {
-                    motorD.directionSwitched = this.directionSwitched;
-                    channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed, 'directionSwitched': this.directionSwitched });
-                    if ( this.directionSwitched === false ) switchButton.d.setFrames(2,0,1,0);
-                    else switchButton.d.setFrames(1,1,1,0);
-                }
-            }
-
-
             /* Plus and Minus Increase and Decrease Speed */
             // minusButton = {
-            //     a : game.add.button( positionMotors['a'].x+107, positionMotors['a'].y+91, 'minusButton', actionDecreaseOnClick, motorA ),
-            //     b : game.add.button( positionMotors['b'].x+107, positionMotors['b'].y+91, 'minusButton', actionDecreaseOnClick, motorB ),
-            //     c : game.add.button( positionMotors['c'].x+107, positionMotors['c'].y+91, 'minusButton', actionDecreaseOnClick, motorC ),
-            //     d : game.add.button( positionMotors['d'].x+107, positionMotors['d'].y+91, 'minusButton', actionDecreaseOnClick, motorD ),
             //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+91, 'minusButton', actionDecreaseOnClick, gang1 ),
             //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+91, 'minusButton', actionDecreaseOnClick, gang2 ),
             // }
             // plusButton = {
-            //     a : game.add.button( positionMotors['a'].x+107, positionMotors['a'].y+33, 'plusButton', actionIncreaseOnClick, motorA ),
-            //     b : game.add.button( positionMotors['b'].x+107, positionMotors['b'].y+33, 'plusButton', actionIncreaseOnClick, motorB ),
-            //     c : game.add.button( positionMotors['c'].x+107, positionMotors['c'].y+33, 'plusButton', actionIncreaseOnClick, motorC ),
-            //     d : game.add.button( positionMotors['d'].x+107, positionMotors['d'].y+33, 'plusButton', actionIncreaseOnClick, motorD ),
             //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+33, 'plusButton', actionIncreaseOnClick, gang1 ),
             //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+33, 'plusButton', actionIncreaseOnClick, gang2 ),
             // }
-
-            // minusButton.a.input.useHandCursor = true;
-            // minusButton.b.input.useHandCursor = true;
-            // minusButton.c.input.useHandCursor = true;
-            // minusButton.d.input.useHandCursor = true;
             // minusButton.g1.input.useHandCursor = true;
             // minusButton.g2.input.useHandCursor = true;
-
-            // plusButton.a.input.useHandCursor = true;
-            // plusButton.b.input.useHandCursor = true;
-            // plusButton.c.input.useHandCursor = true;
-            // plusButton.d.input.useHandCursor = true;
             // plusButton.g1.input.useHandCursor = true;
             // plusButton.g2.input.useHandCursor = true;
-
-            // minusButton.a.setFrames(1,0,2,0);
-            // minusButton.b.setFrames(1,0,2,0);
-            // minusButton.c.setFrames(1,0,2,0);
-            // minusButton.d.setFrames(1,0,2,0);
             // minusButton.g1.setFrames(1,0,2,0);
             // minusButton.g2.setFrames(1,0,2,0);
-
-            // plusButton.a.setFrames(1,0,2,0);
-            // plusButton.b.setFrames(1,0,2,0);
-            // plusButton.c.setFrames(1,0,2,0);
-            // plusButton.d.setFrames(1,0,2,0);
             // plusButton.g1.setFrames(1,0,2,0);
             // plusButton.g2.setFrames(1,0,2,0);
 
-        /* Click and drag motor speed setting & display */
-            sliderTrackA = game.add.graphics(0,0);
-            sliderTrackA.beginFill(frameLineColor, 1);
-            sliderIncrements.a = game.add.sprite(positionMotors['a'].x+163, positionMotors['a'].y+16, 'sliderIncrements');
-
-            sliderTrackB = game.add.graphics(0,0);
-            sliderTrackB.beginFill(frameLineColor, 1);
-            sliderIncrements.b = game.add.sprite(positionMotors['b'].x+163, positionMotors['b'].y+16, 'sliderIncrements');
-                        
-            sliderTrackC = game.add.graphics(0,0);
-            sliderTrackC.beginFill(frameLineColor, 1);
-            sliderIncrements.c = game.add.sprite(positionMotors['c'].x+163, positionMotors['c'].y+16, 'sliderIncrements');
-
-            sliderTrackD = game.add.graphics(0,0);
-            sliderTrackD.beginFill(frameLineColor, 1);
-            sliderIncrements.d = game.add.sprite(positionMotors['d'].x+163, positionMotors['d'].y+16, 'sliderIncrements');
-
-            sliderTrackG1 = game.add.graphics(0,0);
-            sliderTrackG1.beginFill(frameLineColor, 1);
-            sliderIncrements.g1 = game.add.sprite(positionGang1.x+254, positionGang1.y+16, 'sliderIncrements');
-
-            sliderTrackG2 = game.add.graphics(0,0);
-            sliderTrackG2.beginFill(frameLineColor, 1);
-            sliderIncrements.g2 = game.add.sprite(positionGang2.x+254, positionGang2.y+16, 'sliderIncrements');
-
-            // Add some labels to the sliders
-            sliderLabel = {
-                a : game.add.text(positionMotors['a'].x+154, positionMotors['a'].y+179, "Speed (\xB0/sec)", labelStyle),
-                b : game.add.text(positionMotors['b'].x+154, positionMotors['b'].y+179, "Speed (\xB0/sec)", labelStyle),
-                c : game.add.text(positionMotors['c'].x+154, positionMotors['c'].y+179, "Speed (\xB0/sec)", labelStyle),
-                d : game.add.text(positionMotors['d'].x+154, positionMotors['d'].y+179, "Speed (\xB0/sec)", labelStyle),
-                g1 : game.add.text(positionGang1.x+245, positionGang1.y+179, "Speed (\xB0/sec)" , labelStyle),
-                g2 : game.add.text(positionGang2.x+245, positionGang2.y+179, "Speed (\xB0/sec)", labelStyle)
-            }
-            for (var i = 0; i <= 7; i++) {
-                var speedLabel = speedRange[i] + "";
-                var speedLabelY = { 
-                    a : positionMotors['a'].y+162 - 22 * i,
-                    b : positionMotors['b'].y+162 - 22 * i,
-                    c : positionMotors['c'].y+162 - 22 * i,
-                    d : positionMotors['d'].y+162 - 22 * i,
-                }
-                var speedLabelA = game.add.text(positionMotors['a'].x+237, speedLabelY.a, speedLabel, labelStyle)
-                var speedLabelB = game.add.text(positionMotors['b'].x+237, speedLabelY.b, speedLabel, labelStyle)
-                var speedLabelC = game.add.text(positionMotors['c'].x+237, speedLabelY.c, speedLabel, labelStyle)
-                var speedLabelD = game.add.text(positionMotors['d'].x+237, speedLabelY.d, speedLabel, labelStyle);
-            }
-            for ( var i = 0; i <= 7; i++) {
-                var speedLabel = speedRange[i] + ""; //this makes it a string, so 0 appears at bottom
-                var speedLabelG1Y = positionGang1.y + 162 - 22 * i; //for gang 1
-                var speedLabelG1 = game.add.text(positionGang1.x+328, speedLabelG1Y, speedLabel, labelStyle)
-            }
-            for ( var i = 0; i <= 7; i++) {
-                var speedLabel = speedRange[i] + "";
-                var speedLabelG2Y = positionGang2.y + 162 - 22 * i; //for gang 2
-                var speedLabelG2 = game.add.text(positionGang2.x+328, speedLabelG2Y, speedLabel, labelStyle)
-            }
 
             // sliderBar = {
             //     g1 : game.add.button(positionGang1.x+249, positionGang1.y+165, 'sliderBar'),
@@ -1623,20 +1484,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* Create Motors */
             for ( var i = 1; i <= numMotors; i++ ) {
                 var motorPort = numbers[i];
-                motors[ motorPort ] = new Motor(game, motorPort);
-                labelMotors[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ numbers[i] ].name, largeTitleStyle );
+                motors[ motorPort ] = new Motor( game, motorPort );
+                labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ numbers[i] ].name, largeTitleStyle );
+                sliderTracks[ motorPort] = game.add.sprite( positionMotors[ motorPort ].x+163, positionMotors[ motorPort].y+16, 'sliderIncrements' );
+                for ( var k = 0; k <= 7; k++ ) {
+                    var speedLabel = speedRange[k] + "";
+                    sliderSpeedIncrements[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+237, positionMotors[ motorPort ].y+162 - 22 * k, speedLabel, labelStyle );
+
+                }
+                sliderSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+154, positionMotors[ motorPort ].y+179, "Speed (\xB0/sec)", labelStyle );
+                currentSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y+179, "Current Speed:", labelStyle );
+                directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+38, positionMotors[ motorPort ].y+150, "Switch Directions", labelStyle );
+
                 forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
                 reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
                 plusButtons[ motorPort ] = new PlusButton( game, motorPort );
                 minusButtons[ motorPort ] = new MinusButton( game, motorPort );
                 sliderBars[ motorPort ] = new SliderBar( game, motorPort );
+                directionChecks[ motorPort ] = new DirectionCheckbox( game, motorPort );
             }
-
-            /* Create Gangs */
 
         } // end create 
 
-
+        function configDirectionsAction () {
+            if ( this.directionSwitched === false ) this.directionSwitched = true;
+            else this.directionSwitched = false;
+            
+            motors[ this.port ].directionSwitched = this.directionSwitched;
+            var dashKey = this.port + 'Dash';
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': this.directionSwitched });
+            if ( this.directionSwitched === false ) switchButton.a.setFrames(2,0,1,0);
+            else directionChecks[ this.port ].setFrames(1,1,1,0);
+            console.log("flipping directions for motor " + this.port);        
+        }
         function increaseSpeedClickActionDown () {
             if ( motors[ this.port ].speed <= 650 ) {
                 motors[ this.port ].speed += 50; // increase speed by 50 degrees/sec
@@ -1646,7 +1526,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 motors[ this.port ].speed = 700; // just set the speed to the maximum
                 sliderBars[ this.port ].y = positionMotors['a'].y + 11;
             }
-            //channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
+            var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             console.log("increasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
@@ -1659,7 +1540,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 motors[ this.port ].speed = 0; // just set the speed to the minimum
                 sliderBars[ this.port ].y = positionMotors[ this.port ].y + 165; 
             }
-            //channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
+            var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             console.log("decreasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
@@ -1677,8 +1559,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBars[ this.port ].y = positionMotors[ this.port ].y+165;
             }
             motors[ this.port ].speed = 700 + ( 700/154 ) * (positionMotors[this.port].y + 11 - sliderBars[this.port].y); // normalize speed over the range of y values on the slider track
-            
-            //channel.getKeyspace(botId).put('aDash', { 'speed' : motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
+            var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
             sliderBars[ this.port ].state = 'up';
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
@@ -1721,18 +1603,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.speed = speed;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
-            if (motor === 'a') {
-                channel.getKeyspace(botId).put('aDash', { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
-            }
-            if (motor === 'b') {
-                channel.getKeyspace(botId).put('bDash', { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
-            }
-            if (motor === 'c') {
-                channel.getKeyspace(botId).put('cDash', { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
-            }
-            if (motor === 'd') {
-                channel.getKeyspace(botId).put('dDash', { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
-            }
+            var dashKey = motor + 'Dash';
+            channel.getKeyspace(botId).put(dashKey, { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
         }
         function stopMotor( recipient, motor ) {
             var data = {};
@@ -1741,18 +1613,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.port = motor;
             console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
-            if (data.port === 'a') {
-                channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed, 'direction': "stopped", 'directionSwitched': motorA.directionSwitched });
-            }
-            if (data.port === 'b') {
-                channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed, 'direction': "stopped", 'directionSwitched': motorB.directionSwitched });
-            }
-            if (data.port === 'c') {
-                channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed, 'direction': "stopped", 'directionSwitched': motorC.directionSwitched });
-            }
-            if (data.port === 'd') {
-                channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed, 'direction': "stopped", 'directionSwitched': motorD.directionSwitched });
-            }
+            var dashKey = motor + 'Dash';
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[motor].speed, 'direction': "stopped", 'directionSwitched': motors[motor].directionSwitched });
         }
 
     /* Button-click functions (most of them anyway...) */
@@ -1766,7 +1628,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 status.statusDisplay = game.add.text(positionStatus.x+5, positionStatus.y+34, labelStatusDisplay, statusStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                // resume.resumeOverlay.drawRect(0,51,960,599);
                 resume.resumeOverlay.drawRect(14,66,932,581);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
@@ -1794,252 +1655,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60, messageDisplay3, messageStyle);
         }
 
-        //=============================================================================
-        /* Plus and Minus Buttons and Click-and-Drag Slider Bar For Increase and Decreasing Motor Speeds */
-        
-        function actionDecreaseOnClick() {
-            if ( this.port === 'a' ) {
-                if (motorA.speed >= 50) {
-                    motorA.speed = motorA.speed - 50;
-                    sliderBar.a.y = sliderBar.a.y + 11;
-                } else {
-                    motorA.speed = 0; // just set the speed to the minimum
-                    sliderBar.a.y = positionMotors['a'].y + 165; // and move sliderbar to that corresponding position
-                }
-                console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
-                channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
-                game.world.remove(motorA.currentSpeedDisplay);
-                motorA.currentSpeedDisplay = game.add.text(positionMotors['a'].x+100, positionMotors['a'].y+176, motorA.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'b' ) {
-                if (motorB.speed >= 50) {
-                    motorB.speed = motorB.speed - 50;
-                    sliderBar.b.y = sliderBar.b.y + 11;
-                } else {
-                    motorB.speed = 0;
-                    sliderBar.b.y = positionMotors['b'].y + 165;
-                }
-                console.log(motorB.speed.toFixed(2));
-                channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed });
-                game.world.remove(motorB.currentSpeedDisplay);
-                motorB.currentSpeedDisplay = game.add.text(positionMotors['b'].x+100, positionMotors['b'].y+176, motorB.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'c' ) {
-                if (motorC.speed >= 50) {
-                    motorC.speed = motorC.speed - 50;
-                    sliderBar.c.y = sliderBar.c.y + 11;
-                } else {
-                    motorC.speed = 0;
-                    sliderBar.c.y = positionMotors['c'].y + 165;
-                }
-                console.log(motorC.speed.toFixed(2));
-                channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed });
-                game.world.remove(motorC.currentSpeedDisplay);
-                motorC.currentSpeedDisplay = game.add.text(positionMotors['c'].x+100, positionMotors['c'].y+176, motorC.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'd' ) {
-                if (motorD.speed >= 50) {
-                    motorD.speed = motorD.speed - 50;
-                    sliderBar.d.y = sliderBar.d.y + 11;
-                } else {
-                    motorD.speed = 0;
-                    sliderBar.d.y = positionMotors['d'].y + 165;
-                }
-                console.log(motorD.speed.toFixed(2));
-                channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed });
-                game.world.remove(motorD.currentSpeedDisplay);
-                motorD.currentSpeedDisplay = game.add.text(positionMotors['d'].x+100, positionMotors['d'].y+176, motorD.speed.toFixed(1), dataOutputStyle);
-            } 
-            else if ( this.gang === 1 ) {
-                if (gang1.speed >= 50) {
-                    gang1.speed = gang1.speed - 50;
-                    sliderBar.g1.y = sliderBar.g1.y + 11; 
-                } else {
-                    gang1.speed = 0; // just set to min position
-                    sliderBar.g1.y = positionGang1.y + 165; //and move sliderbar to that position
-                }
-                console.log(gang1.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-                game.world.remove(gang1.currentSpeedDisplay);
-                gang1.currentSpeedDisplay = game.add.text(positionGang1.x+191, positionGang1.y+176, gang1.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.gang === 2 ) {
-                if (gang2.speed >= 50) {
-                    gang2.speed = gang2.speed - 50;
-                    sliderBar.g2.y = sliderBar.g2.y + 11;
-                } else {
-                    gang2.speed = 0;
-                    sliderBar.g2.y = positionGang2.y + 165;
-                }
-                console.log(gang2.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-                game.world.remove(gang2.currentSpeedDisplay);
-                gang2.currentSpeedDisplay = game.add.text(positionGang2.x+191, positionGang2.y+176, gang2.speed.toFixed(1), dataOutputStyle);
-            }
-        }
-        function actionIncreaseOnClick() {
-            if ( this.port === 'a' ) {
-                if (motorA.speed <= 650) {
-                    motorA.speed = motorA.speed + 50;0
-                    sliderBar.a.y = sliderBar.a.y - 11;
-                } else {
-                    motorA.speed = 700; // just set the speed to the maximum
-                    sliderBar.a.y = positionMotors['a'].y + 11; // and move sliderbar to that corresponding position
-                }
-                console.log(motorA.speed.toFixed(2));
-                channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
-                game.world.remove(motorA.currentSpeedDisplay);
-                motorA.currentSpeedDisplay = game.add.text(positionMotors['a'].x+100, positionMotors['a'].y+176, motorA.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'b' ) {
-                if (motorB.speed <= 650) {
-                    motorB.speed = motorB.speed + 50;
-                    sliderBar.b.y = sliderBar.b.y - 11;
-                } else {
-                    motorB.speed = 700;
-                    sliderBar.b.y = positionMotors['b'].y + 11;
-                }
-                console.log(motorB.speed.toFixed(2));
-                channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed }); 
-                game.world.remove(motorB.currentSpeedDisplay);
-                motorB.currentSpeedDisplay = game.add.text(positionMotors['b'].x+100, positionMotors['b'].y+176, motorB.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'c' ) {
-                if (motorC.speed <= 650) {
-                    motorC.speed = motorC.speed + 50;
-                    sliderBar.c.y = sliderBar.c.y - 11;
-                } else {
-                    motorC.speed = 700;
-                    sliderBar.c.y = positionMotors['c'].y + 11;
-                }
-                console.log(motorC.speed.toFixed(2));
-                channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed });
-                game.world.remove(motorC.currentSpeedDisplay);
-                motorC.currentSpeedDisplay = game.add.text(positionMotors['c'].x+100, positionMotors['c'].y+176, motorC.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'd' ) {
-                if (motorD.speed <= 650) {
-                    motorD.speed = motorD.speed + 50;
-                    sliderBar.d.y = sliderBar.d.y - 11;
-                } else {
-                    motorD.speed = 700;
-                    sliderBar.d.y = positionMotors['d'].y + 11;
-                }
-                console.log(motorD.speed.toFixed(2));
-                channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed });
-                game.world.remove(motorD.currentSpeedDisplay);
-                motorD.currentSpeedDisplay = game.add.text(positionMotors['d'].x+100, positionMotors['d'].y+176, motorD.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.gang === 1 ) {
-                if (gang1.speed <= 650) {
-                    gang1.speed = gang1.speed + 50;
-                    sliderBar.g1.y = sliderBar.g1.y - 11;
-                } else {
-                    gang1.speed = 700; //just set to max speed
-                    sliderBar.g1.y = positionGang1.y + 11; //and move sliderbar to that position
-                }
-                console.log(gang1.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-                game.world.remove(gang1.currentSpeedDisplay);
-                gang1.currentSpeedDisplay = game.add.text(positionGang1.x+191, positionGang1.y+176, gang1.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.gang === 2 ) {
-                if (gang2.speed <= 650) {
-                    gang2.speed = gang2.speed + 50;
-                    sliderBar.g2.y = sliderBar.g2.y - 11;
-                } else {
-                    gang2.speed = 700;
-                    sliderBar.g2.y = positionGang2.y + 11;
-                }
-                console.log(gang2.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-                game.world.remove(gang2.currentSpeedDisplay);
-                gang2.currentSpeedDisplay = game.add.text(positionGang2.x+191, positionGang2.y+176, gang2.speed.toFixed(1), dataOutputStyle);
-            }
-        }
-        function actionDragOnClick() {
-            if ( this.port === 'a' ) {
-                //we're sliding between positionMotors['a'].y + 11 px (0 deg/sec) and positionMotors['a'].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-                if (sliderBar.a.y < positionMotors['a'].y+11) { //set max speed boundary limit
-                    sliderBar.a.y = positionMotors['a'].y+11;
-                } else if (sliderBar.a.y > positionMotors['a'].y+165) { //set min speed boundary limit
-                    sliderBar.a.y = positionMotors['a'].y+165;
-                }
-                motorA.speed = 700 + (700/154) * (positionMotors['a'].y + 11 - sliderBar.a.y); // normalize speed over the range of y values on the slider track
-                channel.getKeyspace(botId).put('aDash', { 'speed' : motorA.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
-                sliderBarState.a = "up";
-                console.log(motorA.speed.toFixed(2)); //this makes motorA.speed a string with 2 decimal places
-                var motorASpeedDisplay = motorA.speed.toFixed(0);
-                game.world.remove(motorA.currentSpeedDisplay);
-                motorA.currentSpeedDisplay = game.add.text(positionMotors['a'].x+100, positionMotors['a'].y+176, motorA.speed.toFixed(1), dataOutputStyle);
-
-            }
-            else if ( this.port === 'b' ) {
-                if (sliderBar.b.y < positionMotors['b'].y+11) {
-                    sliderBar.b.y = positionMotors['b'].y+11;
-                } else if (sliderBar.b.y > positionMotors['b'].y+165) {
-                    sliderBar.b.y = positionMotors['b'].y+165;
-                }
-                motorB.speed = 700 + (700/154) * (positionMotors['b'].y + 11 - sliderBar.b.y);
-                channel.getKeyspace(botId).put('bDash', { 'speed' : motorB.speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'b' into it, which contains the value 'speed' equal to motorB.speed
-                sliderBarState.b = "up";
-                console.log(motorB.speed.toFixed(2));
-                game.world.remove(motorB.currentSpeedDisplay);
-                motorB.currentSpeedDisplay = game.add.text(positionMotors['b'].x+100, positionMotors['b'].y+176, motorB.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'c' ) {
-                if (sliderBar.c.y < positionMotors['c'].y+11) {
-                    sliderBar.c.y = positionMotors['c'].y+11;
-                } else if (sliderBar.c.y > positionMotors['c'].y+165) {
-                    sliderBar.c.y = positionMotors['c'].y+165;
-                }
-                motorC.speed = 700 + (700/154) * (positionMotors['c'].y + 11 - sliderBar.c.y);
-                channel.getKeyspace(botId).put('cDash', { 'speed' : motorC.speed }); 
-                sliderBarState.c = "up";
-                console.log(motorC.speed.toFixed(2));
-                game.world.remove(motorC.currentSpeedDisplay);
-                motorC.currentSpeedDisplay = game.add.text(positionMotors['c'].x+100, positionMotors['c'].y+176, motorC.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.port === 'd' ) {
-                if (sliderBar.d.y < positionMotors['d'].y+11) {
-                    sliderBar.d.y = positionMotors['d'].y+11;
-                } else if (sliderBar.d.y > positionMotors['d'].y+165) {
-                    sliderBar.d.y = positionMotors['d'].y+165;
-                }
-                motorD.speed = 700 + (700/154) * (positionMotors['d'].y + 11 - sliderBar.d.y);
-                channel.getKeyspace(botId).put('dDash', { 'speed' : motorD.speed }); 
-                sliderBarState.d = "up";
-                console.log(motorD.speed.toFixed(2));
-                game.world.remove(motorD.currentSpeedDisplay);
-                motorD.currentSpeedDisplay = game.add.text(positionMotors['d'].x+100, positionMotors['d'].y+176, motorD.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.gang === 1 ) {
-                if (sliderBar.g1.y < positionGang1.y+11) {
-                    sliderBar.g1.y = positionGang1.y+11;
-                } else if (sliderBar.g1.y > positionGang1.y+165) {
-                    sliderBar.g1.y = positionGang1.y+165;
-                }
-                gang1.speed = 700 + (700/154) * (positionGang1.y + 11 - sliderBar.g1.y);
-                console.log(gang1.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g1Dash', { 'speed': gang1.speed,'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-                sliderBarState.g1 = "up";
-                game.world.remove(gang1.currentSpeedDisplay);
-                gang1.currentSpeedDisplay = game.add.text(positionGang1.x+191, positionGang1.y+176, gang1.speed.toFixed(1), dataOutputStyle);
-            }
-            else if ( this.gang === 2 ) {
-                if (sliderBar.g2.y < positionGang2.y+11) {
-                    sliderBar.g2.y = positionGang2.y+11;
-                } else if (sliderBar.g2.y > positionGang2.y+165) {
-                    sliderBar.g2.y = positionGang2.y+165;
-                }
-                gang2.speed = 700 + (700/154) * (positionGang2.y + 11 - sliderBar.g2.y);
-                console.log(gang2.speed.toFixed(2));
-                channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-                sliderBarState.g2 = "up";
-                game.world.remove(gang2.currentSpeedDisplay);
-                gang2.currentSpeedDisplay = game.add.text(positionGang2.x+191, positionGang2.y+176, gang2.speed.toFixed(1), dataOutputStyle);
-            }
-        }
 
         //=============================================================================
 
@@ -2219,7 +1834,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
     /* Update stuff */
         //WE CAN IMPLEMENT THIS GUY WHEN WE'RE READY AND HAVE OTHER STUFF HOOKED UP FOR SYNCING THE GANGS 
         function updateGang (key, speed, a, b, c, d) {
-            if ( key === 'g1Dash' ) {
+/*            if ( key === 'g1Dash' ) {
                 if ( gang1.speed !== speed ) {
                     sliderBar.g1.y = positionGang1.y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
                     gang1.speed = speed;
@@ -2308,7 +1923,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     gang2.d = d;
                 }
                 gang2.previousSpeed = speed;
-            }
+            }*/
         }
 
         /* Update set speeds and slider positions for all users */

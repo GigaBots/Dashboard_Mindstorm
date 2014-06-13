@@ -2669,47 +2669,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
-                codeArray[iterationNum,1] = err.message;
+                codeArray[iterationNum,1] += codeArray[iterationNum,1]+ "<br>Error: "+ err.message;
             }
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray[iterationNum,0] = formatCode;
-=================================================
-// Perhaps use (for) loop to store values, log values sequentially. Haven't tampered with anything outside of this yet. Still need to work on both (editorContent) and up/down maneuvering if need be.
 
-            // what does this do?
-            document.getElementById("previousCode").innerHTML+= codeArray[iterationNum,0];
-            $( "#previousCode" ).after( '<div style="text-align:right; color:red">' +  codeArray[iterationNum,1] + '</div>');
-            console.log(codeArray[iterationNum,1]);
-            // after submitted, move to next element number
+            $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[0,0] + '</div>');
+            $( ".previousCode" ).append( '<div style="text-align:right; color:red; margin:0;">' +  codeArray[0,1] + '</div>');
+
             iterationNum = iterationNum + 1;
-            indexArray = iterationNum;
-
-
-==============================================
+            $("previousCode").scrollTop($("previousCode")[0].scrollHeight)
             $("html").scrollTop($("html")[0].scrollHeight);
 
-            
         } // end .onclick
-
-        function editorContent(elementNum) {
-            var maneuverIterator = 0;
-
-            // Create prevText which has all inputs within it
-            for (maneuverIterator; maneuverIterator <= elementNum; maneuverIterator++) {
-                prevText += codeArray[maneuverIterator,0] + "<br>";
-                prevError += codeArray[maneuverIterator,1] + "<br>";
-            };
-            // Display all previous code (from array) in previousCode area
-            document.getElementById("previousCode").innerHTML = prevText + prevError;
-            // scroll to bottom of previousCode text (showing last input)
-            $("#previousCode").scrollTop($("#previousCode")[0].scrollHeight)
-            // clear currentCode to validate that code was submitted
-            document.getElementById("currentCode").innerHTML = "";
-            $("#currentCode").focus();
-        }
         
-
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed
         $(document).keydown(function(e) {

@@ -117,7 +117,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         var motors = {}
         var labelMotors = {}
-        Motor = function ( game, port ) {
+        Motor = function ( game, port ) { //prototype for building motor objects
             this.port = port;
             this.name = 'Motor ' + port.toUpperCase();
             this.status = 1;
@@ -131,21 +131,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         Motor.prototype.constructor = Motor;
 
-        
+
         // for ( var i = 1; i <= numMotors; i++ ) {
         //     motors[ numbers[i] ] = new Motor(game, numbers[i] );
         //     labelMotors[ numbers[i] ] = game.add.text(positionMotors[ numbers[i] ].x+10, positionMotors[ numbers[i] ].y, motors[ numbers[i].name ]);
         // }
             //console.dir(motors);
 
+        /* Motor Forward Button */
+        var forwardButtons = {}
+        ForwardButton = function ( game, motor ) {
+            Phaser.Button.call( this, game, positionMotors[motor].x+10, positionMotors[motor].y+32, 'forwardButton' );
+            this.events.onInputDown.add( forwardButtonDownAction, motors[motor] );
+            this.events.onInputUp.add( forwardButtonUpAction, motors[motor] );
+            this.input.useHandCursor = true
+            this.setFrames(1,0,2,0);
+            this.motor = motor;
+            this.name = 'forward button ' + motor;
+            game.add.existing(this);
+        }
+        ForwardButton.prototype = Object.create(Phaser.Button.prototype);
+        ForwardButton.prototype.constructor = ForwardButton;
+        
+        /* Motor Reverse Button */
+        var reverseButtons = {}
+        ReverseButton = function ( game, motor ) {
+            Phaser.Button.call( this, game, positionMotors[motor].x+10, positionMotors[motor].y+90, 'reverseButton' );
+            this.events.onInputDown.add( reverseButtonDownAction, motors[motor] );
+            this.events.onInputUp.add( reverseButtonUpAction, motors[motor] );
+            this.input.useHandCursor = true
+            this.setFrames(1,0,2,0);
+            this.motor = motor;
+            this.name = 'reverse button ' + motor;
+            game.add.existing(this);
+        }
+        ReverseButton.prototype = Object.create(Phaser.Button.prototype);
+        ReverseButton.prototype.constructor = ReverseButton;
+
+        /* Motor Increase Speed Plus Button */
+        
+
+
+
+        /* Motor Decrease Speed Minus Button
+  
+
         /* Motor rotational position needle */
         var needles = {}
         RotationNeedle = function ( game, motor, index ) {
-            Phaser.Sprite.call( this, game, positionDial.x+38+65*(index-1), positionDial.y+50, 'needle');
+            Phaser.Sprite.call( this, game, positionDial.x+38+65*(index-1), positionDial.y+50, 'needle' );
             this.anchor.setTo(0.495, 0.92);
-            game.add.existing(this);
             this.motor = motor;
             this.name = 'needle ' + motor;
+            game.add.existing(this);
         }
         RotationNeedle.prototype = Object.create(Phaser.Sprite.prototype);
         RotationNeedle.prototype.constructor = RotationNeedle;
@@ -1012,8 +1050,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Create Motors */
             for ( var i = 1; i <= numMotors; i++ ) {
-                motors[ numbers[i] ] = new Motor(game, numbers[i] );
-                labelMotors[ numbers[i] ] = game.add.text(positionMotors[ numbers[i] ].x+10, positionMotors[ numbers[i] ].y, motors[ numbers[i] ].name, largeTitleStyle );
+                var motorPort = numbers[i];
+                motors[ motorPort ] = new Motor(game, motorPort);
+                labelMotors[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ numbers[i] ].name, largeTitleStyle );
+                forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
+                reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
             }
 
         /* Labels */
@@ -1032,11 +1073,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+34, statusDisplay, statusStyle);
 
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34, botName, selectBotStyle);
-
-            //labelMotor.a = game.add.text(positionMotors['a'].x+10, positionMotors['a'].y, labelMotor.a, largeTitleStyle);
-            //labelMotor.b = game.add.text(positionMotors['b'].x+10, positionMotors['b'].y, labelMotor.b, largeTitleStyle);
-            //labelMotor.c = game.add.text(positionMotors['c'].x+10, positionMotors['c'].y, labelMotor.c, largeTitleStyle);
-            //labelMotor.d = game.add.text(positionMotors['d'].x+10, positionMotors['d'].y, labelMotor.d, largeTitleStyle);
 
             labelSwitchDirections.a = game.add.text(positionMotors['a'].x+38, positionMotors['a'].y+150, labelSwitchDirections, labelStyle);
             labelSwitchDirections.b = game.add.text(positionMotors['b'].x+38, positionMotors['b'].y+150, labelSwitchDirections, labelStyle);
@@ -1361,160 +1397,37 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderBar.g2.events.onInputUp.add( actionDragOnClick, gang2 );
             sliderBar.g2.events.onInputDown.add( actionDownOnSlide, gang2 );
 
-            // Forward button object and reverse button object
-            fButton = {
-                a : game.add.button(positionMotors['a'].x+10, positionMotors['a'].y+32, 'forwardButton'),
-                b : game.add.button(positionMotors['b'].x+10, positionMotors['b'].y+32, 'forwardButton'),
-                c : game.add.button(positionMotors['c'].x+10, positionMotors['c'].y+32, 'forwardButton'),
-                d : game.add.button(positionMotors['d'].x+10, positionMotors['d'].y+32, 'forwardButton')                
-            }
-            rButton = {
-                a : game.add.button(positionMotors['a'].x+10, positionMotors['a'].y+90, 'reverseButton'),  
-                b : game.add.button(positionMotors['b'].x+10, positionMotors['b'].y+90, 'reverseButton'),  
-                c : game.add.button(positionMotors['c'].x+10, positionMotors['c'].y+90, 'reverseButton'),  
-                d : game.add.button(positionMotors['d'].x+10, positionMotors['d'].y+90, 'reverseButton')
-            }
-
-            /* set different frames for buttons out, over, down, and up */
-            fButton.a.setFrames(1,0,2,0);
-            rButton.a.setFrames(1,0,2,0);
-            fButton.b.setFrames(1,0,2,0);
-            rButton.b.setFrames(1,0,2,0);
-            fButton.c.setFrames(1,0,2,0);
-            rButton.c.setFrames(1,0,2,0);
-            fButton.d.setFrames(1,0,2,0);
-            rButton.d.setFrames(1,0,2,0);
-
-            /* change cursor to a hand when hovering over the buttons */
-            fButton.a.input.useHandCursor = true;
-            rButton.a.input.useHandCursor = true;
-            fButton.b.input.useHandCursor = true;
-            rButton.b.input.useHandCursor = true;
-            fButton.c.input.useHandCursor = true;
-            rButton.c.input.useHandCursor = true;
-            fButton.d.input.useHandCursor = true;
-            rButton.d.input.useHandCursor = true;
-
-            /* adding forward button events */
-            fButton.a.events.onInputDown.add(fButtonDownAction, motorA);
-            fButton.a.events.onInputUp.add(fButtonUpAction, motorA);
-            fButton.b.events.onInputDown.add(fButtonDownAction, motorB);
-            fButton.b.events.onInputUp.add(fButtonUpAction, motorB);
-            fButton.c.events.onInputDown.add(fButtonDownAction, motorC);
-            fButton.c.events.onInputUp.add(fButtonUpAction, motorC);
-            fButton.d.events.onInputDown.add(fButtonDownAction, motorD); 
-            fButton.d.events.onInputUp.add(fButtonUpAction, motorD);
-
-            /* adding reverse button events */
-            rButton.a.events.onInputDown.add(rButtonDownAction, motorA);
-            rButton.a.events.onInputUp.add(rButtonUpAction, motorA);
-            rButton.b.events.onInputDown.add(rButtonDownAction, motorB);
-            rButton.b.events.onInputUp.add(rButtonUpAction, motorB);
-            rButton.c.events.onInputDown.add(rButtonDownAction, motorC);
-            rButton.c.events.onInputUp.add(rButtonUpAction, motorC);
-            rButton.d.events.onInputDown.add(rButtonDownAction, motorD);
-            rButton.d.events.onInputUp.add(rButtonUpAction, motorD);
-
-
-            // THESE 4 FUNCTIONS SHOULD BE USABLE BY ANY NUMBER OF MOTORS
-            /* forward button actions */
-            function fButtonDownAction () {
-                console.log("onActionDownForward"); 
-                moveMotor( botId, this.port, "f", this.speed, this.directionSwitched );
-                if ( this.port === 'a' ) {
-                    fButton.a.setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking
-                }
-                if ( this.port === 'b' ) {
-                    fButton.b.setFrames(2,2,2,2);
-                }
-                if ( this.port === 'c' ) {
-                    fButton.c.setFrames(2,2,2,2); 
-                }
-                if ( this.port === 'd' ) {
-                    fButton.d.setFrames(2,2,2,2); 
-                }                
-            }
-            function fButtonUpAction() {
-                console.log("onActionUpForward");
-                stopMotor( botId, this.port ); 
-                if ( this.port === 'a' ) {
-                    fButton.a.setFrames(1,0,2,0); // show the forward button as up (normal position)
-                }
-                if ( this.port === 'b' ) {
-                    fButton.b.setFrames(1,0,2,0); 
-                }
-                if ( this.port === 'c' ) {
-                    fButton.c.setFrames(1,0,2,0);
-                }
-                if ( this.port === 'd' ) {
-                    fButton.d.setFrames(1,0,2,0); 
-                } 
-            }
-            /* reverse buttons actions*/
-            function rButtonDownAction () {
-                console.log("onActionDownReverse"); 
-                moveMotor( botId, this.port, "r", this.speed, this.directionSwitched );
-                if ( this.port === 'a' ) {
-                    rButton.a.setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking
-                }
-                if ( this.port === 'b' ) {
-                    rButton.b.setFrames(2,2,2,2);
-                }
-                if ( this.port === 'c' ) {
-                    rButton.c.setFrames(2,2,2,2); 
-                }
-                if ( this.port === 'd' ) {
-                    rButton.d.setFrames(2,2,2,2); 
-                }  
-            }
-            function rButtonUpAction() {
-                console.log("onActionUpReverse");
-                stopMotor( botId, this.port );
-                if ( this.port === 'a' ) {
-                    rButton.a.setFrames(1,0,2,0); // show the reverse button as up (normal position)
-                }
-                if ( this.port === 'b' ) {
-                    rButton.b.setFrames(1,0,2,0); 
-                }
-                if ( this.port === 'c' ) {
-                    rButton.c.setFrames(1,0,2,0);
-                }
-                if ( this.port === 'd' ) {
-                    rButton.d.setFrames(1,0,2,0); 
-                } 
-            }
-
         /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
             
             // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
             var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
-            fAKey.onDown.add(fButtonDownAction, motorA); // this will move motor A forward
+            fAKey.onDown.add(forwardButtonDownAction, motorA); // this will move motor A forward
             var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
-            fBKey.onDown.add(fButtonDownAction, motorB);
+            fBKey.onDown.add(forwardButtonDownAction, motorB);
             var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-            fCKey.onDown.add(fButtonDownAction, motorC);
+            fCKey.onDown.add(forwardButtonDownAction, motorC);
             var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
-            fDKey.onDown.add(fButtonDownAction, motorD);
+            fDKey.onDown.add(forwardButtonDownAction, motorD);
 
             var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
-            rAKey.onDown.add(rButtonDownAction, motorA); // this will move motor A in reverse
+            rAKey.onDown.add(reverseButtonDownAction, motorA); // this will move motor A in reverse
             var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
-            rBKey.onDown.add(rButtonDownAction, motorB);
+            rBKey.onDown.add(reverseButtonDownAction, motorB);
             var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
-            rCKey.onDown.add(rButtonDownAction, motorC);
+            rCKey.onDown.add(reverseButtonDownAction, motorC);
             var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
-            rDKey.onDown.add(rButtonDownAction, motorD);
+            rDKey.onDown.add(reverseButtonDownAction, motorD);
 
             // stop motor on key up:
-            fAKey.onUp.add(fButtonUpAction, motorA); // this will stop motorA
-            fBKey.onUp.add(fButtonUpAction, motorB);
-            fCKey.onUp.add(fButtonUpAction, motorC);
-            fDKey.onUp.add(fButtonUpAction, motorD);
+            fAKey.onUp.add(forwardButtonUpAction, motorA); // this will stop motorA
+            fBKey.onUp.add(forwardButtonUpAction, motorB);
+            fCKey.onUp.add(forwardButtonUpAction, motorC);
+            fDKey.onUp.add(forwardButtonUpAction, motorD);
 
-            rAKey.onUp.add(rButtonUpAction, motorA); // this will stop motor A
-            rBKey.onUp.add(rButtonUpAction, motorB);
-            rCKey.onUp.add(rButtonUpAction, motorC);
-            rDKey.onUp.add(rButtonUpAction, motorD);
+            rAKey.onUp.add(reverseButtonUpAction, motorA); // this will stop motor A
+            rBKey.onUp.add(reverseButtonUpAction, motorB);
+            rCKey.onUp.add(reverseButtonUpAction, motorC);
+            rDKey.onUp.add(reverseButtonUpAction, motorD);
 
             // buttons for motor gangs:
             fGangButton = {
@@ -1714,6 +1627,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
 
         } // end create 
+
+
+            function forwardButtonDownAction () {
+                console.log("onActionDownForward"); 
+                moveMotor( botId, this.port, "f", this.speed, this.directionSwitched );
+                forwardButtons[this.port].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
+            }
+            function forwardButtonUpAction() {
+                console.log("onActionUpForward");
+                stopMotor( botId, this.port ); 
+                forwardButtons[this.port].setFrames(1,0,2,0); // show the forward button as up (normal position)
+            }
+            function reverseButtonDownAction () {
+                console.log("onActionDownReverse"); 
+                moveMotor( botId, this.port, "r", this.speed, this.directionSwitched );
+                reverseButtons[this.port].setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking            
+            }
+            function reverseButtonUpAction() {
+                console.log("onActionUpReverse");
+                stopMotor( botId, this.port ); 
+                reverseButtons[this.port].setFrames(1,0,2,0); // show the reverse button as up (normal position)
+            }
+
+
+
+
         //=============================================================================
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( recipient, motor, direction, speed, switched ) {

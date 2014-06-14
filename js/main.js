@@ -128,7 +128,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.previousSpeed = 0;
             this.speedDisplay = ''; 
             this.directionSwitched = false;
-            this.previousDirectionSwitched = false;
         }
         Motor.prototype.constructor = Motor;
 
@@ -181,7 +180,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         PlusButton.prototype = Object.create(Phaser.Button.prototype);
         PlusButton.prototype.constructor = PlusButton;
-
 
         /* Motor Decrease Speed Minus Button */
         var minusButtons = {}
@@ -333,7 +331,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             stalled: false,
             previousSpeed : 0,
             speedDisplay : '', 
-            directionSwitched : false
+            //directionSwitched : false
         }
         var motorB = {
             port: 'b',
@@ -343,7 +341,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gang: 0,
             stalled: false,
             previousSpeed : 0, 
-            directionSwitched : false
+            //directionSwitched : false
         }
         var motorC = {
             port: 'c',
@@ -353,7 +351,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gang: 0,
             stalled: false,
             previousSpeed : 0, 
-            directionSwitched : false
+            //directionSwitched : false
         }
         var motorD = {
             port: 'd',
@@ -363,7 +361,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gang: 0,
             stalled: false,
             previousSpeed : 0, 
-            directionSwitched : false
+            //directionSwitched : false
         }
         var gang1 = {
             gang: 1,
@@ -1507,25 +1505,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function configDirectionsActionDown () {
             directionChecks[ this.port ].state = 'down';
-            // if ( this.directionSwitched === false ) this.directionSwitched = true;
-            // else this.directionSwitched = false;
-            // motors[ this.port ].directionSwitched = this.directionSwitched;
-            // var dashKey = this.port + 'Dash';
-            // channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': this.directionSwitched });
-            // if ( this.directionSwitched === false ) directionChecks.a.setFrames(2,0,1,0);
-            // else directionChecks[ this.port ].setFrames(1,1,1,0);
-            // console.log("flipping directions for motor " + this.port);        
+            var newDirectionSwitched;
+            if ( !this.directionSwitched ) newDirectionSwitched = true;
+            else newDirectionSwitched = false;
+            motors[ this.port ].directionSwitched = newDirectionSwitched;
+            var dashKey = this.port + 'Dash';
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': newDirectionSwitched });
+            if ( newDirectionSwitched === false ) directionChecks[ this.port ].setFrames(2,0,1,0);
+            else directionChecks[ this.port ].setFrames(1,1,1,0);
+            console.log("flipping directions for motor " + this.port);
         }
         function configDirectionsActionUp () {
             directionChecks[ this.port ].state = 'up';
-                        if ( this.directionSwitched === false ) this.directionSwitched = true;
-            else this.directionSwitched = false;
-            motors[ this.port ].directionSwitched = this.directionSwitched;
-            var dashKey = this.port + 'Dash';
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': this.directionSwitched });
-            if ( this.directionSwitched === false ) directionChecks.a.setFrames(2,0,1,0);
-            else directionChecks[ this.port ].setFrames(1,1,1,0);
-            console.log("flipping directions for motor " + this.port);   
         }
         function increaseSpeedClickActionDown () {
             if ( motors[ this.port ].speed <= 650 ) {
@@ -1945,7 +1936,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 motors[ motorPort ].directionSwitched = true;
                 directionChecks[ motorPort ].setFrames(1,1,1,1);
             }
-            motors[ motorPort ].previousDirectionSwitched = switchDirection;
+            //motors[ motorPort ].previousDirectionSwitched = switchDirection;
 
             // if ( key === 'aDash' ) {
             //     if ( switchDirection === false ) {
@@ -2089,8 +2080,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( motors[ motorPort ].speed !== val.speed && motors[ motorPort ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
                 updateSpeed( key, val.speed );
             }
-            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched && motors[ motorPort ].previousDirectionSwitched !== val.directionSwitched ) {
-                //if ( motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
+            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
                 updateDirections( key, val.directionSwitched );
             }
 

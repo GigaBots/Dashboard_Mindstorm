@@ -128,6 +128,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.previousSpeed = 0;
             this.speedDisplay = ''; 
             this.directionSwitched = false;
+            //this.previousDirectionSwitched = false;
         }
         Motor.prototype.constructor = Motor;
 
@@ -1505,15 +1506,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function configDirectionsActionDown () {
             directionChecks[ this.port ].state = 'down';
-            var newDirectionSwitched;
-            if ( !this.directionSwitched ) newDirectionSwitched = true;
-            else newDirectionSwitched = false;
-            motors[ this.port ].directionSwitched = newDirectionSwitched;
+            var temp = this.directionSwitched;
+            if ( !this.directionSwitched ) {
+                this.directionSwitched = true;
+                directionChecks[ this.port ].setFrames(1,1,1,1); //checked
+            } 
+            else {
+                this.directionSwitched = false;
+                directionChecks[ this.port ].setFrames(2,0,1,0); //unchecked
+            }
+            //motors[ this.port ].previousDirectionSwitched = motors[ this.port ].directionSwitched;
             var dashKey = this.port + 'Dash';
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': newDirectionSwitched });
-            if ( newDirectionSwitched === false ) directionChecks[ this.port ].setFrames(2,0,1,0);
-            else directionChecks[ this.port ].setFrames(1,1,1,0);
-            console.log("flipping directions for motor " + this.port);
+            channel.getKeyspace(botId).put(dashKey, { 'speed': this.speed, 'directionSwitched': this.directionSwitched });
+            console.log("flipping directions for motor " + this.port + " from " + temp + " to " + this.directionSwitched );
         }
         function configDirectionsActionUp () {
             directionChecks[ this.port ].state = 'up';
@@ -1928,6 +1933,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Update the direction configurations of the motors for all users*/
         function updateDirections ( key, switchDirection ) {
             var motorPort = key.slice(0,1);
+            if ( motors[ motorPort ].directionSwitched === switchDirection ) {
+                return 0;
+            }
             console.log ("updating direction of motor " + motorPort + " to " + switchDirection);
             if ( switchDirection === false ) {
                 motors[ motorPort ].directionSwitched = false;
@@ -1937,43 +1945,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 directionChecks[ motorPort ].setFrames(1,1,1,1);
             }
             //motors[ motorPort ].previousDirectionSwitched = switchDirection;
-
-            // if ( key === 'aDash' ) {
-            //     if ( switchDirection === false ) {
-            //         motorA.directionSwitched = false;
-            //         switchButton.a.setFrames(2,0,1,0);
-            //     } else {
-            //         motorA.directionSwitched = true;
-            //         switchButton.a.setFrames(1,1,1,1);
-            //     }
-            // }
-            // if ( key === 'bDash' ) {
-            //     if ( switchDirection === false ) {
-            //         motorB.directionSwitched = false;
-            //         switchButton.b.setFrames(2,0,1,0);
-            //     } else {
-            //         motorB.directionSwitched = true;
-            //         switchButton.b.setFrames(1,1,1,1);
-            //     }
-            // }
-            // if ( key === 'cDash' ) {
-            //     if ( switchDirection === false ) {
-            //         motorC.directionSwitched = false;
-            //         switchButton.c.setFrames(2,0,1,0);
-            //     } else {
-            //         motorC.directionSwitched = true;
-            //         switchButton.c.setFrames(1,1,1,1);
-            //     }
-            // }
-            // if ( key === 'dDash' ) {
-            //     if ( switchDirection === false ) {
-            //         motorD.directionSwitched = false;
-            //         switchButton.d.setFrames(2,0,1,0);
-            //     } else {
-            //         motorD.directionSwitched = true;
-            //         switchButton.d.setFrames(1,1,1,1);
-            //     }
-            // }
 
         }
 
@@ -2080,44 +2051,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( motors[ motorPort ].speed !== val.speed && motors[ motorPort ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
                 updateSpeed( key, val.speed );
             }
+            //if ( directionChecks[motorPort].state == 'up ') {
             if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
+                console.log(directionChecks[motorPort].state);
+                console.log(motors[ motorPort ].directionSwitched + " and " + val.directionSwitched );
                 updateDirections( key, val.directionSwitched );
             }
+            //}
 
-        
-            // if ( key === 'aDash' ) {
-            //     if ( motorA.speed !== val.speed && motorA.previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
-            //         updateSpeed(key, val.speed);
-            //     }
-            //     if ( typeof(val.directionSwitched) !== 'undefined' ) { //} && motorA.directionSwitched !== val.directionSwitched ) {
-            //         //console.log("motorA.directionSwitched = " + motorA.directionSwitched + " but val.directionSwitched = " + val.directionSwitched );
-            //         updateDirections('aDash', val.directionSwitched);
-            //     }
-            // }
-            // if ( key === 'bDash' ) {
-            //     if ( motorB.speed !== val.speed && motorB.previousSpeed !== val.speed ) {
-            //         updateSpeed(key, val.speed);
-            //     }
-            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
-            //         updateDirections('bDash', val.directionSwitched);
-            //     }
-            // }
-            // if ( key === 'cDash' ) {
-            //     if ( motorC.speed !== val.speed && motorC.previousSpeed !== val.speed ) {
-            //         updateSpeed(key, val.speed);
-            //     }
-            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
-            //         updateDirections('cDash', val.directionSwitched);
-            //     }
-            // }
-            // if ( key === 'dDash' ) {
-            //     if ( motorD.speed !== val.speed && motorD.previousSpeed !== val.speed ) {
-            //         updateSpeed(key, val.speed);
-            //     }
-            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
-            //         updateDirections('dDash', val.directionSwitched);
-            //     }
-            // }
             // if ( key === 'g1Dash' ) {
             //     if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change
             //         updateGang(key, val.speed, val.a, val.b, val.c, val.d);

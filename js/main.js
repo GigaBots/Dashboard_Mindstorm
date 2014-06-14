@@ -89,8 +89,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dragBoxButton;
 
         /* Two objects, for referring to motors (or sensors, etc), by a letter corresponding to a number and a number coresponding to the letter. This is for building objects and then using them */
-        var letters = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20, u: 21, v: 22, w: 23, x: 24, y: 25, z: 26 }
-        var numbers = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z' }
+        var numbers = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20, u: 21, v: 22, w: 23, x: 24, y: 25, z: 26 }
+        var letters = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z' }
 
         /* Specify the number of motors */
         var numMotors = 4;
@@ -110,7 +110,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( j === 1) var subIndex = j + 1 + (i - 1)/i;
                 else var subIndex = j + 1;
                 var index = subIndex*i - i;
-                positionMotors[ numbers[ index ] ] = { x : 15 + (j-1)*283 , y : 228 + (i-1)*215 }
+                positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 228 + (i-1)*215 }
             } // this is a sequence to position motors (laid out in a grid). It only handles rectangular arrangements right now...
         }
 
@@ -128,12 +128,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.previousSpeed = 0;
             this.speedDisplay = ''; 
             this.directionSwitched = false;
+            this.previousDirectionSwitched = false;
         }
         Motor.prototype.constructor = Motor;
 
         // for ( var i = 1; i <= numMotors; i++ ) {
-        //     motors[ numbers[i] ] = new Motor(game, numbers[i] );
-        //     labelMotors[ numbers[i] ] = game.add.text(positionMotors[ numbers[i] ].x+10, positionMotors[ numbers[i] ].y, motors[ numbers[i].name ]);
+        //     motors[ letters[i] ] = new Motor(game, letters[i] );
+        //     labelMotors[ letters[i] ] = game.add.text(positionMotors[ letters[i] ].x+10, positionMotors[ letters[i] ].y, motors[ letters[i].name ]);
         // }
         // console.dir(motors);
 
@@ -223,11 +224,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var directionChecks = {}
         DirectionCheckbox = function ( game, motor ) {
             Phaser.Button.call ( this, game, positionMotors[motor].x+10, positionMotors[motor].y+148, 'checkbox' );
-            this.events.onInputDown.add( configDirectionsAction, motors[motor] );
+            this.events.onInputDown.add( configDirectionsActionDown, motors[motor] );
+            this.events.onInputUp.add( configDirectionsActionUp, motors[motor])
             this.input.useHandCursor = true;
             this.setFrames(2,0,1,0);
             this.motor = motor;
             this.name = 'switch direction button ' + motor;
+            this.state = 'up';
             game.add.existing(this);
         }
         DirectionCheckbox.prototype = Object.create(Phaser.Button.prototype);
@@ -937,20 +940,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         //EXPERIMENTING...trying to show motor statuses correctly
-        function getInitialMotorStatus() {
-            var currentPosD = needles['d'].angle;
-            moveMotor(botId,'d','f',1);
-            if (currentPosD === needles['d'].angle) {
-                statusLight.d.animations.play('unplugged');
-                motorD.status = "unplugged";
-            } 
-            else {
-                statusLight.d.animations.play('pluggedIn');
-                motorD.status = "pluggedIn";
-            }
-            moveMotor(botId,'d','r',1);
-            moveMotor(botId,'d','f',0);
-        }
+        // function getInitialMotorStatus() {
+        //     var currentPosD = needles['d'].angle;
+        //     moveMotor(botId,'d','f',1);
+        //     if (currentPosD === needles['d'].angle) {
+        //         statusLight.d.animations.play('unplugged');
+        //         motorD.status = "unplugged";
+        //     } 
+        //     else {
+        //         statusLight.d.animations.play('pluggedIn');
+        //         motorD.status = "pluggedIn";
+        //     }
+        //     moveMotor(botId,'d','r',1);
+        //     moveMotor(botId,'d','f',0);
+        // }
 
     //==============================================================================================================================
         function preload() {
@@ -1096,8 +1099,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameDials.lineStyle(1, frameLineColor, 1);
             frameDials.beginFill(frameFill,frameOpacity);
             frameDials.drawRect(positionDial.x, positionDial.y, 271, 83);
-
-
 
 
         /* Labels */
@@ -1326,97 +1327,97 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // Pretty quick and dirty here, hopefully this works though:
             /* forward button actions */
             function fGangButtonDownAction () {
-                console.log("onActionDownForwardGang"); 
-                if ( this.a === true) {
-                    motorA.previousSpeed = motorA.speed = this.speed;
-                    moveMotor( botId, "a", "f", this.speed, motorA.directionSwitched );
-                }
-                if ( this.b === true) {
-                    motorB.previousSpeed = motorB.speed = this.speed;
-                    moveMotor( botId, "b", "f", this.speed, motorB.directionSwitched );
-                }
-                if ( this.c === true) {
-                    motorC.previousSpeed = motorC.speed = this.speed;
-                    moveMotor( botId, "c", "f", this.speed, motorC.directionSwitched );
-                }
-                if ( this.d === true) {
-                    motorD.previousSpeed = motorD.speed = this.speed;
-                    moveMotor( botId, "d", "f", this.speed, motorD.directionSwitched );
-                }
-                if ( this === gang1 ) {
-                    fGangButton.g1.setFrames(2,2,2,2); //forward button as down
-                }
-                if ( this === gang2 ) {
-                    fGangButton.g2.setFrames(2,2,2,2);
-                }
+                // console.log("onActionDownForwardGang"); 
+                // if ( this.a === true) {
+                //     motorA.previousSpeed = motorA.speed = this.speed;
+                //     moveMotor( botId, "a", "f", this.speed, motorA.directionSwitched );
+                // }
+                // if ( this.b === true) {
+                //     motorB.previousSpeed = motorB.speed = this.speed;
+                //     moveMotor( botId, "b", "f", this.speed, motorB.directionSwitched );
+                // }
+                // if ( this.c === true) {
+                //     motorC.previousSpeed = motorC.speed = this.speed;
+                //     moveMotor( botId, "c", "f", this.speed, motorC.directionSwitched );
+                // }
+                // if ( this.d === true) {
+                //     motorD.previousSpeed = motorD.speed = this.speed;
+                //     moveMotor( botId, "d", "f", this.speed, motorD.directionSwitched );
+                // }
+                // if ( this === gang1 ) {
+                //     fGangButton.g1.setFrames(2,2,2,2); //forward button as down
+                // }
+                // if ( this === gang2 ) {
+                //     fGangButton.g2.setFrames(2,2,2,2);
+                // }
             }
             function fGangButtonUpAction() {
-                console.log("onActionUpForwardGang");
-                if ( this.a === true) {
-                    stopMotor(botId, "a");
-                }
-                if ( this.b === true) {
-                    stopMotor(botId, "b");
-                }
-                if ( this.c === true) {
-                    stopMotor(botId, "c");
-                }
-                if ( this.d === true) {
-                    stopMotor(botId, "d");
-                }
-                if ( this === gang1 ) {
-                    fGangButton.g1.setFrames(1,0,2,0); //forward button as up
-                }
-                if ( this === gang2 ) {
-                    fGangButton.g2.setFrames(1,0,2,0);
-                }
+                // console.log("onActionUpForwardGang");
+                // if ( this.a === true) {
+                //     stopMotor(botId, "a");
+                // }
+                // if ( this.b === true) {
+                //     stopMotor(botId, "b");
+                // }
+                // if ( this.c === true) {
+                //     stopMotor(botId, "c");
+                // }
+                // if ( this.d === true) {
+                //     stopMotor(botId, "d");
+                // }
+                // if ( this === gang1 ) {
+                //     fGangButton.g1.setFrames(1,0,2,0); //forward button as up
+                // }
+                // if ( this === gang2 ) {
+                //     fGangButton.g2.setFrames(1,0,2,0);
+                // }
             }
             /* reverse buttons actions*/
             function rGangButtonDownAction () {
-                console.log("onActionDownReverseGang"); 
-                if ( this.a === true) {
-                    motorA.previousSpeed = motorA.speed = this.speed;
-                    moveMotor( botId, "a", "r", this.speed, motorA.directionSwitched );
-                }
-                if ( this.b === true) {
-                    motorB.previousSpeed = motorB.speed = this.speed;
-                    moveMotor( botId, "b", "r", this.speed, motorB.directionSwitched );
-                }
-                if ( this.c === true) {
-                    motorC.previousSpeed = motorC.speed = this.speed;
-                    moveMotor( botId, "c", "r", this.speed, motorC.directionSwitched );
-                }
-                if ( this.d === true) {
-                    motorD.previousSpeed = motorD.speed = this.speed;
-                    moveMotor( botId, "d", "r", this.speed, motorD.directionSwitched );
-                }
-                if ( this === gang1 ) {
-                    rGangButton.g1.setFrames(2,2,2,2); //reverse button as down
-                }
-                if ( this === gang2 ) {
-                    rGangButton.g2.setFrames(2,2,2,2);
-                }
+                // console.log("onActionDownReverseGang"); 
+                // if ( this.a === true) {
+                //     motorA.previousSpeed = motorA.speed = this.speed;
+                //     moveMotor( botId, "a", "r", this.speed, motorA.directionSwitched );
+                // }
+                // if ( this.b === true) {
+                //     motorB.previousSpeed = motorB.speed = this.speed;
+                //     moveMotor( botId, "b", "r", this.speed, motorB.directionSwitched );
+                // }
+                // if ( this.c === true) {
+                //     motorC.previousSpeed = motorC.speed = this.speed;
+                //     moveMotor( botId, "c", "r", this.speed, motorC.directionSwitched );
+                // }
+                // if ( this.d === true) {
+                //     motorD.previousSpeed = motorD.speed = this.speed;
+                //     moveMotor( botId, "d", "r", this.speed, motorD.directionSwitched );
+                // }
+                // if ( this === gang1 ) {
+                //     rGangButton.g1.setFrames(2,2,2,2); //reverse button as down
+                // }
+                // if ( this === gang2 ) {
+                //     rGangButton.g2.setFrames(2,2,2,2);
+                // }
             }
             function rGangButtonUpAction() {
-                console.log("onActionUpReverseGang");
-                if ( this.a === true) {
-                    stopMotor(botId, "a");
-                }
-                if ( this.b === true) {
-                    stopMotor(botId, "b");
-                }
-                if ( this.c === true) {
-                    stopMotor(botId, "c");
-                }
-                if ( this.d === true) {
-                    stopMotor(botId, "d");
-                }
-                if ( this === gang1 ) {
-                    rGangButton.g1.setFrames(1,0,2,0); //reverse button as up
-                }
-                if ( this === gang2 ) {
-                    rGangButton.g2.setFrames(1,0,2,0);
-                }
+                // console.log("onActionUpReverseGang");
+                // if ( this.a === true) {
+                //     stopMotor(botId, "a");
+                // }
+                // if ( this.b === true) {
+                //     stopMotor(botId, "b");
+                // }
+                // if ( this.c === true) {
+                //     stopMotor(botId, "c");
+                // }
+                // if ( this.d === true) {
+                //     stopMotor(botId, "d");
+                // }
+                // if ( this === gang1 ) {
+                //     rGangButton.g1.setFrames(1,0,2,0); //reverse button as up
+                // }
+                // if ( this === gang2 ) {
+                //     rGangButton.g2.setFrames(1,0,2,0);
+                // }
             }
 
         /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
@@ -1475,27 +1476,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelRotation = game.add.text(positionDial.x+10, positionDial.y+2, labelRotation, smallTitleStyle);
 
             for ( var i = 1; i <= numMotors; i++ ) {
-                var motorPort = numbers[i];
+                var motorPort = letters[i];
                 dials[ motorPort ] = game.add.sprite( positionDial.x+12+(i-1)*65, positionDial.y+24, 'dialFace' );
                 labelDials[ motorPort ] = game.add.text( positionDial.x+32+(i-1)*65, positionDial.y+45, motorPort.toUpperCase(), dialLabelStyle );
-                needles[ motorPort ] = new RotationNeedle ( game, motorPort , letters[ motorPort ] );
+                needles[ motorPort ] = new RotationNeedle ( game, motorPort , numbers[ motorPort ] );
             }
 
             /* Create Motors */
             for ( var i = 1; i <= numMotors; i++ ) {
-                var motorPort = numbers[i];
+                var motorPort = letters[i];
                 motors[ motorPort ] = new Motor( game, motorPort );
-                labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ numbers[i] ].name, largeTitleStyle );
+                labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ letters[i] ].name, largeTitleStyle );
                 sliderTracks[ motorPort] = game.add.sprite( positionMotors[ motorPort ].x+163, positionMotors[ motorPort].y+16, 'sliderIncrements' );
                 for ( var k = 0; k <= 7; k++ ) {
                     var speedLabel = speedRange[k] + "";
                     sliderSpeedIncrements[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+237, positionMotors[ motorPort ].y+162 - 22 * k, speedLabel, labelStyle );
-
                 }
                 sliderSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+154, positionMotors[ motorPort ].y+179, "Speed (\xB0/sec)", labelStyle );
                 currentSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y+179, "Current Speed:", labelStyle );
                 directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+38, positionMotors[ motorPort ].y+150, "Switch Directions", labelStyle );
-
                 forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
                 reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
                 plusButtons[ motorPort ] = new PlusButton( game, motorPort );
@@ -1506,16 +1505,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end create 
 
-        function configDirectionsAction () {
-            if ( this.directionSwitched === false ) this.directionSwitched = true;
+        function configDirectionsActionDown () {
+            directionChecks[ this.port ].state = 'down';
+            // if ( this.directionSwitched === false ) this.directionSwitched = true;
+            // else this.directionSwitched = false;
+            // motors[ this.port ].directionSwitched = this.directionSwitched;
+            // var dashKey = this.port + 'Dash';
+            // channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': this.directionSwitched });
+            // if ( this.directionSwitched === false ) directionChecks.a.setFrames(2,0,1,0);
+            // else directionChecks[ this.port ].setFrames(1,1,1,0);
+            // console.log("flipping directions for motor " + this.port);        
+        }
+        function configDirectionsActionUp () {
+            directionChecks[ this.port ].state = 'up';
+                        if ( this.directionSwitched === false ) this.directionSwitched = true;
             else this.directionSwitched = false;
-            
             motors[ this.port ].directionSwitched = this.directionSwitched;
             var dashKey = this.port + 'Dash';
             channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'directionSwitched': this.directionSwitched });
-            if ( this.directionSwitched === false ) switchButton.a.setFrames(2,0,1,0);
+            if ( this.directionSwitched === false ) directionChecks.a.setFrames(2,0,1,0);
             else directionChecks[ this.port ].setFrames(1,1,1,0);
-            console.log("flipping directions for motor " + this.port);        
+            console.log("flipping directions for motor " + this.port);   
         }
         function increaseSpeedClickActionDown () {
             if ( motors[ this.port ].speed <= 650 ) {
@@ -1524,10 +1534,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else {
                 motors[ this.port ].speed = 700; // just set the speed to the maximum
-                sliderBars[ this.port ].y = positionMotors['a'].y + 11;
+                sliderBars[ this.port ].y = positionMotors[ this.port ].y + 11;
             }
             var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.port into it, which contains the value 'speed' equal to motors[this.port].speed
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             console.log("increasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
@@ -1541,18 +1551,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderBars[ this.port ].y = positionMotors[ this.port ].y + 165; 
             }
             var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.port into it, which contains the value 'speed' equal to motors[this.port].speed
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             console.log("decreasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
         }
-
         function changeSpeedSlideActionDown () {
             sliderBars[ this.port ].state = 'down';
             motors[ this.port ].previousSpeed = motors[ this.port ].speed;
         }
         function changeSpeedSlideActionUp () {
-            //we're sliding between positionMotors['a'].y + 11 px (0 deg/sec) and positionMotors['a'].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            sliderBars[ this.port ].state = 'up';
+            //we're sliding between positionMotors[ this.port ].y + 11 px (0 deg/sec) and positionMotors[ this.port ].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             if ( sliderBars[ this.port ].y < positionMotors[ this.port ].y+11 ) { //set max speed boundary limit
                 sliderBars[ this.port ].y = positionMotors[ this.port ].y+11;
             } else if ( sliderBars[this.port].y > positionMotors[this.port].y+165 ) { //set min speed boundary limit
@@ -1560,13 +1570,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motors[ this.port ].speed = 700 + ( 700/154 ) * (positionMotors[this.port].y + 11 - sliderBars[this.port].y); // normalize speed over the range of y values on the slider track
             var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key 'a' into it, which contains the value 'speed' equal to motorA.speed
-            sliderBars[ this.port ].state = 'up';
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.port into it, which contains the value 'speed' equal to motors[this.port].speed
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+176, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             console.log("changing speed of motor " + this.port + " to " + motors[ this.port ].speed.toFixed(2));
         }
-
         function forwardDirectionActionDown () {
             console.log("move motor " + this.port + " forward"); 
             moveMotor( botId, this.port, "f", this.speed, this.directionSwitched );
@@ -1926,40 +1934,67 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }*/
         }
 
+        /* Update the direction configurations of the motors for all users*/
+        function updateDirections ( key, switchDirection ) {
+            var motorPort = key.slice(0,1);
+            console.log ("updating direction of motor " + motorPort + " to " + switchDirection);
+            if ( switchDirection === false ) {
+                motors[ motorPort ].directionSwitched = false;
+                directionChecks[ motorPort ].setFrames(2,0,1,0);
+            } else {
+                motors[ motorPort ].directionSwitched = true;
+                directionChecks[ motorPort ].setFrames(1,1,1,1);
+            }
+            motors[ motorPort ].previousDirectionSwitched = switchDirection;
+
+            // if ( key === 'aDash' ) {
+            //     if ( switchDirection === false ) {
+            //         motorA.directionSwitched = false;
+            //         switchButton.a.setFrames(2,0,1,0);
+            //     } else {
+            //         motorA.directionSwitched = true;
+            //         switchButton.a.setFrames(1,1,1,1);
+            //     }
+            // }
+            // if ( key === 'bDash' ) {
+            //     if ( switchDirection === false ) {
+            //         motorB.directionSwitched = false;
+            //         switchButton.b.setFrames(2,0,1,0);
+            //     } else {
+            //         motorB.directionSwitched = true;
+            //         switchButton.b.setFrames(1,1,1,1);
+            //     }
+            // }
+            // if ( key === 'cDash' ) {
+            //     if ( switchDirection === false ) {
+            //         motorC.directionSwitched = false;
+            //         switchButton.c.setFrames(2,0,1,0);
+            //     } else {
+            //         motorC.directionSwitched = true;
+            //         switchButton.c.setFrames(1,1,1,1);
+            //     }
+            // }
+            // if ( key === 'dDash' ) {
+            //     if ( switchDirection === false ) {
+            //         motorD.directionSwitched = false;
+            //         switchButton.d.setFrames(2,0,1,0);
+            //     } else {
+            //         motorD.directionSwitched = true;
+            //         switchButton.d.setFrames(1,1,1,1);
+            //     }
+            // }
+
+        }
+
         /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
-            //console.log ("updating speed of motor " + key + " to " + speed);
-            if ( key === 'aDash' ) { 
-                motorA.speed = speed;
-                sliderBar.a.y = positionMotors['a'].y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-                motorA.previousSpeed = speed;
-                game.world.remove(motorA.currentSpeedDisplay);
-                motorA.currentSpeedDisplay = game.add.text(positionMotors['a'].x+100, positionMotors['a'].y+176, speed.toFixed(1), dataOutputStyle);
-            }
-            if ( key === 'bDash') { 
-                motorB.speed = speed;
-                sliderBar.b.y = positionMotors['b'].y + 11 - (154 / 700) * (speed - 700); 
-                motorB.previousSpeed = speed;
-                game.world.remove(motorB.currentSpeedDisplay);
-                motorB.currentSpeedDisplay = game.add.text(positionMotors['b'].x+100, positionMotors['b'].y+176, speed.toFixed(1), dataOutputStyle);
-
-            }
-            if ( key === 'cDash') { 
-                motorC.speed = speed;
-                sliderBar.c.y = positionMotors['c'].y + 11 - (154 / 700) * (speed - 700); 
-                motorC.previousSpeed = speed;
-                game.world.remove(motorC.currentSpeedDisplay);
-                motorC.currentSpeedDisplay = game.add.text(positionMotors['c'].x+100, positionMotors['c'].y+176, speed.toFixed(1), dataOutputStyle);
-
-            }
-            if ( key === 'dDash') { 
-                motorD.speed = speed;
-                sliderBar.d.y = positionMotors['d'].y + 11 - (154 / 700) * (speed - 700); 
-                motorD.previousSpeed = speed;
-                game.world.remove(motorD.currentSpeedDisplay);
-                motorD.currentSpeedDisplay = game.add.text(positionMotors['d'].x+100, positionMotors['d'].y+176, speed.toFixed(1), dataOutputStyle);
-
-            }
+            var motorPort = key.slice(0,1);
+            //console.log ("updating speed of motor " + motorPort + " to " + speed);
+            motors[ motorPort ].speed = speed;
+            sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+            motors[ motorPort ].previousSpeed = speed;
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+176, speed.toFixed(1), dataOutputStyle );
         }
 
         /* Rotation of motor position dials */
@@ -2047,171 +2082,137 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
 
-        function updateDirections ( key, switchDirection ) {
-            if ( key === 'aDash' ) {
-                if ( switchDirection === false ) {
-                    motorA.directionSwitched = false;
-                    switchButton.a.setFrames(2,0,1,0);
-                } else {
-                    motorA.directionSwitched = true;
-                    switchButton.a.setFrames(1,1,1,1);
-                }
-            }
-            if ( key === 'bDash' ) {
-                if ( switchDirection === false ) {
-                    motorB.directionSwitched = false;
-                    switchButton.b.setFrames(2,0,1,0);
-                } else {
-                    motorB.directionSwitched = true;
-                    switchButton.b.setFrames(1,1,1,1);
-                }
-            }
-            if ( key === 'cDash' ) {
-                if ( switchDirection === false ) {
-                    motorC.directionSwitched = false;
-                    switchButton.c.setFrames(2,0,1,0);
-                } else {
-                    motorC.directionSwitched = true;
-                    switchButton.c.setFrames(1,1,1,1);
-                }
-            }
-            if ( key === 'dDash' ) {
-                if ( switchDirection === false ) {
-                    motorD.directionSwitched = false;
-                    switchButton.d.setFrames(2,0,1,0);
-                } else {
-                    motorD.directionSwitched = true;
-                    switchButton.d.setFrames(1,1,1,1);
-                }
-            }
-
-        }
-
         /* Get key-value pairs from the dashboard keyspace and do things with them */
         function getDashboardValues (key, val) {
-            if ( key === 'aDash' ) {
-                if ( motorA.speed !== val.speed && motorA.previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
-                    updateSpeed(key, val.speed);
-                }
-                if ( typeof(val.directionSwitched) !== 'undefined' ) { //} && motorA.directionSwitched !== val.directionSwitched ) {
-                    //console.log("motorA.directionSwitched = " + motorA.directionSwitched + " but val.directionSwitched = " + val.directionSwitched );
-                    updateDirections('aDash', val.directionSwitched);
-                }
+            //console.log("getting dashboard values for " + key); 
+            var motorPort = key.slice(0,1); // take only the letter from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
+            if ( motors[ motorPort ].speed !== val.speed && motors[ motorPort ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
+                updateSpeed( key, val.speed );
             }
-            if ( key === 'bDash' ) {
-                if ( motorB.speed !== val.speed && motorB.previousSpeed !== val.speed ) {
-                    updateSpeed(key, val.speed);
-                }
-                if ( typeof(val.directionSwitched) !== 'undefined' ) {
-                    updateDirections('bDash', val.directionSwitched);
-                }
+            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched && motors[ motorPort ].previousDirectionSwitched !== val.directionSwitched ) {
+                //if ( motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
+                updateDirections( key, val.directionSwitched );
             }
-            if ( key === 'cDash' ) {
-                if ( motorC.speed !== val.speed && motorC.previousSpeed !== val.speed ) {
-                    updateSpeed(key, val.speed);
-                }
-                if ( typeof(val.directionSwitched) !== 'undefined' ) {
-                    updateDirections('cDash', val.directionSwitched);
-                }
-            }
-            if ( key === 'dDash' ) {
-                if ( motorD.speed !== val.speed && motorD.previousSpeed !== val.speed ) {
-                    updateSpeed(key, val.speed);
-                }
-                if ( typeof(val.directionSwitched) !== 'undefined' ) {
-                    updateDirections('dDash', val.directionSwitched);
-                }
-            }
-            if ( key === 'g1Dash' ) {
-                if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change
-                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                } 
-                else if ( gang1.previousSpeed !== val.speed && gang1.speed !== val.speed ) { // adjust only only if gang 1 speed changes
-                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                } 
-            }
-            if ( key === 'g2Dash' ) {
-                if ( gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
-                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                }
-                else if ( gang2.previousSpeed !== val.speed && gang2.speed !== val.speed ) {
-                    updateGang(key, val.speed, val.a, val.b, val.c, val.d);
-                }
-            } 
+
+        
+            // if ( key === 'aDash' ) {
+            //     if ( motorA.speed !== val.speed && motorA.previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
+            //         updateSpeed(key, val.speed);
+            //     }
+            //     if ( typeof(val.directionSwitched) !== 'undefined' ) { //} && motorA.directionSwitched !== val.directionSwitched ) {
+            //         //console.log("motorA.directionSwitched = " + motorA.directionSwitched + " but val.directionSwitched = " + val.directionSwitched );
+            //         updateDirections('aDash', val.directionSwitched);
+            //     }
+            // }
+            // if ( key === 'bDash' ) {
+            //     if ( motorB.speed !== val.speed && motorB.previousSpeed !== val.speed ) {
+            //         updateSpeed(key, val.speed);
+            //     }
+            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
+            //         updateDirections('bDash', val.directionSwitched);
+            //     }
+            // }
+            // if ( key === 'cDash' ) {
+            //     if ( motorC.speed !== val.speed && motorC.previousSpeed !== val.speed ) {
+            //         updateSpeed(key, val.speed);
+            //     }
+            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
+            //         updateDirections('cDash', val.directionSwitched);
+            //     }
+            // }
+            // if ( key === 'dDash' ) {
+            //     if ( motorD.speed !== val.speed && motorD.previousSpeed !== val.speed ) {
+            //         updateSpeed(key, val.speed);
+            //     }
+            //     if ( typeof(val.directionSwitched) !== 'undefined' ) {
+            //         updateDirections('dDash', val.directionSwitched);
+            //     }
+            // }
+            // if ( key === 'g1Dash' ) {
+            //     if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change
+            //         updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+            //     } 
+            //     else if ( gang1.previousSpeed !== val.speed && gang1.speed !== val.speed ) { // adjust only only if gang 1 speed changes
+            //         updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+            //     } 
+            // }
+            // if ( key === 'g2Dash' ) {
+            //     if ( gang2.a !== val.a || gang2.b !== val.b || gang2.c !== val.c || gang2.d !== val.d ) {
+            //         updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+            //     }
+            //     else if ( gang2.previousSpeed !== val.speed && gang2.speed !== val.speed ) {
+            //         updateGang(key, val.speed, val.a, val.b, val.c, val.d);
+            //     }
+            // } 
         }
 
         function getDialValues (key, val) {
             
-            if ( key === 'aDash' ) {
-                if ( val.direction === 'f' || val.direction === 'r' ) {
-                    moveDial ('aDash', val.direction); //smooth-ish linear interpolation
-                } else if ( val.direction === "stopped" ) {
-                    channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
-                    var motorDataA = channel.channelData.get('aDash');
-                    updateDial ('aDash', motorDataA); // update at the next second to the value in the message sent by the bot
-                }
-            }
-            if ( key === 'bDash' ) {
-                if ( val.direction === 'f' || val.direction === 'r' ) {
-                    moveDial ('bDash', val.direction);
-                } else if ( val.direction === "stopped" ) {
-                    channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed }); 
-                    var motorDataB = channel.channelData.get('bDash');
-                    updateDial ('bDash', motorDataB); 
-                }
-            }
-            if ( key === 'cDash' ) {
-                if ( val.direction === 'f' || val.direction === 'r' ) {
-                    moveDial ('cDash', val.direction); 
-                } else if ( val.direction === "stopped" ) {
-                    channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed }); 
-                    var motorDataC = channel.channelData.get('cDash');
-                    updateDial ('cDash', motorDataC); 
-                }
-            }
-            if ( key === 'dDash' ) {
-                if ( val.direction === 'f' || val.direction === 'r' ) {
-                    moveDial ('dDash', val.direction);
-                } else if ( val.direction === "stopped" ) {
-                    channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed }); 
-                    var motorDataD = channel.channelData.get('dDash');
-                    updateDial ('dDash', motorDataD);
-                }
-            }
+            // if ( key === 'aDash' ) {
+            //     if ( val.direction === 'f' || val.direction === 'r' ) {
+            //         moveDial ('aDash', val.direction); //smooth-ish linear interpolation
+            //     } else if ( val.direction === "stopped" ) {
+            //         channel.getKeyspace(botId).put('aDash', { 'speed': motorA.speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
+            //         var motorDataA = channel.channelData.get('aDash');
+            //         updateDial ('aDash', motorDataA); // update at the next second to the value in the message sent by the bot
+            //     }
+            // }
+            // if ( key === 'bDash' ) {
+            //     if ( val.direction === 'f' || val.direction === 'r' ) {
+            //         moveDial ('bDash', val.direction);
+            //     } else if ( val.direction === "stopped" ) {
+            //         channel.getKeyspace(botId).put('bDash', { 'speed': motorB.speed }); 
+            //         var motorDataB = channel.channelData.get('bDash');
+            //         updateDial ('bDash', motorDataB); 
+            //     }
+            // }
+            // if ( key === 'cDash' ) {
+            //     if ( val.direction === 'f' || val.direction === 'r' ) {
+            //         moveDial ('cDash', val.direction); 
+            //     } else if ( val.direction === "stopped" ) {
+            //         channel.getKeyspace(botId).put('cDash', { 'speed': motorC.speed }); 
+            //         var motorDataC = channel.channelData.get('cDash');
+            //         updateDial ('cDash', motorDataC); 
+            //     }
+            // }
+            // if ( key === 'dDash' ) {
+            //     if ( val.direction === 'f' || val.direction === 'r' ) {
+            //         moveDial ('dDash', val.direction);
+            //     } else if ( val.direction === "stopped" ) {
+            //         channel.getKeyspace(botId).put('dDash', { 'speed': motorD.speed }); 
+            //         var motorDataD = channel.channelData.get('dDash');
+            //         updateDial ('dDash', motorDataD);
+            //     }
+            // }
         }
 
         function update() {
-            // if ( botId === '' ) { // don't do anything when we're not dealing with a particular bot
-            //     return 0;
-            // }
-            // /* DASHBOARD STUFF */
-            //     // note: keyspaces contain key-value pairs. A value in a key-value pair must be a JSON object with pairs of property names and values
-            //     // example: // keyspace name: 'dashboard', key: 'a', value: '{speed: 0, position: 0}' and key: 'b', value: '{speed: 0, position: 0}', 'c', 'd', etc 
-            
-            // if (sliderBarState.a === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
-            //     var dashMotorA = channel.getKeyspace(botId).get('aDash'); 
-            //     if ( typeof(dashMotorA) !== "undefined" ) {
-            //         getDashboardValues('aDash', dashMotorA);
-            //     }               
-            // }
-            // if (sliderBarState.b === "up") {
-            //     var dashMotorB = channel.getKeyspace(botId).get('bDash');
-            //     if ( typeof(dashMotorB) !== "undefined" ) {
-            //         getDashboardValues('bDash', dashMotorB);
+            if ( botId === '' ) { // don't do anything when we're not dealing with a particular bot
+                return 0;
+            }
+            /* DASHBOARD STUFF */
+            for ( var k in sliderBars ) {
+                if (sliderBars[k].state === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
+                    var dashKey = k + 'Dash';
+                    var dashMotor = channel.getKeyspace(botId).get(dashKey); 
+                    if ( typeof(dashMotor) !== "undefined" ) {
+                        getDashboardValues(dashKey, dashMotor);
+                    }               
+                }
+            }
+
+            // for ( var i=1; i <= numMotors; i++ ) {
+                
+            //     if (sliderBars[ letters[i] ].state === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
+            //         var dashKey = letters[i] + 'Dash';
+            //         var dashMotor = channel.getKeyspace(botId).get(dashKey); 
+            //         if ( typeof(dashMotor) !== "undefined" ) {
+            //             getDashboardValues(dashKey, dashMotor);
+            //         }               
             //     }
             // }
-            // if (sliderBarState.c === "up") {
-            //     var dashMotorC = channel.getKeyspace(botId).get('cDash'); 
-            //     if ( typeof(dashMotorC) !== "undefined" ) {
-            //         getDashboardValues('cDash', dashMotorC);
-            //     }
-            // }
-            // if (sliderBarState.d === "up") {
-            //     var dashMotorD = channel.getKeyspace(botId).get('dDash'); 
-            //     if ( typeof(dashMotorD) !== "undefined" ) {
-            //         getDashboardValues('dDash', dashMotorD);
-            //     }
-            // }
+
+
             // if (sliderBarState.g1 === "up") {
             //     var dashGang1 = channel.getKeyspace(botId).get('g1Dash'); 
             //     if ( typeof(dashGang1) !== "undefined" ) {

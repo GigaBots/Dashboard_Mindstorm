@@ -269,25 +269,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Specify the number of gangs */
         var numGangs = 2;
-        var gangColumns = 2, gangRows = '';
+        var gangColumns = 1, gangRows = '';
 
         /* Gang positions */
         var positionGangs = {}
-        if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
-            var maxGangColumns = gangColumns;
-            var maxGangRows = numGangs/gangColumns;
-        } else {
-            var maxGangColumns = numGangs/gangRows;
-            var maxGangRows = gangRows;
+        for ( var i = 1; i <= numGangs; i++ ) {
+            positionGangs[ i ] = { x : 581, y : 228 + (i-1)*215 }
         }
-        for ( var i = 1; i <= maxGangRows; i++ ) { 
-            for ( var j = 1; j <= maxGangColumns; j++ ) {
-                if ( j === 1) var subIndex = j + 1 + (i - 1)/i;
-                else var subIndex = j + 1;
-                var index = subIndex*i - i;
-                positionGangs[ index ] = { x : 581 + (j-1)*374 , y : 228 + (i-1)*215 }
-            } // this is a sequence to position gangs (laid out in a grid). It only handles rectangular arrangements right now...
-        }
+        // if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
+        //     var maxGangColumns = gangColumns;
+        //     var maxGangRows = numGangs/gangColumns;
+        // } else {
+        //     var maxGangColumns = numGangs/gangRows;
+        //     var maxGangRows = gangRows;
+        // }
+        //for ( var i = 1; i <= maxGangRows; i++ ) { 
+            //for ( var j = 1; j <= maxGangColumns; j++ ) {
+                //if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
+                //else var subIndex = j + 1;
+                //var index = subIndex*i - i;
+                //positionGangs[ index ] = { x : 581 + (j-1)*374 , y : 228 + (i-1)*215 }
+            //} // this is a sequence to position gangs (laid out in a grid). It only handles rectangular arrangements right now...
+        //}
 
         var gangs = {}
         Gang = function ( game, gangId ) {
@@ -300,11 +303,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.previousSpeed = 0;
         }
         Gang.prototype.constructor = Gang;
+        var gangIds = {}
+        var gangLabels = {}
 
         var gangPlusButtons = {}
         GangPlusButton = function ( game, gang ) {
             Phaser.Button.call ( this, game, positionGangs[gang].x+198, positionGangs[gang].y+33, 'plusButton' );
-            this.events.onInputDown.add( increaseSpeedClickActionDown, gangs[gang] );
+            this.events.onInputDown.add( increaseGangSpeedClickActionDown, gangs[gang] );
             this.input.useHandCursor = true;
             this.setFrames(1,0,2,0);
             this.gang = gang;
@@ -313,6 +318,99 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         GangPlusButton.prototype = Object.create(Phaser.Button.prototype);
         GangPlusButton.prototype.constructor = GangPlusButton;
+
+        var gangMinusButtons = {}
+        GangMinusButton = function ( game, gang ) {
+            Phaser.Button.call ( this, game, positionGangs[gang].x+198, positionGangs[gang].y+91, 'minusButton' );
+            this.events.onInputDown.add( decreaseGangSpeedClickActionDown, gangs[gang] );
+            this.input.useHandCursor = true;
+            this.setFrames(1,0,2,0);
+            this.gang = gang;
+            this.name = 'minus button ' + gang;
+            game.add.existing(this);
+        }
+        GangMinusButton.prototype = Object.create(Phaser.Button.prototype);
+        GangMinusButton.prototype.constructor = GangMinusButton;
+
+        /* Gang Change/Display Speed Slider Bar (Button) */
+        var gangSliderBars = {}
+        GangSliderBar = function ( game, gang ) {
+            Phaser.Button.call ( this, game, positionGangs[gang].x+249, positionGangs[gang].y+165, 'sliderBar' );
+            this.events.onInputDown.add( changeGangSpeedSlideActionDown, gangs[gang] );
+            this.events.onInputUp.add( changeGangSpeedSlideActionUp, gangs[gang] );
+            this.inputEnabled = true;
+            this.input.useHandCursor = true;
+            this.input.enableDrag();
+            this.input.allowHorizontalDrag = false;
+            this.setFrames(1,0,2,0);
+            this.gang = gang;
+            this.state = 'up';
+            this.name = 'slider bar ' + gang;
+            game.add.existing(this);
+        }
+        GangSliderBar.prototype = Object.create(Phaser.Button.prototype);
+        GangSliderBar.prototype.constructor = GangSliderBar;
+
+        var directionsNote = {}
+
+        var gangCheckboxes = {}
+        GangCheckbox = function ( game, gang ) {
+            this.gang = gang;
+            this.name = 'checkbox gang ' + gang;
+        }
+        GangCheckbox.prototype = Object.create(Phaser.Button.prototype);
+        GangCheckbox.prototype.constructor = GangCheckbox;
+
+        var motorCheckboxes = {}
+        MotorCheckbox = function ( game, gang, motor, x, y ) {
+            Phaser.Button.call ( this, game, x, y, 'checkbox' );
+            this.events.onInputDown.add( actionMotorCheckbox, gangs[gang] );
+            this.input.useHandCursor = true;
+            this.setFrames(2,0,1,0);
+            this.gang = gang;
+            this.motor = motor;
+            this.name = 'checkbox Motor ' + gang + ' motor ' + motor;
+            game.add.existing(this);
+        }
+        MotorCheckbox.prototype = Object.create(Phaser.Button.prototype);
+        MotorCheckbox.prototype.constructor = MotorCheckbox;
+
+        var gangMotorLabels = {}
+        GangMotorLabel = function ( game, gang ) {
+            this.gang = gang;
+            this.name = 'checkbox gang ' + gang;
+        }
+        GangMotorLabel.prototype = Object.create(Phaser.Button.prototype);
+        GangMotorLabel.prototype.constructor = GangMotorLabel;
+
+        var gangForwardButtons = {}
+        GangForwardButton = function ( game, gang ) {
+            Phaser.Button.call( this, game, positionGangs[gang].x+101, positionGangs[gang].y+32, 'forwardButton' );
+            this.events.onInputDown.add( gangForwardDirectionActionDown, gangs[gang] );
+            this.events.onInputUp.add( gangForwardDirectionActionUp, gangs[gang] );
+            this.input.useHandCursor = true
+            this.setFrames(1,0,2,0);
+            this.gang = gang;
+            this.name = 'forward button ' + gang;
+            game.add.existing(this);
+        }
+        GangForwardButton.prototype = Object.create(Phaser.Button.prototype);
+        GangForwardButton.prototype.constructor = GangForwardButton;
+
+        var gangReverseButtons = {}
+        GangReverseButton = function ( game, gang ) {
+            Phaser.Button.call( this, game, positionGangs[gang].x+101, positionGangs[gang].y+90, 'reverseButton' );
+            this.events.onInputDown.add( gangReverseDirectionActionDown, gangs[gang] );
+            this.events.onInputUp.add( gangReverseDirectionActionUp, gangs[gang] );
+            this.input.useHandCursor = true
+            this.setFrames(1,0,2,0);
+            this.gang = gang;
+            this.name = 'reverse button ' + gang;
+            game.add.existing(this);
+        }
+        GangReverseButton.prototype = Object.create(Phaser.Button.prototype);
+        GangReverseButton.prototype.constructor = GangReverseButton;
+
 
         // positions of different units are the upper left x & y coordinates of their frames
 
@@ -357,94 +455,82 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Individual motor controls and feedback */
         var frameMotor;
 
-        /* Speed */
-        var sliderLabel;
-        var sliderBarState = { a: "up", b: "up", c: "up", d: "up", g1: "up", g2: "up" }
-        var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
-        var sliderIncrements = { a : '', b : '', c : '', d : '', g1 : '', g2 : ''}
-        
-        var motorminusButton, motorplusButton, sliderBar;
-
-        var motorminusButtonA, motorminusButtonB, motorminusButtonC, motorminusButtonD, motorminusButtonG1, motorminusButtonG2;
-        var motorplusButtonA, motorplusButtonB, motorplusButtonC, motorplusButtonD, motorplusButtonG1, motorplusButtonG2;
-        var speed;
-        var speedRange = [0, 100, 200, 300, 400, 500, 600, 700];
 
         /* Rotational position */    
         var labelRotation = "Motor Rotational Positions";
         var frameDials;        
         var positionDial = { x : 674, y : 133 }
-        var t1 = { a : 0, b : 0, c : 0, d : 0 }
+        //var t1 = { a : 0, b : 0, c : 0, d : 0 }
 
         /* Ganging motors together */
         var frameMotorGanging, frameMotorGang1, frameMotorGang2;
-        var positionGang = { x : 970, y : 66 }
-        var positionGang1 = { x : 581, y: 228 } 
-        var positionGang2 = { x : 581, y: 443 } 
+        //var positionGang = { x : 970, y : 66 }
+        //var positionGang1 = { x : 581, y: 228 } 
+        //var positionGang2 = { x : 581, y: 443 } 
         var checkbox;
         var fGangButton, rGangButton;
 
 
 
-        var motorA = {
-            port: 'a',
-            status : 1,
-            speed : 0,
-            position : 0,
-            gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
-            stalled: false,
-            previousSpeed : 0,
-            speedDisplay : '', 
-            //directionSwitched : false
-        }
-        var motorB = {
-            port: 'b',
-            status : 1,
-            speed : 0,
-            position : 0,
-            gang: 0,
-            stalled: false,
-            previousSpeed : 0, 
-            //directionSwitched : false
-        }
-        var motorC = {
-            port: 'c',
-            status : 1,
-            speed : 0,
-            position : 0,
-            gang: 0,
-            stalled: false,
-            previousSpeed : 0, 
-            //directionSwitched : false
-        }
-        var motorD = {
-            port: 'd',
-            status : 1,
-            speed : 0,
-            position : 0,
-            gang: 0,
-            stalled: false,
-            previousSpeed : 0, 
-            //directionSwitched : false
-        }
-        var gang1 = {
-            gang: 1,
-            speed : 0,
-            a : false, //initially motor A is not in any gang
-            b : false,
-            c : false,
-            d : false,
-            previousSpeed : 0
-        }
-        var gang2 = {
-            gang: 2,
-            speed : 0,
-            a : false, //initially motor A is not in any gang
-            b : false,
-            c : false,
-            d : false,
-            previousSpeed : 0
-        }
+        // var motorA = {
+        //     port: 'a',
+        //     status : 1,
+        //     speed : 0,
+        //     position : 0,
+        //     gang: 0, // 0 = not ganged with other motors, 1 = joined in gang 1, or 2 = joined in gang 2
+        //     stalled: false,
+        //     previousSpeed : 0,
+        //     speedDisplay : '', 
+        //     //directionSwitched : false
+        // }
+        // var motorB = {
+        //     port: 'b',
+        //     status : 1,
+        //     speed : 0,
+        //     position : 0,
+        //     gang: 0,
+        //     stalled: false,
+        //     previousSpeed : 0, 
+        //     //directionSwitched : false
+        // }
+        // var motorC = {
+        //     port: 'c',
+        //     status : 1,
+        //     speed : 0,
+        //     position : 0,
+        //     gang: 0,
+        //     stalled: false,
+        //     previousSpeed : 0, 
+        //     //directionSwitched : false
+        // }
+        // var motorD = {
+        //     port: 'd',
+        //     status : 1,
+        //     speed : 0,
+        //     position : 0,
+        //     gang: 0,
+        //     stalled: false,
+        //     previousSpeed : 0, 
+        //     //directionSwitched : false
+        // }
+        // var gang1 = {
+        //     gang: 1,
+        //     speed : 0,
+        //     a : false, //initially motor A is not in any gang
+        //     b : false,
+        //     c : false,
+        //     d : false,
+        //     previousSpeed : 0
+        // }
+        // var gang2 = {
+        //     gang: 2,
+        //     speed : 0,
+        //     a : false, //initially motor A is not in any gang
+        //     b : false,
+        //     c : false,
+        //     d : false,
+        //     previousSpeed : 0
+        // }
 
 
         /* Sensors */
@@ -1150,12 +1236,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameMotorGang1 = game.add.graphics(0,0);
             frameMotorGang1.lineStyle(1, frameLineColor, 1);
             frameMotorGang1.beginFill(frameFill,frameOpacity);
-            frameMotorGang1.drawRect(positionGang1.x, positionGang1.y-2, 364, 205);
+            frameMotorGang1.drawRect(positionGangs[1].x, positionGangs[1].y-2, 364, 205);
 
             frameMotorGang2 = game.add.graphics(0,0);
             frameMotorGang2.lineStyle(1, frameLineColor, 1);
             frameMotorGang2.beginFill(frameFill,frameOpacity);
-            frameMotorGang2.drawRect(positionGang2.x, positionGang2.y-2, 364, 205);
+            frameMotorGang2.drawRect(positionGangs[2].x, positionGangs[2].y-2, 364, 205);
 
             frameDials = game.add.graphics(0,0);
             frameDials.lineStyle(1, frameLineColor, 1);
@@ -1206,18 +1292,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             /* Ganging motors together */
             labelMotorGang = {
-                g1: game.add.text(positionGang1.x+10, positionGang1.y, "Motor Gang 1", largeTitleStyle),
-                g2: game.add.text(positionGang2.x+10, positionGang2.y, "Motor Gang 2", largeTitleStyle),
-                a1 : game.add.text(positionGang1.x+38, positionGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
-                a2 : game.add.text(positionGang2.x+38, positionGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
-                b1 : game.add.text(positionGang1.x+38, positionGang1.y+75, "Motor B", labelStyle), 
-                b2 : game.add.text(positionGang2.x+38, positionGang2.y+75, "Motor B", labelStyle), 
-                c1 : game.add.text(positionGang1.x+38, positionGang1.y+117, "Motor C", labelStyle), 
-                c2 : game.add.text(positionGang2.x+38, positionGang2.y+117, "Motor C", labelStyle), 
-                d1 : game.add.text(positionGang1.x+38, positionGang1.y+159, "Motor D", labelStyle), 
-                d2 : game.add.text(positionGang2.x+38, positionGang2.y+159, "Motor D", labelStyle), 
-                note1 : game.add.text(positionGang1.x+101, positionGang1.y+142, "*Forward and Reverse\n directions are relative", noteStyle), 
-                note2 : game.add.text(positionGang2.x+101, positionGang2.y+142, "*Forward and Reverse\n directions are relative", noteStyle) 
+                // g1: game.add.text(positionGang1.x+10, positionGang1.y, "Motor Gang 1", largeTitleStyle),
+                // g2: game.add.text(positionGang2.x+10, positionGang2.y, "Motor Gang 2", largeTitleStyle),
+                // a1 : game.add.text(positionGang1.x+38, positionGang1.y+33, "Motor A", labelStyle), // motor A in gang 1
+                // a2 : game.add.text(positionGang2.x+38, positionGang2.y+33, "Motor A", labelStyle), //motor A in gang 2
+                // b1 : game.add.text(positionGang1.x+38, positionGang1.y+75, "Motor B", labelStyle), 
+                // b2 : game.add.text(positionGang2.x+38, positionGang2.y+75, "Motor B", labelStyle), 
+                // c1 : game.add.text(positionGang1.x+38, positionGang1.y+117, "Motor C", labelStyle), 
+                // c2 : game.add.text(positionGang2.x+38, positionGang2.y+117, "Motor C", labelStyle), 
+                // d1 : game.add.text(positionGang1.x+38, positionGang1.y+159, "Motor D", labelStyle), 
+                // d2 : game.add.text(positionGang2.x+38, positionGang2.y+159, "Motor D", labelStyle), 
+                //note1 : game.add.text(positionGang1.x+101, positionGang1.y+142, "*Forward and Reverse\n directions are relative", noteStyle), 
+                //note2 : game.add.text(positionGang2.x+101, positionGang2.y+142, "*Forward and Reverse\n directions are relative", noteStyle) 
             }
 
         /* Buttons */
@@ -1254,137 +1340,71 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenInputButton.input.useHandCursor = true;
             
             /* Adding motor-ganging functionality */
-            checkbox = {
-                //a1 : game.add.button(positionGang.x, positionGang.y+27, 'checkbox', actionCheckbox, this),
-                a1 : game.add.button(positionGang1.x+10, positionGang1.y+32, 'checkbox', actionCheckboxA1, this),
-                a2 : game.add.button(positionGang2.x+10, positionGang2.y+32, 'checkbox', actionCheckboxA2, this),
-                b1 : game.add.button(positionGang1.x+10, positionGang1.y+74, 'checkbox', actionCheckboxB1, this),
-                b2 : game.add.button(positionGang2.x+10, positionGang2.y+74, 'checkbox', actionCheckboxB2, this),
-                c1 : game.add.button(positionGang1.x+10, positionGang1.y+116, 'checkbox', actionCheckboxC1, this),
-                c2 : game.add.button(positionGang2.x+10, positionGang2.y+116, 'checkbox', actionCheckboxC2, this),
-                d1 : game.add.button(positionGang1.x+10, positionGang1.y+158, 'checkbox', actionCheckboxD1, this),
-                d2 : game.add.button(positionGang2.x+10, positionGang2.y+158, 'checkbox', actionCheckboxD2, this)
-            }
-            // let's initially set the checkbox frames so that they're unchecked and if you hvoer over them, they highlight
-            checkbox.a1.setFrames(2,0,1,0);
-            checkbox.a2.setFrames(2,0,1,0);
-            checkbox.b1.setFrames(2,0,1,0);
-            checkbox.b2.setFrames(2,0,1,0);
-            checkbox.c1.setFrames(2,0,1,0);
-            checkbox.c2.setFrames(2,0,1,0);
-            checkbox.d1.setFrames(2,0,1,0);
-            checkbox.d2.setFrames(2,0,1,0);
+            // checkbox = {
+            //     //a1 : game.add.button(positionGang.x, positionGang.y+27, 'checkbox', actionCheckbox, this),
+            //     a1 : game.add.button(positionGang1.x+10, positionGang1.y+32, 'checkbox', actionCheckboxA1, this),
+            //     a2 : game.add.button(positionGang2.x+10, positionGang2.y+32, 'checkbox', actionCheckboxA2, this),
+            //     b1 : game.add.button(positionGang1.x+10, positionGang1.y+74, 'checkbox', actionCheckboxB1, this),
+            //     b2 : game.add.button(positionGang2.x+10, positionGang2.y+74, 'checkbox', actionCheckboxB2, this),
+            //     c1 : game.add.button(positionGang1.x+10, positionGang1.y+116, 'checkbox', actionCheckboxC1, this),
+            //     c2 : game.add.button(positionGang2.x+10, positionGang2.y+116, 'checkbox', actionCheckboxC2, this),
+            //     d1 : game.add.button(positionGang1.x+10, positionGang1.y+158, 'checkbox', actionCheckboxD1, this),
+            //     d2 : game.add.button(positionGang2.x+10, positionGang2.y+158, 'checkbox', actionCheckboxD2, this)
+            // }
+            // // let's initially set the checkbox frames so that they're unchecked and if you hvoer over them, they highlight
+            // checkbox.a1.setFrames(2,0,1,0);
+            // checkbox.a2.setFrames(2,0,1,0);
+            // checkbox.b1.setFrames(2,0,1,0);
+            // checkbox.b2.setFrames(2,0,1,0);
+            // checkbox.c1.setFrames(2,0,1,0);
+            // checkbox.c2.setFrames(2,0,1,0);
+            // checkbox.d1.setFrames(2,0,1,0);
+            // checkbox.d2.setFrames(2,0,1,0);
 
-            /* use hand cursor when hovering over checkboxes */
-            checkbox.a1.input.useHandCursor = true;
-            checkbox.a2.input.useHandCursor = true;
-            checkbox.b1.input.useHandCursor = true;
-            checkbox.b2.input.useHandCursor = true;
-            checkbox.c1.input.useHandCursor = true;
-            checkbox.c2.input.useHandCursor = true;
-            checkbox.d1.input.useHandCursor = true;
-            checkbox.d2.input.useHandCursor = true;
+            // /* use hand cursor when hovering over checkboxes */
+            // checkbox.a1.input.useHandCursor = true;
+            // checkbox.a2.input.useHandCursor = true;
+            // checkbox.b1.input.useHandCursor = true;
+            // checkbox.b2.input.useHandCursor = true;
+            // checkbox.c1.input.useHandCursor = true;
+            // checkbox.c2.input.useHandCursor = true;
+            // checkbox.d1.input.useHandCursor = true;
+            // checkbox.d2.input.useHandCursor = true;
             
             //======================
-            /* Plus and Minus Increase and Decrease Speed */
-            // motorminusButton = {
-            //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+91, 'minusButton', actionDecreaseOnClick, gang1 ),
-            //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+91, 'minusButton', actionDecreaseOnClick, gang2 ),
-            // }
-            // motorplusButton = {
-            //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+33, 'plusButton', actionIncreaseOnClick, gang1 ),
-            //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+33, 'plusButton', actionIncreaseOnClick, gang2 ),
-            // }
-            // motorminusButton.g1.input.useHandCursor = true;
-            // motorminusButton.g2.input.useHandCursor = true;
-            // motorplusButton.g1.input.useHandCursor = true;
-            // motorplusButton.g2.input.useHandCursor = true;
-            // motorminusButton.g1.setFrames(1,0,2,0);
-            // motorminusButton.g2.setFrames(1,0,2,0);
-            // motorplusButton.g1.setFrames(1,0,2,0);
-            // motorplusButton.g2.setFrames(1,0,2,0);
 
 
-            // sliderBar = {
-            //     g1 : game.add.button(positionGang1.x+249, positionGang1.y+165, 'sliderBar'),
-            //     g2 : game.add.button(positionGang2.x+249, positionGang2.y+165, 'sliderBar'),
-            // }
 
-            // sliderBar.g1.inputEnabled=true;
-            // sliderBar.g1.input.useHandCursor = true;
-            // sliderBar.g1.input.enableDrag();
-            // sliderBar.g1.input.allowHorizontalDrag=false;
-            // sliderBar.g1.events.onInputUp.add( actionDragOnClick, gang1 );
-            // sliderBar.g1.events.onInputDown.add( actionDownOnSlide, gang1 );
-
-            // sliderBar.g2.inputEnabled=true;
-            // sliderBar.g2.input.useHandCursor = true;
-            // sliderBar.g2.input.enableDrag();
-            // sliderBar.g2.input.allowHorizontalDrag=false;
-            // sliderBar.g2.events.onInputUp.add( actionDragOnClick, gang2 );
-            // sliderBar.g2.events.onInputDown.add( actionDownOnSlide, gang2 );
-
-        /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
-            
-            // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
-            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
-            fAKey.onDown.add(forwardDirectionActionDown, motorA); // this will move motor A forward
-            var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
-            fBKey.onDown.add(forwardDirectionActionDown, motorB);
-            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-            fCKey.onDown.add(forwardDirectionActionDown, motorC);
-            var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
-            fDKey.onDown.add(forwardDirectionActionDown, motorD);
-
-            var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
-            rAKey.onDown.add(reverseDirectionActionDown, motorA); // this will move motor A in reverse
-            var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
-            rBKey.onDown.add(reverseDirectionActionDown, motorB);
-            var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
-            rCKey.onDown.add(reverseDirectionActionDown, motorC);
-            var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
-            rDKey.onDown.add(reverseDirectionActionDown, motorD);
-
-            // stop motor on key up:
-            fAKey.onUp.add(forwardDirectionActionUp, motorA); // this will stop motorA
-            fBKey.onUp.add(forwardDirectionActionUp, motorB);
-            fCKey.onUp.add(forwardDirectionActionUp, motorC);
-            fDKey.onUp.add(forwardDirectionActionUp, motorD);
-
-            rAKey.onUp.add(reverseDirectionActionUp, motorA); // this will stop motor A
-            rBKey.onUp.add(reverseDirectionActionUp, motorB);
-            rCKey.onUp.add(reverseDirectionActionUp, motorC);
-            rDKey.onUp.add(reverseDirectionActionUp, motorD);
 
             // buttons for motor gangs:
-            fGangButton = {
-                g1 : game.add.button(positionGang1.x+101, positionGang1.y+32, 'forwardButton'),
-                g2 : game.add.button(positionGang2.x+101, positionGang2.y+32, 'forwardButton')
-            }
-            rGangButton = {
-                g1 : game.add.button(positionGang1.x+101, positionGang1.y+90, 'reverseButton'),
-                g2 : game.add.button(positionGang2.x+101, positionGang2.y+90, 'reverseButton')
-            }
+            // fGangButton = {
+            //     g1 : game.add.button(positionGangs[1].x+101, positionGangs[1].y+32, 'forwardButton'),
+            //     g2 : game.add.button(positionGangs[2].x+101, positionGangs[2].y+32, 'forwardButton')
+            // }
+            // rGangButton = {
+            //     g1 : game.add.button(positionGangs[1].x+101, positionGangs[1].y+90, 'reverseButton'),
+            //     g2 : game.add.button(positionGangs[2].x+101, positionGangs[2].y+90, 'reverseButton')
+            // }
             
-            fGangButton.g1.events.onInputDown.add(fGangButtonDownAction, gang1);
-            fGangButton.g1.events.onInputUp.add(fGangButtonUpAction, gang1);
-            fGangButton.g2.events.onInputDown.add(fGangButtonDownAction, gang2);
-            fGangButton.g2.events.onInputUp.add(fGangButtonUpAction, gang2);
+            // fGangButton.g1.events.onInputDown.add(fGangButtonDownAction, gangs[1]);
+            // fGangButton.g1.events.onInputUp.add(fGangButtonUpAction, gangs[1]);
+            // fGangButton.g2.events.onInputDown.add(fGangButtonDownAction, gangs[2]);
+            // fGangButton.g2.events.onInputUp.add(fGangButtonUpAction, gangs[2]);
 
-            rGangButton.g1.events.onInputDown.add(rGangButtonDownAction, gang1);
-            rGangButton.g1.events.onInputUp.add(rGangButtonUpAction, gang1);
-            rGangButton.g2.events.onInputDown.add(rGangButtonDownAction, gang2);
-            rGangButton.g2.events.onInputUp.add(rGangButtonUpAction, gang2);
+            // rGangButton.g1.events.onInputDown.add(rGangButtonDownAction, gangs[1]);
+            // rGangButton.g1.events.onInputUp.add(rGangButtonUpAction, gangs[1]);
+            // rGangButton.g2.events.onInputDown.add(rGangButtonDownAction, gangs[2]);
+            // rGangButton.g2.events.onInputUp.add(rGangButtonUpAction, gangs[2]);
 
-            fGangButton.g1.setFrames(1,0,2,2);
-            rGangButton.g1.setFrames(1,0,2,2);
-            fGangButton.g2.setFrames(1,0,2,2);
-            rGangButton.g2.setFrames(1,0,2,2);
+            // fGangButton.g1.setFrames(1,0,2,2);
+            // rGangButton.g1.setFrames(1,0,2,2);
+            // fGangButton.g2.setFrames(1,0,2,2);
+            // rGangButton.g2.setFrames(1,0,2,2);
 
-            fGangButton.g1.input.useHandCursor = true;
-            rGangButton.g1.input.useHandCursor = true;
-            fGangButton.g2.input.useHandCursor = true;
-            rGangButton.g2.input.useHandCursor = true;
+            // fGangButton.g1.input.useHandCursor = true;
+            // rGangButton.g1.input.useHandCursor = true;
+            // fGangButton.g2.input.useHandCursor = true;
+            // rGangButton.g2.input.useHandCursor = true;
 
             // Pretty quick and dirty here, hopefully this works though:
             /* forward button actions */
@@ -1482,27 +1502,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // }
             }
 
-        /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
-            
-            //add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
-            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
-            fG1Key.onDown.add(fGangButtonDownAction, gang1); // this will move gang 1 forward
-            var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
-            fG2Key.onDown.add(fGangButtonDownAction, gang2);
-
-            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
-            rG1Key.onDown.add(rGangButtonDownAction, gang1); // this will move gang 1 in reverse
-            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.Y);
-            rG2Key.onDown.add(rGangButtonDownAction, gang2);
-
-            // stop motor on key up:
-            fG1Key.onUp.add(fGangButtonUpAction, gang1); // this will stop gang 1
-            fG2Key.onUp.add(fGangButtonUpAction, gang2);
-
-            rG1Key.onUp.add(rGangButtonUpAction, gang1); // this will stop gang 1
-            rG2Key.onUp.add(rGangButtonUpAction, gang2);
-
-
         /* Status Lights */
             statusLight.a = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+24, 'statusLight');
             statusLight.a.animations.add('unplugged', [3], 1);
@@ -1552,7 +1551,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ letters[i] ].name, largeTitleStyle );
                 sliderTracks[ motorPort] = game.add.sprite( positionMotors[ motorPort ].x+163, positionMotors[ motorPort].y+16, 'sliderIncrements' );
                 for ( var k = 0; k <= 7; k++ ) {
-                    var speedLabel = speedRange[k] + "";
+                    var speedLabel = 100 * k + "";
                     sliderSpeedIncrements[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+237, positionMotors[ motorPort ].y+162 - 22 * k, speedLabel, labelStyle );
                 }
                 sliderSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+154, positionMotors[ motorPort ].y+179, "Speed (\xB0/sec)", labelStyle );
@@ -1569,8 +1568,73 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* Create Gangs */
             for ( var i = 1; i <= numGangs; i++ ) {
                 gangs[ i ] = new Gang( game, i );
+                gangLabels[ i ] = game.add.text( positionGangs[ i ].x+10, positionGangs[ i ].y, gangs[ i ].name, largeTitleStyle );
+                sliderTracks[ i ] = game.add.sprite( positionGangs[ i ].x+254, positionGangs[ i ].y+16, 'sliderIncrements' );                
+                for ( var k = 0; k <= 7; k++ ) {
+                    var speedLabel = 100 * k + "";
+                    sliderSpeedIncrements[ i ] = game.add.text( positionGangs[ i ].x+328, positionGangs[ i ].y+162 - 22 * k, speedLabel, labelStyle );
+                }
+                sliderSpeedLabels[ i ] = game.add.text( positionGangs[ i ].x+245, positionGangs[ i ].y+179, "Speed (\xB0/sec)", labelStyle );
+                currentSpeedLabels[ i ] = game.add.text( positionGangs[ i ].x+101, positionGangs[ i ].y+179, "Current Speed:", labelStyle );
+                directionsNote[ i ] = game.add.text(positionGangs[ i ].x+101, positionGangs[ i ].y+142, "*Forward and Reverse\n directions are relative", noteStyle), 
+                gangForwardButtons[ i ] = new GangForwardButton( game, i );
+                gangReverseButtons[ i ] = new GangReverseButton( game, i );
                 gangPlusButtons[ i ] = new GangPlusButton( game, i );
+                gangMinusButtons[ i ] = new GangMinusButton( game, i );
+                gangSliderBars[ i ] = new GangSliderBar( game, i );
+                gangCheckboxes[i] = new GangCheckbox( game, i );
+                gangMotorLabels[i] = new GangMotorLabel( game, i );
+                var spacing = Math.floor((159 - 33)/(numMotors-1));
+                for ( var j = 1; j <= numMotors; j++ ) {
+                    var motorName = "Motor " + letters[j].toUpperCase();
+                    gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+33+(j-1)*spacing, motorName, labelStyle );
+                    gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+10, positionGangs[ i ].y+32+(j-1)*spacing );
+                }              
             }
+
+            /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
+            // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
+            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
+            fAKey.onDown.add(forwardDirectionActionDown, motors['a']); // this will move motor A forward
+            var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
+            fBKey.onDown.add(forwardDirectionActionDown, motors['b']);
+            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
+            fCKey.onDown.add(forwardDirectionActionDown, motors['c']);
+            var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
+            fDKey.onDown.add(forwardDirectionActionDown, motors['d']);
+            var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
+            rAKey.onDown.add(reverseDirectionActionDown, motors['a']); // this will move motor A in reverse
+            var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
+            rBKey.onDown.add(reverseDirectionActionDown, motors['b']);
+            var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
+            rCKey.onDown.add(reverseDirectionActionDown, motors['c']);
+            var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
+            rDKey.onDown.add(reverseDirectionActionDown, motors['d']);
+            // stop motor on key up:
+            fAKey.onUp.add(forwardDirectionActionUp, motors['a']); // this will stop motorA
+            fBKey.onUp.add(forwardDirectionActionUp, motors['b']);
+            fCKey.onUp.add(forwardDirectionActionUp, motors['c']);
+            fDKey.onUp.add(forwardDirectionActionUp, motors['d']);
+            rAKey.onUp.add(reverseDirectionActionUp, motors['a']); // this will stop motor A
+            rBKey.onUp.add(reverseDirectionActionUp, motors['b']);
+            rCKey.onUp.add(reverseDirectionActionUp, motors['c']);
+            rDKey.onUp.add(reverseDirectionActionUp, motors['d']);
+
+            /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
+            // // add reverse/forward keyboard controls (using Q & W for forward, and T & Y for reverse):
+            // var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
+            // fG1Key.onDown.add(fGangButtonDownAction, gangs[1]); // this will move gang 1 forward
+            // var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
+            // fG2Key.onDown.add(fGangButtonDownAction, gangs[1]);
+            // var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.T);
+            // rG1Key.onDown.add(rGangButtonDownAction, gangs[2]); // this will move gang 1 in reverse
+            // var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.Y);
+            // rG2Key.onDown.add(rGangButtonDownAction, gangs[2]);
+            // // stop motor on key up:
+            // fG1Key.onUp.add(fGangButtonUpAction, gangs[1]); // this will stop gang 1
+            // fG2Key.onUp.add(fGangButtonUpAction, gangs[2]);
+            // rG1Key.onUp.add(rGangButtonUpAction, gangs[1]); // this will stop gang 1
+            // rG2Key.onUp.add(rGangButtonUpAction, gangs[2]);
 
         } // end create 
 
@@ -1660,6 +1724,115 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("stop motor " + this.port);
             stopMotor( botId, this.port ); 
             reverseButtons[this.port].setFrames(1,0,2,0); // show the reverse button as up (normal position)
+        }
+
+        /* Gang controls */
+        function increaseGangSpeedClickActionDown () {
+            if ( gangs[ this.gangId ].speed <= 650 ) {
+                gangs[ this.gangId ].speed += 50; // increase speed by 50 degrees/sec
+                gangSliderBars[ this.gangId ].y -= 11;
+            }
+            else {
+                gangs[ this.gangId ].speed = 700; // just set the speed to the maximum
+                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y + 11;
+            }
+            var dashKey = this.gangId + 'Dash'; // we're creating a string which will be the keyspace key for this gang's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': gangs[ this.gangId ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.gangId into it, which contains the value 'speed' equal to gangs[this.gangId].speed
+            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
+            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+191, positionGangs[this.gangId].y+176, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
+            console.log("increasing gang " + this.gangId + " speed to " + gangs[ this.gangId ].speed.toFixed(2) );
+        }
+        function decreaseGangSpeedClickActionDown () {
+            if (gangs[ this.gangId ].speed >= 50) {
+                gangs[ this.gangId ].speed -= 50;
+                gangSliderBars[ this.gangId ].y += 11;
+            } else {
+                gangs[ this.gangId ].speed = 0; // just set the speed to the minimum
+                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y + 165; 
+            }
+            var dashKey = this.gangId + 'Dash'; // we're creating a string which will be the keyspace key for this gang's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': gangs[ this.gangId ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.gangId into it, which contains the value 'speed' equal to gangs[this.gangId].speed
+            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
+            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+191, positionGangs[this.gangId].y+176, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
+            console.log("decreasing gang " + this.gangId + " speed to " + gangs[ this.gangId ].speed.toFixed(2) );
+        }
+        function changeGangSpeedSlideActionDown () {
+            gangSliderBars[ this.gangId ].state = 'down';
+            gangs[ this.gangId ].previousSpeed = gangs[ this.gangId ].speed;
+        }
+        function changeGangSpeedSlideActionUp () {
+            gangSliderBars[ this.gangId ].state = 'up';
+            //we're sliding between positionGangs[ this.gangId ].y + 11 px (0 deg/sec) and positionGangs[ this.gangId ].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            if ( gangSliderBars[ this.gangId ].y < positionGangs[ this.gangId ].y+11 ) { //set max speed boundary limit
+                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y+11;
+            } else if ( gangSliderBars[this.gangId].y > positionGangs[this.gangId].y+165 ) { //set min speed boundary limit
+                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y+165;
+            }
+            gangs[ this.gangId ].speed = 700 + ( 700/154 ) * (positionGangs[this.gangId].y + 11 - gangSliderBars[this.gangId].y); // normalize speed over the range of y values on the slider track
+            var dashKey = this.gangId + 'Dash'; // we're creating a string which will be the keyspace key for this gang's dashboard settings
+            channel.getKeyspace(botId).put(dashKey, { 'speed': gangs[ this.gangId ].speed }); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.gangId into it, which contains the value 'speed' equal to gangs[this.gangId].speed
+            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
+            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+191, positionGangs[this.gangId].y+176, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
+            console.log("changing speed of gang " + this.gangId + " to " + gangs[ this.gangId ].speed.toFixed(2));
+        }
+
+        function actionMotorCheckbox (gang, motor) {
+            console.log("checkbox " + this);
+            console.dir(this);
+
+            for ( var j in gangs ) {
+                if ( this.gangId === j ) {
+                    for ( var k in motors ) {
+                        if ( this[k] === false ) {
+                            var checkboxId = this[k];
+                            gangCheckboxes[this[k]].setFrames(1,1,1,1);
+                        }
+                    }
+                }
+            }
+            // for ( var k in motors ) {
+            //     if ( this[k] === false ) {
+            //         var checkboxId = this[k];
+            //         gangCheckboxes[this][this[k]].setFrames(1,1,1,1);
+            //     }
+            // }
+            // if ( this.a === false ) { //the checkbox is UNCHECKED
+            //     checkbox.a1.setFrames(1,1,1,1); // over frame and out frame should now both show the box checked
+            //     gang1.a = true; // motor A is in gang 1
+            //     if ( gang2.a === true ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked, uncheck it now
+            //         checkbox.a2.setFrames(2,0,1,0) // show other box as unchecked
+            //         gang2.a = false; // motor A is no longer in gang 2
+            //     }
+            // }
+            // else { // the checkbox is CHECKED
+            //     //checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
+            //     gang1.a = false; // motor A is not in gang 1, so uncheck it now
+            // }
+            // channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+            // channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
+            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
+
+        }
+
+        function gangForwardDirectionActionDown () {
+            console.log("move gang " + this.gangId + " forward"); 
+        //    moveMotor( botId, this.port, "f", this.speed, this.directionSwitched );
+        //    forwardButtons[this.port].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
+        }
+        function gangForwardDirectionActionUp() {
+            console.log("stop gang " + this.gangId);
+        //    stopMotor( botId, this.port ); 
+        //    forwardButtons[this.port].setFrames(1,0,2,0); // show the forward button as up (normal position)
+        }
+        function gangReverseDirectionActionDown () {
+            console.log("move gang " + this.gangId + " in reverse"); 
+        //    moveMotor( botId, this.port, "r", this.speed, this.directionSwitched );
+        //    reverseButtons[this.port].setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking            
+        }
+        function gangReverseDirectionActionUp() {
+            console.log("stop gang " + this.gangId);
+        //    stopMotor( botId, this.port ); 
+        //    reverseButtons[this.port].setFrames(1,0,2,0); // show the reverse button as up (normal position)
         }
 
         //=============================================================================
@@ -2036,14 +2209,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var motorPort = key.slice(0,1);
             var time2 = game.time.time;
             var deltaTime = time2 - motors[ motorPort ].time1;
-            if ( deltaTime >= 40 ) {
+            if ( deltaTime >= 60 ) {
                 deltaTime = 30; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
             }
             if ( direction === 'f' ) {
-                needles[ motorPort ].angle = needles [ motorPort ].angle + motors[ motorPort ].speed * deltaTime / 1000; // CW
+                needles[ motorPort ].angle += motors[ motorPort ].speed * deltaTime / 1000; // CW
             }
             if ( direction === 'r' ) {
-                needles[ motorPort ].angle = needles [ motorPort ].angle - motors[ motorPort ].speed * deltaTime / 1000; // CCW
+                needles[ motorPort ].angle -= motors[ motorPort ].speed * deltaTime / 1000; // CCW
             }
             motors[ motorPort ].time1 = time2;
 
@@ -2067,9 +2240,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
         // May need to comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
             var motorPort = key.slice(0,1);
-            if ( motorData.moving === false ) {
-                needles[ motorPort ].angle = motorData.position //now, update to exact value that was published to channel by bot
+            if ( typeof(motorData) !== "undefined" ) {
+                if ( motorData.moving === false ) {
+                    needles[ motorPort ].angle = motorData.position //now, update to exact value that was published to channel by bot
+                }
             }
+            console.log("update dial " +  motorPort);
 
             // if ( key === 'aDash' && typeof(motorData) !== "undefined" ) {
             //     if ( motorData.moving === false ) {
@@ -2116,11 +2292,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log("getting dial values for " + key); 
             var motorPort = key.slice(0,1);
             if ( val.direction === 'f' || val.direction === 'r' ) {
-                moveDial ('aDash', val.direction); //smooth-ish linear extrapolation
+                moveDial (key, val.direction); //smooth-ish linear extrapolation
             } else if ( val.direction === "stopped" ) {
                 channel.getKeyspace(botId).put( key, { 'speed': motors[ motorPort ].speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
                 var motorData = channel.channelData.get( key );
-                updateDial ('aDash', motorData ); // update at the next second to the value in the message sent by the bot
+                updateDial (key, motorData ); // update at the next second to the value in the message sent by the bot
             }
 
             // if ( key === 'aDash' ) {

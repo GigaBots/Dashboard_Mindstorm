@@ -2157,7 +2157,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 updateDirections( key, val.directionSwitched );
             }
             //}
-            
+
 
             // if ( key === 'g1Dash' ) {
             //     if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change

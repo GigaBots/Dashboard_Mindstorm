@@ -364,11 +364,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var motorCheckboxes = {}
         MotorCheckbox = function ( game, gang, motor, x, y ) {
             Phaser.Button.call ( this, game, x, y, 'checkbox' );
-            this.events.onInputDown.add( actionMotorCheckbox, gangs[gang] );
+            this.events.onInputDown.add( actionMotorCheckbox, this );
             this.input.useHandCursor = true;
             this.setFrames(2,0,1,0);
             this.gang = gang;
             this.motor = motor;
+            this.motor.gang = gang;
             this.name = 'checkbox Motor ' + gang + ' motor ' + motor;
             game.add.existing(this);
         }
@@ -1592,6 +1593,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }              
             }
 
+            //console.dir(gangCheckboxes);
+
             /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
             // add reverse/forward keyboard controls (using A,S,D,&F for forward, and Z,X,C,&V for reverse):
             var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
@@ -1776,20 +1779,34 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("changing speed of gang " + this.gangId + " to " + gangs[ this.gangId ].speed.toFixed(2));
         }
 
-        function actionMotorCheckbox (gang, motor) {
-            console.log("checkbox " + this);
-            console.dir(this);
-
-            for ( var j in gangs ) {
-                if ( this.gangId === j ) {
-                    for ( var k in motors ) {
-                        if ( this[k] === false ) {
-                            var checkboxId = this[k];
-                            gangCheckboxes[this[k]].setFrames(1,1,1,1);
-                        }
-                    }
-                }
+        function actionMotorCheckbox () {
+            var gangId = this.gang;
+            var motorPort = this.motor;
+            if ( gangs[ gangId ][ motorPort ] === false ) {
+                gangs[ gangId ][ motorPort ] = true;
+                gangCheckboxes[ gangId ][ motorPort ].setFrames(1,1,1,1); // check the box
             }
+            else {
+                gangs[ gangId ][ motorPort ] = false;
+                gangCheckboxes[ gangId ][ motorPort ].setFrames(2,0,1,0); // uncheck the box
+            }
+            var dashKey = 'g' + gangId + 'Dash';
+            //var gangVal = 'gang' + gangId;
+            var gangChannelData = {
+                'speed' : gangs[ gangId ].speed
+            }
+            for ( var k in motors ) {
+                var gangVal = 'gang' + gangId + '.' + k;
+                gangChannelData[gangVal] = gangs[ gangId ][ k ]
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
+
+            //console.dir(gangChannelData);
+
+            //channel.getKeyspace(botId).put( dashKey, { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
+
+            //console.dir(this);
+
             // for ( var k in motors ) {
             //     if ( this[k] === false ) {
             //         var checkboxId = this[k];
@@ -1902,135 +1919,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60, messageDisplay3, messageStyle);
         }
 
-
-        //=============================================================================
-
-        function actionCheckboxA1 () {
-            if ( gang1.a === false ) { //the checkbox is UNCHECKED
-                checkbox.a1.setFrames(1,1,1,1); // over frame and out frame should now both show the box checked
-                gang1.a = true; // motor A is in gang 1
-                if ( gang2.a === true ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked, uncheck it now
-                    checkbox.a2.setFrames(2,0,1,0) // show other box as unchecked
-                    gang2.a = false; // motor A is no longer in gang 2
-                }
-            }
-            else { // the checkbox is CHECKED
-                //checkbox.a1.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                gang1.a = false; // motor A is not in gang 1, so uncheck it now
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
-        }
-        function actionCheckboxA2 () {
-            if ( gang2.a === false ) { //the checkbox is UNCHECKED
-                checkbox.a2.setFrames(1,1,1,1); // over frame and out frame should now both show the box checked
-                gang2.a = true; // motor A is in gang 2
-                if ( gang1.a === true ) { // both checkboxes for a single motor cannot be checked, so if the other motor is checked, uncheck it now
-                    checkbox.a1.setFrames(2,0,1,0) // show other box as unchecked
-                    gang1.a = false; // motor A is no longer in gang 1
-                }
-            }
-            else { // the checkbox is CHECKED
-                checkbox.a2.setFrames(2,0,1,0); // over frame and out frame should now both show the box unchecked
-                gang2.a = false; // motor A is not in gang 2, so uncheck it now
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-            //console.log ("gang 1 speed: " + gang1.speed + " gang 2 speed: " + gang2.speed + "\na1: " + gang1.a + "  b1: " + gang1.b  + "  c1: " + gang1.c  + "  d1: " + gang1.d  + "\na2: " + gang2.a  + "  b2: " + gang2.b  + "  c2: " + gang2.c  + "  d2: " + gang2.d );
-        } 
-        function actionCheckboxB1 () {
-            if ( gang1.b === false ) {
-                checkbox.b1.setFrames(1,1,1,1);
-                gang1.b = true;
-                if ( gang2.b === true ) {
-                    checkbox.b2.setFrames(2,0,1,0);
-                    gang2.b = false;
-                }
-            } else {
-                checkbox.b1.setFrames(2,0,1,0);
-                gang1.b = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        }
-        function actionCheckboxB2 () {
-            if ( gang2.b === false ) { 
-                checkbox.b2.setFrames(1,1,1,1);
-                gang2.b = true;
-                if ( gang1.b === true ) {
-                    checkbox.b1.setFrames(2,0,1,0);
-                    gang1.b = false;
-                } 
-            } else {
-                checkbox.b2.setFrames(2,0,1,0); 
-                gang2.b = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        }
-        function actionCheckboxC1 () {
-            if ( gang1.c === false ) {
-                checkbox.c1.setFrames(1,1,1,0); 
-                gang1.c = true;
-                if ( gang2.c === true ) { 
-                    checkbox.c2.setFrames(2,0,1,0)
-                    gang2.c = false;
-                }
-            }
-            else {
-                checkbox.c1.setFrames(2,0,1,0);
-                gang1.c = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-        }
-        function actionCheckboxC2 () {
-            if ( gang2.c === false ) { 
-                checkbox.c2.setFrames(1,1,1,0);
-                gang2.c = true;
-                if ( gang1.c === true ) {
-                    checkbox.c1.setFrames(2,0,1,0);
-                    gang1.c = false;
-                } 
-            } else {
-                checkbox.c2.setFrames(2,0,1,0); 
-                gang2.c = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        }
-        function actionCheckboxD1 () {
-            if ( gang1.d === false ) {
-                checkbox.d1.setFrames(1,1,1,0); 
-                gang1.d = true;
-                if ( gang2.d === true ) { 
-                    checkbox.d2.setFrames(2,0,1,0)
-                    gang2.d = false;
-                }
-            }
-            else {
-                checkbox.d1.setFrames(2,0,1,0);
-                gang1.d = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });
-        }
-        function actionCheckboxD2 () {
-            if ( gang2.d === false ) { 
-                checkbox.d2.setFrames(1,1,1,0);
-                gang2.d = true;
-                if ( gang1.d === true ) {
-                    checkbox.d1.setFrames(2,0,1,0);
-                    gang1.d = false;
-                } 
-            } else {
-                checkbox.d2.setFrames(2,0,1,0); 
-                gang2.d = false;
-            }
-            channel.getKeyspace(botId).put('g1Dash', { 'speed' : gang1.speed, 'a' : gang1.a, 'b' : gang1.b, 'c' : gang1.c, 'd' : gang1.d });
-            channel.getKeyspace(botId).put('g2Dash', { 'speed' : gang2.speed, 'a' : gang2.a, 'b' : gang2.b, 'c' : gang2.c, 'd' : gang2.d });            
-        }
 
     //=============================================================================
 
@@ -2269,6 +2157,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 updateDirections( key, val.directionSwitched );
             }
             //}
+            
 
             // if ( key === 'g1Dash' ) {
             //     if ( gang1.a !== val.a || gang1.b !== val.b || gang1.c !== val.c || gang1.d !== val.d ) { // adjust only if gang 1 checkboxes change

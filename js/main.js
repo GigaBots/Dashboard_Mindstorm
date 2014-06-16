@@ -93,27 +93,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var letters = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z' }
 
         /* Specify the number of motors */
-        var numMotors = 4;
-        var columns = 2, rows = ''; //specify either # of columns or # of rows (NOT both!)
+        var numMotors = 4; //specify # of motors (for now, it must be a multiple of the # of columns or rows and no more than 26 )
+        var motorColumns = 2, motorRows = ''; //specify either # of columns or # of rows (NOT both!) (for now, it must be divisible by the number of motors)
 
         /* Motor positions */
         var positionMotors = {}
-        if ( columns !== '' && typeof(rows) === 'string' ) {
-            var maxColumns = columns;
-            var maxRows = numMotors/columns;
+        if ( motorColumns !== '' && typeof(motorRows) === 'string' ) {
+            var maxMotorColumns = motorColumns;
+            var maxMotorRows = numMotors/motorColumns;
         } else {
-            var maxColumns = numMotors/rows;
-            var maxRows = rows;
+            var maxMotorColumns = numMotors/motorRows;
+            var maxMotorRows = motorRows;
         }
-        for ( var i = 1; i <= maxRows; i++ ) { 
-            for ( var j = 1; j <= maxColumns; j++ ) {
+        for ( var i = 1; i <= maxMotorRows; i++ ) { 
+            for ( var j = 1; j <= maxMotorColumns; j++ ) {
                 if ( j === 1) var subIndex = j + 1 + (i - 1)/i;
                 else var subIndex = j + 1;
                 var index = subIndex*i - i;
                 positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 228 + (i-1)*215 }
             } // this is a sequence to position motors (laid out in a grid). It only handles rectangular arrangements right now...
         }
-
 
         var motors = {}
         var labelMotors = {}
@@ -128,15 +127,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.previousSpeed = 0;
             this.speedDisplay = ''; 
             this.directionSwitched = false;
+            this.time1 = 0;
             //this.previousDirectionSwitched = false;
         }
         Motor.prototype.constructor = Motor;
 
-        // for ( var i = 1; i <= numMotors; i++ ) {
-        //     motors[ letters[i] ] = new Motor(game, letters[i] );
-        //     labelMotors[ letters[i] ] = game.add.text(positionMotors[ letters[i] ].x+10, positionMotors[ letters[i] ].y, motors[ letters[i].name ]);
-        // }
-        // console.dir(motors);
+        var motorFrames = {}
+        MotorFrame = function ( game, motor ) {
+            //Phaser.Rectangle.call( this, game );
+            game.add.graphics(0,0);
+            this.x = positionMotors[motor].x;
+            this.y = positionMotors[motor].y-2;
+            this.height = 205;
+            this.width = 273;
+            //this.lineStyle(1, frameLineColor, 1);
+            //this.beginFill(frameFill,frameOpacity);
+            //this.drawRect(positionMotors[motor].x, positionMotors[motor].y-2, 273, 205);
+            //game.add.existing(this);
+        }
+        MotorFrame.prototype = Object.create(Phaser.Rectangle.prototype);
+        MotorFrame.prototype.constructor = MotorFrame;
+
+        //frameMotor.a = game.add.graphics(0,0);
+        //frameMotor.a.lineStyle(1, frameLineColor, 1);
+        //frameMotor.a.beginFill(frameFill,frameOpacity);
+        //frameMotor.a.drawRect(positionMotors['a'].x, positionMotors['a'].y-2, 273, 205); //this is temporarily y-2 (until we do some rearranging of the motor)
+
 
         /* Motor Forward Button */
         var forwardButtons = {}
@@ -169,8 +185,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         ReverseButton.prototype.constructor = ReverseButton;
 
         /* Motor Increase Speed Plus Button */
-        var plusButtons = {}
-        PlusButton = function ( game, motor ) {
+        var motorPlusButtons = {}
+        MotorPlusButton = function ( game, motor ) {
             Phaser.Button.call ( this, game, positionMotors[motor].x+107, positionMotors[motor].y+33, 'plusButton' );
             this.events.onInputDown.add( increaseSpeedClickActionDown, motors[motor] );
             this.input.useHandCursor = true;
@@ -179,12 +195,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.name = 'plus button ' + motor;
             game.add.existing(this);
         }
-        PlusButton.prototype = Object.create(Phaser.Button.prototype);
-        PlusButton.prototype.constructor = PlusButton;
+        MotorPlusButton.prototype = Object.create(Phaser.Button.prototype);
+        MotorPlusButton.prototype.constructor = MotorPlusButton;
 
         /* Motor Decrease Speed Minus Button */
-        var minusButtons = {}
-        MinusButton = function ( game, motor ) {
+        var motorMinusButtons = {}
+        MotorMinusButton = function ( game, motor ) {
             Phaser.Button.call ( this, game, positionMotors[motor].x+107, positionMotors[motor].y+91, 'minusButton' );
             this.events.onInputDown.add( decreaseSpeedClickActionDown, motors[motor] );
             this.input.useHandCursor = true;
@@ -193,8 +209,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.name = 'minus button ' + motor;
             game.add.existing(this);
         }
-        MinusButton.prototype = Object.create(Phaser.Button.prototype);
-        MinusButton.prototype.constructor = MinusButton;
+        MotorMinusButton.prototype = Object.create(Phaser.Button.prototype);
+        MotorMinusButton.prototype.constructor = MotorMinusButton;
 
         /* Motor Change/Display Speed Slider Bar (Button) */
         var sliderBars = {}
@@ -247,9 +263,56 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         RotationNeedle.prototype = Object.create(Phaser.Sprite.prototype);
         RotationNeedle.prototype.constructor = RotationNeedle;
-
         var dials = {}
         var labelDials = {}
+
+
+        /* Specify the number of gangs */
+        var numGangs = 2;
+        var gangColumns = 2, gangRows = '';
+
+        /* Gang positions */
+        var positionGangs = {}
+        if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
+            var maxGangColumns = gangColumns;
+            var maxGangRows = numGangs/gangColumns;
+        } else {
+            var maxGangColumns = numGangs/gangRows;
+            var maxGangRows = gangRows;
+        }
+        for ( var i = 1; i <= maxGangRows; i++ ) { 
+            for ( var j = 1; j <= maxGangColumns; j++ ) {
+                if ( j === 1) var subIndex = j + 1 + (i - 1)/i;
+                else var subIndex = j + 1;
+                var index = subIndex*i - i;
+                positionGangs[ index ] = { x : 581 + (j-1)*374 , y : 228 + (i-1)*215 }
+            } // this is a sequence to position gangs (laid out in a grid). It only handles rectangular arrangements right now...
+        }
+
+        var gangs = {}
+        Gang = function ( game, gangId ) {
+            this.gangId = gangId;
+            this.name = 'Gang ' + gangId;
+            this.speed = 0;
+            for ( var g = 1; g <= numMotors; g++ ) {
+                this[ letters[g] ] = false; // set each gang to contain none of the motors
+            }
+            this.previousSpeed = 0;
+        }
+        Gang.prototype.constructor = Gang;
+
+        var gangPlusButtons = {}
+        GangPlusButton = function ( game, gang ) {
+            Phaser.Button.call ( this, game, positionGangs[gang].x+198, positionGangs[gang].y+33, 'plusButton' );
+            this.events.onInputDown.add( increaseSpeedClickActionDown, gangs[gang] );
+            this.input.useHandCursor = true;
+            this.setFrames(1,0,2,0);
+            this.gang = gang;
+            this.name = 'plus button ' + gang;
+            game.add.existing(this);
+        }
+        GangPlusButton.prototype = Object.create(Phaser.Button.prototype);
+        GangPlusButton.prototype.constructor = GangPlusButton;
 
         // positions of different units are the upper left x & y coordinates of their frames
 
@@ -300,10 +363,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sliderTrackA, sliderTrackB, sliderTrackC, sliderTrackD, sliderTrackG1, sliderTrackG2;
         var sliderIncrements = { a : '', b : '', c : '', d : '', g1 : '', g2 : ''}
         
-        var minusButton, plusButton, sliderBar;
+        var motorminusButton, motorplusButton, sliderBar;
 
-        var minusButtonA, minusButtonB, minusButtonC, minusButtonD, minusButtonG1, minusButtonG2;
-        var plusButtonA, plusButtonB, plusButtonC, plusButtonD, plusButtonG1, plusButtonG2;
+        var motorminusButtonA, motorminusButtonB, motorminusButtonC, motorminusButtonD, motorminusButtonG1, motorminusButtonG2;
+        var motorplusButtonA, motorplusButtonB, motorplusButtonC, motorplusButtonD, motorplusButtonG1, motorplusButtonG2;
         var speed;
         var speedRange = [0, 100, 200, 300, 400, 500, 600, 700];
 
@@ -1032,15 +1095,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 110, 57);
 
             frameMotor = {
-                a : game.add.graphics(0,0),
+                //a : game.add.graphics(0,0),
                 b : game.add.graphics(0,0),
                 c : game.add.graphics(0,0),
                 d : game.add.graphics(0,0),
             }
 
-            frameMotor.a.lineStyle(1, frameLineColor, 1);
-            frameMotor.a.beginFill(frameFill,frameOpacity);
-            frameMotor.a.drawRect(positionMotors['a'].x, positionMotors['a'].y-2, 273, 205); //this is temporarily y-2 (until we do some rearranging of the motor)
+            // frameMotor.a.lineStyle(1, frameLineColor, 1);
+            // frameMotor.a.beginFill(frameFill,frameOpacity);
+            // frameMotor.a.drawRect(positionMotors['a'].x, positionMotors['a'].y-2, 273, 205); //this is temporarily y-2 (until we do some rearranging of the motor)
 
             frameMotor.b.lineStyle(1, frameLineColor, 1);
             frameMotor.b.beginFill(frameFill,frameOpacity);
@@ -1224,22 +1287,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             //======================
             /* Plus and Minus Increase and Decrease Speed */
-            // minusButton = {
+            // motorminusButton = {
             //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+91, 'minusButton', actionDecreaseOnClick, gang1 ),
             //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+91, 'minusButton', actionDecreaseOnClick, gang2 ),
             // }
-            // plusButton = {
+            // motorplusButton = {
             //     g1 : game.add.button( positionGang1.x+198, positionGang1.y+33, 'plusButton', actionIncreaseOnClick, gang1 ),
             //     g2 : game.add.button( positionGang2.x+198, positionGang2.y+33, 'plusButton', actionIncreaseOnClick, gang2 ),
             // }
-            // minusButton.g1.input.useHandCursor = true;
-            // minusButton.g2.input.useHandCursor = true;
-            // plusButton.g1.input.useHandCursor = true;
-            // plusButton.g2.input.useHandCursor = true;
-            // minusButton.g1.setFrames(1,0,2,0);
-            // minusButton.g2.setFrames(1,0,2,0);
-            // plusButton.g1.setFrames(1,0,2,0);
-            // plusButton.g2.setFrames(1,0,2,0);
+            // motorminusButton.g1.input.useHandCursor = true;
+            // motorminusButton.g2.input.useHandCursor = true;
+            // motorplusButton.g1.input.useHandCursor = true;
+            // motorplusButton.g2.input.useHandCursor = true;
+            // motorminusButton.g1.setFrames(1,0,2,0);
+            // motorminusButton.g2.setFrames(1,0,2,0);
+            // motorplusButton.g1.setFrames(1,0,2,0);
+            // motorplusButton.g2.setFrames(1,0,2,0);
 
 
             // sliderBar = {
@@ -1485,6 +1548,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var i = 1; i <= numMotors; i++ ) {
                 var motorPort = letters[i];
                 motors[ motorPort ] = new Motor( game, motorPort );
+                motorFrames[ motorPort ] = new MotorFrame( game, motorPort );
                 labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y, motors[ letters[i] ].name, largeTitleStyle );
                 sliderTracks[ motorPort] = game.add.sprite( positionMotors[ motorPort ].x+163, positionMotors[ motorPort].y+16, 'sliderIncrements' );
                 for ( var k = 0; k <= 7; k++ ) {
@@ -1496,10 +1560,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+38, positionMotors[ motorPort ].y+150, "Switch Directions", labelStyle );
                 forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
                 reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
-                plusButtons[ motorPort ] = new PlusButton( game, motorPort );
-                minusButtons[ motorPort ] = new MinusButton( game, motorPort );
+                motorPlusButtons[ motorPort ] = new MotorPlusButton( game, motorPort );
+                motorMinusButtons[ motorPort ] = new MotorMinusButton( game, motorPort );
                 sliderBars[ motorPort ] = new SliderBar( game, motorPort );
                 directionChecks[ motorPort ] = new DirectionCheckbox( game, motorPort );
+            }
+
+            /* Create Gangs */
+            for ( var i = 1; i <= numGangs; i++ ) {
+                gangs[ i ] = new Gang( game, i );
+                gangPlusButtons[ i ] = new GangPlusButton( game, i );
             }
 
         } // end create 
@@ -1951,97 +2021,62 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Update set speeds and slider positions for all users */
         function updateSpeed (key, speed) {
             var motorPort = key.slice(0,1);
-            //console.log ("updating speed of motor " + motorPort + " to " + speed);
-            motors[ motorPort ].speed = speed;
-            sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-            motors[ motorPort ].previousSpeed = speed;
-            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
-            motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+176, speed.toFixed(1), dataOutputStyle );
+            //if ( sliderBars[ motorPort ].state === "up " ) {
+                //console.log ("updating speed of motor " + motorPort + " to " + speed);
+                motors[ motorPort ].speed = speed;
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 11 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+                motors[ motorPort ].previousSpeed = speed;
+                game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+                motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+176, speed.toFixed(1), dataOutputStyle );
+            //}
         }
 
         /* Rotation of motor position dials */
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
-            var tapprox = 30;
-            if ( key === 'aDash' ) {
-                var t2a = game.time.time;
-                var taDelta = t2a - t1.a; //change in time in milliseconds
-                if (taDelta >= 50) {
-                    taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
-                // instead of using tapprox; 
-                }
-                if (direction === 'f') {
-                    needles['a'].angle = needles['a'].angle + motorA.speed*taDelta/1000; //clockwise
-                }
-                else if (direction === 'r') {
-                    needles['a'].angle = needles['a'].angle - motorA.speed*taDelta/1000; //counterclockwise
-                }
-                t1.a = t2a; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
+            var motorPort = key.slice(0,1);
+            var time2 = game.time.time;
+            var deltaTime = time2 - motors[ motorPort ].time1;
+            if ( deltaTime >= 40 ) {
+                deltaTime = 30; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
             }
-            if ( key === 'bDash' ) {
-                var t2b = game.time.time;
-                var tbDelta = t2b - t1.b;
-                if (tbDelta >= 50) {
-                    tbDelta = tapprox; 
-                }                
-                if (direction === 'f') {
-                    needles['b'].angle = needles['b'].angle + motorB.speed*tbDelta/1000;
-                }
-                else if (direction === 'r') {
-                    needles['b'].angle = needles['b'].angle - motorB.speed*tbDelta/1000;
-                }
-                t1.b = t2b;
+            if ( direction === 'f' ) {
+                needles[ motorPort ].angle = needles [ motorPort ].angle + motors[ motorPort ].speed * deltaTime / 1000; // CW
             }
-            if ( key === 'cDash' ) {
-                var t2c = game.time.time;
-                var tcDelta = t2c - t1.c;
-                if (tcDelta >= 50) {
-                    tcDelta = tapprox; 
-                } 
-                if (direction === 'f') {
-                    needles['c'].angle = needles['c'].angle + motorC.speed*tcDelta/1000;
-                }
-                else if (direction === 'r') {
-                    needles['c'].angle = needles['c'].angle - motorC.speed*tcDelta/1000;
-                }
-                t1.c = t2c;
+            if ( direction === 'r' ) {
+                needles[ motorPort ].angle = needles [ motorPort ].angle - motors[ motorPort ].speed * deltaTime / 1000; // CCW
             }
-            if ( key === 'dDash' ) {
-                var t2d = game.time.time;
-                var tdDelta = t2d - t1.d;
-                if (tdDelta >= 50) {
-                    tdDelta = tapprox; 
-                } 
-                if (direction === 'f') {
-                    needles['d'].angle = needles['d'].angle + motorD.speed*tdDelta/1000;
-                }
-                else if (direction === 'r') {
-                    needles['d'].angle = needles['d'].angle - motorD.speed*tdDelta/1000;
-                }
-                t1.d = t2d;
-            }
+            motors[ motorPort ].time1 = time2;
+
+            // if ( key === 'aDash' ) {
+            //     var t2a = game.time.time;
+            //     var taDelta = t2a - t1.a; //change in time in milliseconds
+            //     if (taDelta >= 50) {
+            //         taDelta = tapprox; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+            //     // instead of using tapprox; 
+            //     }
+            //     if (direction === 'f') {
+            //         needles['a'].angle = needles['a'].angle + motors['a'].speed*taDelta/1000; //clockwise
+            //     }
+            //     else if (direction === 'r') {
+            //         needles['a'].angle = needles['a'].angle - motors['a'].speed*taDelta/1000; //counterclockwise
+            //     }
+            //     t1.a = t2a; // the next t1 will be equal to the most recent t2 (this will be used in calculating tdelta when continuously running of a motor)
+            // }
+
         } 
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
         // May need to comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
-            if ( key === 'aDash' && typeof(motorData) !== "undefined" ) {
-                if ( motorData.moving === false ) {
-                    needles['a'].angle = motorData.position; //value that was published to channel by bot
-                }
+            var motorPort = key.slice(0,1);
+            if ( motorData.moving === false ) {
+                needles[ motorPort ].angle = motorData.position //now, update to exact value that was published to channel by bot
             }
-            if ( key === 'bDash' && typeof(motorData) !== "undefined" ) {
-                if ( motorData.moving === false) {
-                    needles['b'].angle = motorData.position;
-                }
-            }
-            if ( key === 'cDash' && typeof(motorData) !== "undefined" ) {
-                if ( motorData.moving === false) {
-                    needles['c'].angle = motorData.position;
-                }
-            }
-            if ( key === 'dDash' && typeof(motorData) !== "undefined" ) {
-                if ( motorData.moving === false) {
-                    needles['d'].angle = motorData.position;
-                }
-            }
+
+            // if ( key === 'aDash' && typeof(motorData) !== "undefined" ) {
+            //     if ( motorData.moving === false ) {
+            //         needles['a'].angle = motorData.position; //value that was published to channel by bot
+            //     }
+            // }
+
         }
 
         /* Get key-value pairs from the dashboard keyspace and do things with them */
@@ -2078,7 +2113,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         function getDialValues (key, val) {
-            
+            //console.log("getting dial values for " + key); 
+            var motorPort = key.slice(0,1);
+            if ( val.direction === 'f' || val.direction === 'r' ) {
+                moveDial ('aDash', val.direction); //smooth-ish linear extrapolation
+            } else if ( val.direction === "stopped" ) {
+                channel.getKeyspace(botId).put( key, { 'speed': motors[ motorPort ].speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
+                var motorData = channel.channelData.get( key );
+                updateDial ('aDash', motorData ); // update at the next second to the value in the message sent by the bot
+            }
+
             // if ( key === 'aDash' ) {
             //     if ( val.direction === 'f' || val.direction === 'r' ) {
             //         moveDial ('aDash', val.direction); //smooth-ish linear interpolation
@@ -2122,15 +2166,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 return 0;
             }
             /* DASHBOARD STUFF */
-            for ( var k in sliderBars ) {
-                if (sliderBars[k].state === "up") { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
-                    var dashKey = k + 'Dash';
-                    var dashMotor = channel.getKeyspace(botId).get(dashKey); 
-                    if ( typeof(dashMotor) !== "undefined" ) {
-                        getDashboardValues(dashKey, dashMotor);
-                    }               
-                }
+            for ( var k in motors ) {
+                var dashKey = k + 'Dash';
+                //if ( sliderBars[k].state === "up" ) { // this is to partially eliminate the glitch in the dashboard of the user who changed the speed
+                var dashMotor = channel.getKeyspace(botId).get(dashKey); 
+                if ( typeof(dashMotor) !== "undefined" ) {
+                    getDashboardValues( dashKey, dashMotor );
+                    getDialValues( dashKey, dashMotor );
+                }               
+                //}
             }
+
 
             // for ( var i=1; i <= numMotors; i++ ) {
                 

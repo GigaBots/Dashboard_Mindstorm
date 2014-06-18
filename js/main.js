@@ -1016,21 +1016,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
             if (typeof(dashMotorA) === 'undefined') { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
                 console.log("initializing keyspace and dashboard settings for the newly connected bot...");
-                // set all dashboard settings to defaults of 0, unganged, stopped, etc in the new bot's keyspace
-                channel.getKeyspace(botId).put('aDash', { 'speed': 0, 'direction': "stopped", 'directionSwitched': false });
-                channel.getKeyspace(botId).put('bDash', { 'speed': 0, 'direction': "stopped", 'directionSwitched': false });
-                channel.getKeyspace(botId).put('cDash', { 'speed': 0, 'direction': "stopped", 'directionSwitched': false });
-                channel.getKeyspace(botId).put('dDash', { 'speed': 0, 'direction': "stopped", 'directionSwitched': false });
-                channel.getKeyspace(botId).put('1Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
-                channel.getKeyspace(botId).put('2Dash', { 'speed' : 0, 'a' : false, 'b' : false, 'c' : false, 'd' : false });
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 0, 'touchTime' : 0 });                
                 channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });
-                channel.getKeyspace(botId).put('a', { 'port': "a", 'position': 0, 'stalled': false, 'moving': false });
-                channel.getKeyspace(botId).put('b', { 'port': "b", 'position': 0, 'stalled': false, 'moving': false });
-                channel.getKeyspace(botId).put('c', { 'port': "c", 'position': 0, 'stalled': false, 'moving': false });
-                channel.getKeyspace(botId).put('d', { 'port': "d", 'position': 0, 'stalled': false, 'moving': false });
+                for ( var m in motors ) {
+                    var dashKey = m + 'Dash';
+                    channel.getKeyspace(botId).put( dashKey, { 'speed': 0, 'direction': "stopped", 'directionSwitched': false }); //dashboard settings
+                    channel.getKeyspace(botId).put(m, { 'port': m, 'position': 0, 'stalled': false, 'moving': false }); //robot data
+                }
+                for ( var g in gangs ) {
+                    var dashKey = g + 'Dash';
+                    var initialChannelData = {
+                        'speed' : 0
+                    }
+                    for ( var k in motors ) {
+                        initialChannelData[ k ] = gangs[ g ][ k ];
+                    }
+                    channel.getKeyspace(botId).put( dashKey, initialChannelData );
+                }
             }
-
         }
 
         //EXPERIMENTING...trying to show motor statuses correctly
@@ -1626,17 +1629,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
-            console.log("Bot Info from Robot:");
             var isRobot = channel.getKeyspace(botId).get('robot');
             console.log(isRobot); //Object {imTotallyARobot: "yup"} 
-            var ma = channel.getKeyspace(botId).get('a');
-            console.log(ma); //Object {port: "a", position: 161, stalled: false, moving: false}
-            var mb = channel.getKeyspace(botId).get('b');
-            console.log(mb);
-            var mc = channel.getKeyspace(botId).get('c');
-            console.log(mc);
-            var md = channel.getKeyspace(botId).get('d');
-            console.log(md);
+            console.log("Bot Info from Robot:");
+            for ( var m in motors ) {
+                var motorData = channel.getKeyspace(botId).get( m );
+                console.log( motorData);
+            }
             var s1 = channel.getKeyspace(botId).get('S1');
             console.log(s1); //Object {sensorType: "lejos.hardware.sensor.EV3IRSensor", port: "S1", mode: "Distance", values: Array[1]}
             var s2 = channel.getKeyspace(botId).get('S2');
@@ -1645,23 +1644,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(s3); //Object {sensorType: "lejos.hardware.sensor.EV3ColorSensor", port: "S3", mode: "RGB", values: Array[3]}
             var s4 = channel.getKeyspace(botId).get('S4');
             console.log(s4);
-            console.log("Dashboard Info from Robot:")
-            var da = channel.getKeyspace(botId).get('aDash');
-            console.log(da);
-            var db = channel.getKeyspace(botId).get('bDash');
-            console.log(db);
-            var dc = channel.getKeyspace(botId).get('cDash');
-            console.log(dc);
-            var dd = channel.getKeyspace(botId).get('dDash');
-            console.log(dd);
-            var dg1 = channel.getKeyspace(botId).get('1Dash');
-            console.log(dg1);
-            var dg2 = channel.getKeyspace(botId).get('2Dash');
-            console.log(dg2);
+            console.log("Dashboard Info:")
+            for ( var m in motors ) {
+                var dashKey = m + 'Dash';
+                var motorSettings = channel.getKeyspace(botId).get( dashKey );
+                console.log( motorSettings );
+            }
+            for ( var g in gangs ) {
+                var dashKey = g + 'Dash';
+                var gangSettings = channel.getKeyspace(botId).get( dashKey );
+                console.log( gangSettings );
+            }
             var dt = channel.getKeyspace(botId).get('touchDash');
             console.log(dt);
             var dbl = channel.getKeyspace(botId).get('batteryDash');
             console.log(dbl);
+
         }
 
     //==============================================================================================================================

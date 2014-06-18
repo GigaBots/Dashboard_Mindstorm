@@ -96,6 +96,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var numMotors = 4; //specify # of motors (for now, it must be a multiple of the # of columns or rows and no more than 26 )
         var motorColumns = 2, motorRows = ''; //specify either # of columns or # of rows (NOT both!) (for now, it must be divisible by the number of motors)
 
+        /* Specify the number of gangs */
+        var numGangs = 2;
+        var gangColumns = 1, gangRows = '';
+
         /* Motor positions */
         var positionMotors = {}
         if ( motorColumns !== '' && typeof(motorRows) === 'string' ) {
@@ -243,11 +247,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         RotationNeedle.prototype.constructor = RotationNeedle;
         var dials = {}
         var labelDials = {}
-
-
-        /* Specify the number of gangs */
-        var numGangs = 2;
-        var gangColumns = 1, gangRows = '';
 
         /* Gang positions */
         var positionGangs = {}
@@ -1272,12 +1271,76 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangSliderBars[ i ] = new GangSliderBar( game, i );
                 gangCheckboxes[i] = new GangCheckbox( game, i );
                 gangMotorLabels[i] = new GangMotorLabel( game, i );
-                var spacing = Math.floor((161 - 35)/(numMotors-1));
-                for ( var j = 1; j <= numMotors; j++ ) {
-                    var motorName = "Motor " + letters[j].toUpperCase();
-                    gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
-                    gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+10, positionGangs[ i ].y+34+(j-1)*spacing );
-                }              
+                if ( numMotors < 6 ) {
+                    var spacing = Math.floor((161 - 35)/(numMotors-1));
+                    for ( var j = 1; j <= numMotors; j++ ) {
+                        var motorName = "Motor " + letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+10, positionGangs[ i ].y+34+(j-1)*spacing );
+                    }
+                }
+                else if ( numMotors === 6 ) {
+                    var spacing = Math.floor((179 - 35)/(numMotors-1));
+                    for ( var j = 1; j <= numMotors; j++ ) {
+                        var motorName = "Motor " + letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+10, positionGangs[ i ].y+34+(j-1)*spacing );
+                    }
+                }
+                else if ( 6 < numMotors && numMotors <= 8 ) {
+                    var spacing = Math.floor((161 - 35)/((numMotors-1)/2));
+                    for ( var j = 1; j <= 4; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+8, positionGangs[ i ].y+34+(j-1)*spacing );
+                    }
+                    for ( var j = 5; j <= numMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+84, positionGangs[ i ].y+35+(j-4-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+58, positionGangs[ i ].y+34+(j-4-1)*spacing );
+                    }
+                }
+                else if ( 8 < numMotors && numMotors <= 10 ) {
+                    var spacing = Math.floor((179 - 35)/((numMotors-1)/2));
+                    for ( var j = 1; j <= 5; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+8, positionGangs[ i ].y+34+(j-1)*spacing );
+                    }
+                    for ( var j = 6; j <= numMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+84, positionGangs[ i ].y+35+(j-5-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+58, positionGangs[ i ].y+34+(j-5-1)*spacing );
+                    }
+                }
+                else if ( 10 < numMotors ) {
+                    var halfNumMotors = Math.round(numMotors/2);
+                    var spacing = Math.floor((179 - 35)/((halfNumMotors-1)));
+                    for ( var j = 1; j <= halfNumMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+35+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+8, positionGangs[ i ].y+34+(j-1)*spacing );
+                    }
+                    for ( var j = halfNumMotors + 1; j <= numMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+84, positionGangs[ i ].y+35+(j-halfNumMotors-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+58, positionGangs[ i ].y+34+(j-halfNumMotors-1)*spacing );
+                    }
+                } 
+                else if ( 14 < numMotors ) {
+                    var halfNumMotors = Math.round(numMotors/2);
+                    var spacing = Math.floor((186 - 25)/((halfNumMotors-1)));
+                    for ( var j = 1; j <= halfNumMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+38, positionGangs[ i ].y+25+(j-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+8, positionGangs[ i ].y+24+(j-1)*spacing );
+                    }
+                    for ( var j = halfNumMotors + 1; j <= numMotors; j++ ) {
+                        var motorName = letters[j].toUpperCase();
+                        gangMotorLabels[ i ][ letters[j] ] = game.add.text( positionGangs[ i ].x+84, positionGangs[ i ].y+25+(j-halfNumMotors-1)*spacing, motorName, labelStyle );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x+58, positionGangs[ i ].y+24+(j-halfNumMotors-1)*spacing );
+                    }
+                }       
             }
 
             /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
@@ -1584,8 +1647,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = motor + 'Dash';
             channel.getKeyspace(botId).put(dashKey, { 'speed': motors[motor].speed, 'direction': "stopped", 'directionSwitched': motors[motor].directionSwitched });
         }
-
-    /* Button-click functions (most of them anyway...) */
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
                 statusButton.setFrames(2,2,2,2);
@@ -1623,7 +1684,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
     //=============================================================================
-
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing/debugging
             console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
@@ -1659,7 +1719,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(dt);
             var dbl = channel.getKeyspace(botId).get('batteryDash');
             console.log(dbl);
-
         }
 
     //==============================================================================================================================

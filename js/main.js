@@ -911,7 +911,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function actionNoBotSelection() {
             dropdownBox.destroy();
             dropdown.noBotSelection.destroy();
-            var numBots = Object.size(botStore);
+            var numBots = getSize(botStore);
             for ( var j = 0; j < numBots+1; j++ ) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
@@ -930,6 +930,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var j = 0; j < numBots+1; j++ ) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
+            }
+            if ( newBotName === '' || typeof(newBotName) === 'undefined' || newBotName === null ) {
+                newBotName = 'default name';
+            }
+            if ( newBotId === '' || typeof(newBotId) === 'undefined' || newBotId === null ) {
+                newBotId = 'defaultId';
             }
             botStore[ newBotId ] = newBotName;
             // botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this

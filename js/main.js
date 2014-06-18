@@ -425,7 +425,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Bot selector */
-        var frameBotSelector;
         var positionBotSelector = { x : 97, y : 66 }
         var botDropdown, dropdownBox, dropdown;
         var dropHighlight = { 1 : 0 }
@@ -446,9 +445,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionDial = { x : 674, y : 133 }
 
         /* Ganging motors together */
-        var frameMotorGanging, frameMotorGang1, frameMotorGang2;
-        //var positionGang1 = { x : 581, y: 228 } 
-        //var positionGang2 = { x : 581, y: 443 } 
         var checkbox;
 
         /* Sensors */
@@ -477,14 +473,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var time = {
             touchTimeDisplay : 0 //display total time
         }
-        var frameTouch;
         var positionTouch = { x : 443, y : 133 }
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ", labelTouchTime = "Total Time Pressed: ", labelTouchTimeUnits = "sec";
         var touchIndicator;
         var t1Touch;
 
         /* IR sensor */
-        var frameIR;
         var positionIR = { x : 217, y : 66 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
         var IRDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
@@ -493,7 +487,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Color sensor */
-        var frameColor;
         var positionColor = { x : 217, y : 133 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
         var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
@@ -515,7 +508,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* Ultrasonic sensor */
-        var frameUltrasonic;
         var positionUltrasonic = { x : 379, y : 66 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
         var ultrasonicDist = 0; // THIS IS A PLACEHOLDER FOR NOW!
@@ -528,7 +520,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionBattery = { x : 821, y : 66 }
 
         /* LCD Screen */
-        var frameScreen, LCDScreenBox;
+        var LCDScreenBox;
         var positionScreen = { x : 15, y : 133 }
         var labelScreen = "LCD Screen";
         var screenMessage = {
@@ -852,7 +844,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.setFrames(2,2,2,2);
             dropdownBox = game.add.graphics(0,0);
             dropdownBox.beginFill(0xFFFFFF,0.8);
-            dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, numBots*24); //24 is height of a row (the highlight "button")
+            dropdownBox.drawRect(positionBotSelector.x+5, positionBotSelector.y+29, 150, (numBots+1)*24); //24 is height of a row (the highlight "button")
             var j =0;
             for ( var key in botStore ) {
                 var obj = botStore[key];
@@ -870,6 +862,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, botNameDropdown, dropdownStyle);
                 j++;
             }
+            /* create a 'Add a New Bot' button at the bottom of the list */
+            dropHighlight[j] = game.add.button(positionBotSelector.x+5, positionBotSelector.y+29+24*j, 'highlighter');
+            dropHighlight[j].setFrames(0,2,1,2);
+            dropHighlight[j].events.onInputDown.add(actionAddNewBot);
+            dropHighlight[j].input.useHandCursor = true;
+            botLabels[j] = game.add.text(positionBotSelector.x+8, positionBotSelector.y+31+24*j, 'Add a New Bot', dropdownStyle);
+            
             botDropdown.input.stop();
             dropdown = {
                 noBotSelection : game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown')
@@ -883,7 +882,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dropdownBox.destroy();
             dropdown.noBotSelection.destroy();
             var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots; j++ ) {
+            for ( var j = 0; j < numBots+1; j++ ) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
@@ -908,13 +907,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //droppedDown = false;
             //getInitialMotorStatus();
             setInitialDashboardSettings(botId);
-
         }
         function actionNoBotSelection() {
             dropdownBox.destroy();
             dropdown.noBotSelection.destroy();
             var numBots = Object.size(botStore);
-            for ( var j = 0; j < numBots; j++ ) {
+            for ( var j = 0; j < numBots+1; j++ ) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
@@ -922,6 +920,39 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
             //droppedDown = false;
+        }
+        function actionAddNewBot() {
+            var newBotName = prompt("Enter the name of the bot.");
+            var newBotId = prompt("Enter a temporary id for the bot.");
+            dropdownBox.destroy();
+            dropdown.noBotSelection.destroy();
+            var numBots = getSize(botStore);
+            for ( var j = 0; j < numBots+1; j++ ) {
+                botLabels[j].destroy();
+                dropHighlight[j].destroy();
+            }
+            botStore[ newBotId ] = newBotName;
+            // botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
+            // botName = botStore[this];
+            // botIndex++;
+            // listenToBot(botId, botIndex); // start listening to the bot that was just selected
+            // getInitialTouchData(botId);
+            // getInitialBatteryLevel(botId);
+            // game.world.remove(bot.nameDisplay);
+            // if ( botName.length > 15 ) {
+            //     var botNameDisplay = botName.slice(0, 15);
+            // }
+            // else {
+            //     var botNameDisplay = botName;
+            // }
+            // bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34, botNameDisplay, statusStyle);
+            botDropdown.input.start();
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            //droppedDown = false;
+            //getInitialMotorStatus();
+            
+            //setInitialDashboardSettings(botId);
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData(robotClientId) {
@@ -1044,7 +1075,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             /* this button is for testing. it's invisible and in the upper right corner */   
             updateBar(100, $("#progressBar")); 
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
-            //=============
 
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
@@ -1069,63 +1099,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             poweredBy = game.add.sprite(740,8,'poweredBy');
 
         /* Frames */
-            frameMotorStatus = game.add.graphics(0,0);
-            frameMotorStatus.lineStyle(1, frameLineColor, 1);
-            frameMotorStatus.beginFill(frameFill,frameOpacity);
-            frameMotorStatus.drawRect(positionMotorStatus.x, positionMotorStatus.y, 130, 57);
-
-            frameSensorStatus = game.add.graphics(0,0);
-            frameSensorStatus.lineStyle(1, frameLineColor, 1);
-            frameSensorStatus.beginFill(frameFill,frameOpacity);
-            frameSensorStatus.drawRect(positionSensorStatus.x, positionSensorStatus.y, 130, 57);
-
-            frameStatus = game.add.graphics(0,0);
-            frameStatus.lineStyle(1, frameLineColor, 1);
-            frameStatus.beginFill(frameFill,frameOpacity);
-            frameStatus.drawRect(positionStatus.x, positionStatus.y, 72, 57);
-
-            frameBotSelector = game.add.graphics(0,0);
-            frameBotSelector.lineStyle(1, frameLineColor, 1);
-            frameBotSelector.beginFill(frameFill,frameOpacity);
-            frameBotSelector.drawRect(positionBotSelector.x, positionBotSelector.y, 110, 57);
-
-            frameTouch = game.add.graphics(0,0);
-            frameTouch.lineStyle(1, frameLineColor, 1);
-            frameTouch.beginFill(frameFill,frameOpacity);
-            frameTouch.drawRect(positionTouch.x, positionTouch.y, 221, 83);
-
-            frameIR = game.add.graphics(0,0);
-            frameIR.lineStyle(1, frameLineColor, 1);
-            frameIR.beginFill(frameFill,frameOpacity);
-            frameIR.drawRect(positionIR.x, positionIR.y, 152, 57);
-
-            frameUltrasonic = game.add.graphics(0,0);
-            frameUltrasonic.lineStyle(1, frameLineColor, 1);
-            frameUltrasonic.beginFill(frameFill,frameOpacity);
-            frameUltrasonic.drawRect(positionUltrasonic.x, positionUltrasonic.y, 152, 57);
-
-            frameColor = game.add.graphics(0,0);
-            frameColor.lineStyle(1, frameLineColor, 1);
-            frameColor.beginFill(frameFill,frameOpacity);
-            frameColor.drawRect(positionColor.x, positionColor.y, 216, 83);
-
-            frameBattery = game.add.graphics(0,0);
-            frameBattery.lineStyle(1, frameLineColor, 1);
-            frameBattery.beginFill(frameFill,frameOpacity);
-            frameBattery.drawRect(positionBattery.x, positionBattery.y, 124, 57);
-
-            frameScreen = game.add.graphics(0,0);
-            frameScreen.lineStyle(1, frameLineColor, 1);
-            frameScreen.beginFill(frameFill,frameOpacity);
-            frameScreen.drawRect(positionScreen.x, positionScreen.y, 192, 83);
-
-            frameDials = game.add.graphics(0,0);
-            frameDials.lineStyle(1, frameLineColor, 1);
-            frameDials.beginFill(frameFill,frameOpacity);
-            frameDials.drawRect(positionDial.x, positionDial.y, 271, 83);
-
+            frames[ 'status' ] = new Frame( game, 'status', positionStatus.x, positionStatus.y, 72, 57);
+            frames[ 'botSelector' ] = new Frame( game, 'botSelector', positionBotSelector.x, positionBotSelector.y, 110, 57);
+            frames[ 'motorStatus' ] = new Frame( game, 'motorStatus', positionMotorStatus.x, positionMotorStatus.y, 130, 57);
+            frames[ 'sensorStatus' ] = new Frame( game, 'sensorStatus', positionSensorStatus.x, positionSensorStatus.y, 130, 57);
+            frames[ 'battery' ] = new Frame( game, 'Battery', positionBattery.x, positionBattery.y, 124, 57);
+            frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 152, 57);
+            frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 152, 57);
+            frames[ 'touch' ] = new Frame( game, 'touch', positionTouch.x, positionTouch.y, 221, 83);
+            frames[ 'color' ] = new Frame( game, 'color', positionColor.x, positionColor.y, 216, 83);
+            frames[ 'screen' ] = new Frame( game, 'screen', positionScreen.x, positionScreen.y, 192, 83);
+            frames[ 'dials' ] = new Frame( game, 'dials', positionDial.x, positionDial.y, 271, 83);
 
         /* Labels */
+            status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+34, statusDisplay, statusStyle);
+
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34, botName, selectBotStyle);
+
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2, labelMotorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
             labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37, 'A', labelStyle);
             labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37, 'B', labelStyle);
@@ -1137,10 +1127,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+37, labelSensors.f, labelStyle);
             label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+37, labelSensors.g, labelStyle);
             label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+37, labelSensors.h, labelStyle);
-
-            status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+34, statusDisplay, statusStyle);
-
-            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34, botName, selectBotStyle);
 
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2, labelTouch, smallTitleStyle);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27, labelTouched, labelStyle);
@@ -1166,37 +1152,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+2, labelScreen, smallTitleStyle);
 
-
-        /* Buttons */
+        /* Dashboard stop/resume button */
             statusButton = game.add.button(positionStatus.x+5, positionStatus.y+5, 'statusButton', actionStopOnClick);
             statusButton.setFrames(1,0,0,0);
             statusButton.input.useHandCursor = true;
-
-            /* Select which robot to control */
+        /* Select which robot to control */
             botDropdown = game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown');
             botDropdown.events.onInputDown.add(actionDropdown);
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
-
         /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+25, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');
-
         /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+27, 'batteryOutline');
-
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
             batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
-
         /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
             LCDScreenBox.beginFill(0x808080, 0.6);
             LCDScreenBox.lineStyle(1.5, frameLineColor, 1);
             LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+29, 172, 46);
-
+            //input button
             screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+4, 'screenInputButton', actionInputOnClick);
             screenInputButton.input.useHandCursor = true;
 

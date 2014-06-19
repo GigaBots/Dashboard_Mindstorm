@@ -94,7 +94,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Specify the number of motors */
         var numMotors = 4; //specify # of motors (for now, it must be a multiple of the # of columns or rows and no more than 26 )
-        var motorColumns = 2, motorRows = ''; //specify either # of columns or # of rows (NOT both!) (for now, it must be divisible by the number of motors)
+        var motorColumns = 2, motorRows = ''; //specify either # of columns or # of rows (NOT both!) 
 
         /* Specify the number of gangs */
         var numGangs = 2;
@@ -104,19 +104,83 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionMotors = {}
         if ( motorColumns !== '' && typeof(motorRows) === 'string' ) {
             var maxMotorColumns = motorColumns;
-            var maxMotorRows = numMotors/motorColumns;
-        } else {
-            var maxMotorColumns = numMotors/motorRows;
+            var maxMotorRows = Math.ceil(numMotors/motorColumns);
+        }
+        else {
+            var maxMotorColumns = Math.ceil(numMotors/motorRows);
             var maxMotorRows = motorRows;
         }
-        for ( var i = 1; i <= maxMotorRows; i++ ) { 
-            for ( var j = 1; j <= maxMotorColumns; j++ ) {
-                if ( j === 1) var subIndex = j + 1 + (i - 1)/i;
-                else var subIndex = j + 1;
-                var index = subIndex*i - i;
-                positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
-            } // this is a sequence to position motors (laid out in a grid). It only handles rectangular arrangements right now...
+        //resize game window height if we have more than 2 rows
+        if ( maxMotorRows > 2 ) {
+            game.height = gameBoundY += (maxMotorRows-2) * 215;
         }
+
+        if ( maxMotorRows === 1 ) {
+            for ( var j = 1; j <= maxMotorColumns; j++ ) {
+                positionMotors[ letters[ j ] ] = { x : 15 + (j-1)*283, y : 226 }
+            }            
+        }
+        else if ( maxMotorColumns === 1 ) {
+            for ( var i = 1; i <= maxMotorRows; i++ ) {
+                positionMotors[ letters[ i ] ] = { x : 15, y : 226 + (i-1)*215 }
+            }
+        }
+        else if ( maxMotorColumns === 2 ) {
+            for ( var i = 1; i <= maxMotorRows; i++ ) { 
+                for ( var j = 1; j <= maxMotorColumns; j++ ) {
+                    if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
+                    else var subIndex = j + 1;
+                    var index = subIndex * i - i;
+                    if (index > numMotors) break;
+                    positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
+                } // this is a sequence to position motors (laid out in a grid)
+            }
+        }
+        else if ( maxMotorColumns === 3 ) {
+            var subIndex, subIndex1 = 2, denominator = 1;
+            for ( var i = 1; i <= maxMotorRows; i++ ) {
+                for ( var j = 1; j <= maxMotorColumns; j++ ) {
+                    if ( j === 1 ) {
+                        if ( i !== 1 ) {
+                            subIndex = subIndex1 += 1/denominator;
+                            denominator += i;
+                        }
+                        else if ( i === 1 ) subIndex = subIndex1 +=0;
+                    }
+                    else if ( j === 2 ) 
+                        subIndex = subIndex2 = 3 + (i-1)/i;
+                    else if ( j === 3 ) subIndex = 4;
+                    var index = subIndex * i -i;
+                    if (index > numMotors) break;
+                    positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
+                } // this is a sequence to position motors (laid out in a grid)
+            }
+        }
+
+        /* Gang positions */
+        var positionGangs = {}
+        for ( var i = 1; i <= numGangs; i++ ) {
+            positionGangs[ i ] = { x : 581, y : 226 + (i-1)*215 }
+        }
+        if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
+            var maxGangColumns = gangColumns;
+            var maxGangRows = numGangs/gangColumns;
+        } else {
+            var maxGangColumns = numGangs/gangRows;
+            var maxGangRows = gangRows;
+        }
+        //resize game window height if we have more than 2 rows
+        if ( maxGangRows > 2 && maxGangRows > maxMotorRows ) {
+            game.height = gameBoundY += (maxGangRows-2) * 215;
+        }
+        //for ( var i = 1; i <= maxGangRows; i++ ) { 
+            //for ( var j = 1; j <= maxGangColumns; j++ ) {
+                //if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
+                //else var subIndex = j + 1;
+                //var index = subIndex*i - i;
+                //positionGangs[ index ] = { x : 581 + (j-1)*374 , y : 228 + (i-1)*215 }
+            //} // this is a sequence to position gangs (laid out in a grid). It only handles rectangular arrangements right now...
+        //}
 
         var motors = {}
         var labelMotors = {}
@@ -247,27 +311,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         RotationNeedle.prototype.constructor = RotationNeedle;
         var dials = {}
         var labelDials = {}
-
-        /* Gang positions */
-        var positionGangs = {}
-        for ( var i = 1; i <= numGangs; i++ ) {
-            positionGangs[ i ] = { x : 581, y : 226 + (i-1)*215 }
-        }
-        // if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
-        //     var maxGangColumns = gangColumns;
-        //     var maxGangRows = numGangs/gangColumns;
-        // } else {
-        //     var maxGangColumns = numGangs/gangRows;
-        //     var maxGangRows = gangRows;
-        // }
-        //for ( var i = 1; i <= maxGangRows; i++ ) { 
-            //for ( var j = 1; j <= maxGangColumns; j++ ) {
-                //if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
-                //else var subIndex = j + 1;
-                //var index = subIndex*i - i;
-                //positionGangs[ index ] = { x : 581 + (j-1)*374 , y : 228 + (i-1)*215 }
-            //} // this is a sequence to position gangs (laid out in a grid). It only handles rectangular arrangements right now...
-        //}
 
         var gangs = {}
         Gang = function ( game, gangId ) {

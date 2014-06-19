@@ -8,6 +8,7 @@
 	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
 	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
+
 </head>
 
 <body>
@@ -17,6 +18,28 @@
 			<script src="js/phaser.min.js"></script>
 			<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
 			<script src="js/jquery.min.js"></script>
+			<script type="text/javascript" src="js/jquery.mb.browser.min.js"></script>
+    		<script type="text/javascript">
+    			//browser detection to fix formatting/layout in Firefox
+		        var browserFix = 0;
+		        $(function(){
+		            var txt = ''
+		                    +'jQuery.browser.ua  = '+jQuery.browser.ua+'<br>'
+		                    +'jQuery.browser.name  = '+jQuery.browser.name+'<br>'
+		                    +'jQuery.browser.fullVersion  = '+jQuery.browser.fullVersion+'<br>'
+		                    +'jQuery.browser.version = '+jQuery.browser.version+'<br><br><br>'
+		                    +'jQuery.browser.msie = '+jQuery.browser.msie+'<br>'
+		                    +'jQuery.browser.mozilla = '+jQuery.browser.mozilla+'<br>'
+		                    +'jQuery.browser.opera = '+jQuery.browser.opera+'<br>'
+		                    +'jQuery.browser.webkit = '+jQuery.browser.webkit+'<br>'
+		                    +'jQuery.browser.safari = '+jQuery.browser.safari+'<br>'
+		                    +'jQuery.browser.chrome = '+jQuery.browser.chrome+'<br>';
+
+		            $("#result").html(txt);
+		            if( jQuery.browser.name === 'Firefox' ) browserFix = 4;
+		            else browserFix = 0;
+		        });
+    		</script>
 		</div>
 		
 	 	<div id="textEditor">
@@ -32,6 +55,7 @@
 	<div id="footer"> <!-- Footer remains locked to bottom of screen if entirety of content is within viewport. Otherwise remains locked to bottom of content -->
 		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
 	</div>
+
 </body>
 
 

@@ -86,6 +86,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var numbers = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20, u: 21, v: 22, w: 23, x: 24, y: 25, z: 26 }
         var letters = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z' }
 
+        /* Specify number of sensors (for now, until we have better detection stuff) */
+        var numSensors = 4;
+
         /* Specify the number of motors */
         var numMotors = 4; //specify # of motors (for now, it must be a multiple of the # of columns or rows and no more than 26 )
         var motorColumns = 2, motorRows = ''; //specify either # of columns or # of rows (NOT both!) 
@@ -314,8 +317,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Motor status lights */
         var statusLights = {}
-        StatusLight = function ( game, motor, index ) {
-            Phaser.Sprite.call( this, game, positionMotorStatus.x+12+30*(index-1), positionMotorStatus.y+24, 'statusLight' );
+        StatusLight = function ( game, motor, index, x, y  ) {
+            Phaser.Sprite.call( this, game, x, y, 'statusLight' );
             this.motor = motor;
             this.name = 'status light ' + motor;
             this.animations.add('pluggedIn', [1], 1);
@@ -453,8 +456,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.recipient.lineStyle( 1 + browserFix/4, 0xa3a3a3, 1 - browserFix/10);
             this.recipient.beginFill( 0x313233, 0.7);
             this.recipient.drawRect( x, y, width, height );
+            this.width = width;
+            this.height = height;
         }
         Frame.prototype.constructor = Frame;
+
+        var sensorStatusLights = {}
+        var sensorStatusLabels = {}
 
         // positions of different units are the upper left x & y coordinates of their frames
 
@@ -605,9 +613,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( selectionIndex < botIndex ) {
                     return 0;
                 }
-                if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-                    setMotorInfo( key, val);
+                if ( key in motors ) {
+                    setMotorInfo( key, val );
                 }
+                // if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                //     setMotorInfo( key, val);
+                // }
                 else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                     if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         setIRSensor(val);
@@ -634,9 +645,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 if ( selectionIndex < botIndex ) {
                     return 0;
                 }
-                if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
-                    setMotorInfo(key, val);
+                if ( key in motors ) {
+                    setMotorInfo( key, val );
                 }
+                // if ( key === 'a' ||  key ==='b' || key ==='c' || key === 'd') {
+                //     setMotorInfo(key, val);
+                // }
                 else if ( key === 'S1' || key === 'S2' || key === 'S3' || key === 'S4' ) {
                     if ( val.sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         setIRSensor(val);
@@ -664,74 +678,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //quick and dirty for now
         function setMotorInfo( key, val ) {
             needles[key].angle = val.position;
-            //if ( !val.stalled ) {
-            //    statusLight;
+            if ( !val.stalled ) {
+                statusLights[ key ].animations.play('pluggedIn');
+            }
+            else if ( val.stalled ) {
+                statusLights[ key ].animations.play('stalled');
+            }
+            //else {
+            //    statusLights[ key ].animations.play('unplugged');
             //}
-            // if( key === 'a') {
-            //     motorA.status =1;
-            //     needles[key].angle = val.position;
-            //     if( !val.stalled ) {
-            //         statusLight.a.animations.play('pluggedIn');
-            //     } else {
-            //         motorA.status =2;
-            //         statusLight.a.animations.play('stalled');
-            //     }
-            // }
-            // else if (key === 'b') {
-            //     motorB.status =1;
-            //     needles[key].angle = val.position;
-            //     if( !val.stalled ) {
-            //         statusLight.b.animations.play('pluggedIn');
-            //     } else {
-            //         motorB.status =2;
-            //         statusLight.b.animations.play('stalled');
-            //     }
-            // }
-            // else if( key === 'c') {
-            //     motorC.status =1;
-            //     needles[key].angle = val.position;
-            //     if( !val.stalled ) {
-            //         statusLight.c.animations.play('pluggedIn');
-            //     } else {
-            //         motorC.status =2;
-            //         statusLight.c.animations.play('stalled');
-            //     }
-            // }
-            // else if( key === 'd')  {
-            //     //motorD.status =1;
-            //     needles[key].angle = val.position;
-            //     if ( val.moving ) {
-            //         motorD.status =1;
-            //         statusLight.d.animations.play('pluggedIn');
-            //     }
-            //     else if ( val.stalled ) {
-            //         motorD.status =2;
-            //         statusLight.d.animations.play('stalled');
-            //     } 
-            //     else {
-            //         motorD.status =0;
-            //         statusLight.d.animations.play('unplugged');
-            //     } 
-            //     // motorD.status =1;
-            //     // needles['d'].angle = val.position; // in update function now
-            //     // if ( val.stalled ) {
-            //     //     statusLight.d.animations.play('stalled');
-            //     // } 
-            //     // else {
-            //     //     if (motorD.status === "unplugged" ) {
-            //     //         statusLight.d.animations.play('unplugged');
-            //     //     }
-            //     //     else {
-            //     //         statusLight.d.animations.play('pluggedIn');
-            //     //     }
-            //     // }
-            //     // if( !val.stalled ) {
-            //     //     statusLight.d.animations.play('pluggedIn');
-            //     // } else {
-            //     //     motorD.status =2;
-            //     //     statusLight.d.animations.play('stalled');
-            //     // }
-            // }
         }
         function setTouchSensor( val ) {
             //console.log("touchSensor " + JSON.stringify(val));
@@ -788,65 +743,67 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
                 game.world.remove(color.nameDisplay);
-                if (val.value[1] === 0)) {
+                switch ( val.values[ 1 ] ) {
+                case 0:
                     colorNameDisplay = "Red";
                     colorOutputStyle.fill = #F00;
-                }
-                else if (val.value[1] === 1) {
+                    break;
+                case 1:
                     colorNameDisplay = "Green";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 2) {
+                    break;
+                case 2:
                     colorNameDisplay = "Blue";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 3) {
+                    break;
+                case 3:
                     colorNameDisplay = "Yellow";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 4) {
+                    break;
+                case 4:
                     colorNameDisplay = "Magenta";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 5) {
+                    break;
+                case 5:
                     colorNameDisplay = "Orange";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 6) {
+                    break;
+                case 6:
                     colorNameDisplay = "White";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 7) {
+                    break;
+                case 7:
                     colorNameDisplay = "Black";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 8) {
+                    break;
+                case 8:
                     colorNameDisplay = "Pink";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 9) {
+                    break;
+                case 9:
                     colorNameDisplay = "Gray";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 10) {
+                    break;
+                case 10:
                     colorNameDisplay = "Light Gray";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 11) {
+                    break;
+                case 11:
                     colorNameDisplay = "Dark Gray";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 12) {
+                    break;
+                case 12:
                     colorNameDisplay = "Cyan";
                     colorOutputStyle.fill = #0F0;
-                }
-                else if (val.value[1] === 13) {
+                    break;
+                case 13:
                     colorNameDisplay = "Brown";
                     colorOutputStyle.fill = #0F0;
-                }
-                velse if (val.value[1] === -1) {
+                    break;
+                default:
                     colorNameDisplay = "N/A";
                     colorOutputStyle.fill = #0F0;
+                    break;
                 }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, colorOutputStyle);
             } */
@@ -1179,16 +1136,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34+browserFix, botName, selectBotStyle);
 
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2+browserFix, labelMotorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
-            // labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37+browserFix, 'A', labelStyle);
-            // labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37+browserFix, 'B', labelStyle);
-            // labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37+browserFix, 'C', labelStyle);
-            // labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37+browserFix, 'D', labelStyle);
 
             labelSensorStatus = game.add.text(positionSensorStatus.x+10, positionSensorStatus.y+2+browserFix, labelSensorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
-            label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+37+browserFix, labelSensors.e, labelStyle);
-            label2 = game.add.text(positionSensorStatus.x+45, positionSensorStatus.y+37+browserFix, labelSensors.f, labelStyle);
-            label3 = game.add.text(positionSensorStatus.x+75, positionSensorStatus.y+37+browserFix, labelSensors.g, labelStyle);
-            label4 = game.add.text(positionSensorStatus.x+105, positionSensorStatus.y+37+browserFix, labelSensors.h, labelStyle);
 
             labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2+browserFix, labelTouch, smallTitleStyle);
             labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27+browserFix, labelTouched, labelStyle);
@@ -1214,26 +1163,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             
             labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+2+browserFix, labelScreen, smallTitleStyle);
 
-        /* Dashboard stop/resume button */
+            /* Dashboard stop/resume button */
             statusButton = game.add.button(positionStatus.x+5, positionStatus.y+5, 'statusButton', actionStopOnClick);
             statusButton.setFrames(1,0,0,0);
             statusButton.input.useHandCursor = true;
-        /* Select which robot to control */
+            /* Select which robot to control */
             botDropdown = game.add.button(positionBotSelector.x+5, positionBotSelector.y+5, 'botDropdown');
             botDropdown.events.onInputDown.add(actionDropdown);
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
-        /* Touch Sensor */
+            /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+25, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');
-        /* Battery Level Sensor */
+            /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+27, 'batteryOutline');
             batteryLevelFill = game.add.graphics(0,0);
             batteryLevelFill.beginFill(0x808080, 1);
             batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16); // the "x100" converts the battery level (whatever it initially is) to the scale of 100 px wide
-        /* LCD Screen */
+            /* LCD Screen */
             LCDScreenBox = game.add.graphics(0,0);
             LCDScreenBox.beginFill(0x808080, 0.6);
             LCDScreenBox.lineStyle(1.5, 0xa3a3a3, 1);
@@ -1242,21 +1191,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+4, 'screenInputButton', actionInputOnClick);
             screenInputButton.input.useHandCursor = true;
 
-        /* Status Lights */
-
-            statusLight.s1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+24, 'statusLight');
-            statusLight.s1.animations.add('unplugged', [3], 1);
-            statusLight.s1.animations.add('pluggedIn', [1], 1);
-            statusLight.s2 = game.add.sprite(positionSensorStatus.x+42, positionSensorStatus.y+24, 'statusLight');
-            statusLight.s2.animations.add('unplugged', [3], 1);
-            statusLight.s2.animations.add('pluggedIn', [1], 1);
-            statusLight.s3 = game.add.sprite(positionSensorStatus.x+72, positionSensorStatus.y+24, 'statusLight');
-            statusLight.s3.animations.add('unplugged', [3], 1);
-            statusLight.s3.animations.add('pluggedIn', [1], 1);
-            statusLight.s4 = game.add.sprite(positionSensorStatus.x+102, positionSensorStatus.y+24, 'statusLight');
-            statusLight.s4.animations.add('unplugged', [3], 1);
-            statusLight.s4.animations.add('pluggedIn', [1], 1);
-
+            /* Sensor Status Lights (We might take these out althogether) */
+            for ( var i = 1; i <= numSensors; i++ ) {
+                var sensorId = 'S' + i;
+                var statusSpacing = frames['sensorStatus'].width/(numSensors+0.5);
+                sensorStatusLights[ sensorId ] = new StatusLight( game, sensorId, i, Math.floor(positionSensorStatus.x+statusSpacing/2+(i-1)*statusSpacing), positionSensorStatus.y+24 );
+                sensorStatusLabels[ sensorId ] = game.add.text( Math.floor(positionSensorStatus.x+statusSpacing/2+(i-1)*statusSpacing) + 3, positionSensorStatus.y+37+browserFix, i, labelStyle );
+            }
             /* Rotational position dials and needles for motors */
             labelRotation = game.add.text(positionDial.x+10, positionDial.y+2+browserFix, labelRotation, smallTitleStyle);
 
@@ -1285,9 +1226,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 /* outside of motor frames */
                 dials[ motorPort ] = game.add.sprite( positionDial.x+12+(i-1)*65, positionDial.y+24, 'dialFace' );
                 labelDials[ motorPort ] = game.add.text( positionDial.x+32+(i-1)*65, positionDial.y+46+browserFix*1.25, motorPort.toUpperCase(), dialLabelStyle );
-                needles[ motorPort ] = new RotationNeedle( game, motorPort , numbers[ motorPort ] );
-                statusLights[ motorPort ] = new StatusLight( game, motorPort, numbers[ motorPort ] );
-                motorStatusLabels[ motorPort ] = game.add.text( positionMotorStatus.x+14 + 30*(i-1), positionMotorStatus.y+37+browserFix, motorPort.toUpperCase(), labelStyle );
+                needles[ motorPort ] = new RotationNeedle( game, motorPort , numbers[ motorPort ] );            
+                var statusSpacing = frames['motorStatus'].width / (numMotors + 0.5);
+                statusLights[ motorPort ] = new StatusLight( game, motorPort, numbers[ motorPort ], Math.floor(positionMotorStatus.x+statusSpacing/2+(i-1)*statusSpacing), positionMotorStatus.y+24 );
+                motorStatusLabels[ motorPort ] = game.add.text( Math.floor(positionMotorStatus.x+statusSpacing/2+(i-1)*statusSpacing) + 2, positionMotorStatus.y+37+browserFix, motorPort.toUpperCase(), labelStyle );
             }
 
             /* Create Gangs */
@@ -1845,11 +1787,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( k === 'speed' ) {
                         updateGangSpeed( key, val[ k ] );
                     }
-                    for ( var m in motors ) {
-                        if ( k === m ) {
-                            updateGangMotors( key, m, val[ k ] );
-                        }
+                    if ( k in motors ) {
+                        updateGangMotors( key, k, val[k] );
                     }
+                    // for ( var m in motors ) { // this way is probably less efficient
+                    //     if ( k === m ) {
+                    //         updateGangMotors( key, m, val[ k ] );
+                    //     }
+                    // }
                 }
             } 
         }

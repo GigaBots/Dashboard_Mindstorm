@@ -312,6 +312,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dials = {}
         var labelDials = {}
 
+        /* Motor status lights */
+        var statusLights = {}
+        StatusLight = function ( game, motor, index ) {
+            Phaser.Sprite.call( this, game, positionMotorStatus.x+12+30*(index-1), positionMotorStatus.y+24, 'statusLight' );
+            this.motor = motor;
+            this.name = 'status light ' + motor;
+            this.animations.add('pluggedIn', [1], 1);
+            this.animations.add('stalled', [2], 1);
+            this.animations.add('unplugged', [3], 1);
+            game.add.existing(this);
+        }
+        StatusLight.prototype = Object.create(Phaser.Sprite.prototype);
+        StatusLight.prototype.constructor = StatusLight;
+        var motorStatusLabels = {}
+
         var gangs = {}
         Gang = function ( game, gangId ) {
             this.gangId = gangId;
@@ -649,6 +664,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         //quick and dirty for now
         function setMotorInfo( key, val ) {
             needles[key].angle = val.position;
+            //if ( !val.stalled ) {
+            //    statusLight;
+            //}
             // if( key === 'a') {
             //     motorA.status =1;
             //     needles[key].angle = val.position;
@@ -1161,10 +1179,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34+browserFix, botName, selectBotStyle);
 
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2+browserFix, labelMotorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
-            labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37+browserFix, 'A', labelStyle);
-            labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37+browserFix, 'B', labelStyle);
-            labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37+browserFix, 'C', labelStyle);
-            labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37+browserFix, 'D', labelStyle);
+            // labelA = game.add.text(positionMotorStatus.x+14, positionMotorStatus.y+37+browserFix, 'A', labelStyle);
+            // labelB = game.add.text(positionMotorStatus.x+44, positionMotorStatus.y+37+browserFix, 'B', labelStyle);
+            // labelC = game.add.text(positionMotorStatus.x+74, positionMotorStatus.y+37+browserFix, 'C', labelStyle);
+            // labelD = game.add.text(positionMotorStatus.x+104, positionMotorStatus.y+37+browserFix, 'D', labelStyle);
 
             labelSensorStatus = game.add.text(positionSensorStatus.x+10, positionSensorStatus.y+2+browserFix, labelSensorStatus, smallTitleStyle); //label at top of box indicating status of motor ports
             label1 = game.add.text(positionSensorStatus.x+15, positionSensorStatus.y+37+browserFix, labelSensors.e, labelStyle);
@@ -1225,22 +1243,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenInputButton.input.useHandCursor = true;
 
         /* Status Lights */
-            statusLight.a = game.add.sprite(positionMotorStatus.x+12, positionMotorStatus.y+24, 'statusLight');
-            statusLight.a.animations.add('unplugged', [3], 1);
-            statusLight.a.animations.add('pluggedIn', [1], 1);
-            statusLight.a.animations.add('stalled', [2], 1);
-            statusLight.b = game.add.sprite(positionMotorStatus.x+42, positionMotorStatus.y+24, 'statusLight');
-            statusLight.b.animations.add('unplugged', [3], 1);
-            statusLight.b.animations.add('pluggedIn', [1], 1);
-            statusLight.b.animations.add('stalled', [2], 1);
-            statusLight.c = game.add.sprite(positionMotorStatus.x+72, positionMotorStatus.y+24, 'statusLight');
-            statusLight.c.animations.add('unplugged', [3], 1);
-            statusLight.c.animations.add('pluggedIn', [1], 1);
-            statusLight.c.animations.add('stalled', [2], 1);
-            statusLight.d = game.add.sprite(positionMotorStatus.x+102, positionMotorStatus.y+24, 'statusLight');
-            statusLight.d.animations.add('unplugged', [3], 1);
-            statusLight.d.animations.add('pluggedIn', [1], 1);
-            statusLight.d.animations.add('stalled', [2], 1);
 
             statusLight.s1 = game.add.sprite(positionSensorStatus.x+12, positionSensorStatus.y+24, 'statusLight');
             statusLight.s1.animations.add('unplugged', [3], 1);
@@ -1283,7 +1285,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 /* outside of motor frames */
                 dials[ motorPort ] = game.add.sprite( positionDial.x+12+(i-1)*65, positionDial.y+24, 'dialFace' );
                 labelDials[ motorPort ] = game.add.text( positionDial.x+32+(i-1)*65, positionDial.y+46+browserFix*1.25, motorPort.toUpperCase(), dialLabelStyle );
-                needles[ motorPort ] = new RotationNeedle ( game, motorPort , numbers[ motorPort ] );
+                needles[ motorPort ] = new RotationNeedle( game, motorPort , numbers[ motorPort ] );
+                statusLights[ motorPort ] = new StatusLight( game, motorPort, numbers[ motorPort ] );
+                motorStatusLabels[ motorPort ] = game.add.text( positionMotorStatus.x+14 + 30*(i-1), positionMotorStatus.y+37+browserFix, motorPort.toUpperCase(), labelStyle );
             }
 
             /* Create Gangs */
@@ -1304,8 +1308,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangPlusButtons[ i ] = new GangPlusButton( game, i );
                 gangMinusButtons[ i ] = new GangMinusButton( game, i );
                 gangSliderBars[ i ] = new GangSliderBar( game, i );
-                gangCheckboxes[i] = new GangCheckbox( game, i );
-                gangMotorLabels[i] = new GangMotorLabel( game, i );
+                gangCheckboxes[ i ] = new GangCheckbox( game, i );
+                gangMotorLabels[ i ] = new GangMotorLabel( game, i );
                 if ( numMotors < 6 ) {
                     var spacing = Math.floor((161 - 35)/(numMotors-1));
                     for ( var j = 1; j <= numMotors; j++ ) {

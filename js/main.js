@@ -273,7 +273,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.input.allowHorizontalDrag = false;
             this.setFrames(1,0,2,0);
             this.motor = motor;
-            this.state = 'up';
+            //this.state = 'up';
             this.name = 'slider bar ' + motor;
             game.add.existing(this);
         }
@@ -382,7 +382,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.input.allowHorizontalDrag = false;
             this.setFrames(1,0,2,0);
             this.gang = gang;
-            this.state = 'up';
+            //this.state = 'up';
             this.name = 'slider bar ' + gang;
             game.add.existing(this);
         }
@@ -718,9 +718,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 touchIndicator.animations.play('up');
             }
         }
-
         function setColorSensor( val ) {
-            if (val.mode === "RGB") {
+            /*if (val.mode === "RGB") {
                 game.world.remove(color.rDisplay);
                 game.world.remove(color.gDisplay);
                 game.world.remove(color.bDisplay);
@@ -737,8 +736,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
                 //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
             }
-            
-            /* After determining output of ColorID sensor, use if statements to implement output into dashboard
             else if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
@@ -1045,22 +1042,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
-
-        //EXPERIMENTING...trying to show motor statuses correctly
-        // function getInitialMotorStatus() {
-        //     var currentPosD = needles['d'].angle;
-        //     moveMotor(botId,'d','f',1);
-        //     if (currentPosD === needles['d'].angle) {
-        //         statusLight.d.animations.play('unplugged');
-        //         motorD.status = "unplugged";
-        //     } 
-        //     else {
-        //         statusLight.d.animations.play('pluggedIn');
-        //         motorD.status = "pluggedIn";
-        //     }
-        //     moveMotor(botId,'d','r',1);
-        //     moveMotor(botId,'d','f',0);
-        // }
 
     //==============================================================================================================================
         function preload() {
@@ -1418,11 +1399,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log("decreasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
         }
         function changeSpeedSlideActionDown () {
-            sliderBars[ this.port ].state = 'down';
+            //sliderBars[ this.port ].state = 'down';
             motors[ this.port ].previousSpeed = motors[ this.port ].speed;
         }
         function changeSpeedSlideActionUp () {
-            sliderBars[ this.port ].state = 'up';
+            //sliderBars[ this.port ].state = 'up';
             //we're sliding between positionMotors[ this.port ].y + 11 px (0 deg/sec) and positionMotors[ this.port ].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             if ( sliderBars[ this.port ].y < positionMotors[ this.port ].y+13 ) { //set max speed boundary limit
                 sliderBars[ this.port ].y = positionMotors[ this.port ].y+13;
@@ -1500,11 +1481,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log("decreasing gang " + this.gangId + " speed to " + gangs[ this.gangId ].speed.toFixed(2) );
         }
         function changeGangSpeedSlideActionDown () {
-            gangSliderBars[ this.gangId ].state = 'down';
+            //gangSliderBars[ this.gangId ].state = 'down';
             gangs[ this.gangId ].previousSpeed = gangs[ this.gangId ].speed;
         }
         function changeGangSpeedSlideActionUp () {
-            gangSliderBars[ this.gangId ].state = 'up';
+            //gangSliderBars[ this.gangId ].state = 'up';
             //we're sliding between positionGangs[ this.gangId ].y + 11 px (0 deg/sec) and positionGangs[ this.gangId ].y + 165px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             if ( gangSliderBars[ this.gangId ].y < positionGangs[ this.gangId ].y+13 ) { //set max speed boundary limit
                 gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y+13;
@@ -1704,7 +1685,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Update the dashboard speed setting of gangs */
         function updateGangSpeed (key, speed) {
             var gangId = key.slice(0,1);
-            //if ( gangSliderBars[ gangId ].state === "up " ) {
+            //if ( gangSliderBars[ gangId ].state === "up"  ) {
                 //console.log ("updating speed of gang " + gangId + " to " + speed);
                 gangs[ gangId ].speed = speed;
                 gangSliderBars[ gangId ].y = positionGangs[ gangId ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
@@ -1784,7 +1765,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var k in val ) {
                 if ( val[ k ] !== gangs[ gangId ][ k ] ) {
                     gangs[ gangId ][ k ] = val[ k ];
-                    if ( k === 'speed' ) {
+                    if ( k === 'speed' && val[ k ] !== gangs[ gangId ].previousSpeed ) {
                         updateGangSpeed( key, val[ k ] );
                     }
                     if ( k in motors ) {
@@ -1840,10 +1821,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var g in gangs ) {
                 var dashKey = g + 'Dash';
+                //if ( gangSliderBars[ g ].state === "up" ) {
                 var dashGang = channel.getKeyspace(botId).get(dashKey);
                 //if ( typeof(dashGang) !== "undefined" ) {
                 // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
                 getGangValues( dashKey, dashGang );
+                //}
                 //}
             }
 

@@ -52,8 +52,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
         updateBar(78, $("#progressBar"));
-        var getKeyspaceButton;
-
 
         channel.onSubscribers( function(joined) {
            // subscribeBotUser(joined);
@@ -110,53 +108,59 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var maxMotorColumns = Math.ceil(numMotors/motorRows);
             var maxMotorRows = motorRows;
         }
-        //resize game window height if we have more than 2 rows
+        // resize game window height if we have more than 2 rows
         if ( maxMotorRows > 2 ) {
             game.height = gameBoundY += (maxMotorRows-2) * 215;
         }
-
+        // set motor frame positions
         if ( maxMotorRows === 1 ) {
             for ( var j = 1; j <= maxMotorColumns; j++ ) {
                 positionMotors[ letters[ j ] ] = { x : 15 + (j-1)*283, y : 226 }
             }            
         }
-        else if ( maxMotorColumns === 1 ) {
-            for ( var i = 1; i <= maxMotorRows; i++ ) {
-                positionMotors[ letters[ i ] ] = { x : 15, y : 226 + (i-1)*215 }
-            }
-        }
-        else if ( maxMotorColumns === 2 ) {
-            for ( var i = 1; i <= maxMotorRows; i++ ) { 
-                for ( var j = 1; j <= maxMotorColumns; j++ ) {
-                    if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
-                    else var subIndex = j + 1;
-                    var index = subIndex * i - i;
-                    if (index > numMotors) break;
-                    positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
-                } // this is a sequence to position motors (laid out in a grid)
-            }
-        }
-        else if ( maxMotorColumns === 3 ) {
-            var subIndex, subIndex1 = 2, denominator = 1;
-            for ( var i = 1; i <= maxMotorRows; i++ ) {
-                for ( var j = 1; j <= maxMotorColumns; j++ ) {
-                    if ( j === 1 ) {
-                        if ( i !== 1 ) {
-                            subIndex = subIndex1 += 1/denominator;
-                            denominator += i;
-                        }
-                        else if ( i === 1 ) subIndex = subIndex1 +=0;
+        else {
+            switch ( maxMotorColumns ) {
+                case 1:
+                    for ( var i = 1; i <= maxMotorRows; i++ ) {
+                        positionMotors[ letters[ i ] ] = { x : 15, y : 226 + (i-1)*215 }
                     }
-                    else if ( j === 2 ) 
-                        subIndex = subIndex2 = 3 + (i-1)/i;
-                    else if ( j === 3 ) subIndex = 4;
-                    var index = subIndex * i -i;
-                    if (index > numMotors) break;
-                    positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
-                } // this is a sequence to position motors (laid out in a grid)
+                    break;
+                case 2:
+                    for ( var i = 1; i <= maxMotorRows; i++ ) { 
+                        for ( var j = 1; j <= maxMotorColumns; j++ ) {
+                            if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
+                            else var subIndex = j + 1;
+                            var index = subIndex * i - i;
+                            if (index > numMotors) break;
+                            positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
+                        } // this is a sequence to position motors (laid out in a grid)
+                    }
+                    break;
+                case 3: 
+                    var subIndex, subIndex1 = 2, denominator = 1;
+                    for ( var i = 1; i <= maxMotorRows; i++ ) {
+                        for ( var j = 1; j <= maxMotorColumns; j++ ) {
+                            if ( j === 1 ) {
+                                if ( i !== 1 ) {
+                                    subIndex = subIndex1 += 1/denominator;
+                                    denominator += i;
+                                }
+                                else if ( i === 1 ) subIndex = subIndex1 +=0;
+                            }
+                            else if ( j === 2 ) 
+                                subIndex = subIndex2 = 3 + (i-1)/i;
+                            else if ( j === 3 ) subIndex = 4;
+                            var index = subIndex * i -i;
+                            if (index > numMotors) break;
+                            positionMotors[ letters[ index ] ] = { x : 15 + (j-1)*283 , y : 226 + (i-1)*215 }
+                        } // this is a sequence to position motors (laid out in a grid)
+                    }
+                    break;
+                default:
+                    alert("Please specify 1, 2, or 3 columns, or specify 1 row.");
+                    break;
             }
         }
-
         /* Gang positions */
         var positionGangs = {}
         for ( var i = 1; i <= numGangs; i++ ) {
@@ -485,10 +489,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelRotation = "Motor Rotational Positions";
         var frameDials;        
         var positionDial = { x : 674, y : 133 }
-
         /* Ganging motors together */
         var checkbox;
-
         /* Sensors */
         var sensor1 = {
             status : 0, //0 = unplugged, 1 = plugged-in // 2 for initial setting
@@ -502,7 +504,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sensor4 = {
             status : 0, //0 = unplugged, 1 = plugged-in // 2 for initial setting
         }
-
         /* Touch sensor */
         var press = 0; // 0 = not pressed, 1 = pressed
         var touchCount = 0, bumpCount = 0, touchTime = 0; //count total touches or bumps
@@ -519,7 +520,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ", labelTouchTime = "Total Time Pressed: ", labelTouchTimeUnits = "sec";
         var touchIndicator;
         var t1Touch;
-
         /* IR sensor */
         var positionIR = { x : 217, y : 66 }
         var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
@@ -527,7 +527,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var IR = {
             IRDistDisplay : 0
         }
-
         /* Color sensor */
         var positionColor = { x : 217, y : 133 }
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
@@ -548,7 +547,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             nameDisplay : '',
             lightIntensity : 0
         }
-
         /* Ultrasonic sensor */
         var positionUltrasonic = { x : 379, y : 66 }
         var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
@@ -556,11 +554,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var ultrasonic = {
             ultrasonicDistDisplay : 0
         }
-
         /* Battery level sensor */
         var frameBattery, labelBattery = "Battery Level", batteryOutline, batteryLevel = 1; //initialize the level at 100% (or, 1)
         var positionBattery = { x : 821, y : 66 }
-
         /* LCD Screen */
         var LCDScreenBox;
         var positionScreen = { x : 15, y : 133 }
@@ -570,6 +566,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             messageDisplay2 : "",
             messageDisplay3 : ""
         }
+        /* Button for testing */
+        var getKeyspaceButton;
 
         /* === Text editor stuff === */
         var userType;
@@ -869,7 +867,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16);
                 }
             }
-
             channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : batteryLevel });
         }
 
@@ -1109,7 +1106,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('dialFace', 'assets/gigabot_dashboard_dial_face.png', 52, 52);
             game.load.image('screenInputButton', 'assets/buttons/gigabot_dashboard_button_lcd_screen_input.png', 43, 22);
             game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm_on_dark.png', 48, 48);
-            game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
+            //game.load.image('dragButton','assets/buttons/gigabot_dashboard_drag_button.png', 24, 14);
             game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
             game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
             game.load.spritesheet('statusButton','assets/buttons/gigabot_dashboard_button_status_spritesheet.png', 63,25);
@@ -1661,7 +1658,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             } 
         }
-
         //=============================================================================
     /* Motor communication with Robot via messages to Big Bang channel */
         function moveMotor( recipient, motor, direction, speed, switched ) {
@@ -1725,7 +1721,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay2 = game.add.text(positionScreen.x+15, positionScreen.y+46, messageDisplay2, messageStyle);
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60, messageDisplay3, messageStyle);
         }
-
     //=============================================================================
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing/debugging
@@ -1763,7 +1758,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dbl = channel.getKeyspace(botId).get('batteryDash');
             console.log(dbl);
         }
-
     //==============================================================================================================================
     /* Update stuff */
         /* Update the dashboard speed setting of gangs */
@@ -1809,15 +1803,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function updateSpeed (key, speed) {
             var motorPort = key.slice(0,1);
             //if ( sliderBars[ motorPort ].state === "up " ) {
-                //console.log ("updating speed of motor " + motorPort + " to " + speed);
-                motors[ motorPort ].speed = speed;
-                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-                motors[ motorPort ].previousSpeed = speed;
-                game.world.remove( motors[ motorPort ].currentSpeedDisplay );
-                motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+178, speed.toFixed(1), dataOutputStyle );
+            //console.log ("updating speed of motor " + motorPort + " to " + speed);
+            motors[ motorPort ].speed = speed;
+            sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+            motors[ motorPort ].previousSpeed = speed;
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+178, speed.toFixed(1), dataOutputStyle );
             //}
         }
-        /* Rotation of motor position dials */
+        /* Approximate rotation of motor position dials in realtime */
         function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
             var motorPort = key.slice(0,1);
             var time2 = game.time.time;
@@ -1833,22 +1827,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             motors[ motorPort ].time1 = time2;
         } 
+        /* Once motor stops, update its dial to the precise value measured by the robot and published to channel */
         function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
-        // May need to comment out this function this while the robot is not running. We'll figure out a way to first determine if the robot is running and connected
             var motorPort = key.slice(0,1);
-            if ( typeof(motorData) !== "undefined" ) {
-                if ( motorData.moving === false ) {
-                    needles[ motorPort ].angle = motorData.position //now, update to exact value that was published to channel by bot
-                }
+            //if ( typeof(motorData) !== "undefined" ) {
+            if ( typeof(motorData) !== "undefined" && motorData.moving === false ) {
+                //if ( motorData.moving === false ) {
+                needles[ motorPort ].angle = motorData.position;
+                //}
             }
         }
+        /* Get key-value pairs related to dashboard gang settings from the keyspace and execute other functions with them  */
         function getGangValues (key, val) {
             var gangId = key.slice(0,1); // take only the gang's number from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
             for ( var k in val ) {
-                if ( val[k] !== gangs[ gangId ][k] ) {
-                    gangs[ gangId ][k] = val[k];
+                if ( val[ k ] !== gangs[ gangId ][ k ] ) {
+                    gangs[ gangId ][ k ] = val[ k ];
                     if ( k === 'speed' ) {
-                        updateGangSpeed( key, val[k] );
+                        updateGangSpeed( key, val[ k ] );
                     }
                     for ( var m in motors ) {
                         if ( k === m ) {
@@ -1858,7 +1854,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             } 
         }
-        /* Get key-value pairs from the dashboard keyspace and do things with them */
+        /* Get key-value pairs related to dashboard motor settings from the keyspace and execute other functions with them  */
         function getDashboardValues (key, val) {
             //console.log("getting dashboard values for " + key); 
             var motorPort = key.slice(0,1); // take only the letter from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
@@ -1882,7 +1878,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 updateDial (key, motorData ); // update at the next second to the value in the message sent by the bot
             }
         }
-        function update() {
+        function update() { // Infinite loop running at about 60x per second
             if ( botId === '' ) { // don't do anything when we're not dealing with a particular bot
                 return 0;
             }
@@ -1892,7 +1888,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //if ( sliderBars[k].state === "up" ) { // this was to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotor = channel.getKeyspace(botId).get(dashKey); 
                 if ( typeof(dashMotor) !== "undefined" ) {
-                    getDashboardValues( dashKey, dashMotor );
+                    // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
+                    getDashboardValues( dashKey, dashMotor ); 
                     getDialValues( dashKey, dashMotor );
                 }               
                 //}
@@ -1901,7 +1898,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashKey = g + 'Dash';
                 var dashGang = channel.getKeyspace(botId).get(dashKey);
                 //if ( typeof(dashGang) !== "undefined" ) {
-                    getGangValues( dashKey, dashGang );
+                // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
+                getGangValues( dashKey, dashGang );
                 //}
             }
 

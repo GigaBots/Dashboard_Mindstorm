@@ -536,7 +536,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var codeError;
         var clicked = false;
         // array for textEditor code inputs to be stored, first dimension is input, second is output
-        var codeArray = [,];
+        var codeArray = [];
         var iterationNum = 0;
         // element to determine which code to display for "up" and "down" presses
         var indexArray = iterationNum;
@@ -1826,29 +1826,35 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
-
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
-            // try to evalate user's input code in text editor area. Will evaluate if possible.
+
+            // store currentCode in an array to be accessed if they press the up key
+            codeArray.push([formatCode]);
+            
             try {
-                codeArray[iterationNum,1] = eval(evalCode);
+            // try to evalate user's input code in text editor area. Will evaluate if possible.
+            
+                codeArray[iterationNum].push(eval(evalCode));
             }
             // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
-                codeArray[iterationNum,1] += codeArray[iterationNum,1]+ "<br>Error: "+ err.message;
+                codeArray[iterationNum][1] = codeArray[iterationNum] + "<br>Error: "+ err.message
             }
 
-            // store currentCode in an array to be accessed if they press the up key
-            codeArray[iterationNum,0] = formatCode;
+            
+            
 
-            $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[0,0] + '</div>');
-            $( ".previousCode" ).append( '<div style="text-align:right; color:red; margin:0;">' +  codeArray[0,1] + '</div>');
+            $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[iterationNum][0] + '</div>');
+            $( ".previousCode" ).append( '<div style="text-align:right; color:orange; margin:0;">' +  "Output: " + codeArray[iterationNum][1] + '</div>');
 
             iterationNum = iterationNum + 1;
-            $("previousCode").scrollTop($("previousCode")[0].scrollHeight)
+            indexArray = iterationNum;
+            $(".previousCode").scrollTop($(".previousCode")[0].scrollHeight);
             $("html").scrollTop($("html")[0].scrollHeight);
+            document.getElementById("currentCode").innerHTML = "";
 
         } // end .onclick
         
@@ -1863,6 +1869,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
                 // If up key is pressed (keycode number 38) then
                 case 38: // up
+                    
                     // If at the last element in the array and they press up
                     if (indexArray === iterationNum) {
                         // Remember their unsubmitted code in a tempCode variable so in case they want to return what they previously wrote
@@ -1872,7 +1879,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if (indexArray != 0) {
                         //Maneuver back through previous input code
                         indexArray=indexArray-1;
-                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray][0];
                     }
                 break;
                 // If down key is pressed
@@ -1880,7 +1887,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     // Maneuver forward through newer code input
                     if (indexArray != iterationNum) {
                         indexArray=indexArray+1;
-                        document.getElementById("currentCode").innerHTML = codeArray[indexArray];
+                        document.getElementById("currentCode").innerHTML = codeArray[indexArray][0];
                     }
                     if (indexArray === iterationNum) {
                         document.getElementById("currentCode").innerHTML = tempCode; 

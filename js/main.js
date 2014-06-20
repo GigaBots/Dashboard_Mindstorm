@@ -1422,6 +1422,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
+                /////// Quick and dirty for now, this will update the gang's motors speed if changed while the motors are moving
+                if ( gangChannelData[ k ] === true ) {
+                    var dashMotorKey = k + 'Dash';
+                    var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
+                    if ( keyspaceMotorData.direction !== "stopped" ) {
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                    }
+                }
+                ///////
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); // This accesses the keyspace 'dashboard,' which if it doesn't exist is then created containing a non-null value. Then it puts a key this.gangId into it, which contains the value 'speed' equal to gangs[this.gangId].speed
             game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
@@ -1442,6 +1451,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
+                /////// Quick and dirty for now, this will update the gang's motors speed if changed while the motors are moving
+                if ( gangChannelData[ k ] === true ) {
+                    var dashMotorKey = k + 'Dash';
+                    var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
+                    if ( keyspaceMotorData.direction !== "stopped" ) {
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                    }
+                }
+                ///////
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
             game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
@@ -1467,6 +1485,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
+                /////// Quick and dirty for now, this will update the gang's motors speed if changed while the motors are moving
+                if ( gangChannelData[ k ] === true ) {
+                    var dashMotorKey = k + 'Dash';
+                    var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
+                    if ( keyspaceMotorData.direction !== "stopped" ) {
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                    }
+                }
+                ///////
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
             game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
@@ -1649,43 +1676,36 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dbl = channel.getKeyspace(botId).get('batteryDash');
             console.log(dbl);
         }
-      //==============================================================================================================================
-      /* Update stuff */
-        /* Update the dashboard speed setting of gangs */
+    //==============================================================================================================================
+    /* Update stuff */
+      /* Update the dashboard speed setting of gangs */
         function updateGangSpeed (key, speed) {
-            var gangId = key.slice(0,1);
-          //if ( gangSliderBars[ gangId ].state === "up"  ) {
+          //if ( gangSliderBars[ key ].state === "up"  ) {
             //console.log ("updating speed of gang " + gangId + " to " + speed);
-            gangs[ gangId ].speed = speed;
-            gangSliderBars[ gangId ].y = positionGangs[ gangId ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-            gangs[ gangId ].previousSpeed = speed;
-            game.world.remove( gangs[ gangId ].currentSpeedDisplay );
-            gangs[ gangId ].currentSpeedDisplay = game.add.text( positionGangs[ gangId ].x+191, positionGangs[ gangId ].y+178+browserFix, speed.toFixed(1), dataOutputStyle );
+            gangs[ key ].speed = speed;
+            gangSliderBars[ key ].y = positionGangs[ key ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+            gangs[ key ].previousSpeed = speed;
+            game.world.remove( gangs[ key ].currentSpeedDisplay );
+            gangs[ key ].currentSpeedDisplay = game.add.text( positionGangs[ key ].x+191, positionGangs[ key ].y+178+browserFix, speed.toFixed(1), dataOutputStyle );
           //}
         }
-        /* Update the dashboard motor selection in gangs */
+      /* Update the dashboard motor selection in gangs */
         function updateGangMotors (key, motor, status ) {
-            var gangId = key.slice(0,1);
-            //console.log( "updating motor " + motor + " within gang " + gangId );
-            gangs[ gangId ][ motor ] = status;
-            if ( status === true ) {
-                gangCheckboxes[ gangId ][ motor ].setFrames(1,1,1,1);   
-            } else {
-                gangCheckboxes[ gangId ][ motor ].setFrames(2,0,1,0);                  
-            }
+            //console.log( "updating motor " + motor + " within gang " + key );
+            gangs[ key ][ motor ] = status;
+            if ( status === true ) gangCheckboxes[ key ][ motor ].setFrames(1,1,1,1);   
+            else gangCheckboxes[ key ][ motor ].setFrames(2,0,1,0);                  
         }
-        /* Get key-value pairs related to dashboard gang settings from the keyspace and execute other functions with them  */
+      /* Get key-value pairs related to dashboard gang settings from the keyspace and execute other functions with them  */
         function getGangValues (key, val) {
-            var gangId = key.slice(0,1); // take only the gang's number from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
             for ( var k in val ) {
-                if ( val[ k ] !== gangs[ gangId ][ k ] ) {
-                    gangs[ gangId ][ k ] = val[ k ];
-                    if ( k === 'speed' && val[ k ] !== gangs[ gangId ].previousSpeed ) updateGangSpeed( key, val[ k ] );
+                if ( val[ k ] !== gangs[ key ][ k ] ) {
+                    gangs[ key ][ k ] = val[ k ];
+                    if ( k === 'speed' && val[ k ] !== gangs[ key ].previousSpeed ) updateGangSpeed( key, val[ k ] );
                     if ( k in motors ) updateGangMotors( key, k, val[k] );
                 }
             } 
         }
- 
       /* Update the direction configurations of the motors for all users */
         function updateMotorDirections ( key, switchDirection ) {
             if ( motors[ key ].directionSwitched === switchDirection ) return 0; // exit function if the values are already equal
@@ -1766,7 +1786,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashGang = channel.getKeyspace(botId).get(dashKey);
                 //if ( typeof(dashGang) !== "undefined" ) {
                 // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
-                getGangValues( dashKey, dashGang );
+                getGangValues( g, dashGang );
                 //}
                 //}
             }

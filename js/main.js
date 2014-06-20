@@ -1653,120 +1653,187 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangCheckboxes[ gangId ][ motor ].setFrames(2,0,1,0);                  
             }
         }
-        /* Update the direction configurations of the motors for all users */
-        function updateDirections ( key, switchDirection ) {
-            var motorPort = key.slice(0,1);
-            if ( motors[ motorPort ].directionSwitched === switchDirection ) {
-                return 0;
-            }
-            //console.log ("updating direction of motor " + motorPort + " to " + switchDirection);
-            if ( switchDirection === false ) {
-                motors[ motorPort ].directionSwitched = false;
-                directionChecks[ motorPort ].setFrames(2,0,1,0);
-            } else {
-                motors[ motorPort ].directionSwitched = true;
-                directionChecks[ motorPort ].setFrames(1,1,1,1);
-            }
-            //motors[ motorPort ].previousDirectionSwitched = switchDirection;
-        }
-        /* Update set speeds and slider positions for all users */
-        function updateSpeed (key, speed) {
-            var motorPort = key.slice(0,1);
-            //if ( sliderBars[ motorPort ].state === "up " ) {
-            //console.log ("updating speed of motor " + motorPort + " to " + speed);
-            motors[ motorPort ].speed = speed;
-            sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
-            motors[ motorPort ].previousSpeed = speed;
-            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
-            motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+178+browserFix, speed.toFixed(1), dataOutputStyle );
-            //}
-        }
-        /* Approximate rotation of motor position dials in realtime */
-        function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
-            var motorPort = key.slice(0,1);
-            var time2 = game.time.time;
-            var deltaTime = time2 - motors[ motorPort ].time1;
-            if ( deltaTime >= 60 ) {
-                deltaTime = 30; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
-            }
-            if ( direction === 'f' ) {
-                needles[ motorPort ].angle += motors[ motorPort ].speed * deltaTime / 1000; // CW
-            }
-            if ( direction === 'r' ) {
-                needles[ motorPort ].angle -= motors[ motorPort ].speed * deltaTime / 1000; // CCW
-            }
-            motors[ motorPort ].time1 = time2;
-        } 
-        /* Once motor stops, update its dial to the precise value measured by the robot and published to channel */
-        function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
-            var motorPort = key.slice(0,1);
-            //if ( typeof(motorData) !== "undefined" ) {
-            if ( typeof(motorData) !== "undefined" && motorData.moving === false ) {
-                //if ( motorData.moving === false ) {
-                needles[ motorPort ].angle = motorData.position;
-                //}
-            }
-        }
         /* Get key-value pairs related to dashboard gang settings from the keyspace and execute other functions with them  */
         function getGangValues (key, val) {
             var gangId = key.slice(0,1); // take only the gang's number from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
             for ( var k in val ) {
                 if ( val[ k ] !== gangs[ gangId ][ k ] ) {
                     gangs[ gangId ][ k ] = val[ k ];
-                    if ( k === 'speed' && val[ k ] !== gangs[ gangId ].previousSpeed ) {
-                        updateGangSpeed( key, val[ k ] );
-                    }
-                    if ( k in motors ) {
-                        updateGangMotors( key, k, val[k] );
-                    }
-                    // for ( var m in motors ) { // this way is probably less efficient
-                    //     if ( k === m ) {
-                    //         updateGangMotors( key, m, val[ k ] );
-                    //     }
-                    // }
+                    if ( k === 'speed' && val[ k ] !== gangs[ gangId ].previousSpeed ) updateGangSpeed( key, val[ k ] );
+                    if ( k in motors ) updateGangMotors( key, k, val[k] );
                 }
             } 
         }
-        /* Get key-value pairs related to dashboard motor settings from the keyspace and execute other functions with them  */
-        function getDashboardValues (key, val) {
-            //console.log("getting dashboard values for " + key); 
-            var motorPort = key.slice(0,1); // take only the letter from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
-            if ( motors[ motorPort ].speed !== val.speed && motors[ motorPort ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
-                updateSpeed( key, val.speed );
+        /* Update the direction configurations of the motors for all users */
+        // function updateDirections ( key, switchDirection ) {
+        //     var motorPort = key.slice(0,1);
+        //     if ( motors[ motorPort ].directionSwitched === switchDirection ) {
+        //         return 0;
+        //     }
+        //     //console.log ("updating direction of motor " + motorPort + " to " + switchDirection);
+        //     if ( switchDirection === false ) {
+        //         motors[ motorPort ].directionSwitched = false;
+        //         directionChecks[ motorPort ].setFrames(2,0,1,0);
+        //     } else {
+        //         motors[ motorPort ].directionSwitched = true;
+        //         directionChecks[ motorPort ].setFrames(1,1,1,1);
+        //     }
+        //     //motors[ motorPort ].previousDirectionSwitched = switchDirection;
+        // }
+        // /* Update set speeds and slider positions for all users */
+        // function updateSpeed (key, speed) {
+        //     var motorPort = key.slice(0,1);
+        //     //if ( sliderBars[ motorPort ].state === "up " ) {
+        //     //console.log ("updating speed of motor " + motorPort + " to " + speed);
+        //     motors[ motorPort ].speed = speed;
+        //     sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+        //     motors[ motorPort ].previousSpeed = speed;
+        //     game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+        //     motors[ motorPort ].currentSpeedDisplay = game.add.text( positionMotors[ motorPort ].x+100, positionMotors[ motorPort ].y+178+browserFix, speed.toFixed(1), dataOutputStyle );
+        //     //}
+        // }
+        // /* Approximate rotation of motor position dials in realtime */
+        // function moveDial (key, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
+        //     var motorPort = key.slice(0,1);
+        //     var time2 = game.time.time;
+        //     var deltaTime = time2 - motors[ motorPort ].time1;
+        //     if ( deltaTime >= 60 ) {
+        //         deltaTime = 30; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+        //     }
+        //     if ( direction === 'f' ) {
+        //         needles[ motorPort ].angle += motors[ motorPort ].speed * deltaTime / 1000; // CW
+        //     }
+        //     if ( direction === 'r' ) {
+        //         needles[ motorPort ].angle -= motors[ motorPort ].speed * deltaTime / 1000; // CCW
+        //     }
+        //     motors[ motorPort ].time1 = time2;
+        // } 
+        // /* Once motor stops, update its dial to the precise value measured by the robot and published to channel */
+        // function updateDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
+        //     var motorPort = key.slice(0,1);
+        //     //if ( typeof(motorData) !== "undefined" ) {
+        //     if ( typeof(motorData) !== "undefined" ) { //&& motorData.moving === false ) {
+        //         //if ( motorData.moving === false ) {
+        //         needles[ motorPort ].angle = motorData.position;
+        //         //}
+        //     }
+        // }
+        // /* Get key-value pairs related to dashboard motor settings from the keyspace and execute other functions with them  */
+        // function getDashboardValues (key, val) {
+        //     //console.log("getting dashboard values for " + key); 
+        //     var motorPort = key.slice(0,1); // take only the letter from the keyspace dashboard motor settings (e.g., take 'a' from 'aDash')
+        //     if ( motors[ motorPort ].speed !== val.speed && motors[ motorPort ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
+        //         updateSpeed( key, val.speed );
+        //     }
+        //     //if ( directionChecks[motorPort].state == 'up ') {
+        //     if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
+        //         updateDirections( key, val.directionSwitched );
+        //     }
+        //     //} 
+        // }
+        // function getDialValues (key, val) {
+        //     //console.log("getting dial values for " + key); 
+        //     var motorPort = key.slice(0,1);
+        //     if ( val.direction === 'f' || val.direction === 'r' ) {
+        //          moveDial (key, val.direction); //smooth-ish linear extrapolation
+        //     } 
+        //     else if ( val.direction === "stopped" ) {
+        //         channel.getKeyspace(botId).put( key, { 'speed': motors[ motorPort ].speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
+        //         var motorData = channel.channelData.get( key );
+        //         updateDial (key, motorData ); // update at the next second to the value in the message sent by the bot
+        //     }
+        // }
+
+
+
+        function updateMotorDirections ( key, switchDirection ) {
+            if ( motors[ key ].directionSwitched === switchDirection ) {
+                return 0;
             }
-            //if ( directionChecks[motorPort].state == 'up ') {
-            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ motorPort ].directionSwitched !== val.directionSwitched ) {
-                updateDirections( key, val.directionSwitched );
+            //console.log ("updating direction of motor " + key + " to " + switchDirection);
+            if ( switchDirection === false ) {
+                motors[ key ].directionSwitched = false;
+                directionChecks[ key ].setFrames(2,0,1,0);
+            } else {
+                motors[ key ].directionSwitched = true;
+                directionChecks[ key ].setFrames(1,1,1,1);
             }
-            //} 
         }
-        function getDialValues (key, val) {
-            //console.log("getting dial values for " + key); 
-            var motorPort = key.slice(0,1);
+        function updateMotorSpeed (key, speed) {
+            //if ( sliderBars[ motorPort ].state === "up " ) {
+            //console.log ("updating speed of motor " + motorPort + " to " + speed);
+            motors[ key ].speed = speed;
+            sliderBars[ key ].y = positionMotors[ key ].y + 13 - (154 / 700) * (speed - 700); //back-calculate sliderbar position from speed normalized over the range of slider track y-values
+            motors[ key ].previousSpeed = speed;
+            game.world.remove( motors[ key ].currentSpeedDisplay );
+            motors[ key ].currentSpeedDisplay = game.add.text( positionMotors[ key ].x+100, positionMotors[ key ].y+178+browserFix, speed.toFixed(1), dataOutputStyle );
+            //}
+        }
+        function updateMotorDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
+            //if ( typeof(motorData) !== "undefined" ) {
+            if ( typeof(motorData) !== "undefined" ) { //&& motorData.moving === false ) {
+                if ( motorData.moving === false ) {
+                needles[ key ].angle = motorData.position;
+                }
+            }
+        }
+        function moveMotorDial (key, speed, direction) { // Move the dial in realtime in all users' dashboards: this is an approximation based on the previous needle position and the current speed and direction
+            var time2 = game.time.time;
+            var deltaTime = time2 - motors[ key ].time1;
+            if ( deltaTime >= 60 ) deltaTime = 30; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
+            if ( direction === 'f' ) needles[ key ].angle += speed * deltaTime / 1000; // CW
+            if ( direction === 'r' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
+            motors[ key ].time1 = time2;
+        } 
+        function getMotorData ( key, val ) {
+            if ( motors[ key ].speed !== val.speed && motors[ key ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
+                updateMotorSpeed( key, val.speed );
+            }
+            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ key ].directionSwitched !== val.directionSwitched ) {
+                 updateMotorDirections( key, val.directionSwitched );
+            }
+            
             if ( val.direction === 'f' || val.direction === 'r' ) {
-                moveDial (key, val.direction); //smooth-ish linear extrapolation
-            } else if ( val.direction === "stopped" ) {
-                channel.getKeyspace(botId).put( key, { 'speed': motors[ motorPort ].speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
-                var motorData = channel.channelData.get( key );
-                updateDial (key, motorData ); // update at the next second to the value in the message sent by the bot
+                 moveMotorDial (key, val.speed, val.direction); //smooth-ish linear extrapolation
+            } 
+            else if ( val.direction === "stopped" ) {
+                 var dashKey = key + 'Dash';
+                 channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ key ].speed }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
+                 var dashKey = key + 'Dash';
+                 var motorData = channel.channelData.get( dashKey );
+                 updateMotorDial (key, motorData ); // update at the next second to the value in the message sent by the bot
             }
         }
+
+
         function update() { // Infinite loop running at about 60x per second
             if ( botId === '' ) { // don't do anything when we're not dealing with a particular bot
                 return 0;
             }
             /* DASHBOARD STUFF */
+            // for ( var k in motors ) {
+            //     var dashKey = k + 'Dash';
+            //     //if ( sliderBars[k].state === "up" ) { // this was to partially eliminate the glitch in the dashboard of the user who changed the speed
+            //     var dashMotor = channel.getKeyspace(botId).get(dashKey); 
+            //     if ( typeof(dashMotor) !== "undefined" ) {
+            //         // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
+            //         getDashboardValues( dashKey, dashMotor ); 
+            //         getDialValues( dashKey, dashMotor );
+            //     }               
+            //     //}
+            // }
+
             for ( var k in motors ) {
                 var dashKey = k + 'Dash';
                 //if ( sliderBars[k].state === "up" ) { // this was to partially eliminate the glitch in the dashboard of the user who changed the speed
                 var dashMotor = channel.getKeyspace(botId).get(dashKey); 
                 if ( typeof(dashMotor) !== "undefined" ) {
-                    // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
-                    getDashboardValues( dashKey, dashMotor ); 
-                    getDialValues( dashKey, dashMotor );
+                    getMotorData( k, dashMotor ); 
+
                 }               
                 //}
             }
+
             for ( var g in gangs ) {
                 var dashKey = g + 'Dash';
                 //if ( gangSliderBars[ g ].state === "up" ) {

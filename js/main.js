@@ -1314,15 +1314,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = this.port + 'Dash';
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { // if the motor is currently moving, we need to make it move in the updated direction
-                var newDirection;
-                if (keyspaceData.direction === 'f') newDirection = 'r';
-                if (keyspaceData.direction === 'r') newDirection = 'f';
+                //var newDirection;
+                //if (keyspaceData.direction === 'f') newDirection = 'r';
+                //if (keyspaceData.direction === 'r') newDirection = 'f';
                 moveMotor( botId, this.port, keyspaceData.direction, keyspaceData.speed, this.directionSwitched );
-                channel.getKeyspace(botId).put(dashKey, { 'speed': keyspaceData.speed, 'direction': newDirection, 'directionSwitched': this.directionSwitched }); 
             }
-            else {
             channel.getKeyspace(botId).put(dashKey, { 'speed': keyspaceData.speed, 'direction': keyspaceData.direction, 'directionSwitched': this.directionSwitched }); 
-            }
             //console.log("flipping directions for motor " + this.port + " from " + temp + " to " + this.directionSwitched );
         }
         function configDirectionsActionUp () {
@@ -1558,11 +1555,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             data.type = "motorStart";
             data.recipient = recipient;
             data.port = motor;
-            if ( switched === true ) {
-                if ( direction === 'f' ) direction = 'r';
-                else direction = 'f'; 
+            if ( switched === false ) {
+                data.dir = direction;
+            } 
+            else {
+                if ( direction === 'f' ) data.dir = 'r';
+                else data.dir = 'f';                 
             }               
-            data.dir = direction;
             data.speed = speed;
             //console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
@@ -1716,12 +1715,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
       /* Approximate rotation of motor position dials in realtime */
-        function rotateMotorDial (key, speed, direction) { // Move the dial in realtime in all users' dashboards: this is a linear approximation based on the previous needle position and the motor's current speed and direction
+        function rotateMotorDial (key, speed, direction, switched ) { // Move the dial in realtime in all users' dashboards: this is a linear approximation based on the previous needle position and the motor's current speed and direction
             var time2 = game.time.time;
             var deltaTime = time2 - motors[ key ].time1;
             if ( deltaTime >= 80 ) deltaTime = 100/6; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
-            if ( direction === 'f' ) needles[ key ].angle += speed * deltaTime / 1000; // CW
-            if ( direction === 'r' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
+            if ( switched === false ) {
+                if ( direction === 'f' ) needles[ key ].angle += speed * deltaTime / 1000; // CW
+                if ( direction === 'r' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
+            }
+            else { // directions are switched
+                if ( direction === 'f' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
+                if ( direction === 'r' ) needles[ key ].angle += speed * deltaTime / 1000; // CW                
+            }
             motors[ key ].time1 = time2;
             //console.log("rotating dial " + key + " at " + speed + " deg/sec, in " + direction + " direction...");
         }
@@ -1733,16 +1738,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof(val.directionSwitched) !== 'undefined' && motors[ key ].directionSwitched !== val.directionSwitched ) {
                  updateMotorDirections( key, val.directionSwitched );
             }
-            //if ( val.direction === 'f' || val.direction === 'r' ) {
-            //      rotateMotorDial (key, val.speed, val.direction);
-            // } 
-            // else if ( val.direction === "stopped" ) {
-            //      var dashKey = key + 'Dash';
-            //      channel.getKeyspace(botId).put( dashKey, { 'speed': val.speed, 'directionSwitched': val.directionSwitched }); // get rid of direction value until the motor's moving again (so this doesn't keep running), by replacing the key with only a speed value
-            //      var dashKey = key + 'Dash';
-            //      var motorData = channel.channelData.get( dashKey );
-            //      updateMotorDial (key, motorData ); // update at the next second to the value in the message sent by the bot
-            // }
         }
       /* Update function inifite loop (~60x/sec) */
         function update() {
@@ -1753,7 +1748,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashData = channel.getKeyspace(botId).get(dashKey); 
                 if ( typeof(dashData) !== "undefined" ) {
                     if ( dashData.direction === 'f' || dashData.direction === 'r' ) { // || motorData.moving === true ) {
-                        rotateMotorDial( k, dashData.speed, dashData.direction );
+                        rotateMotorDial( k, dashData.speed, dashData.direction, dashData.directionSwitched );
                     }
                     else if ( dashData.direction === "stopped" ) {
                         var motorData = channel.getKeyspace(botId).get(k);
@@ -1763,7 +1758,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                     getDashData( k, dashData );
                 } 
-             
             }
 
             for ( var g in gangs ) {

@@ -1833,22 +1833,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);
+            // = codeArray[inputCode]
             
             try {
             // try to evalate user's input code in text editor area. Will evaluate if possible.
-            
                 codeArray[iterationNum].push(eval(evalCode));
+                // = codeArray[inputCode, evaluatedCode]
             }
             // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
             catch(err) {
-                codeArray[iterationNum][1] = codeArray[iterationNum] + "<br>Error: "+ err.message
+                codeArray[iterationNum][1] = codeArray[iterationNum][1] + "<br>Error: "+ err.message;
+                // = codeArray[inputCode, evaluatedCode + errorMessage]
             }
 
             
             
 
             $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[iterationNum][0] + '</div>');
-            $( ".previousCode" ).append( '<div style="text-align:right; color:orange; margin:0;">' +  "Output: " + codeArray[iterationNum][1] + '</div>');
+            $( ".previousCode" ).append( '<div style="text-align:right; color:orange; margin:0;">' +  "Output: " + codeArray[iterationNum][1] +  '</div>');
 
             iterationNum = iterationNum + 1;
             indexArray = iterationNum;
@@ -1889,7 +1891,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         indexArray=indexArray+1;
                         document.getElementById("currentCode").innerHTML = codeArray[indexArray][0];
                     }
-                    if (indexArray === iterationNum) {
+                    if (indexArray+1 === iterationNum) {
+                        indexArray = indexArray+1;
                         document.getElementById("currentCode").innerHTML = tempCode; 
                     }
                 break;

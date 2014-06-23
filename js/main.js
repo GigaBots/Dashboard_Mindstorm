@@ -1256,62 +1256,41 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }       
             }
 
-            /* Add keyboard inputs for motor controls, as an alternative when using a desktop */
-            // add reverse/forward keyboard controls (using A,S,D,& F for forward, and Z,X,C,& V for reverse):
-            
-
-            var keyboardControls = {}
-
-//            var keyboardKeys2 = { 1:'A', 2:'S', 3:'D', 4:'F', 5:'G', 6:'H', 7:'J',8:'K',9:'L' }
-            var keyboardKeys2 = { 'a':'A', 'b':'S', 'c':'D', 'd':'F', 'e':'G', 'f':'H', 'g':'J', 'h':'K','i':'L' }
-
-            for ( k in motors ) {
-                keyboardControls[k] = this.input.keyboard.addKey(Phaser.Keyboard[keyboardKeys2[ k ]]);
+            /* Add keyboard inputs to control up to 9 motors and 3 gangs, as an alternative when using a desktop */
+            // Motor forward: Q, W, E, R, T, Y, U, I, & O; Motor reverse: A, S, D, F, G, H, J, K, & L
+            // Gang forward: Z, X, & C; Gang reverse: B, N, & M 
+            var keyboardControls = {
+                'f' : {},
+                'r' : {}
             }
-
-            var fAKey = this.input.keyboard.addKey(Phaser.Keyboard.A);
-            fAKey.onDown.add(forwardDirectionActionDown, motors['a']); // this will move motor A forward
-            var fBKey = this.input.keyboard.addKey(Phaser.Keyboard.S);
-            fBKey.onDown.add(forwardDirectionActionDown, motors['b']);
-            var fCKey = this.input.keyboard.addKey(Phaser.Keyboard.D);
-            fCKey.onDown.add(forwardDirectionActionDown, motors['c']);
-            var fDKey = this.input.keyboard.addKey(Phaser.Keyboard.F);
-            fDKey.onDown.add(forwardDirectionActionDown, motors['d']);
-            var rAKey = this.input.keyboard.addKey(Phaser.Keyboard.Z);
-            rAKey.onDown.add(reverseDirectionActionDown, motors['a']); // this will move motor A in reverse
-            var rBKey = this.input.keyboard.addKey(Phaser.Keyboard.X);
-            rBKey.onDown.add(reverseDirectionActionDown, motors['b']);
-            var rCKey = this.input.keyboard.addKey(Phaser.Keyboard.C);
-            rCKey.onDown.add(reverseDirectionActionDown, motors['c']);
-            var rDKey = this.input.keyboard.addKey(Phaser.Keyboard.V);
-            rDKey.onDown.add(reverseDirectionActionDown, motors['d']);
-            // stop motor on key up:
-            fAKey.onUp.add(forwardDirectionActionUp, motors['a']); // this will stop motor A
-            fBKey.onUp.add(forwardDirectionActionUp, motors['b']);
-            fCKey.onUp.add(forwardDirectionActionUp, motors['c']);
-            fDKey.onUp.add(forwardDirectionActionUp, motors['d']);
-            rAKey.onUp.add(reverseDirectionActionUp, motors['a']); // this will stop motor A
-            rBKey.onUp.add(reverseDirectionActionUp, motors['b']);
-            rCKey.onUp.add(reverseDirectionActionUp, motors['c']);
-            rDKey.onUp.add(reverseDirectionActionUp, motors['d']);
-            /* Add keyboard inputs for motor gangs, as an alternative when using a desktop */
-            // add reverse/forward keyboard controls (using Q & W for forward, and E & R for reverse):
-            var fG1Key = this.input.keyboard.addKey(Phaser.Keyboard.Q);
-            fG1Key.onDown.add(gangForwardDirectionActionDown, gangs[1]); // this will move gang 1 forward
-            var fG2Key = this.input.keyboard.addKey(Phaser.Keyboard.W);
-            fG2Key.onDown.add(gangForwardDirectionActionDown, gangs[2]);
-            var rG1Key = this.input.keyboard.addKey(Phaser.Keyboard.E);
-            rG1Key.onDown.add(gangReverseDirectionActionDown, gangs[1]); // this will move gang 1 in reverse
-            var rG2Key = this.input.keyboard.addKey(Phaser.Keyboard.R);
-            rG2Key.onDown.add(gangReverseDirectionActionDown, gangs[2]);
-            // stop motor on key up:
-            fG1Key.onUp.add(gangForwardDirectionActionUp, gangs[1]); // this will stop gang 1
-            fG2Key.onUp.add(gangForwardDirectionActionUp, gangs[2]);
-            rG1Key.onUp.add(gangReverseDirectionActionUp, gangs[1]); // this will stop gang 1
-            rG2Key.onUp.add(gangReverseDirectionActionUp, gangs[2]);
+            var keyboardKeys1 = { 'a':'Q', 'b':'W', 'c':'E', 'd':'R', 'e':'T', 'f':'Y', 'g':'U', 'h':'I', 'i':'O' }
+            var keyboardKeys2 = { 'a':'A', 'b':'S', 'c':'D', 'd':'F', 'e':'G', 'f':'H', 'g':'J', 'h':'K', 'i':'L' }
+            var keyboardKeys3 = { 1:'Z', 2:'X', 3:'C' }
+            var keyboardKeys4 = { 1:'B', 2:'N', 3:'M' }
+            for ( k in motors ) {
+                if ( numbers[ k ] <= 9 ) {
+                    keyboardControls[ 'f' ][ k ] = this.input.keyboard.addKey( Phaser.Keyboard[ keyboardKeys1[ k ] ] ); // forward
+                    keyboardControls[ 'f' ][ k ].onDown.add( forwardDirectionActionDown, motors[ k ] ); // start motor on key down
+                    keyboardControls[ 'f' ][ k ].onUp.add( forwardDirectionActionUp, motors[ k ] ); // stop motor on key up
+                    keyboardControls[ 'r' ][ k ] = this.input.keyboard.addKey( Phaser.Keyboard[ keyboardKeys2[ k ] ] ); // reverse
+                    keyboardControls[ 'r' ][ k ].onDown.add( reverseDirectionActionDown, motors[ k ] );
+                    keyboardControls[ 'r' ][ k ].onUp.add( reverseDirectionActionUp, motors[ k ] );
+                }
+            }
+            for ( k in gangs ) {
+                if ( k <= 3 ) {
+                    keyboardControls[ 'f' ][ k ] = this.input.keyboard.addKey( Phaser.Keyboard[ keyboardKeys3[ k ] ] ); //forward
+                    keyboardControls[ 'f' ][ k ].onDown.add( gangForwardDirectionActionDown, gangs[ k ] ); // start motor on key down
+                    keyboardControls[ 'f' ][ k ].onUp.add( gangForwardDirectionActionUp, gangs[ k ] ); // stop motor on key up
+                    keyboardControls[ 'r' ][ k ] = this.input.keyboard.addKey( Phaser.Keyboard[ keyboardKeys4[ k ] ] ); // reverse
+                    keyboardControls[ 'r' ][ k ].onDown.add( gangReverseDirectionActionDown, gangs[ k ] );
+                    keyboardControls[ 'r' ][ k ].onUp.add( gangReverseDirectionActionUp, gangs[ k ] );
+                }
+            }
 
           /* this button is for testing. it's invisible and in the upper right corner */   
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
+            
         } // end create 
 
         function configDirectionsActionDown () {
@@ -1379,7 +1358,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             motors[ this.port ].previousSpeed = motors[ this.port ].speed;
 
             //maybe here we can add something for changing the slider bar while the motor is moving (e.g. for smooth acceleration functionality)
-            if (motors[ this.port ].direction !== stopped ) {
+            if ( motors[ this.port ].direction !== stopped ) {
                 console.log('motor is moving');
                 //
             }
@@ -1532,7 +1511,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             var otherDashKey = k + 'Dash';
                             var otherGangChannelData = {
                                 'speed' : gangs[ k ].speed,
-                            'gangDirection' : gangs[ k ].gangDirection
+                                'gangDirection' : gangs[ k ].gangDirection
                             }
                             for ( var n in motors ) {
                                 otherGangChannelData[ n ] = gangs[ k ][ n ];
@@ -1571,7 +1550,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //var gangVal = 'gang' + gangId;
             var gangChannelData = {
                 'speed' : gangs[ gangId ].speed,
-                'direction' : gangs[ gangId ].direction
+                'gangDirection' : gangs[ gangId ].gangDirection
             }
             for ( var m in motors ) {
                 //var gangVal = 'gang' + gangId + '.' + m;
@@ -1642,7 +1621,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             var dashKey = motor + 'Dash';
-            channel.getKeyspace(botId).put(dashKey, { 'speed': speed, 'direction': direction, 'directionSwitched': switched });
+            channel.getKeyspace(botId).put( dashKey, { 'speed': speed, 'direction': direction, 'directionSwitched': switched } );
         }
         function stopMotor( recipient, motor ) {
             var data = {};
@@ -1652,7 +1631,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             var dashKey = motor + 'Dash';
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched });
+            channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched } );
         }
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {

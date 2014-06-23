@@ -23,7 +23,8 @@ require.config({
         "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
     }
 });
-updateBar(24, $("#progressBar")) ;
+
+updateBar(24, $("#progressBar"));
 
 require(['BrowserBigBangClient'], function (bigbang) {
 
@@ -32,19 +33,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
     var client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
-           client.subscribe("newBot", function( err, c) {
-              if(!err) {
-                  beginGame(client,c);
-              }
-              else {
-                  console.log("Subscribe failure. " + err);
-              }
-           })
+            client.subscribe("newBot", function( err, c) {
+                if(!err) {
+                    beginGame(client,c);
+                }
+                else {
+                    console.log("Subscribe failure. " + err);
+                }
+            })
         }
         else {
             console.log("CONNECT FAILURE.");
         }
     });
+
     updateBar(59, $("#progressBar"));    
 
     function beginGame(client, channel) {
@@ -58,14 +60,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
+        
         updateBar(78, $("#progressBar"));
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
             console.log('join ' + joined);
-            //var roboInfo = channel.getKeyspace(joined).get('robot');
-            //if( roboInfo ) {
-            //    botStore[joined] = roboInfo.ev3.name;
-            //}
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
             });
@@ -992,7 +991,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     var dashKey = g + 'Dash';
                     var initialChannelData = {
                         'speed' : 0,
-                        'direction' : "stopped"
+                        //'direction' : "stopped"
                     }
                     for ( var k in motors ) {
                         initialChannelData[ k ] = false;
@@ -1184,6 +1183,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangSliderBars[ i ] = new GangSliderBar( game, i );
                 gangCheckboxes[ i ] = new GangCheckbox( game, i );
                 gangMotorLabels[ i ] = new GangMotorLabel( game, i );
+                // arrange checkboxes:
                 if ( numMotors < 6 ) {
                     var spacing = Math.floor((161 - 35)/(numMotors-1));
                     for ( var j = 1; j <= numMotors; j++ ) {
@@ -1522,10 +1522,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             console.log("removed");
                             console.dir(gangs[ gangId ]);
                             console.dir(gangs[ k ]);
-                            if ( gangs[ gangId ].direction !== "stopped" && gangs[ k ].direction === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
-                                console.log("stopped");
-                                stopMotor( botId, motorPort );
-                            }
+                            //if ( gangs[ gangId ].direction !== "stopped" && gangs[ k ].direction === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
+                            //    console.log("stopped");
+                            //    stopMotor( botId, motorPort );
+                            //}
                             channel.getKeyspace(botId).put( otherDashKey, otherGangChannelData ); // replace key value with all of the gang's data (not just the updated info)
                         }  
                     }
@@ -1577,7 +1577,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function gangForwardDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
             console.dir(this);
-            gangs[ this.gangId ].direction = "stopped";
+            //gangs[ this.gangId ].direction = "stopped";
             console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
@@ -1598,7 +1598,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangReverseDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
-            gangs[ this.gangId ].direction = "stopped";
+            //gangs[ this.gangId ].direction = "stopped";
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );
@@ -1807,7 +1807,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             if ( motorData.moving === false ) {
                                 updateMotorDial ( k, motorData ); // update at the next second to the value in the message sent by the bot
                             }
-                            else if ( motorData.moving === true ) {
+                            else if ( motorData.moving === true && game.time.time > motors[ k ].time1 + 999 ) { // if text editor id used, the bot's keyspace dashboard motor key would show it as "stopped" whereas the bot's motor data key would show it as moving. We must deal with a little lag, so add 999 milliseconds of padding
                                 // based on positions, we need to figure out which direction it's moving
                                 if ( motorData.position > needles[ k ].angle ) {
                                     rotateMotorDial( k, dashData.speed, 'f', false ); // we don't know if it's switched or not, just how it's moving
@@ -1819,8 +1819,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         }
                     }
                     getDashData( k, dashData );
-                } 
-            }
+                }
+            }                    
 
             for ( var g in gangs ) {
                 var dashKey = g + 'Dash';

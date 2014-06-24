@@ -1734,7 +1734,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var db = channel.getKeyspace(botId).get('batteryDash');
             console.log(db);
 
-            channel.publish( {type: 'motorStart', js: 'bot.a.mtz()', recipient: botId } );
+            /*
+            channel.publish( {type: 'motorStart', js: 'bot.a.moveTo(100)', recipient: botId } );
+            channel.publish( {type: 'motorStart', js: 'bot.c.moveTo(200)', recipient: botId } );
+            channel.publish( {type: 'motorStart', js: 'bot.a.rtz()', recipient: botId } );
+            */
+            /*
+            channel.publish( {type: 'js', js: 'bot.a.moveTo(100)', recipient: botId } );
+            channel.publish( {type: 'js', js: 'bot.c.moveTo(200)', recipient: botId } );
+            channel.publish( {type: 'js', js: 'bot.a.rtz()', recipient: botId } );
+            */
         }
     //==============================================================================================================================
     /* Update stuff */

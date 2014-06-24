@@ -1519,10 +1519,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             console.log("removed");
                             console.dir(gangs[ gangId ]);
                             console.dir(gangs[ k ]);
-                            //if ( gangs[ gangId ].gangDirection !== "stopped" && gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
-                            //    console.log("stopped");
-                            //    stopMotor( botId, motorPort );
-                            //}
+                            if ( gangs[ gangId ].gangDirection !== "stopped" && gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
+                                console.log("stopped");
+                                stopMotor( botId, motorPort );
+                            }
                             channel.getKeyspace(botId).put( otherDashKey, otherGangChannelData ); // replace key value with all of the gang's data (not just the updated info)
                         }  
                     }
@@ -1560,6 +1560,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangForwardDirectionActionDown () {
             //console.log("move gang " + this.gangId + " forward"); 
+            console.log("down");
             console.dir(this);
             gangs[ this.gangId ].gangDirection = "f";
             console.dir(this);
@@ -1569,10 +1570,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     forwardButtons[ m ].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
                 }
             }
-            console.log(this);
         }
         function gangForwardDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
+            console.log("up");
             console.dir(this);
             gangs[ this.gangId ].gangDirection = "stopped";
             console.dir(this);
@@ -1585,7 +1586,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangReverseDirectionActionDown () {
             //console.log("move gang " + this.gangId + " in reverse"); 
+            console.log("down");
+            console.dir(this);
             gangs[ this.gangId ].gangDirection = "r";
+            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
                     moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
@@ -1595,7 +1599,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangReverseDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
+            console.log("up");
+            console.dir(this);
             gangs[ this.gangId ].gangDirection = "stopped";
+            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );

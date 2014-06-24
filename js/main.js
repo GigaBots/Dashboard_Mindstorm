@@ -1929,7 +1929,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // move to of code in currentCode
             $("#currentCode").scrollTop($("#currentCode")[0].scrollHeight);
         });
-
     } // end beginGame
 
 }); // end require

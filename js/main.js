@@ -678,91 +678,91 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
         function setColorSensor( val ) {
-            /*if (val.mode === "RGB") {
-                game.world.remove(color.rDisplay);
-                game.world.remove(color.gDisplay);
-                game.world.remove(color.bDisplay);
-                //game.world.remove(color.valueDisplay);
-                //game.world.remove(color.nameDisplay);
-                //game.world.remove(color.lightIntensityDisplay);
-                color.r = val.values[0];
-                color.g = val.values[1];
-                color.b = val.values[2];
-                colorRDisplay = color.r;
-                colorGDisplay = color.g;
-                colorBDisplay = color.b;
-                color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24+browserFix, colorRDisplay.toFixed(0), dataOutputStyle);
-                //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
-                //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
-            }
-            else if (val.mode === "ColorID") {
+            // if (val.mode === "RGB") {
+            //     game.world.remove(color.rDisplay);
+            //     game.world.remove(color.gDisplay);
+            //     game.world.remove(color.bDisplay);
+            //     //game.world.remove(color.valueDisplay);
+            //     //game.world.remove(color.nameDisplay);
+            //     //game.world.remove(color.lightIntensityDisplay);
+            //     color.r = val.values[0];
+            //     color.g = val.values[1];
+            //     color.b = val.values[2];
+            //     colorRDisplay = color.r;
+            //     colorGDisplay = color.g;
+            //     colorBDisplay = color.b;
+            //     color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24+browserFix, colorRDisplay.toFixed(0), dataOutputStyle);
+            //     //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
+            //     //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
+            // }
+            if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
                 game.world.remove(color.nameDisplay);
                 switch ( val.values[ 1 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
-                    colorOutputStyle.fill = #F00;
+                    colorOutputStyle.fill = '#FF0000';
                     break;
                 case 1:
                     colorNameDisplay = "Green";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#00FF00';
                     break;
                 case 2:
                     colorNameDisplay = "Blue";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#0000FF';
                     break;
                 case 3:
                     colorNameDisplay = "Yellow";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FFFF00';
                     break;
                 case 4:
                     colorNameDisplay = "Magenta";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FF00FF';
                     break;
                 case 5:
                     colorNameDisplay = "Orange";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#F48E40';
                     break;
                 case 6:
                     colorNameDisplay = "White";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FFFFFF';
                     break;
                 case 7:
                     colorNameDisplay = "Black";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#000000';
                     break;
                 case 8:
                     colorNameDisplay = "Pink";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FF00FF';
                     break;
                 case 9:
                     colorNameDisplay = "Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#808080';
                     break;
                 case 10:
                     colorNameDisplay = "Light Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#D0D0D0';
                     break;
                 case 11:
                     colorNameDisplay = "Dark Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#505050';
                     break;
                 case 12:
                     colorNameDisplay = "Cyan";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#00FFFF';
                     break;
                 case 13:
                     colorNameDisplay = "Brown";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#663300';
                     break;
                 default:
                     colorNameDisplay = "N/A";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#0F0';
                     break;
                 }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, colorOutputStyle);
-            } */
+            } 
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -990,8 +990,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 for ( var g in gangs ) {
                     var dashKey = g + 'Dash';
                     var initialChannelData = {
-                        'speed' : 0,
-                        'gangDirection' : "nope"
+                        speed : 0,
+                        gangDirection : "nope"
                     }
                     for ( var k in motors ) {
                         initialChannelData[ k ] = false;
@@ -1677,7 +1677,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = motor + 'Dash';
             channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched } );
         }
-      /* Stop/resume and LCD screen input */  
+      //=============================================================================
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
                 statusButton.setFrames(2,2,2,2);
@@ -1712,7 +1712,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay2 = game.add.text(positionScreen.x+15, positionScreen.y+46+browserFix, messageDisplay2, messageStyle);
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60+browserFix, messageDisplay3, messageStyle);
         }
-      //=============================================================================
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing/debugging
             console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
@@ -1748,6 +1747,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(dt);
             var db = channel.getKeyspace(botId).get('batteryDash');
             console.log(db);
+
+            channel.publish( {type: 'motorStart', js: 'bot.a.mtz()', recipient: botId } );
         }
     //==============================================================================================================================
     /* Update stuff */

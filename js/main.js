@@ -1562,7 +1562,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gangs[ this.gangId ].gangDirection = "f";
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
-                    moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
+                    moveMotor( botId, m, "f", this.speed, motors[ m ].directionSwitched );
                     reverseButtons[ m ].setFrames(2,2,2,2);         
                 }
             }

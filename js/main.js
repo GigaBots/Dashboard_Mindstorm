@@ -343,7 +343,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 this[ letters[g] ] = false; // set each gang to contain none of the motors
             }
             this.previousSpeed = 0;
-            //this.direction = "stopped";
+            this.gangDirection = "stopped";
         }
         Gang.prototype.constructor = Gang;
         var gangIds = {}
@@ -678,91 +678,91 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
         function setColorSensor( val ) {
-            /*if (val.mode === "RGB") {
-                game.world.remove(color.rDisplay);
-                game.world.remove(color.gDisplay);
-                game.world.remove(color.bDisplay);
-                //game.world.remove(color.valueDisplay);
-                //game.world.remove(color.nameDisplay);
-                //game.world.remove(color.lightIntensityDisplay);
-                color.r = val.values[0];
-                color.g = val.values[1];
-                color.b = val.values[2];
-                colorRDisplay = color.r;
-                colorGDisplay = color.g;
-                colorBDisplay = color.b;
-                color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24+browserFix, colorRDisplay.toFixed(0), dataOutputStyle);
-                //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
-                //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
-            }
-            else if (val.mode === "ColorID") {
+            // if (val.mode === "RGB") {
+            //     game.world.remove(color.rDisplay);
+            //     game.world.remove(color.gDisplay);
+            //     game.world.remove(color.bDisplay);
+            //     //game.world.remove(color.valueDisplay);
+            //     //game.world.remove(color.nameDisplay);
+            //     //game.world.remove(color.lightIntensityDisplay);
+            //     color.r = val.values[0];
+            //     color.g = val.values[1];
+            //     color.b = val.values[2];
+            //     colorRDisplay = color.r;
+            //     colorGDisplay = color.g;
+            //     colorBDisplay = color.b;
+            //     color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24+browserFix, colorRDisplay.toFixed(0), dataOutputStyle);
+            //     //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
+            //     //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
+            // }
+            if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
                 game.world.remove(color.nameDisplay);
                 switch ( val.values[ 1 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
-                    colorOutputStyle.fill = #F00;
+                    colorOutputStyle.fill = '#FF0000';
                     break;
                 case 1:
                     colorNameDisplay = "Green";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#00FF00';
                     break;
                 case 2:
                     colorNameDisplay = "Blue";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#0000FF';
                     break;
                 case 3:
                     colorNameDisplay = "Yellow";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FFFF00';
                     break;
                 case 4:
                     colorNameDisplay = "Magenta";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FF00FF';
                     break;
                 case 5:
                     colorNameDisplay = "Orange";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#F48E40';
                     break;
                 case 6:
                     colorNameDisplay = "White";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FFFFFF';
                     break;
                 case 7:
                     colorNameDisplay = "Black";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#000000';
                     break;
                 case 8:
                     colorNameDisplay = "Pink";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#FF00FF';
                     break;
                 case 9:
                     colorNameDisplay = "Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#808080';
                     break;
                 case 10:
                     colorNameDisplay = "Light Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#D0D0D0';
                     break;
                 case 11:
                     colorNameDisplay = "Dark Gray";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#505050';
                     break;
                 case 12:
                     colorNameDisplay = "Cyan";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#00FFFF';
                     break;
                 case 13:
                     colorNameDisplay = "Brown";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#663300';
                     break;
                 default:
                     colorNameDisplay = "N/A";
-                    colorOutputStyle.fill = #0F0;
+                    colorOutputStyle.fill = '#0F0';
                     break;
                 }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, colorOutputStyle);
-            } */
+            } 
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -922,7 +922,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.useHandCursor = true;
             //droppedDown = false;
             //getInitialMotorStatus();
-            //setInitialDashboardSettings(botId);
+            setInitialDashboardSettings(botId);
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData(robotClientId) {
@@ -990,8 +990,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 for ( var g in gangs ) {
                     var dashKey = g + 'Dash';
                     var initialChannelData = {
-                        'speed' : 0,
-                        'gangDirection' : "stopped"
+                        speed : 0,
+                        gangDirection : "stopped"
                     }
                     for ( var k in motors ) {
                         initialChannelData[ k ] = false;
@@ -1290,7 +1290,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
           /* this button is for testing. it's invisible and in the upper right corner */   
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
-            
+
         } // end create 
 
         function configDirectionsActionDown () {
@@ -1359,7 +1359,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             //maybe here we can add something for changing the slider bar while the motor is moving (e.g. for smooth acceleration functionality)
             if ( motors[ this.port ].direction !== stopped ) {
-                console.log('motor is moving');
+                // console.log('motor is moving');
                 //
             }
 
@@ -1421,7 +1421,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) { // update the gang's motors speed if changed while the motors are moving
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r"  ) { // update the gang's motors speed if changed while the motors are moving
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1449,7 +1449,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) { 
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r" ) { 
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1482,7 +1482,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) {
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r"  ) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1516,12 +1516,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             for ( var n in motors ) {
                                 otherGangChannelData[ n ] = gangs[ k ][ n ];
                             }
-                            console.log("removed");
-                            console.dir(gangs[ gangId ]);
-                            console.dir(gangs[ k ]);
-                            if ( gangs[ gangId ].gangDirection !== "stopped" && gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
-                                console.log("stopped");
-                                stopMotor( botId, motorPort );
+                            if ( gangs[ gangId ].gangDirection === "f" || gangs[ gangId ].gangDirection === "r" ) {
+                                if ( gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
+                                    stopMotor( botId, motorPort );
+                                }
                             }
                             channel.getKeyspace(botId).put( otherDashKey, otherGangChannelData ); // replace key value with all of the gang's data (not just the updated info)
                         }  
@@ -1533,7 +1531,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangCheckboxes[ gangId ][ motorPort ].setFrames(2,0,1,0); // uncheck the box
             }
 
-            if ( gangs[ gangId ].gangDirection !== "stopped" ) { // start or stop a motor if it's added to or removed from a motor gang that's in motion
+            if ( gangs[ gangId ].gangDirection === "f" || gangs[ gangId ].gangDirection === "r" ) { // start or stop a motor if it's added to or removed from a motor gang that's in motion
+                // console.log("motor moving");
                 var dashMotorKey = motorPort + 'Dash';
                 var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
                 if ( gangs[ gangId ][ motorPort ] === true ) {
@@ -1560,55 +1559,79 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangForwardDirectionActionDown () {
             //console.log("move gang " + this.gangId + " forward"); 
-            console.log("down");
-            console.dir(this);
             gangs[ this.gangId ].gangDirection = "f";
-            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
-                    moveMotor( botId, m, "f", this.speed, motors[ m ].directionSwitched );
-                    forwardButtons[ m ].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
+                    moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
+                    reverseButtons[ m ].setFrames(2,2,2,2);         
                 }
             }
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "f"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );  
         }
         function gangForwardDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
-            console.log("up");
-            console.dir(this);
             gangs[ this.gangId ].gangDirection = "stopped";
-            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );                     
                     forwardButtons[ m ].setFrames(1,0,2,0); // show the forward button as up (normal position)
                 }
             }
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "stopped"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
         }
         function gangReverseDirectionActionDown () {
             //console.log("move gang " + this.gangId + " in reverse"); 
-            console.log("down");
-            console.dir(this);
             gangs[ this.gangId ].gangDirection = "r";
-            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
                     moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
                     reverseButtons[ m ].setFrames(2,2,2,2);         
                 }
-            }       
+            }
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "r"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );      
         }
         function gangReverseDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
-            console.log("up");
-            console.dir(this);
             gangs[ this.gangId ].gangDirection = "stopped";
-            console.dir(this);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );
                     reverseButtons[ m ].setFrames(1,0,2,0);                     
                 }
             } 
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "stopped"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
         }
         //=============================================================================
       /* Motor communication with Robot via messages to Big Bang channel */
@@ -1640,6 +1663,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = motor + 'Dash';
             channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched } );
         }
+      //=============================================================================
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
                 statusButton.setFrames(2,2,2,2);
@@ -1674,14 +1698,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay2 = game.add.text(positionScreen.x+15, positionScreen.y+46+browserFix, messageDisplay2, messageStyle);
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60+browserFix, messageDisplay3, messageStyle);
         }
-      //=============================================================================
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing/debugging
-            console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
+            console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
             var isRobot = channel.getKeyspace(botId).get('robot');
-            console.log(isRobot); //Object {imTotallyARobot: "yup"} 
+            //console.log(isRobot); //Object {imTotallyARobot: "yup"} 
             console.log("Bot Info from Robot:");
             for ( var m in motors ) {
                 var motorData = channel.getKeyspace(botId).get( m );
@@ -1708,8 +1731,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             var dt = channel.getKeyspace(botId).get('touchDash');
             console.log(dt);
-            var dbl = channel.getKeyspace(botId).get('batteryDash');
-            console.log(dbl);
+            var db = channel.getKeyspace(botId).get('batteryDash');
+            console.log(db);
+
+            channel.publish( {type: 'motorStart', js: 'bot.a.mtz()', recipient: botId } );
         }
     //==============================================================================================================================
     /* Update stuff */
@@ -1738,6 +1763,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     gangs[ key ][ k ] = val[ k ];
                     if ( k === 'speed' && val[ k ] !== gangs[ key ].previousSpeed ) updateGangSpeed( key, val[ k ] );
                     if ( k in motors ) updateGangMotors( key, k, val[k] );
+
+                    if ( k === 'gangDirection' ) {
+                        gangs[ key ].gangDirection = val.gangDirection;
+                    }
+
                 }
             } 
         }

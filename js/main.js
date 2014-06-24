@@ -1516,8 +1516,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             for ( var n in motors ) {
                                 otherGangChannelData[ n ] = gangs[ k ][ n ];
                             }
-                            if ( gangs[ gangId ].gangDirection === "f" || gangs[ gangId ].gangDirection === "r" ) {
-                                if ( gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
+                            if ( otherGangChannelData.gangDirection === "f" || otherGangChannelData.gangDirection === "r" ) {
+                                if ( gangs[ gangId ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
                                     stopMotor( botId, motorPort );
                                 }
                             }
@@ -1542,8 +1542,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     stopMotor( botId, motorPort );
                 }
             }
-            //STILL NEED TO FIX IT SO A MOTOR STOPS MOVING IF IT'S ADDED TO A DIFFERENT GANG
-
 
             var dashKey = gangId + 'Dash';
             //var gangVal = 'gang' + gangId;

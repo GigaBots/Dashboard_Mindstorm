@@ -65,6 +65,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
             console.log('join ' + joined);
+            var roboInfo = channel.getKeyspace(joined).get('robot');
+            if( roboInfo ) {
+               botStore[joined] = roboInfo.ev3.name;
+            }
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
             });
@@ -1516,8 +1520,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             for ( var n in motors ) {
                                 otherGangChannelData[ n ] = gangs[ k ][ n ];
                             }
-                            if ( gangs[ gangId ].gangDirection === "f" || gangs[ gangId ].gangDirection === "r" ) {
-                                if ( gangs[ k ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
+                            if ( otherGangChannelData.gangDirection === "f" || otherGangChannelData.gangDirection === "r" ) {
+                                if ( gangs[ gangId ].gangDirection === "stopped" ) { // stop a motor when it's removed from a gang in motion because it was added to a gang, which happened to not be in motion
                                     stopMotor( botId, motorPort );
                                 }
                             }
@@ -1542,8 +1546,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     stopMotor( botId, motorPort );
                 }
             }
-            //STILL NEED TO FIX IT SO A MOTOR STOPS MOVING IF IT'S ADDED TO A DIFFERENT GANG
-
 
             var dashKey = gangId + 'Dash';
             //var gangVal = 'gang' + gangId;
@@ -1734,7 +1736,24 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var db = channel.getKeyspace(botId).get('batteryDash');
             console.log(db);
 
-            channel.publish( {type: 'motorStart', js: 'bot.a.mtz()', recipient: botId } );
+
+
+            console.log("sending commands...");
+            /*
+            channel.publish( {type: 'motorStart', js: 'bot.a.moveTo(100)', recipient: botId } );
+            channel.publish( {type: 'motorStart', js: 'bot.c.moveTo(200)', recipient: botId } );
+            channel.publish( {type: 'motorStart', js: 'bot.a.rtz()', recipient: botId } );
+            */
+            
+            // channel.publish( {type: 'js', js: 'bot.a.rotateTo(100)', recipient: botId } );
+            // channel.publish( {type: 'js', js: 'bot.c.rotateTo(200)', recipient: botId } );
+            // channel.publish( {type: 'js', js: 'bot.a.rtz()', recipient: botId } );
+            // channel.publish( {type: 'js', js: 'bot.beep()', recipient: botId } );
+            // channel.publish( {type: 'js', js: 'bot.sing()', recipient: botId } ); 
+
+            console.log("sent commands");
+
+            
         }
     //==============================================================================================================================
     /* Update stuff */

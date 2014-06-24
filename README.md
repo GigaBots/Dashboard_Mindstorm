@@ -9,7 +9,7 @@ Version 2.0.1 - Released June 9th, 2014
 * Follow on [Twitter] (https://twitter.com/TheGigabots)
 * Join developers on [Github] (#)
 
-![div](http://thegigabots.com/wp-content/uploads/2014/04/hi_mozilla.jpg)
+![div](http://thegigabots.com/wp-content/uploads/2014/04/hello_gigabot.jpg)
 
 
 #Instructions for Use

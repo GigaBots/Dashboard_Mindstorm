@@ -922,7 +922,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.useHandCursor = true;
             //droppedDown = false;
             //getInitialMotorStatus();
-            //setInitialDashboardSettings(botId);
+            setInitialDashboardSettings(botId);
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData(robotClientId) {
@@ -991,7 +991,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     var dashKey = g + 'Dash';
                     var initialChannelData = {
                         'speed' : 0,
-                        'gangDirection' : "stopped"
+                        'gangDirection' : "nope"
                     }
                     for ( var k in motors ) {
                         initialChannelData[ k ] = false;
@@ -1421,7 +1421,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) { // update the gang's motors speed if changed while the motors are moving
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r"  ) { // update the gang's motors speed if changed while the motors are moving
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1449,7 +1449,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) { 
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r" ) { 
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1482,7 +1482,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             for ( var k in motors ) {
                 gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].gangDirection !== "stopped" ) {
+                if ( gangs[ this.gangId ].gangDirection === "f" || gangs[ this.gangId ].gangDirection === "r"  ) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
@@ -1533,7 +1533,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangCheckboxes[ gangId ][ motorPort ].setFrames(2,0,1,0); // uncheck the box
             }
 
-            if ( gangs[ gangId ].gangDirection !== "stopped" ) { // start or stop a motor if it's added to or removed from a motor gang that's in motion
+            if ( gangs[ gangId ].gangDirection === "f" || gangs[ gangId ].gangDirection === "r" ) { // start or stop a motor if it's added to or removed from a motor gang that's in motion
+                console.log("motor moving");
                 var dashMotorKey = motorPort + 'Dash';
                 var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
                 if ( gangs[ gangId ][ motorPort ] === true ) {
@@ -1560,48 +1561,91 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function gangForwardDirectionActionDown () {
             //console.log("move gang " + this.gangId + " forward"); 
-            console.dir(this);
+            console.log("down");
+            console.dir(gangs[ this.gangId ]);
             gangs[ this.gangId ].gangDirection = "f";
-            console.dir(this);
+            console.dir(gangs[ this.gangId ]);
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
                     moveMotor( botId, m, "f", this.speed, motors[ m ].directionSwitched );
                     forwardButtons[ m ].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
                 }
             }
-            console.log(this);
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "f"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
         }
         function gangForwardDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
-            console.dir(this);
-            gangs[ this.gangId ].gangDirection = "stopped";
-            console.dir(this);
+            console.log("up");
+            console.dir(gangs[ this.gangId ]);
+            gangs[ this.gangId ].gangDirection = "stop forward";
+            console.dir(gangs[ this.gangId ]);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );                     
                     forwardButtons[ m ].setFrames(1,0,2,0); // show the forward button as up (normal position)
                 }
             }
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : false
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
         }
         function gangReverseDirectionActionDown () {
             //console.log("move gang " + this.gangId + " in reverse"); 
+            console.log("down");
+            console.dir(gangs[ this.gangId ]);
             gangs[ this.gangId ].gangDirection = "r";
+            console.dir(gangs[ this.gangId ]);
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
                     moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
                     reverseButtons[ m ].setFrames(2,2,2,2);         
                 }
-            }       
+            }
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : "r"
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );      
         }
         function gangReverseDirectionActionUp() {
             //console.log("stop gang " + this.gangId); 
-            gangs[ this.gangId ].gangDirection = "stopped";
+            console.log("up");
+            console.dir(gangs[ this.gangId ]);
+            gangs[ this.gangId ].gangDirection = "stop reverse";
+            console.dir(gangs[ this.gangId ]);
             for ( var m in motors ) {
                 if ( this[ m ] === true ) {
                     stopMotor( botId, m );
                     reverseButtons[ m ].setFrames(1,0,2,0);                     
                 }
             } 
+            var dashKey = this.gangId + 'Dash';
+            var gangChannelData = {
+                'speed' : gangs[ this.gangId ].speed,
+                'gangDirection' : false
+            }
+            for ( var m in motors ) {
+                gangChannelData[ m ] = gangs[ this.gangId ][ m ];
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData );
         }
         //=============================================================================
       /* Motor communication with Robot via messages to Big Bang channel */
@@ -1633,6 +1677,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = motor + 'Dash';
             channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched } );
         }
+      /* Stop/resume and LCD screen input */  
         function actionStopOnClick () {
             if ( dashboardStatus === 1 ) {
                 statusButton.setFrames(2,2,2,2);
@@ -1670,11 +1715,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
       //=============================================================================
         function actionGetKeyspace() {
         // this is to query the current bot's keyspace, for testing/debugging
-            console.log("\nGetting Keyspace Info for Bot...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
+            console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
             var isRobot = channel.getKeyspace(botId).get('robot');
-            console.log(isRobot); //Object {imTotallyARobot: "yup"} 
+            //console.log(isRobot); //Object {imTotallyARobot: "yup"} 
             console.log("Bot Info from Robot:");
             for ( var m in motors ) {
                 var motorData = channel.getKeyspace(botId).get( m );
@@ -1701,8 +1746,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             var dt = channel.getKeyspace(botId).get('touchDash');
             console.log(dt);
-            var dbl = channel.getKeyspace(botId).get('batteryDash');
-            console.log(dbl);
+            var db = channel.getKeyspace(botId).get('batteryDash');
+            console.log(db);
         }
     //==============================================================================================================================
     /* Update stuff */
@@ -1731,6 +1776,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     gangs[ key ][ k ] = val[ k ];
                     if ( k === 'speed' && val[ k ] !== gangs[ key ].previousSpeed ) updateGangSpeed( key, val[ k ] );
                     if ( k in motors ) updateGangMotors( key, k, val[k] );
+
+                    if ( k === 'gangDirection' ) {
+                        gangs[ key ].gangDirection = val.gangDirection;
+                    }
+
                 }
             } 
         }

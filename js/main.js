@@ -7,6 +7,10 @@
 * main.js contains the control panel, text editor, and loading progress bar
 */
 
+
+
+
+
 // Loading progress bar
 function updateBar (progress, $element) {
     var progressBarWidth = progress * $element.width() / 100;
@@ -60,7 +64,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
-        
+         
         updateBar(78, $("#progressBar"));
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
@@ -708,7 +712,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 switch ( val.values[ 0 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
-                    colorDisplayFill = '0xFF3232';
+                    colorDisplayFill = '0xFF1919';
                     break;
                 case 1:
                     colorNameDisplay = "Green";
@@ -764,7 +768,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     break;
                 default:
                     colorNameDisplay = "N/A";
-                    colorDisplayFill = '0x505050';
+                    colorDisplayFill = '0x313233';
                     break;
                 }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, dataOutputStyle);
@@ -1038,6 +1042,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
       //==============================================================================================================================
         function create() {          
             updateBar(100, $("#progressBar")); 
+            
+            console.dir(game);
+            this.game.canvas.addEventListener('mouseout', function() {
+                console.log("out");
+                console.dir(game);
+                if (game.input.mousePointer.isDown === true) {
+                    console.log("down");
+                }
+                // if (game.input.mouse.mouseDownCallback) {
+                //    console.log("down callback");
+                // }
+            }, true);
+
 
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
@@ -1426,7 +1443,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             forwardButtons[this.port].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
         }
         function forwardDirectionActionUp() {
-            console.log("stop motor " + this.port);
+            //console.log("stop motor " + this.port);
             stopMotor( botId, this.port ); 
             forwardButtons[this.port].setFrames(1,0,2,0); // show the forward button as up (normal position)
         }

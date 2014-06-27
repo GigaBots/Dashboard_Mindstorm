@@ -1119,9 +1119,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');
-          /* Touch Sensor */        
+          /* Color Sensor */        
             colorDisplay = game.add.graphics(0,0);
-            colorDisplay.beginFill(0x000000, 1);
+            colorDisplay.beginFill(0x000000, 0.05);
             colorDisplay.lineStyle(1, 0xa3a3a3, 1);
             colorDisplay.drawRect(positionColor.x+144, positionColor.y+50, 58, 20);
           /* Battery Level Sensor */

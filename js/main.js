@@ -1370,7 +1370,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
         var liveSpeed;
-        function changeLiveSpeed(motorPort) {
+        function changeLiveSpeed( motorPort ) {
             //console.log("adjusting while motor is moving...");
             sliderBars[ motorPort ].y = game.input.mousePointer.y;
             if ( sliderBars[ motorPort ].y < positionMotors[ motorPort ].y+13 ) { //set max speed boundary limit
@@ -1415,7 +1415,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             forwardButtons[this.port].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
         }
         function forwardDirectionActionUp() {
-            //console.log("stop motor " + this.port);
+            console.log("stop motor " + this.port);
             stopMotor( botId, this.port ); 
             forwardButtons[this.port].setFrames(1,0,2,0); // show the forward button as up (normal position)
         }
@@ -1491,8 +1491,47 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function changeGangSpeedSlideActionDown () {
             //gangSliderBars[ this.gangId ].state = 'down';
             gangs[ this.gangId ].previousSpeed = gangs[ this.gangId ].speed;
+            // add something for changing the slider bar in realtime while the motor is moving (e.g. for smooth acceleration functionality)
+            var dashKey = this.gangId + 'Dash';
+            var dashData = channel.getKeyspace(botId).get(dashKey);
+            if ( dashData.direction !== "stopped" ) {
+                //console.log('motor is moving');
+                var gangId = this.gangId;
+                liveGangSpeed = setInterval( function() { changeLiveGangSpeed(gangId) }, 50 ); //50 ms should be rapid enough
+            }
+        }
+        var liveGangSpeed;
+        function changeLiveGangSpeed( gangId ) {
+            //console.log("adjusting while gang's motors are moving...");
+            gangSliderBars[ gangId ].y = game.input.mousePointer.y;
+            if ( gangSliderBars[ gangId ].y < positionGangs[ gangId ].y+13 ) { //set max speed boundary limit
+                gangSliderBars[ gangId ].y = positionGangs[ gangId ].y+13;
+            } else if ( gangSliderBars[ gangId].y > positionGangs[ gangId ].y+167 ) { //set min speed boundary limit
+                gangSliderBars[ gangId ].y = positionGangs[ gangId ].y+167;
+            }
+            gangs[ gangId ].speed = 700 + ( 700/154 ) * (positionGangs[gangId].y + 13 - gangSliderBars[gangId].y); // normalize speed over the range of y values on the slider track
+            var dashKey = gangId + 'Dash'; 
+            var gangChannelData = {
+                'speed' : gangs[ gangId ].speed,
+                'direction' : gangs[ gangId ].direction
+            }
+            for ( var k in motors ) {
+                gangChannelData[ k ] = gangs[ gangId ][ k ];
+                if ( gangs[ gangId ].direction === "f" || gangs[ gangId ].direction === "r"  ) {
+                    if ( gangChannelData[ k ] === true ) {
+                        var dashMotorKey = k + 'Dash';
+                        var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ gangId ].speed, keyspaceMotorData.directionSwitched );
+                    }
+                }
+            }
+            channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
+            game.world.remove( gangs[ gangId ].currentSpeedDisplay );
+            gangs[ gangId ].currentSpeedDisplay = game.add.text(positionGangs[gangId].x+191, positionGangs[gangId].y+178+browserFix, gangs[ gangId ].speed.toFixed(1), dataOutputStyle);
+            //console.log("changing speed of gang " + this.gangId + " to " + gangs[ this.gangId ].speed.toFixed(2));
         }
         function changeGangSpeedSlideActionUp () {
+            clearInterval(liveGangSpeed); // stop the live gang speed adjusting
             //gangSliderBars[ this.gangId ].state = 'up';
             //we're sliding between positionGangs[ this.gangId ].y + 13 px (0 deg/sec) and positionGangs[ this.gangId ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             if ( gangSliderBars[ this.gangId ].y < positionGangs[ this.gangId ].y+13 ) { //set max speed boundary limit

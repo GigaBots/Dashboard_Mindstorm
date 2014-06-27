@@ -1360,15 +1360,37 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function changeSpeedSlideActionDown () {
             //sliderBars[ this.port ].state = 'down';
             motors[ this.port ].previousSpeed = motors[ this.port ].speed;
-
-            //maybe here we can add something for changing the slider bar while the motor is moving (e.g. for smooth acceleration functionality)
-            if ( motors[ this.port ].direction !== stopped ) {
-                // console.log('motor is moving');
-                //
+            // add something for changing the slider bar in realtime while the motor is moving (e.g. for smooth acceleration functionality)
+            var dashKey = this.port + 'Dash';
+            var dashData = channel.getKeyspace(botId).get(dashKey);
+            if ( dashData.direction !== "stopped" ) {
+                //console.log('motor is moving');
+                var motorPort = this.port;
+                liveSpeed = setInterval( function() { changeLiveSpeed(motorPort) }, 50 ); //50 ms should be rapid enough
             }
-
+        }
+        var liveSpeed;
+        function changeLiveSpeed(motorPort) {
+            //console.log("adjusting while motor is moving...");
+            sliderBars[ motorPort ].y = game.input.mousePointer.y;
+            if ( sliderBars[ motorPort ].y < positionMotors[ motorPort ].y+13 ) { //set max speed boundary limit
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y+13;
+            } else if ( sliderBars[motorPort].y > positionMotors[motorPort].y+167 ) { //set min speed boundary limit
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y+167;
+            }
+            motors[ motorPort ].speed = 700 + ( 700/154 ) * (positionMotors[motorPort].y + 13 - sliderBars[motorPort].y); // normalize speed over the range of y values on the slider track
+            var dashKey = motorPort + 'Dash'; 
+            var keyspaceData = channel.getKeyspace(botId).get(dashKey);
+            if ( keyspaceData.direction !== "stopped" ) { 
+                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwitched );
+            }
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwitched': keyspaceData.directionSwitched }); 
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text(positionMotors[motorPort].x+100, positionMotors[motorPort].y+178+browserFix, motors[ motorPort ].speed.toFixed(1), dataOutputStyle);
+            //console.log("changing speed of motor " + motorPort + " to " + motors[ motorPort ].speed.toFixed(2));
         }
         function changeSpeedSlideActionUp () {
+            clearInterval(liveSpeed); // stop the live speed adjusting
             //sliderBars[ this.port ].state = 'up';
             //we're sliding between positionMotors[ this.port ].y + 13 px (0 deg/sec) and positionMotors[ this.port ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
             if ( sliderBars[ this.port ].y < positionMotors[ this.port ].y+13 ) { //set max speed boundary limit
@@ -1843,7 +1865,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                  updateMotorDirections( key, val.directionSwitched );
             }
         }
-      /* Update function inifite loop (~60x/sec) */
+      /* Update function infinite loop (~60x/sec) */
         function update() {
             if ( botId === '' ) return 0; // don't do anything when we're not dealing with a particular bot
 

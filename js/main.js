@@ -707,7 +707,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 switch ( val.values[ 0 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
-                    colorOutputStyle.fill = '#FF0000';
+                    colorOutputStyle.fill = '#FF3232';
                     break;
                 case 1:
                     colorNameDisplay = "Green";
@@ -715,7 +715,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     break;
                 case 2:
                     colorNameDisplay = "Blue";
-                    colorOutputStyle.fill = '#0000FF';
+                    colorOutputStyle.fill = '#8000FF';
                     break;
                 case 3:
                     colorNameDisplay = "Yellow";

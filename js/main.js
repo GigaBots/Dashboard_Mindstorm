@@ -682,6 +682,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
         function setColorSensor( val ) {
+            console.log(val.values[0]);
             // if (val.mode === "RGB") {
             //     game.world.remove(color.rDisplay);
             //     game.world.remove(color.gDisplay);
@@ -703,7 +704,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var colorNameDisplay;
                 var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
                 game.world.remove(color.nameDisplay);
-                switch ( val.values[ 1 ] ) {
+                switch ( val.values[ 0 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
                     colorOutputStyle.fill = '#FF0000';
@@ -758,7 +759,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     break;
                 case 13:
                     colorNameDisplay = "Brown";
-                    colorOutputStyle.fill = '#663300';
+                    colorOutputStyle.fill = '#926239';
                     break;
                 default:
                     colorNameDisplay = "N/A";

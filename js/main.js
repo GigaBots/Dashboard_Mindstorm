@@ -536,6 +536,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
         var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
         var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rDisplay : 0, gDisplay : 0, bDisplay : 0, valueDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
+        var colorDisplay;
 
         /* Ultrasonic sensor */
         var positionUltrasonic = { x : 379, y : 66 }
@@ -701,71 +702,76 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // }
             if (val.mode === "ColorID") {
                 var colorNameDisplay;
-                var colorOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif"}
+                var colorDisplayFill;
                 game.world.remove(color.nameDisplay);
-                switch ( val.values[ 1 ] ) {
+                colorDisplay.destroy();
+                switch ( val.values[ 0 ] ) {
                 case 0:
                     colorNameDisplay = "Red";
-                    colorOutputStyle.fill = '#FF0000';
+                    colorDisplayFill = '0xFF3232';
                     break;
                 case 1:
                     colorNameDisplay = "Green";
-                    colorOutputStyle.fill = '#00FF00';
+                    colorDisplayFill = '0x00FF00';
                     break;
                 case 2:
                     colorNameDisplay = "Blue";
-                    colorOutputStyle.fill = '#0000FF';
+                    colorDisplayFill = '0x8000FF';
                     break;
                 case 3:
                     colorNameDisplay = "Yellow";
-                    colorOutputStyle.fill = '#FFFF00';
+                    colorDisplayFill = '0xFFFF00';
                     break;
                 case 4:
                     colorNameDisplay = "Magenta";
-                    colorOutputStyle.fill = '#FF00FF';
+                    colorDisplayFill = '0xFF00FF';
                     break;
                 case 5:
                     colorNameDisplay = "Orange";
-                    colorOutputStyle.fill = '#F48E40';
+                    colorDisplayFill = '0xF48E40';
                     break;
                 case 6:
                     colorNameDisplay = "White";
-                    colorOutputStyle.fill = '#FFFFFF';
+                    colorDisplayFill = '0xFFFFFF';
                     break;
                 case 7:
                     colorNameDisplay = "Black";
-                    colorOutputStyle.fill = '#000000';
+                    colorDisplayFill = '0x000000';
                     break;
                 case 8:
                     colorNameDisplay = "Pink";
-                    colorOutputStyle.fill = '#FF00FF';
+                    colorDisplayFill = '0xFF00FF';
                     break;
                 case 9:
                     colorNameDisplay = "Gray";
-                    colorOutputStyle.fill = '#808080';
+                    colorDisplayFill = '0x808080';
                     break;
                 case 10:
                     colorNameDisplay = "Light Gray";
-                    colorOutputStyle.fill = '#D0D0D0';
+                    colorDisplayFill = '0xD0D0D0';
                     break;
                 case 11:
                     colorNameDisplay = "Dark Gray";
-                    colorOutputStyle.fill = '#505050';
+                    colorDisplayFill = '0x505050';
                     break;
                 case 12:
                     colorNameDisplay = "Cyan";
-                    colorOutputStyle.fill = '#00FFFF';
+                    colorDisplayFill = '0x00FFFF';
                     break;
                 case 13:
                     colorNameDisplay = "Brown";
-                    colorOutputStyle.fill = '#663300';
+                    colorDisplayFill = '0x926239';
                     break;
                 default:
                     colorNameDisplay = "N/A";
-                    colorOutputStyle.fill = '#505050';
+                    colorDisplayFill = '0x505050';
                     break;
                 }
-                color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, colorOutputStyle);
+                color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, dataOutputStyle);
+                colorDisplay = game.add.graphics(0,0);
+                colorDisplay.beginFill(colorDisplayFill, 1);
+                colorDisplay.lineStyle(1, 0xa3a3a3, 1);
+                colorDisplay.drawRect(positionColor.x+144, positionColor.y+50, 58, 20);
             } 
         }
         function setIRSensor( val ) {
@@ -1113,6 +1119,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');
+          /* Touch Sensor */        
+            colorDisplay = game.add.graphics(0,0);
+            colorDisplay.beginFill(0x000000, 1);
+            colorDisplay.lineStyle(1, 0xa3a3a3, 1);
+            colorDisplay.drawRect(positionColor.x+144, positionColor.y+50, 58, 20);
           /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionBattery.x+8, positionBattery.y+27, 'batteryOutline');
             batteryLevelFill = game.add.graphics(0,0);
@@ -2055,7 +2066,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // move to of code in currentCode
             $("#currentCode").scrollTop($("#currentCode")[0].scrollHeight);
         });
-
     } // end beginGame
 
 }); // end require

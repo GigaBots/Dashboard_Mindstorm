@@ -1043,12 +1043,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function create() {          
             updateBar(100, $("#progressBar")); 
             
-            console.dir(game);
             this.game.canvas.addEventListener('mouseout', function() {
-                console.log("out");
-                console.dir(game);
+                //console.log("out");
+                //console.dir(game);
                 if (game.input.mousePointer.isDown === true) {
-                    console.log("down");
+                   // console.log("down");
                 }
                 // if (game.input.mouse.mouseDownCallback) {
                 //    console.log("down callback");

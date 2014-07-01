@@ -517,6 +517,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var positionDial = { x : 674, y : 133 } 
         var labelRotation;
 
+        /* Sensor ID labels */
+        var sensorIDLabels = {
+            IR : '',
+            Touch : '',
+            Color : '',
+            Ultrasonic : ''
+        }
+
         /* IR sensor */
         var positionIR = { x : 225, y : 66 }
         var labelIR, labelIRDist, labelIRUnits;
@@ -598,6 +606,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     else if ( val.sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
                         setColorSensor(val);
                     }
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
+                        setUltrasonicSensor(val);
+                    }
                 }
                 else if ( key === 'robot' ) {
                     setBatteryLevel(val.ev3.power);
@@ -626,6 +637,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                     else if ( val.sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
                         setColorSensor(val);
+                    }
+                    else if ( val.sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
+                        setUltrasonicSensor(val);
                     }
                 }
                 else if ( key === 'robot') {
@@ -820,7 +834,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             dropdownBox = game.add.graphics(0,0);
             dropdownBox.beginFill(0xFFFFFF,0.85);
             dropdownBox.drawRect(positionBotSelector.x+7, positionBotSelector.y+31, 150, (numBots+1)*24); //24 is height of a row (the highlight "button")
-            var j =0;
+            var j = 0;
             for ( var key in botStore ) {
                 var obj = botStore[key];
                 var name = botStore[key];
@@ -873,6 +887,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.useHandCursor = true;
             //getInitialMotorStatus();
             setInitialDashboardSettings(botId);
+            setSensorIDs();
         }
         function actionNoBotSelection() {
             dropdownBox.destroy();
@@ -903,25 +918,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 newBotId = 'defaultId';
             }
             botStore[ newBotId ] = newBotName;
-            // botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-            // botName = botStore[this];
-            // botIndex++;
-            // listenToBot(botId, botIndex); // start listening to the bot that was just selected
-            // getInitialTouchData(botId);
-            // getInitialBatteryLevel(botId);
-            // game.world.remove(bot.nameDisplay);
-            // if ( botName.length > 15 ) {
-            //     var botNameDisplay = botName.slice(0, 15);
-            // }
-            // else {
-            //     var botNameDisplay = botName;
-            // }
-            // bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
-            //getInitialMotorStatus();
-            setInitialDashboardSettings(botId);
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData(robotClientId) {
@@ -971,6 +970,29 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         batteryLevelFill = game.add.graphics(0,0);
                         batteryLevelFill.beginFill(0x808080, 1); // make fill grey
                         batteryLevelFill.drawRect(positionBattery.x+11, positionBattery.y+30, Math.round(batteryLevel*100), 16);
+                    }
+                }
+            }
+        }
+        function setSensorIDs() {
+            var botData = channel.getKeyspace(botId).get('robot');
+            if ( typeof(botData) !== "undefined" ) {
+                for ( var s in botData.ev3.sensors ) {
+                    if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
+                        game.world.remove(sensorIDLabels.IR);
+                        sensorIDLabels.IR = game.add.text(positionIR.x+frames['IR'].width-25, positionIR.y+4+browserFix, s, statusStyle );
+                    }
+                    else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
+                        game.world.remove(sensorIDLabels.touch);
+                        sensorIDLabels.touch = game.add.text(positionTouch.x+frames['touch'].width-25, positionTouch.y+4+browserFix, s, statusStyle );
+                    }
+                    else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
+                        game.world.remove(sensorIDLabels.color);
+                        sensorIDLabels.color = game.add.text(positionColor.x+frames['color'].width-25, positionColor.y+4+browserFix, s, statusStyle );          
+                    }
+                    else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
+                        game.world.remove(sensorIDLabels.ultrasonic);
+                        sensorIDLabels.ultrasonic = game.add.text(positionUltrasonic.x+frames['ultrasonic'].width-25, positionUltrasonic.y+4+browserFix, s, statusStyle );
                     }
                 }
             }
@@ -1286,18 +1308,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
             initTime = game.time.time;
-            clockTime.display = game.add.text(500,20, '0', smallTitleStyle);
-            clock = setInterval( function() { changeClock() }, 60000 );
+            //clockTime.display = game.add.text(500,20, '0', smallTitleStyle);
+            clock = setInterval( function() { restartState() }, 60000 );
 
 
         } // end create 
 
 
 
-        function changeClock() {
-            game.world.remove(clockTime.display);
+        function restartState() {
+            //game.world.remove(clockTime.display);
             var timeDiff = (game.time.time - initTime)/1000;
-            clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
+            //clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
             //console.log(timeDiff);
             if ( timeDiff > 600 ) {
                 game.state.restart(); //restarts game state to the current state
@@ -1792,8 +1814,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
-            var isRobot = channel.getKeyspace(botId).get('robot');
-            //console.log(isRobot); //Object {imTotallyARobot: "yup"} 
+            var botData = channel.getKeyspace(botId).get('robot');
+            console.log(botData);
+            //console.log(botData); //Object {imTotallyARobot: "yup"} 
             console.log("Bot Info from Robot:");
             for ( var m in motors ) {
                 var motorData = channel.getKeyspace(botId).get( m );

@@ -51,6 +51,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
     updateBar(59, $("#progressBar"));    
 
     function beginGame(client, channel) {
+
+
+        var clockTime = {
+            display : ''
+        }
+        var clock;
+        var initTime;
+        var destroyButton;
+
         /* === Dashboard control panel === */
         var gameBoundX = 960, gameBoundY = 650;
         var game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
@@ -504,7 +513,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var botDropdown, dropdownBox, dropdown;
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
-        var botId = "", botIndex = 0, botName = 'Select a robot ';
+        var botId = "", botIndex = 0, botName;
         var bot = { nameDisplay : "" }
         var botStore = { // client id (GUID) : bot name
             'fakeBotId1' : 'Fake Bot 1',
@@ -513,47 +522,44 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Rotational position */   
         var positionDial = { x : 674, y : 133 } 
-        var labelRotation = "Motor Rotational Positions";
+        var labelRotation;
         var frameDials;        
-
-        /* Touch sensor */
-        var positionTouch = { x : 443, y : 133 }
-        //var press = 0; // 0 = not pressed, 1 = pressed
-        var touchCount = 0, bumpCount = 0, touchTime = 0; //count total touches or bumps
-        var touch = { touchCountDisplay : 0 } //display number of total presses
-        var bump = { bumpCountDisplay : 0 } //display number of total bumps
-        var time = { touchTimeDisplay : 0 } //display total time
-        var labelTouch = "Touch Sensor", labelTouched = "Touched", labelTouchCount = "Total Touches: ", labelBumpCount = "Total Bumps: ", labelTouchTime = "Total Time Pressed: ", labelTouchTimeUnits = "sec";
-        var touchIndicator;
-        var t1Touch;
 
         /* IR sensor */
         var positionIR = { x : 217, y : 66 }
-        var labelIR = "Infrared Sensor", labelIRDist = "Distance: ", labelIRUnits = "cm";
+        var labelIR, labelIRDist, labelIRUnits;
         var IRDist = 0; 
         var IR = { IRDistDisplay : 0 }
 
+        /* Ultrasonic sensor */
+        var positionUltrasonic = { x : 379, y : 66 }
+        var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
+        var ultrasonicDist = 0;
+        var ultrasonic = { ultrasonicDistDisplay : 0 }
+
         /* Color sensor */
         var positionColor = { x : 217, y : 133 }
-        var labelColor = "Color Sensor", labelColorR = "Red: ", labelColorB = "Blue: ", labelColorG = "Green: ", labelColorValue = "RGB: ", labelColorName = "Color: ", labelIntensity = "Light Intensity: ";
+        var labelColor, labelColorValue, labelColorName, labelIntensity, labelColorR, labelColorB, labelColorG;
         var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
         var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rDisplay : 0, gDisplay : 0, bDisplay : 0, valueDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
         var colorDisplay;
 
-        /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 379, y : 66 }
-        var labelUltrasonic = "Ultrasonic Sensor", labelUltrasonicDist = "Distance: ", labelUltrasonicUnits = "cm";
-        var ultrasonicDist = 0;
-        var ultrasonic = { ultrasonicDistDisplay : 0 }
+        /* Touch sensor */
+        var positionTouch = { x : 443, y : 133 }
+        var touchCount = 0, touchTime = 0; //count total touches
+        var touch = { touchCountDisplay : 0 } //display number of total touches
+        var time = { touchTimeDisplay : 0 } //display total time
+        var labelTouch, labelTouched, labelTouchCount, labelTouchTime, labelTouchTimeUnits;
+        var touchIndicator;
+        var t1Touch;
 
         /* Battery level sensor */
         var positionBattery = { x : 821, y : 66 }
-        var frameBattery, labelBattery = "Battery Level", batteryOutline, batteryLevel = 1; //initialize the level at 100% (or, 1)
+        var labelBattery, batteryOutline, batteryLevel = 1; //initialize the level at 100% (or, 1)
 
         /* LCD Screen */
-        var LCDScreenBox;
         var positionScreen = { x : 15, y : 133 }
-        var labelScreen = "LCD Screen";
+        var labelScreen, LCDScreenBox;
         var screenMessage = { messageDisplay1 : "", messageDisplay2 : "", messageDisplay3 : "" }
 
         /* Button for testing */
@@ -1058,6 +1064,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // }
             }, true); */
 
+    console.dir(game);
+
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
             game.world.setBounds(0, 0, gameBoundX, gameBoundY);
@@ -1095,34 +1103,33 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* Labels */
             status.statusDisplay =  game.add.text(positionStatus.x+5, positionStatus.y+34+browserFix, "running...", statusStyle);
 
-            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34+browserFix, botName, selectBotStyle);
+            bot.nameDisplay = game.add.text(positionBotSelector.x+5, positionBotSelector.y+34+browserFix, "Select a robot ", selectBotStyle);
 
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2+browserFix, "Motors", smallTitleStyle); //label at top of box indicating status of motor ports
             labelSensorStatus = game.add.text(positionSensorStatus.x+10, positionSensorStatus.y+2+browserFix, "Sensors", smallTitleStyle); //label at top of box indicating status of motor ports
 
-            labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2+browserFix, labelTouch, smallTitleStyle);
-            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27+browserFix, labelTouched, labelStyle);
-            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27+browserFix, labelTouchCount, labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
-            //labelBumpCount = game.add.text(positionTouch.x+10, positionTouch.y+50+browserFix, labelBumpCount, labelStyle);
-            labelTouchTime = game.add.text(positionTouch.x+10, positionTouch.y+50+browserFix, labelTouchTime, labelStyle);
-            labelTouchTimeUnits = game.add.text(positionTouch.x+180, positionTouch.y+50+browserFix, labelTouchTimeUnits, labelStyle);
+            labelTouch = game.add.text(positionTouch.x+10, positionTouch.y+2+browserFix, "Touch Sensor", smallTitleStyle);
+            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27+browserFix, "Touched", labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27+browserFix, "Total Touches:", labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouchTime = game.add.text(positionTouch.x+10, positionTouch.y+50+browserFix, "Total Time Pressed:", labelStyle);
+            labelTouchTimeUnits = game.add.text(positionTouch.x+180, positionTouch.y+50+browserFix, "sec", labelStyle);
 
-            labelIR = game.add.text(positionIR.x+10, positionIR.y+2+browserFix, labelIR, smallTitleStyle);
-            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27+browserFix, labelIRDist, labelStyle);
-            labelIRUnits = game.add.text(positionIR.x+121, positionIR.y+27+browserFix, labelIRUnits, labelStyle);
+            labelIR = game.add.text(positionIR.x+10, positionIR.y+2+browserFix, "Infrared Sensor", smallTitleStyle);
+            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27+browserFix, "Distance:", labelStyle);
+            labelIRUnits = game.add.text(positionIR.x+121, positionIR.y+27+browserFix, "cm", labelStyle);
 
-            labelUltrasonic = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+2+browserFix, labelUltrasonic, smallTitleStyle);
-            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+27+browserFix, labelUltrasonicDist, labelStyle);
-            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+121+browserFix, positionUltrasonic.y+27+browserFix, labelUltrasonicUnits, labelStyle);
+            labelUltrasonic = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+2+browserFix, "Ultrasonic Sensor", smallTitleStyle);
+            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+27+browserFix, "Distance:", labelStyle);
+            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+121+browserFix, positionUltrasonic.y+27+browserFix, "cm", labelStyle);
 
-            labelColor = game.add.text(positionColor.x+10, positionColor.y+2+browserFix, labelColor, smallTitleStyle);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27+browserFix, labelColorValue, labelStyle);
-            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27+browserFix, labelColorName, labelStyle);
-            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50+browserFix, labelIntensity, labelStyle);
+            labelColor = game.add.text(positionColor.x+10, positionColor.y+2+browserFix, "Color Sensor", smallTitleStyle);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27+browserFix, "RGB:", labelStyle);
+            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27+browserFix, "Color:", labelStyle);
+            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50+browserFix, "Light Intensity:", labelStyle);
 
-            labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+2+browserFix, labelBattery, smallTitleStyle);
+            labelBattery = game.add.text(positionBattery.x+10, positionBattery.y+2+browserFix, "Battery Level", smallTitleStyle);
             
-            labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+2+browserFix, labelScreen, smallTitleStyle);
+            labelScreen = game.add.text(positionScreen.x+10, positionScreen.y+2+browserFix, "LCD Screen", smallTitleStyle);
 
           /* Dashboard stop/resume button */
             statusButton = game.add.button(positionStatus.x+5, positionStatus.y+5, 'statusButton', actionStopOnClick);
@@ -1153,7 +1160,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             LCDScreenBox.beginFill(0x808080, 0.6);
             LCDScreenBox.lineStyle(2, 0xa3a3a3, 1);
             LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+29, 172, 46);
-            //input button
             screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+4, 'screenInputButton', actionInputOnClick);
             screenInputButton.input.useHandCursor = true;
 
@@ -1165,7 +1171,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sensorStatusLabels[ sensorId ] = game.add.text( Math.floor(positionSensorStatus.x+statusSpacing/2+(i-1)*statusSpacing) + 3, positionSensorStatus.y+37+browserFix, i, labelStyle );
             }
             /* Rotational position dials and needles for motors */
-            labelRotation = game.add.text(positionDial.x+10, positionDial.y+2+browserFix, labelRotation, smallTitleStyle);
+            labelRotation = game.add.text(positionDial.x+10, positionDial.y+2+browserFix, "Motor Rotational Positions", smallTitleStyle);
 
           /* Create Motors */
             for ( var i = 1; i <= numMotors; i++ ) {
@@ -1325,7 +1331,32 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* this button is for testing. it's invisible and in the upper right corner */   
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
 
+
+
+            destroyButton = game.add.button(300, 0, 'sliderBar', actionReloadGame);
+
+            initTime = game.time.time;
+            clockTime.display = game.add.text(500,20, '0', smallTitleStyle);
+            clock = setInterval( function() { changeClock() }, 1000 );
+
+
         } // end create 
+
+        function changeClock() {
+            game.world.remove(clockTime.display);
+            var timeDiff = (game.time.time - initTime)/1000;
+            clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
+            //console.log(timeDiff);
+            if ( timeDiff > 600 ) {
+                game.state.start(game.state.current);
+            }
+        }
+
+        function actionReloadGame() {
+            game.state.start(game.state.current);
+        }
+
+
 
         function configDirectionsActionDown () {
             directionChecks[ this.port ].state = 'down';
@@ -1846,8 +1877,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             console.log("sent commands");
 
-            
         }
+
     //==============================================================================================================================
     /* Update stuff */
       /* Update the dashboard speed setting of gangs */

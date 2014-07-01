@@ -520,9 +520,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Sensor ID labels */
         var sensorIDLabels = {
             IR : '',
-            Touch : '',
-            Color : '',
-            Ultrasonic : ''
+            touch : '',
+            color : '',
+            ultrasonic : ''
+        }
+        var sensorOverlays = { 
+            // IR : '',
+            // touch : '',
+            // color : '',
+            // ultrasonic : ''
         }
 
         /* IR sensor */
@@ -981,18 +987,55 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         game.world.remove(sensorIDLabels.IR);
                         sensorIDLabels.IR = game.add.text(positionIR.x+frames['IR'].width-25, positionIR.y+4+browserFix, s, statusStyle );
+                        if ( typeof(sensorOverlays.IR) !== "undefined" ) sensorOverlays.IR.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                         game.world.remove(sensorIDLabels.touch);
                         sensorIDLabels.touch = game.add.text(positionTouch.x+frames['touch'].width-25, positionTouch.y+4+browserFix, s, statusStyle );
+                        if ( typeof(sensorOverlays.touch) !== "undefined" ) sensorOverlays.touch.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
                         game.world.remove(sensorIDLabels.color);
                         sensorIDLabels.color = game.add.text(positionColor.x+frames['color'].width-25, positionColor.y+4+browserFix, s, statusStyle );          
+                        if ( typeof(sensorOverlays.color) !== "undefined" ) sensorOverlays.color.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
                         game.world.remove(sensorIDLabels.ultrasonic);
                         sensorIDLabels.ultrasonic = game.add.text(positionUltrasonic.x+frames['ultrasonic'].width-25, positionUltrasonic.y+4+browserFix, s, statusStyle );
+                        if ( typeof(sensorOverlays.ultrasonic) !== "undefined" ) sensorOverlays.ultrasonic.destroy();
+                    }
+                }
+            }
+            console.dir(sensorIDLabels);
+            for ( var n in sensorIDLabels ) {
+                if ( sensorIDLabels[ n ] === "" ) { //sensor must not be connected or available
+                    if ( n === 'IR') {
+                        if ( typeof(sensorOverlays.IR) === "undefined" ) {
+                            sensorOverlays.IR = game.add.graphics(0,0);
+                            sensorOverlays.IR.beginFill(0x00000,0.45);
+                            sensorOverlays.IR.drawRect(positionIR.x+1, positionIR.y+1, frames[ 'IR' ].width-2, frames[ 'IR' ].height-2 );
+                        }
+                    }
+                    else if ( n === 'touch') {
+                        if ( typeof(sensorOverlays.touch) === "undefined" ) {
+                            sensorOverlays.touch = game.add.graphics(0,0);
+                            sensorOverlays.touch.beginFill(0x00000,0.45);
+                            sensorOverlays.touch.drawRect(positionTouch.x+1, positionTouch.y+1, frames[ 'touch' ].width-2, frames[ 'touch' ].height-2 );
+                        }
+                    }
+                    else if ( n === 'color') {
+                        if ( typeof(sensorOverlays.color) === "undefined" ) {
+                            sensorOverlays.color = game.add.graphics(0,0);
+                            sensorOverlays.color.beginFill(0x00000,0.45);
+                            sensorOverlays.color.drawRect(positionColor.x+1, positionColor.y+1, frames[ 'color' ].width-2, frames[ 'color' ].height-2 );
+                        }
+                    }
+                    else if ( n === 'ultrasonic') {
+                        if ( typeof(sensorOverlays.ultrasonic) === "undefined" ) {
+                            sensorOverlays.ultrasonic = game.add.graphics(0,0);
+                            sensorOverlays.ultrasonic.beginFill(0x00000,0.45);
+                            sensorOverlays.ultrasonic.drawRect(positionUltrasonic.x+1, positionUltrasonic.y+1, frames[ 'ultrasonic' ].width-2, frames[ 'ultrasonic' ].height-2 );
+                        }
                     }
                 }
             }

@@ -3,7 +3,7 @@
 A JavaScript web app for controlling LEGO Mindstorm Robots from a computer, phone, or tablet. Powered by the Big Bang platform and uses the Phaser JavaScript framework. This project is funded by the Mozilla Gigabit Community Fund.
 
 By Jonathan Wagner, John DiBaggio, and Cole Bittel
-Version 2.0.1 - Released June 9th, 2014
+Version 2.0.2 - Released June 27th, 2014
 
 * View the [Official Website] (https://thegigabots.com)
 * Follow on [Twitter] (https://twitter.com/TheGigabots)

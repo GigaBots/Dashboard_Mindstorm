@@ -7,6 +7,7 @@
 * main.js contains the control panel, text editor, and loading progress bar
 */
 
+
 // Loading progress bar
 function updateBar (progress, $element) {
     var progressBarWidth = progress * $element.width() / 100;
@@ -60,7 +61,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //paused: paused,
             //destroy: destroy
         }, true); // final "true" value notes that background should be transparent
-        
+         
         updateBar(78, $("#progressBar"));
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
@@ -72,6 +73,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
             });
+            console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
             delete botStore[left];
@@ -204,9 +206,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.stalled = false;
             this.previousSpeed = 0;
             this.speedDisplay = ''; 
-            this.directionSwitched = false;
+            this.directionSwapped = false;
             this.time1 = 0;
-            //this.previousDirectionSwitched = false;
+            //this.previousDirectionSwapped = false;
         }
         Motor.prototype.constructor = Motor;
 
@@ -291,7 +293,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var sliderSpeedIncrements = {}
         var currentSpeedLabels = {}
 
-        /* Motor Switch Directions Checkbox (Button) */
+        /* Motor Swap Directions Checkbox (Button) */
         var directionChecks = {}
         DirectionCheckbox = function ( game, motor ) {
             Phaser.Button.call ( this, game, positionMotors[motor].x+10, positionMotors[motor].y+150, 'checkbox' );
@@ -300,7 +302,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.input.useHandCursor = true;
             this.setFrames(2,0,1,0);
             this.motor = motor;
-            this.name = 'switch direction button ' + motor;
+            this.name = 'swap direction button ' + motor;
             this.state = 'up';
             game.add.existing(this);
         }
@@ -706,67 +708,67 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(color.nameDisplay);
                 colorDisplay.destroy();
                 switch ( val.values[ 0 ] ) {
-                case 0:
-                    colorNameDisplay = "Red";
-                    colorDisplayFill = '0xFF3232';
-                    break;
-                case 1:
-                    colorNameDisplay = "Green";
-                    colorDisplayFill = '0x00FF00';
-                    break;
-                case 2:
-                    colorNameDisplay = "Blue";
-                    colorDisplayFill = '0x8000FF';
-                    break;
-                case 3:
-                    colorNameDisplay = "Yellow";
-                    colorDisplayFill = '0xFFFF00';
-                    break;
-                case 4:
-                    colorNameDisplay = "Magenta";
-                    colorDisplayFill = '0xFF00FF';
-                    break;
-                case 5:
-                    colorNameDisplay = "Orange";
-                    colorDisplayFill = '0xF48E40';
-                    break;
-                case 6:
-                    colorNameDisplay = "White";
-                    colorDisplayFill = '0xFFFFFF';
-                    break;
-                case 7:
-                    colorNameDisplay = "Black";
-                    colorDisplayFill = '0x000000';
-                    break;
-                case 8:
-                    colorNameDisplay = "Pink";
-                    colorDisplayFill = '0xFF00FF';
-                    break;
-                case 9:
-                    colorNameDisplay = "Gray";
-                    colorDisplayFill = '0x808080';
-                    break;
-                case 10:
-                    colorNameDisplay = "Light Gray";
-                    colorDisplayFill = '0xD0D0D0';
-                    break;
-                case 11:
-                    colorNameDisplay = "Dark Gray";
-                    colorDisplayFill = '0x505050';
-                    break;
-                case 12:
-                    colorNameDisplay = "Cyan";
-                    colorDisplayFill = '0x00FFFF';
-                    break;
-                case 13:
-                    colorNameDisplay = "Brown";
-                    colorDisplayFill = '0x926239';
-                    break;
-                default:
-                    colorNameDisplay = "N/A";
-                    colorDisplayFill = '0x505050';
-                    break;
-                }
+                    case 0:
+                        colorNameDisplay = "Red";
+                        colorDisplayFill = '0xFF1919';
+                        break;
+                    case 1:
+                        colorNameDisplay = "Green";
+                        colorDisplayFill = '0x00FF00';
+                        break;
+                    case 2:
+                        colorNameDisplay = "Blue";
+                        colorDisplayFill = '0x8000FF';
+                        break;
+                    case 3:
+                        colorNameDisplay = "Yellow";
+                        colorDisplayFill = '0xFFFF00';
+                        break;
+                    case 4:
+                        colorNameDisplay = "Magenta";
+                        colorDisplayFill = '0xFF00FF';
+                        break;
+                    case 5:
+                        colorNameDisplay = "Orange";
+                        colorDisplayFill = '0xF48E40';
+                        break;
+                    case 6:
+                        colorNameDisplay = "White";
+                        colorDisplayFill = '0xFFFFFF';
+                        break;
+                    case 7:
+                        colorNameDisplay = "Black";
+                        colorDisplayFill = '0x000000';
+                        break;
+                    case 8:
+                        colorNameDisplay = "Pink";
+                        colorDisplayFill = '0xFF00FF';
+                        break;
+                    case 9:
+                        colorNameDisplay = "Gray";
+                        colorDisplayFill = '0x808080';
+                        break;
+                    case 10:
+                        colorNameDisplay = "Light Gray";
+                        colorDisplayFill = '0xD0D0D0';
+                        break;
+                    case 11:
+                        colorNameDisplay = "Dark Gray";
+                        colorDisplayFill = '0x505050';
+                        break;
+                    case 12:
+                        colorNameDisplay = "Cyan";
+                        colorDisplayFill = '0x00FFFF';
+                        break;
+                    case 13:
+                        colorNameDisplay = "Brown";
+                        colorDisplayFill = '0x926239';
+                        break;
+                    default:
+                        colorNameDisplay = "N/A";
+                        colorDisplayFill = '0x313233';
+                        break;
+                    }
                 color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, dataOutputStyle);
                 colorDisplay = game.add.graphics(0,0);
                 colorDisplay.beginFill(colorDisplayFill, 1);
@@ -994,7 +996,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });
                 for ( var m in motors ) {
                     var dashKey = m + 'Dash';
-                    channel.getKeyspace(botId).put( dashKey, { 'speed': 0, 'direction': "stopped", 'directionSwitched': false }); //dashboard settings
+                    channel.getKeyspace(botId).put( dashKey, { 'speed': 0, 'direction': "stopped", 'directionSwapped': false }); //dashboard settings
                     channel.getKeyspace(botId).put(m, { 'port': m, 'position': 0, 'stalled': false, 'moving': false }); //robot data
                 }
                 for ( var g in gangs ) {
@@ -1038,6 +1040,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
       //==============================================================================================================================
         function create() {          
             updateBar(100, $("#progressBar")); 
+            
+            /* this.game.canvas.addEventListener('mouseout', function() {
+                console.log("out");
+                //console.dir(game);
+                if (game.input.mousePointer.isDown === true) {
+                    console.log("down");
+                    var simulateClick = function() {
+                        var evt = document.createEvent("MouseEvents");
+                        evt.initMouseEvent('mouseup', true, false );
+                        document.body.dispatchEvent(evt);
+                    }
+                    //simulateClick();
+                }
+                // if (game.input.mouse.mouseDownCallback) {
+                //    console.log("down callback");
+                // }
+            }, true); */
 
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
@@ -1162,7 +1181,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 sliderSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+154, positionMotors[ motorPort ].y+181+browserFix, "Speed (\xB0/sec)", labelStyle );
                 currentSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+10, positionMotors[ motorPort ].y+181+browserFix, "Current Speed:", labelStyle );
-                directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+38, positionMotors[ motorPort ].y+152+browserFix, "Switch Directions", labelStyle );
+                directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+38, positionMotors[ motorPort ].y+152+browserFix, "Swap Directions", labelStyle );
                 forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
                 reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
                 motorPlusButtons[ motorPort ] = new MotorPlusButton( game, motorPort );
@@ -1310,23 +1329,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         function configDirectionsActionDown () {
             directionChecks[ this.port ].state = 'down';
-            var temp = this.directionSwitched;
-            if ( !this.directionSwitched ) {
-                this.directionSwitched = true;
+            var temp = this.directionSwapped;
+            if ( !this.directionSwapped ) {
+                this.directionSwapped = true;
                 directionChecks[ this.port ].setFrames(1,1,1,1); //checked
             } 
             else {
-                this.directionSwitched = false;
+                this.directionSwapped = false;
                 directionChecks[ this.port ].setFrames(2,0,1,0); //unchecked
             }
-            //motors[ this.port ].previousDirectionSwitched = motors[ this.port ].directionSwitched;
+            //motors[ this.port ].previousDirectionSwapped = motors[ this.port ].directionSwapped;
             var dashKey = this.port + 'Dash';
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { // if the motor is currently moving, we need to make it move in the updated direction
-                moveMotor( botId, this.port, keyspaceData.direction, keyspaceData.speed, this.directionSwitched );
+                moveMotor( botId, this.port, keyspaceData.direction, keyspaceData.speed, this.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': keyspaceData.speed, 'direction': keyspaceData.direction, 'directionSwitched': this.directionSwitched }); 
-            //console.log("flipping directions for motor " + this.port + " from " + temp + " to " + this.directionSwitched );
+            channel.getKeyspace(botId).put(dashKey, { 'speed': keyspaceData.speed, 'direction': keyspaceData.direction, 'directionSwapped': this.directionSwapped }); 
+            //console.log("flipping directions for motor " + this.port + " from " + temp + " to " + this.directionSwapped );
         }
         function configDirectionsActionUp () {
             directionChecks[ this.port ].state = 'up';
@@ -1343,9 +1362,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { // if the motor is currently moving, we need to make it move at the updated speed
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwitched );
+                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwitched': keyspaceData.directionSwitched }); 
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+178+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             //console.log("increasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
@@ -1361,9 +1380,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = this.port + 'Dash'; 
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { 
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwitched );
+                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwitched': keyspaceData.directionSwitched }); 
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+178+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             //console.log("decreasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
@@ -1377,13 +1396,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( dashData.direction !== "stopped" ) {
                 //console.log('motor is moving');
                 var motorPort = this.port;
-                liveSpeed = setInterval( function() { changeLiveSpeed(motorPort) }, 50 ); //50 ms should be rapid enough
+                liveSpeed = setInterval( function() { changeLiveSpeed(motorPort) }, 17 );
+                grabHeight = game.input.mousePointer.y - sliderBars[ motorPort ].y;
             }
         }
-        var liveSpeed;
+        var liveSpeed, grabHeight;
         function changeLiveSpeed( motorPort ) {
             //console.log("adjusting while motor is moving...");
-            sliderBars[ motorPort ].y = game.input.mousePointer.y;
+            sliderBars[ motorPort ].y = game.input.mousePointer.y - grabHeight;
             if ( sliderBars[ motorPort ].y < positionMotors[ motorPort ].y+13 ) { //set max speed boundary limit
                 sliderBars[ motorPort ].y = positionMotors[ motorPort ].y+13;
             } else if ( sliderBars[motorPort].y > positionMotors[motorPort].y+167 ) { //set min speed boundary limit
@@ -1393,9 +1413,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = motorPort + 'Dash'; 
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { 
-                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwitched );
+                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwitched': keyspaceData.directionSwitched }); 
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
             game.world.remove( motors[ motorPort ].currentSpeedDisplay );
             motors[ motorPort ].currentSpeedDisplay = game.add.text(positionMotors[motorPort].x+100, positionMotors[motorPort].y+178+browserFix, motors[ motorPort ].speed.toFixed(1), dataOutputStyle);
             //console.log("changing speed of motor " + motorPort + " to " + motors[ motorPort ].speed.toFixed(2));
@@ -1413,26 +1433,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashKey = this.port + 'Dash'; 
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { 
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwitched );
+                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwitched': keyspaceData.directionSwitched }); 
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
             game.world.remove( motors[ this.port ].currentSpeedDisplay );
             motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+100, positionMotors[this.port].y+178+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
             //console.log("changing speed of motor " + this.port + " to " + motors[ this.port ].speed.toFixed(2));
         }
         function forwardDirectionActionDown () {
             //console.log("move motor " + this.port + " forward"); 
-            moveMotor( botId, this.port, "f", this.speed, this.directionSwitched );
+            moveMotor( botId, this.port, "f", this.speed, this.directionSwapped );
             forwardButtons[this.port].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
         }
         function forwardDirectionActionUp() {
-            console.log("stop motor " + this.port);
+            //console.log("stop motor " + this.port);
             stopMotor( botId, this.port ); 
             forwardButtons[this.port].setFrames(1,0,2,0); // show the forward button as up (normal position)
         }
         function reverseDirectionActionDown () {
             //console.log("move motor " + this.port + " in reverse"); 
-            moveMotor( botId, this.port, "r", this.speed, this.directionSwitched );
+            moveMotor( botId, this.port, "r", this.speed, this.directionSwapped );
             reverseButtons[this.port].setFrames(2,2,2,2); // show the reverse button as down, in case keyboard button inputs were being used instead of clicking            
         }
         function reverseDirectionActionUp() {
@@ -1462,7 +1482,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
@@ -1490,7 +1510,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
@@ -1508,13 +1528,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( dashData.direction !== "stopped" ) {
                 //console.log('motor is moving');
                 var gangId = this.gangId;
-                liveGangSpeed = setInterval( function() { changeLiveGangSpeed(gangId) }, 50 ); //50 ms should be rapid enough
+                liveGangSpeed = setInterval( function() { changeLiveGangSpeed(gangId) }, 1000/60 );
+                gangGrabHeight = game.input.mousePointer.y - gangSliderBars[ gangId ].y;
             }
         }
-        var liveGangSpeed;
+        var liveGangSpeed, gangGrabHeight;
         function changeLiveGangSpeed( gangId ) {
             //console.log("adjusting while gang's motors are moving...");
-            gangSliderBars[ gangId ].y = game.input.mousePointer.y;
+            gangSliderBars[ gangId ].y = game.input.mousePointer.y - gangGrabHeight;
             if ( gangSliderBars[ gangId ].y < positionGangs[ gangId ].y+13 ) { //set max speed boundary limit
                 gangSliderBars[ gangId ].y = positionGangs[ gangId ].y+13;
             } else if ( gangSliderBars[ gangId].y > positionGangs[ gangId ].y+167 ) { //set min speed boundary limit
@@ -1532,7 +1553,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ gangId ].speed, keyspaceMotorData.directionSwitched );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ gangId ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
@@ -1562,7 +1583,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwitched );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
@@ -1612,7 +1633,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashMotorKey = motorPort + 'Dash';
                 var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
                 if ( gangs[ gangId ][ motorPort ] === true ) {
-                    moveMotor( botId, motorPort, gangs[ gangId ].direction, gangs[ gangId ].speed, keyspaceMotorData.directionSwitched );
+                    moveMotor( botId, motorPort, gangs[ gangId ].direction, gangs[ gangId ].speed, keyspaceMotorData.directionSwapped );
                 }
                 else {
                     stopMotor( botId, motorPort );
@@ -1637,7 +1658,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
                     moveMotor( botId, m, "f", this.speed, motors[ m ].directionSwitched );
-                    reverseButtons[ m ].setFrames(2,2,2,2);         
+                    forwardButtons[ m ].setFrames(2,2,2,2); // show the forward button as down, in case keyboard button inputs were being used instead of clicking            
                 }
             }
             var dashKey = this.gangId + 'Dash';
@@ -1674,7 +1695,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gangs[ this.gangId ].direction = "r";
             for ( var m in motors ) {
                 if ( this[ m ] === true) {
-                    moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwitched );
+                    moveMotor( botId, m, "r", this.speed, motors[ m ].directionSwapped );
                     reverseButtons[ m ].setFrames(2,2,2,2);         
                 }
             }
@@ -1709,12 +1730,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         //=============================================================================
       /* Motor communication with Robot via messages to Big Bang channel */
-        function moveMotor( recipient, motor, direction, speed, switched ) {
+        function moveMotor( recipient, motor, direction, speed, swapped ) {
             var data = {};
             data.type = "motorStart";
             data.recipient = recipient;
             data.port = motor;
-            if ( switched === false ) {
+            if ( swapped === false ) {
                 data.dir = direction;
             } 
             else {
@@ -1725,7 +1746,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             var dashKey = motor + 'Dash';
-            channel.getKeyspace(botId).put( dashKey, { 'speed': speed, 'direction': direction, 'directionSwitched': switched } );
+            channel.getKeyspace(botId).put( dashKey, { 'speed': speed, 'direction': direction, 'directionSwapped': swapped } );
         }
         function stopMotor( recipient, motor ) {
             var data = {};
@@ -1735,7 +1756,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //console.log( "sending " + JSON.stringify(data));
             channel.publish( data );
             var dashKey = motor + 'Dash';
-            channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwitched': motors[ motor ].directionSwitched } );
+            channel.getKeyspace(botId).put( dashKey, { 'speed': motors[ motor ].speed, 'direction': "stopped", 'directionSwapped': motors[ motor ].directionSwapped } );
         }
       //=============================================================================
         function actionStopOnClick () {
@@ -1863,14 +1884,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             } 
         }
       /* Update the direction configurations of the motors for all users */
-        function updateMotorDirections ( key, switchDirection ) {
-            if ( motors[ key ].directionSwitched === switchDirection ) return 0; // exit function if the values are already equal
-            //console.log ("updating direction of motor " + key + " to " + switchDirection);
-            if ( switchDirection === false ) {
-                motors[ key ].directionSwitched = false;
+        function updateMotorDirections ( key, swapDirection ) {
+            if ( motors[ key ].directionSwapped === swapDirection ) return 0; // exit function if the values are already equal
+            //console.log ("updating direction of motor " + key + " to " + swapDirection);
+            if ( swapDirection === false ) {
+                motors[ key ].directionSwapped = false;
                 directionChecks[ key ].setFrames(2,0,1,0);
             } else {
-                motors[ key ].directionSwitched = true;
+                motors[ key ].directionSwapped = true;
                 directionChecks[ key ].setFrames(1,1,1,1);
             }
         }
@@ -1891,15 +1912,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
       /* Approximate rotation of motor position dials in realtime */
-        function rotateMotorDial (key, speed, direction, switched ) { // Move the dial in realtime in all users' dashboards: this is a linear approximation based on the previous needle position and the motor's current speed and direction
+        function rotateMotorDial (key, speed, direction, swapped ) { // Move the dial in realtime in all users' dashboards: this is a linear approximation based on the previous needle position and the motor's current speed and direction
             var time2 = game.time.time;
             var deltaTime = time2 - motors[ key ].time1;
             if ( deltaTime >= 80 ) deltaTime = 100/6; // approximate, when the time difference is too large (when starting a motor either for the first time or after a break)
-            if ( switched === false ) {
+            if ( swapped === false ) {
                 if ( direction === 'f' ) needles[ key ].angle += speed * deltaTime / 1000; // CW
                 else if ( direction === 'r' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
             }
-            else { // directions are switched
+            else { // directions are swapped
                 if ( direction === 'f' ) needles[ key ].angle -= speed * deltaTime / 1000; // CCW
                 else if ( direction === 'r' ) needles[ key ].angle += speed * deltaTime / 1000; // CW                
             }
@@ -1911,8 +1932,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( motors[ key ].speed !== val.speed && motors[ key ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
                 updateMotorSpeed( key, val.speed );
             }
-            if ( typeof(val.directionSwitched) !== 'undefined' && motors[ key ].directionSwitched !== val.directionSwitched ) {
-                 updateMotorDirections( key, val.directionSwitched );
+            if ( typeof(val.directionSwapped) !== 'undefined' && motors[ key ].directionSwapped !== val.directionSwapped ) {
+                 updateMotorDirections( key, val.directionSwapped );
             }
         }
       /* Update function infinite loop (~60x/sec) */
@@ -1924,7 +1945,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashData = channel.getKeyspace(botId).get(dashKey); 
                 if ( typeof(dashData) !== "undefined" ) {
                     if ( dashData.direction === 'f' || dashData.direction === 'r' ) { // || motorData.moving === true ) {
-                        rotateMotorDial( k, dashData.speed, dashData.direction, dashData.directionSwitched );
+                        rotateMotorDial( k, dashData.speed, dashData.direction, dashData.directionSwapped );
                     }
                     else if ( dashData.direction === "stopped" ) {
                         var motorData = channel.getKeyspace(botId).get(k);
@@ -1935,10 +1956,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             else if ( motorData.moving === true && game.time.time > motors[ k ].time1 + 999 ) { // if text editor id used, the bot's keyspace dashboard motor key would show it as "stopped" whereas the bot's motor data key would show it as moving. We must deal with a little lag, so add 999 milliseconds of padding
                                 // based on positions, we need to figure out which direction it's moving
                                 if ( motorData.position > needles[ k ].angle ) {
-                                    rotateMotorDial( k, dashData.speed, 'f', false ); // we don't know if it's switched or not, just how it's moving
+                                    rotateMotorDial( k, dashData.speed, 'f', false ); // we don't know if it's swapped or not, just how it's moving
                                 }
                                 else if ( motorData.position < needles[ k ].angle ) {
-                                    rotateMotorDial( k, dashData.speed, 'r', false ); // we don't know if it's switched or not, just how it's moving
+                                    rotateMotorDial( k, dashData.speed, 'r', false ); // we don't know if it's swapped or not, just how it's moving
                                 }
                                 // based on positions, we can figure out the speed it's moving at
                                 if ( typeof(motors[ k ].position1) !== "undefined" && typeof(motors[ k ].timePosition !== "undefined" )) {
@@ -1961,7 +1982,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 //if ( gangSliderBars[ g ].state === "up" ) {
                 var dashGang = channel.getKeyspace(botId).get(dashKey);
                 //if ( typeof(dashGang) !== "undefined" ) {
-                // we can switch to use just the first letter of the key right here instead of slicing dashKey later in other functions
+                // we can swap to use just the first letter of the key right here instead of slicing dashKey later in other functions
                 getGangValues( g, dashGang );
                 //}
                 //}

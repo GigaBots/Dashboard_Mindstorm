@@ -32,6 +32,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
     var botStore = {};
     var botId = "";
 
+    var touchStatus = false;
+
     var client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
@@ -686,6 +688,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
                 touch.touchCountDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24+browserFix, touchCountDisplay, dataOutputStyle);
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });
+                
+                //make beep sound:
+                channel.publish({ "type": "js", "js": "bot.beep()", "recipient": botId });
+                touchStatus = true;
             }
             else {
                 t2 = game.time.time;
@@ -702,6 +708,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touchCount, 'touchTime' : touchTime });                
                 touchIndicator.animations.play('up');
             }
+            touchStatus = false;
         }
         function setColorSensor( val ) {
             // if (val.mode === "RGB") {
@@ -2050,6 +2057,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.input.keyboard.disabled = false;
         }
 
+        function publish(botCode) {
+            channel.publish({ "type": "js", "js": botCode, "recipient": botId });
+        }
+
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
             // get text along with formatting from text editor text area
@@ -2057,9 +2068,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
 
-            // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
+            /* // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
             // publish message to channel for JS interpreter and then execution through the Gigabots API 
             channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
+            */
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);

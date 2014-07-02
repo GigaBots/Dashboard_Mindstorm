@@ -61,6 +61,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var initTime;
 
         /* === Dashboard control panel === */
+
         var gameBoundX = 960, gameBoundY = 650;
         var game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
@@ -1888,24 +1889,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log(dt);
             var db = channel.getKeyspace(botId).get('batteryDash');
             console.log(db);
-
-
-
-            console.log("sending commands...");
-            
-            // channel.publish( {type: 'motorStart', js: 'bot.a.moveTo(100)', recipient: botId } );
-            // channel.publish( {type: 'motorStart', js: 'bot.c.moveTo(200)', recipient: botId } );
-            // channel.publish( {type: 'motorStart', js: 'bot.a.rtz()', recipient: botId } );
-            
-            
-            // channel.publish( {type: 'js', js: 'bot.a.rotateTo(100)', recipient: botId } );
-            // channel.publish( {type: 'js', js: 'bot.b.rotateTo(200)', recipient: botId } );
-            // channel.publish( {type: 'js', js: 'bot.a.rtz()', recipient: botId } );
-            // channel.publish( {type: 'js', js: 'bot.beep()', recipient: botId } );
-            // channel.publish( {type: 'js', js: 'bot.sing()', recipient: botId } ); 
-
-            console.log("sent commands");
-
         }
 
     //==============================================================================================================================
@@ -2050,8 +2033,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end update
 
-// ====================================
-        // textEditor
+        /* === Dashboard console-based text editor === */
 
         // When the latest click is within the dashboard, enable the hotkeys
         // When the latest click is within the textEditor, disable the hotkeys s.t. user can use all letters when typing
@@ -2068,13 +2050,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.input.keyboard.disabled = false;
         }
 
-
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
+
+            // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
+            // publish message to channel for JS interpreter and then execution through the Gigabots API 
+            channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);
@@ -2090,9 +2075,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 codeArray[iterationNum][1] = codeArray[iterationNum][1] + "<br>Error: "+ err.message;
                 // = codeArray[inputCode, evaluatedCode + errorMessage]
             }
-
-            
-            
 
             $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[iterationNum][0] + '</div>');
             $( ".previousCode" ).append( '<div style="text-align:right; color:orange; margin:0;">' +  "Output: " + codeArray[iterationNum][1] +  '</div>');
@@ -2111,8 +2093,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // detect which key it is
             switch(e.which) {
 
-//============= Display previous codes in array above current code ========
-
+        //============= Display previous codes in array above current code ========
 
                 // If up key is pressed (keycode number 38) then
                 case 38: // up

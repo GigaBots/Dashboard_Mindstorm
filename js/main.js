@@ -7,7 +7,6 @@
 * main.js contains the control panel, text editor, and loading progress bar
 */
 
-
 // Loading progress bar
 function updateBar (progress, $element) {
     var progressBarWidth = progress * $element.width() / 100;
@@ -18,7 +17,7 @@ function updateBar (progress, $element) {
 }
 
 require.config({
-    baseUrl: 'js', // set baseURL to 'js' when bbclient.min.js is in the folder entitled 'js' along with main.js, phaser.min.js, and require.js
+    baseUrl: 'js',
     paths: {
         "BrowserBigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min",
         "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
@@ -27,11 +26,12 @@ require.config({
 
 updateBar(24, $("#progressBar"));
 
+var game;
+var restartState;
+
 require(['BrowserBigBangClient'], function (bigbang) {
 
-    var botStore = {};
-    var botId = "";
-
+    //var game;
     var client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
@@ -51,6 +51,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     updateBar(59, $("#progressBar"));    
 
+    var botStore = {};
+    var botId = "", botIndex = 0;
+
     function beginGame(client, channel) {
 
 
@@ -63,7 +66,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* === Dashboard control panel === */
 
         var gameBoundX = 960, gameBoundY = 650;
-        var game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
+        game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
             update: update,
@@ -507,7 +510,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var botDropdown, dropdownBox, dropdown;
         var dropHighlight = { 1 : 0 }
         var botLabels = new Array();
-        var botIndex = 0, botName;
+        var botName;
         var bot = { nameDisplay : "" }
         var botStore = { // client id (GUID) : bot name
             'fakeBotId1' : 'Fake Bot 1',
@@ -1007,7 +1010,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                 }
             }
-            console.dir(sensorIDLabels);
+            //console.dir(sensorIDLabels);
             for ( var n in sensorIDLabels ) {
                 if ( sensorIDLabels[ n ] === "" ) { //sensor must not be connected or available
                     if ( n === 'IR') {
@@ -1040,6 +1043,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     }
                 }
             }
+            //console.dir(sensorOverlays);
         }
         function setInitialDashboardSettings( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
@@ -1131,6 +1135,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             status.statusDisplay =  game.add.text(positionStatus.x+7, positionStatus.y+34+browserFix, "running...", statusStyle);
 
             if ( botId === '' ) bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, "Select a robot ", selectBotStyle);
+            else bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botStore[ botId ], statusStyle); // for a restart state, since a bot is already selected
 
             labelMotorStatus = game.add.text(positionMotorStatus.x+10, positionMotorStatus.y+2+browserFix, "Motor Statuses", smallTitleStyle); //label at top of box indicating status of motor ports
 
@@ -1353,39 +1358,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             initTime = game.time.time;
             //clockTime.display = game.add.text(500,20, '0', smallTitleStyle);
-            clock = setInterval( function() { restartState() }, 60000 );
+            clock = setInterval( function() { timeoutRestartState() }, 60000 );
 
 
         } // end create 
-
-
-
-        function restartState() {
-            //game.world.remove(clockTime.display);
-            var timeDiff = (game.time.time - initTime)/1000;
-            //clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
-            //console.log(timeDiff);
-            if ( timeDiff > 600 ) {
-                game.state.restart(); //restarts game state to the current state
-                //game.state.start(game.state.current); //restarts game state to the current state
-                botName = botStore[ botId ];
-                botIndex++;
-                listenToBot(botId, botIndex); // start listening to the bot that was previously being used
-                getInitialTouchData(botId);
-                getInitialBatteryLevel(botId);
-                if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-                else var botNameDisplay = botName;
-                bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
-                botDropdown.input.start();
-                botDropdown.setFrames(1,0,2,0);
-                botDropdown.input.useHandCursor = true;
-                //getInitialMotorStatus();
-                setInitialDashboardSettings(botId);
-            }
-        }
-
-
-
 
         function configDirectionsActionDown () {
             directionChecks[ this.port ].state = 'down';
@@ -1854,7 +1830,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60+browserFix, messageDisplay3, messageStyle);
         }
         function actionGetKeyspace() {
-        // this is to query the current bot's keyspace, for testing/debugging
+            // this is to query the current bot's keyspace, for testing/debugging
             console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);
             var keys = channel.getKeyspace(botId).keys();
             console.log(keys); //["robot", "a", "b", "c", "d", "S1"]
@@ -2033,6 +2009,49 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end update
 
+        function timeoutRestartState() {
+            // console.log("10 minutes have passed. Restarting state...");
+            // //game.world.remove(clockTime.display);
+            // var timeDiff = (game.time.time - initTime)/1000;
+            // //clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
+            // //console.log(timeDiff);
+            // if ( timeDiff > 600 ) {
+            //     game.state.restart(); //restarts game state to the current state
+            //     //game.state.start(game.state.current); //restarts game state to the current state
+            //     botName = botStore[ botId ];
+            //     botIndex++;
+            //     listenToBot(botId, botIndex); // start listening to the bot that was previously being used
+            //     getInitialTouchData(botId);
+            //     getInitialBatteryLevel(botId);
+            //     if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
+            //     else var botNameDisplay = botName;
+            //     bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
+            //     botDropdown.input.start();
+            //     botDropdown.setFrames(1,0,2,0);
+            //     botDropdown.input.useHandCursor = true;
+            //     //getInitialMotorStatus();
+            //     setInitialDashboardSettings(botId);
+            // }
+        }
+        restartState = function () {
+            console.log("Connection timeout. Restarting state...");
+            game.state.restart(); //restarts game state to the current state
+            //game.state.start(game.state.current); //restarts game state to the current state
+            botName = botStore[ botId ];
+            botIndex++;
+            listenToBot(botId, botIndex); // start listening to the bot that was previously being used
+            getInitialTouchData(botId);
+            getInitialBatteryLevel(botId);
+            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
+            else var botNameDisplay = botName;
+            bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
+            botDropdown.input.start();
+            botDropdown.setFrames(1,0,2,0);
+            botDropdown.input.useHandCursor = true;
+            //getInitialMotorStatus();
+            setInitialDashboardSettings(botId);
+        }
+
         /* === Dashboard console-based text editor === */
 
         // When the latest click is within the dashboard, enable the hotkeys
@@ -2050,6 +2069,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.input.keyboard.disabled = false;
         }
 
+        function publish(botCode) {
+            channel.publish({ "type": "js", "js": botCode, "recipient": botId });
+        }
+
         // When the Submit button is clicked
         document.getElementById("runButton").onclick = function() {
             // get text along with formatting from text editor text area
@@ -2057,9 +2080,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
 
-            // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
+            /* // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
             // publish message to channel for JS interpreter and then execution through the Gigabots API 
             channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
+            */
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);
@@ -2129,5 +2153,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             $("#currentCode").scrollTop($("#currentCode")[0].scrollHeight);
         });
     } // end beginGame
+        
+
+    // when the connection barfs out
+    client.disconnected( function() {
+        console.log("Connection lost");
+        restartState(); //restart the current game state, without refreshing the page. Select the same bot as before
+    });
 
 }); // end require

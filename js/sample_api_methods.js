@@ -138,3 +138,13 @@ for(var i=0; i<=700; i+=20) {
 		channel.publish({ "type": "js", "js": "bot.beep()", "recipient": botId });
 	}
 }
+
+
+if (bot.sensors.pressedAction.result === true ) {
+	bot.beep();
+	bot.beep();
+}
+
+if (bot.pressedAction.result(Boolean.valueOf(sample[0] == 1.0F))) {
+bot.beep();
+}

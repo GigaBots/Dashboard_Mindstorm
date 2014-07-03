@@ -26,13 +26,14 @@ require.config({
 
 updateBar(24, $("#progressBar"));
 
+var client;
 var game;
 var restartState;
 
 require(['BrowserBigBangClient'], function (bigbang) {
 
     //var game;
-    var client = new bigbang.client.BrowserBigBangClient();
+    client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
             client.subscribe("newBot", function( err, c) {
@@ -2034,22 +2035,38 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // }
         }
         restartState = function () {
-            console.log("Connection timeout. Restarting state...");
-            game.state.restart(); //restarts game state to the current state
-            //game.state.start(game.state.current); //restarts game state to the current state
-            botName = botStore[ botId ];
-            botIndex++;
-            listenToBot(botId, botIndex); // start listening to the bot that was previously being used
-            getInitialTouchData(botId);
-            getInitialBatteryLevel(botId);
-            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-            else var botNameDisplay = botName;
-            bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-            //getInitialMotorStatus();
-            setInitialDashboardSettings(botId);
+            console.log("Connection timeout. Reconnecting and restarting state...");
+            client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
+                if( result.success) {
+                    client.subscribe("newBot", function( err, c) {
+                        if(!err) {
+                            game.state.restart(); //restarts game state to the current state
+                            //game.state.start(game.state.current); //restarts game state to the current state
+                            botName = botStore[ botId ];
+                            botIndex++;
+                            listenToBot(botId, botIndex); // start listening to the bot that was previously being used
+                            getInitialTouchData(botId);
+                            getInitialBatteryLevel(botId);
+                            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
+                            else var botNameDisplay = botName;
+                            bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
+                            botDropdown.input.start();
+                            botDropdown.setFrames(1,0,2,0);
+                            botDropdown.input.useHandCursor = true;
+                            //getInitialMotorStatus();
+                            setInitialDashboardSettings(botId);
+                        }
+                        else {
+                            console.log("Subscribe failure. " + err);
+                        }
+                    })
+                }
+                else {
+                    console.log("CONNECT FAILURE.");
+                }
+            });
+
+
         }
 
         /* === Dashboard console-based text editor === */
@@ -2080,7 +2097,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
 
-            /* // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()" --> rotate to 100', and rotate to 0'
+            /* // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()", "bot.a.rotate(100)", "bot.a.position()" --> rotate motor 'a' to 100', rotate motor 'a' to 0', rotate motor 'a' 100' forward, and return position of motor 'a'
             // publish message to channel for JS interpreter and then execution through the Gigabots API 
             channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
             */

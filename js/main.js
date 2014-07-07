@@ -123,7 +123,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Motor positions */
         var positionMotors = {}
-        if ( motorColumns !== '' && typeof(motorRows) === 'string' ) {
+        if ( motorColumns !== '' && typeof motorRows === 'string' ) {
             var maxMotorColumns = motorColumns;
             var maxMotorRows = Math.ceil(numMotors/motorColumns);
         }
@@ -189,7 +189,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         for ( var i = 1; i <= numGangs; i++ ) {
             positionGangs[ i ] = { x : 581, y : 226 + (i-1)*215 }
         }
-        if ( gangColumns !== '' && typeof(gangRows) === 'string' ) {
+        if ( gangColumns !== '' && typeof gangRows === 'string' ) {
             var maxGangColumns = gangColumns;
             var maxGangRows = numGangs/gangColumns;
         } else {
@@ -916,10 +916,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 botLabels[j].destroy();
                 dropHighlight[j].destroy();
             }
-            if ( newBotName === '' || typeof(newBotName) === 'undefined' || newBotName === null ) {
+            if ( newBotName === '' || typeof newBotName ===  "undefined" || newBotName === null ) {
                 newBotName = 'default name';
             }
-            if ( newBotId === '' || typeof(newBotId) === 'undefined' || newBotId === null ) {
+            if ( newBotId === '' || typeof newBotId === "undefined" || newBotId === null ) {
                 newBotId = 'defaultId';
             }
             botStore[ newBotId ] = newBotName;
@@ -959,7 +959,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             setInitialBatteryLevel('batteryDash', batteryLevelData);
         }
         function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
-            if ( typeof(val) !== 'undefined' ) {
+            if ( typeof val !== 'undefined' ) {
                 batteryLevel = val.batteryLevel;
                 if (batteryLevel <= 0.15) { // for almost-dead battery!
                     if(batteryLevel > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
@@ -981,27 +981,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function setSensorIDs() {
             var botData = channel.getKeyspace(botId).get('robot');
-            if ( typeof(botData) !== "undefined" ) {
+            if ( typeof botData !== "undefined" ) {
                 for ( var s in botData.ev3.sensors ) {
                     if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         game.world.remove(sensorIDLabels.IR);
                         sensorIDLabels.IR = game.add.text(positionIR.x+frames['IR'].width-25, positionIR.y+4+browserFix, s, statusStyle );
-                        if ( typeof(sensorOverlays.IR) !== "undefined" ) sensorOverlays.IR.destroy();
+                        if ( typeof sensorOverlays.IR !== "undefined" ) sensorOverlays.IR.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                         game.world.remove(sensorIDLabels.touch);
                         sensorIDLabels.touch = game.add.text(positionTouch.x+frames['touch'].width-25, positionTouch.y+4+browserFix, s, statusStyle );
-                        if ( typeof(sensorOverlays.touch) !== "undefined" ) sensorOverlays.touch.destroy();
+                        if ( typeof sensorOverlays.touch !== "undefined" ) sensorOverlays.touch.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
                         game.world.remove(sensorIDLabels.color);
                         sensorIDLabels.color = game.add.text(positionColor.x+frames['color'].width-25, positionColor.y+4+browserFix, s, statusStyle );          
-                        if ( typeof(sensorOverlays.color) !== "undefined" ) sensorOverlays.color.destroy();
+                        if ( typeof sensorOverlays.color !== "undefined" ) sensorOverlays.color.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
                         game.world.remove(sensorIDLabels.ultrasonic);
                         sensorIDLabels.ultrasonic = game.add.text(positionUltrasonic.x+frames['ultrasonic'].width-25, positionUltrasonic.y+4+browserFix, s, statusStyle );
-                        if ( typeof(sensorOverlays.ultrasonic) !== "undefined" ) sensorOverlays.ultrasonic.destroy();
+                        if ( typeof sensorOverlays.ultrasonic !== "undefined" ) sensorOverlays.ultrasonic.destroy();
                     }
                 }
             }
@@ -1009,28 +1009,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var n in sensorIDLabels ) {
                 if ( sensorIDLabels[ n ] === "" ) { //sensor must not be connected or available
                     if ( n === 'IR') {
-                        if ( typeof(sensorOverlays.IR) === "undefined" ) {
+                        if ( typeof sensorOverlays.IR === "undefined" ) {
                             sensorOverlays.IR = game.add.graphics(0,0);
                             sensorOverlays.IR.beginFill(0x00000,0.45);
                             sensorOverlays.IR.drawRect(positionIR.x+1, positionIR.y+1, frames[ 'IR' ].width-2, frames[ 'IR' ].height-2 );
                         }
                     }
                     else if ( n === 'touch') {
-                        if ( typeof(sensorOverlays.touch) === "undefined" ) {
+                        if ( typeof sensorOverlays.touch === "undefined" ) {
                             sensorOverlays.touch = game.add.graphics(0,0);
                             sensorOverlays.touch.beginFill(0x00000,0.45);
                             sensorOverlays.touch.drawRect(positionTouch.x+1, positionTouch.y+1, frames[ 'touch' ].width-2, frames[ 'touch' ].height-2 );
                         }
                     }
                     else if ( n === 'color') {
-                        if ( typeof(sensorOverlays.color) === "undefined" ) {
+                        if ( typeof sensorOverlays.color === "undefined" ) {
                             sensorOverlays.color = game.add.graphics(0,0);
                             sensorOverlays.color.beginFill(0x00000,0.45);
                             sensorOverlays.color.drawRect(positionColor.x+1, positionColor.y+1, frames[ 'color' ].width-2, frames[ 'color' ].height-2 );
                         }
                     }
                     else if ( n === 'ultrasonic') {
-                        if ( typeof(sensorOverlays.ultrasonic) === "undefined" ) {
+                        if ( typeof sensorOverlays.ultrasonic === "undefined" ) {
                             sensorOverlays.ultrasonic = game.add.graphics(0,0);
                             sensorOverlays.ultrasonic.beginFill(0x00000,0.45);
                             sensorOverlays.ultrasonic.drawRect(positionUltrasonic.x+1, positionUltrasonic.y+1, frames[ 'ultrasonic' ].width-2, frames[ 'ultrasonic' ].height-2 );
@@ -1042,7 +1042,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
         function setInitialDashboardSettings( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
-            if ( typeof(dashMotorA) === 'undefined' ) { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
+            if ( typeof dashMotorA === 'undefined' ) { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
                 console.log("initializing keyspace and dashboard settings for the newly connected bot...");
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 0, 'touchTime' : 0 });                
                 channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });
@@ -1925,7 +1925,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
       /* Once motor stops, update its dial to the precise value measured by the robot and published to channel */
         function updateMotorDial (key, motorData) { // Update the dial once the motor stops, at the next nearest second when the bot sends out a position value (this is more accurate)
-            if ( typeof(motorData) !== "undefined" && motorData.moving === false ) {
+            if ( typeof motorData !== "undefined" && motorData.moving === false ) {
                 needles[ key ].angle = motorData.position;
             }
         }
@@ -1950,7 +1950,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( motors[ key ].speed !== val.speed && motors[ key ].previousSpeed !== val.speed ) { // don't change anything again in the dashboard of the user who changed the speed, only in the others' dashboards
                 updateMotorSpeed( key, val.speed );
             }
-            if ( typeof(val.directionSwapped) !== 'undefined' && motors[ key ].directionSwapped !== val.directionSwapped ) {
+            if ( typeof val.directionSwapped !== 'undefined' && motors[ key ].directionSwapped !== val.directionSwapped ) {
                  updateMotorDirections( key, val.directionSwapped );
             }
         }
@@ -1961,13 +1961,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var k in motors ) {
                 var dashKey = k + 'Dash';
                 var dashData = channel.getKeyspace(botId).get(dashKey); 
-                if ( typeof(dashData) !== "undefined" ) {
+                if ( typeof dashData !== "undefined" ) {
                     if ( dashData.direction === 'f' || dashData.direction === 'r' ) { // || motorData.moving === true ) {
                         rotateMotorDial( k, dashData.speed, dashData.direction, dashData.directionSwapped );
                     }
                     else if ( dashData.direction === "stopped" ) {
                         var motorData = channel.getKeyspace(botId).get(k);
-                        if ( typeof( motorData ) !== "undefined" ) {
+                        if ( typeof motorData !== "undefined" ) {
                             if ( motorData.moving === false ) {
                                 updateMotorDial ( k, motorData ); // update at the next second to the value in the message sent by the bot
                             }
@@ -1980,7 +1980,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                                     rotateMotorDial( k, dashData.speed, 'r', false ); // we don't know if it's swapped or not, just how it's moving
                                 }
                                 // based on positions, we can figure out the speed it's moving at
-                                if ( typeof(motors[ k ].position1) !== "undefined" && typeof(motors[ k ].timePosition !== "undefined" )) {
+                                if ( typeof motors[ k ].position1 !== "undefined" && typeof motors[ k ].timePosition !== "undefined" ) {
                                     var speedCalc = Math.abs( motors [ k ].position1 - motorData.position ) / ( ( game.time.time - motors[ k ].timePosition ) / 1000 );
                                     if ( speedCalc <= 700 ) {
                                         updateMotorSpeed( k, speedCalc );
@@ -1999,7 +1999,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var dashKey = g + 'Dash';
                 //if ( gangSliderBars[ g ].state === "up" ) {
                 var dashGang = channel.getKeyspace(botId).get(dashKey);
-                //if ( typeof(dashGang) !== "undefined" ) {
+                //if ( typeof dashGang !== "undefined" ) {
                 // we can swap to use just the first letter of the key right here instead of slicing dashKey later in other functions
                 getGangValues( g, dashGang );
                 //}
@@ -2046,7 +2046,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             getInitialBatteryLevel( botId );
                             setInitialDashboardSettings( botId );
                             //getInitialMotorStatus();
-                            //var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
+                            var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
                             console.log("Reconnected to bot " + botId + " with name " + botName);
                         }
                         else {

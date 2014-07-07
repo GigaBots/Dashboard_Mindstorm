@@ -21,6 +21,14 @@ updateBar(24, $("#progressBar"));
 var client;
 var game;
 var restartState;
+var botStore = { // client id (GUID) : bot name
+    'fakeBotId1' : 'Fake Bot 1',
+    'fakeBotId2' : 'Fake Bot 2'
+}
+var botId = "", botIndex = 0;
+
+var gameStates = {}
+
 
 require.config({
     baseUrl: 'js',
@@ -31,13 +39,13 @@ require.config({
 });
 require(['BrowserBigBangClient'], function (bigbang) {
 
-    //var game;
     client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
         if( result.success) {
             client.subscribe("newBot", function( err, c) {
                 if(!err) {
                     beginGame(client,c);
+                    //console.dir(c);
                 }
                 else {
                     console.log("Subscribe failure. " + err);
@@ -51,20 +59,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
     updateBar(59, $("#progressBar"));    
 
-    var botStore = { // client id (GUID) : bot name
-        'fakeBotId1' : 'Fake Bot 1',
-        'fakeBotId2' : 'Fake Bot 2'
-    }
-    var botId = "", botIndex = 0;
-
     function beginGame(client, channel) {
-
-
-        var clockTime = {
-            display : ''
-        }
-        var clock;
-        var initTime;
 
         /* === Dashboard control panel === */
 
@@ -72,12 +67,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
         game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
-            update: update,
-            //render: render,
-            //paused: paused,
-            //destroy: destroy
+            update: update
         }, true); // final "true" value notes that background should be transparent
-         
+        
+        var NewState = function( game ) { };
+        NewState.prototype = {
+            preload: preload, 
+            create: create,
+            update: update
+        }
+
+        game.state.add( 'newState', NewState );
+
         updateBar(78, $("#progressBar"));
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
@@ -1354,12 +1355,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* this button is for testing. it's invisible and in the upper right corner */   
             getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
 
-
-            initTime = game.time.time;
-            //clockTime.display = game.add.text(500,20, '0', smallTitleStyle);
-            clock = setInterval( function() { timeoutRestartState() }, 60000 );
-
-
         } // end create 
 
         function configDirectionsActionDown () {
@@ -2008,45 +2003,31 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         } // end update
 
-        function timeoutRestartState() {
-            // console.log("10 minutes have passed. Restarting state...");
-            // //game.world.remove(clockTime.display);
-            // var timeDiff = (game.time.time - initTime)/1000;
-            // //clockTime.display = game.add.text(500,20, timeDiff, smallTitleStyle);
-            // //console.log(timeDiff);
-            // if ( timeDiff > 600 ) {
-            //     game.state.restart(); //restarts game state to the current state
-            //     //game.state.start(game.state.current); //restarts game state to the current state
-            //     botName = botStore[ botId ];
-            //     botIndex++;
-            //     listenToBot(botId, botIndex); // start listening to the bot that was previously being used
-            //     getInitialTouchData(botId);
-            //     getInitialBatteryLevel(botId);
-            //     if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-            //     else var botNameDisplay = botName;
-            //     bot.nameDisplay = game.add.text(positionBotSelector.x+7, positionBotSelector.y+36+browserFix, botNameDisplay, statusStyle);
-            //     botDropdown.input.start();
-            //     botDropdown.setFrames(1,0,2,0);
-            //     botDropdown.input.useHandCursor = true;
-            //     //getInitialMotorStatus();
-            //     setInitialDashboardSettings(botId);
-            // }
-        }
         restartState = function () {
             console.log("Connection timeout. Reconnecting client and restarting dashboard state...");
             client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
                 if( result.success) {
                     client.subscribe("newBot", function( err, c) {
                         if(!err) {
-                            //game.state.restart(); //restarts game state to the current state. This also works: game.state.start(game.state.current);
+                            game.state.start('newState');
+                            // game.world.removeAll();
+                            // game.state.restart('MainScreen'); //restarts game state to the current state. This also works: game.state.start(game.state.current);
+                            // beginGame(client,c);
+                            // console.dir(c);
+                            // game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
+                            //     preload: preload, 
+                            //     create: create,
+                            //     update: update,
+                            // }, true);
+
                             botName = botStore[ botId ];
                             botIndex++;
                             listenToBot( botId, botIndex ); // start listening to the bot that was previously being used
-                            getInitialTouchData( botId );
-                            getInitialBatteryLevel( botId );
+                            //getInitialTouchData( botId );
+                            //getInitialBatteryLevel( botId );
                             setInitialDashboardSettings( botId );
                             //getInitialMotorStatus();
-                            var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
+                            //var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
                             console.log("Reconnected to bot " + botId + " with name " + botName);
                         }
                         else {

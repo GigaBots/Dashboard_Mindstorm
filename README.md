@@ -3,13 +3,13 @@
 A JavaScript web app for controlling LEGO Mindstorm Robots from a computer, phone, or tablet. Powered by the Big Bang platform and uses the Phaser JavaScript framework. This project is funded by the Mozilla Gigabit Community Fund.
 
 By Jonathan Wagner, John DiBaggio, and Cole Bittel
-Version 2.0.1 - Released June 9th, 2014
+Version 2.0.2 - Released June 27th, 2014
 
 * View the [Official Website] (https://thegigabots.com)
 * Follow on [Twitter] (https://twitter.com/TheGigabots)
 * Join developers on [Github] (#)
 
-![div](http://thegigabots.com/wp-content/uploads/2014/04/hi_mozilla.jpg)
+![div](http://thegigabots.com/wp-content/uploads/2014/04/hello_gigabot.jpg)
 
 
 #Instructions for Use
@@ -24,4 +24,4 @@ The main.js file utilizes the [Phaser Framework] (www.phaser.io). Phaser is inte
 A Phaser Framework relies on a succession of different states to create the dashboard and update the dashboard as needed. The states used in this program:
 * Preload - Loads the necessary assets to be used in the dashboard. Primarily, this is in the form of images, such as the background, and sprites.
 * Create - Called immediately following the preload state. Instantiates the initial dashboard panel using preloaded assets. Visually renders front-end. Defines necessary functionality and interactivity. Functions within only called when change in variable state occurs (ie. button is clicked. Different from update function, which calls at 60Hz regardless of if there's a change.)
-* Update - Called immediately following the create state. Loops through around 60 times a second. Handles channels and keystates (Big Bang term) s.t. realtime information passed through channels to keyspaces and updated. Runs at 60Hertz regardless of change in any variable/states/values.
+* Update - Called immediately following the create state. Loops through around 60 times a second. Handles channels and bot keyspaces s.t. realtime information passed through channels to keyspaces and updated. Runs at 60Hertz regardless of change in any variable/states/values.

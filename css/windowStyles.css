@@ -44,8 +44,10 @@ body {
 	margin: 0 auto 0 auto;
 	padding: 0;
 	border: 0;
+	
 	width: 960px;
-	height: 653px;
+	/*height: 653px;
+	*/
 	overflow: hidden;
 	clear: both;
 }
@@ -56,13 +58,13 @@ body {
 	opacity: 0.95;
 	overflow: auto;
 	min-height: 180px;
-	width: 918px;
+	width: 928px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 1px;
 	border-style: solid;
 	border-width: 2px;
-	border-color: #656565;
-	margin: 2px auto 0 auto;
+	border-color: #6f6f6f;
+	margin: 5px auto 0 auto;
 	font-size: 12px;
 	position: relative;
 }

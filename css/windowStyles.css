@@ -58,7 +58,7 @@ body {
 	opacity: 0.95;
 	overflow: auto;
 	min-height: 180px;
-	width: 928px;
+	width: 1130px;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 1px;
 	border-style: solid;
@@ -102,14 +102,14 @@ body {
 	color: #C8C8C8;
 }
 #runButton {
-    left: -moz-calc(50% - 466px);
-    left: -webkit-calc(50% - 466px);
-    left: calc(50% - 466px);
+    left: -moz-calc(50% - 568px);
+    left: -webkit-calc(50% - 568px);
+    left: calc(50% - 568px);
 }
 #repoButton {
-	left: -moz-calc(50% - 466px);
-	left: -webkit-calc(50% - 466px);
-	left: calc(50% - 466px);
+	left: -moz-calc(50% - 568px);
+	left: -webkit-calc(50% - 568px);
+	left: calc(50% - 568px);
 }
 
 

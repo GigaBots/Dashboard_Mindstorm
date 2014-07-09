@@ -1,3 +1,5 @@
+// You can copy and paste the following lines of JavaScript into the text editor, after having selected a bot, to see the effect
+
 /* dashboard sensor data */
 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : 1337, 'touchTime' : 217.53 });
 channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : 0 });

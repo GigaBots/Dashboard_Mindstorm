@@ -760,12 +760,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 color.g = val.values[1];
                 color.b = val.values[2];
                 var rgbDisplay = "(" + color.r.toFixed(0) + ", " + color.g.toFixed(0) + ", " + color.b.toFixed(0) + ")";
-                color.rgbDisplay = game.add.text(positionColor.x+45, positionColor.y+54+browserFix, rgbDisplay, dataOutputStyle);
+                color.rgbDisplay = game.add.text(positionColor.x+47, positionColor.y+54+browserFix, rgbDisplay, dataOutputStyle);
             }
             else if (val.mode === "Ambient") {
                 game.world.remove(color.lightIntensityDisplay)
                 color.lightIntensity = val.values[0];
-                color.lightIntensityDisplay = game.add.text(positionColor.x+102, positionColor.y+29+browserFix, color.lightIntensity, dataOutputStyle);
+                color.lightIntensityDisplay = game.add.text(positionColor.x+101, positionColor.y+29+browserFix, color.lightIntensity, dataOutputStyle);
             }
             else if (val.mode === "Red") {
                 //

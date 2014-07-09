@@ -8,10 +8,55 @@
 	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
 	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
-
+	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="../../assets/js/html5shiv.js"></script>
+      <script src="../../assets/js/respond.min.js"></script>
+    <![endif]-->
 </head>
 
 <body>
+	<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand hidden-xs" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -10px;" src="assets/gigabots_dashboard_logo_on_dark.png"></a>
+				<a class="navbar-brand visible-xs" id="titleSmall" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>
+			</div>
+		    <!-- Collect the nav links, forms, and other content for toggling -->
+		    <div class="navbarMiddle">
+		   	  <ul class="nav navbar-nav">
+		        <li class="dropdown">
+		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
+		          <ul class="dropdown-menu" role="menu">
+		            <li><a href="#">Action</a></li>
+		            <li><a href="#">Another action</a></li>
+		            <li><a href="#">Something else here</a></li>
+		            <li class="divider"></li>
+		            <li><a href="#">Separated link</a></li>
+		            <li class="divider"></li>
+		            <li><a href="#">One more separated link</a></li>
+		          </ul>
+		        </li>
+		      </ul>
+		    </div>
+		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+		      <ul class="nav navbar-nav navbar-right">
+		        <li class="navLinks hidden-xs">
+		        	<ul class="navbar-nav navbar-right">
+			        	<li class="divider-vertical"></li>
+		        	</ul>
+		        </li>
+		        <li class="hidden-xs"><a href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: -10px;" src="assets/powered_by_big_bang_on_dark.png"></a></li>
+		        <li class="visible-xs"><a href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
+		      </ul>
+		    </div><!-- /.navbar-collapse -->
+		  </div><!-- /.container-fluid -->
+		</div>
+	</nav>
+
+<!-- Progress Bar -->
 	<div  id="progressBar"><div></div></div>
 	<div class="content" -webkit-overflow-scrolling: touch>
 		<div id="gameWorld">

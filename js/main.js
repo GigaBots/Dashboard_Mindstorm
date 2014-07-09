@@ -63,7 +63,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* === Dashboard control panel === */
 
-        var gameBoundX = 1132, gameBoundY = 595;
+        var gameBoundX = 1132, gameBoundY = 530;
         game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
@@ -131,14 +131,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // set motor frame positions
         if ( maxMotorRows === 1 ) {
             for ( var j = 1; j <= maxMotorColumns; j++ ) {
-                positionMotors[ letters[ j ] ] = { x : 286 + (j-1)*285, y : 66 }
+                positionMotors[ letters[ j ] ] = { x : 286 + (j-1)*285, y : 1 }
             }            
         }
         else {
             switch ( maxMotorColumns ) {
                 case 1:
                     for ( var i = 1; i <= maxMotorRows; i++ ) {
-                        positionMotors[ letters[ i ] ] = { x : 286, y : 66 + (i-1)*242 }
+                        positionMotors[ letters[ i ] ] = { x : 286, y : 1 + (i-1)*242 }
                     }
                     break;
                 case 2:
@@ -148,7 +148,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             else var subIndex = j + 1;
                             var index = subIndex * i - i;
                             if (index > numMotors) break;
-                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 66 + (i-1)*242 }
+                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
                         } // this is a sequence to position motors (laid out in a grid)
                     }
                     break;
@@ -168,7 +168,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             else if ( j === 3 ) subIndex = 4;
                             var index = subIndex * i -i;
                             if (index > numMotors) break;
-                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 66 + (i-1)*242 }
+                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
                         } // this is a sequence to position motors (laid out in a grid)
                     }
                     break;
@@ -181,7 +181,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var numCheckboxRows = 1 + Math.floor( (numMotors - 1) / 6 );
         var positionGangs = {}
         for ( var i = 1; i <= numGangs; i++ ) {
-            positionGangs[ i ] = { x : 856, y : 66 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+            positionGangs[ i ] = { x : 856, y : 1 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
         }
         if ( gangColumns !== '' && typeof gangRows === 'string' ) {
             var maxGangColumns = gangColumns;
@@ -195,11 +195,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
         var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
         var heightMax = Math.max( heightMotors, heightGangs );
-        if ( heightMax + 66 + 1 > gameBoundY ) {
-            game.height = gameBoundY = heightMax + 66 + 1;
+        if ( heightMax + 2 > gameBoundY ) {
+            game.height = gameBoundY = heightMax + 2;
         }
-        else if ( heightMax + 66 + 1 < gameBoundY ) {
-            game.height = gameBoundY = heightMax + 66 + 1;
+        else if ( heightMax + 2 < gameBoundY ) {
+            game.height = gameBoundY = heightMax + 2;
         }
 
         /* Motor object */
@@ -514,10 +514,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* System info */
-        var positionSystem = { x : 1, y : 66 }
+        var positionSystem = { x : 1, y : 2 }
 
         /* Touch sensor */
-        var positionTouch = { x : 1, y : 162 }
+        var positionTouch = { x : 1, y : 96 }
         var labelTouch, labelTouched, labelTouchCount, labelTouchTime, labelTouchTimeUnits;
         var touch = {
             count : 0, // total number of touches
@@ -529,19 +529,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var touchIndicator;
 
         /* Color sensor */
-        var positionColor = { x : 1, y : 258 }
+        var positionColor = { x : 1, y : 192 }
         var labelColor, labelColorName, labelIntensity, labelColorRGB;
         var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rgbDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
         var colorDisplay;
 
         /* IR sensor */
-        var positionIR = { x : 1, y : 356 }
+        var positionIR = { x : 1, y : 290 }
         var labelIR, labelIRDist, labelIRUnits;
         var IRDist = 0; 
         var IR = { IRDistDisplay : 0 }
 
         /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 1, y : 426 }
+        var positionUltrasonic = { x : 1, y : 360 }
         var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
         var ultrasonicDist = 0;
         var ultrasonic = { ultrasonicDistDisplay : 0 }
@@ -1090,13 +1090,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('sliderBar','assets/buttons/slider_bar.png', 72, 24);
             game.load.image('sliderBar2','assets/buttons/slider_bar_2.png', 72, 24);
             game.load.image('needle','assets/needle.png', 5, 26);
-            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm_on_dark.png', 48, 48);
-            game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
-            game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
             game.load.image('batteryOutline','assets/battery_outline.png',60,22);
-            game.load.image('testingButton','assets/buttons/testing_button.png',100,50);
+            game.load.image('testingButton','assets/buttons/testing_button.png',70,32);
             game.load.image('motorBar','assets/motor_bar.png',273,23);
             game.load.image('gangBar','assets/gang_bar.png',273,23);
             game.load.image('sensorBar','assets/sensor_bar.png',273,23);
@@ -1122,16 +1119,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }, this);
 
-          /* Title */
-            var dashboardTitle = game.add.sprite(75,8,'title');
-            var botLogo = game.add.sprite(10,9,'gigabotSm');
-            var poweredBy = game.add.sprite(917,8,'poweredBy');
-
           /* Translucent background/underlay */
             underlay = game.add.graphics(0,0);
             underlay.lineStyle( 1 + browserFix/4, 0x808080, .4);
             underlay.beginFill(0x808080,0.1);
-            underlay.drawRect(0, 66, gameBoundX, gameBoundY-66);
+            underlay.drawRect(0, 0, gameBoundX, gameBoundY);
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
@@ -1333,8 +1325,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
 
-          /* this button is for testing. it's invisible and in the upper right corner */   
-            getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
+          /* this button is for testing. it's invisible but it's placed above the battery level display */   
+            getKeyspaceButton = game.add.button(positionSystem.x+203, positionSystem.y+28,'testingButton', actionGetKeyspace);
 
         } // end create 
 
@@ -1779,7 +1771,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60, "stopped", statusStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                resume.resumeOverlay.drawRect(0, 66, gameBoundX, gameBoundY-66);
+                resume.resumeOverlay.drawRect(0, 0, gameBoundX, gameBoundY);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
                 botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)

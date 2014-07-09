@@ -525,20 +525,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var touchIndicator;
 
         /* Color sensor */
-        var positionColor = { x : 1, y : 260 }
-        var labelColor, labelColorValue, labelColorName, labelIntensity, labelColorR, labelColorB, labelColorG;
-        var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
-        var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rDisplay : 0, gDisplay : 0, bDisplay : 0, valueDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
+        var positionColor = { x : 1, y : 258 }
+        var labelColor, labelColorName, labelIntensity, labelColorRGB;
+        var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rgbDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
         var colorDisplay;
 
         /* IR sensor */
-        var positionIR = { x : 1, y : 358 }
+        var positionIR = { x : 1, y : 356 }
         var labelIR, labelIRDist, labelIRUnits;
         var IRDist = 0; 
         var IR = { IRDistDisplay : 0 }
 
         /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 1, y : 430 }
+        var positionUltrasonic = { x : 1, y : 428 }
         var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
         var ultrasonicDist = 0;
         var ultrasonic = { ultrasonicDistDisplay : 0 }
@@ -682,23 +681,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
         }
         function setColorSensor( val ) {
-            // if (val.mode === "RGB") {
-            //     game.world.remove(color.rDisplay);
-            //     game.world.remove(color.gDisplay);
-            //     game.world.remove(color.bDisplay);
-            //     //game.world.remove(color.valueDisplay);
-            //     //game.world.remove(color.nameDisplay);
-            //     //game.world.remove(color.lightIntensityDisplay);
-            //     color.r = val.values[0];
-            //     color.g = val.values[1];
-            //     color.b = val.values[2];
-            //     colorRDisplay = color.r;
-            //     colorGDisplay = color.g;
-            //     colorBDisplay = color.b;
-            //     color.rDisplay = game.add.text(positionColor.x+45, positionColor.y+24+browserFix, colorRDisplay.toFixed(0), dataOutputStyle);
-            //     //color.gDisplay = game.add.text(positionColor.x+65, positionColor.y+24+browserFix, colorGDisplay.toFixed(0), dataOutputStyle);
-            //     //color.bDisplay = game.add.text(positionColor.x+85, positionColor.y+24+browserFix, colorBDisplay.toFixed(0), dataOutputStyle);
-            // }
             if (val.mode === "ColorID") {
                 var colorNameDisplay;
                 var colorDisplayFill;
@@ -766,12 +748,28 @@ require(['BrowserBigBangClient'], function (bigbang) {
                         colorDisplayFill = '0x313233';
                         break;
                     }
-                color.nameDisplay = game.add.text(positionColor.x + 150, positionColor.y+24+browserFix,colorNameDisplay, dataOutputStyle);
+                color.nameDisplay = game.add.text(positionColor.x + 182, positionColor.y+29+browserFix,colorNameDisplay, dataOutputStyle);
                 colorDisplay = game.add.graphics(0,0);
                 colorDisplay.beginFill(colorDisplayFill, 1);
                 colorDisplay.lineStyle(1, 0xa3a3a3, 1);
-                colorDisplay.drawRect(positionColor.x+144, positionColor.y+50, 58, 20);
+                colorDisplay.drawRect(positionColor.x+179, positionColor.y+57, 58, 20);
             } 
+            else if (val.mode === "RGB") {
+                game.world.remove(color.rgbDisplay)
+                color.r = val.values[0];
+                color.g = val.values[1];
+                color.b = val.values[2];
+                var rgbDisplay = "(" + color.r.toFixed(0) + ", " + color.g.toFixed(0) + ", " + color.b.toFixed(0) + ")";
+                color.rgbDisplay = game.add.text(positionColor.x+46, positionColor.y+54+browserFix, rgbDisplay, dataOutputStyle);
+            }
+            else if (val.mode === "Ambient") {
+                game.world.remove(color.lightIntensityDisplay)
+                color.lightIntensity = val.values[0];
+                color.lightIntensityDisplay = game.add.text(positionColor.x+102, positionColor.y+29+browserFix, color.lightIntensity, dataOutputStyle);
+            }
+            else if (val.mode === "Red") {
+                //
+            }
         }
         function setIRSensor( val ) {
             game.world.remove(IR.IRDistDisplay);
@@ -780,7 +778,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             IR.IRDistDisplay = game.add.text(positionIR.x+67, positionIR.y+24+browserFix, IRDistDisplay.toFixed(2), dataOutputStyle);
         }
         function setUltrasonicSensor( val ) {
-            ultrasonicDist = val.distance;
+            ultrasonicDist = val.values[0];
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
             ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+67, positionUltrasonic.y+24+browserFix, ultrasonicDistDisplay.toFixed(1), dataOutputStyle);
@@ -990,22 +988,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 for ( var s in botData.ev3.sensors ) {
                     if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3IRSensor' ) {
                         game.world.remove(sensorIDLabels.IR);
-                        sensorIDLabels.IR = game.add.text(positionIR.x+frames['IR'].width-25, positionIR.y+4+browserFix, s, statusStyle );
+                        sensorIDLabels.IR = game.add.text(positionIR.x+frames['IR'].width-25, positionIR.y+1+browserFix, s, statusStyle );
                         if ( typeof sensorOverlays.IR !== "undefined" ) sensorOverlays.IR.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3TouchSensor' ) {
                         game.world.remove(sensorIDLabels.touch);
-                        sensorIDLabels.touch = game.add.text(positionTouch.x+frames['touch'].width-25, positionTouch.y+4+browserFix, s, statusStyle );
+                        sensorIDLabels.touch = game.add.text(positionTouch.x+frames['touch'].width-25, positionTouch.y+1+browserFix, s, statusStyle );
                         if ( typeof sensorOverlays.touch !== "undefined" ) sensorOverlays.touch.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3ColorSensor' ) {
                         game.world.remove(sensorIDLabels.color);
-                        sensorIDLabels.color = game.add.text(positionColor.x+frames['color'].width-25, positionColor.y+4+browserFix, s, statusStyle );          
+                        sensorIDLabels.color = game.add.text(positionColor.x+frames['color'].width-25, positionColor.y+1+browserFix, s, statusStyle );          
                         if ( typeof sensorOverlays.color !== "undefined" ) sensorOverlays.color.destroy();
                     }
                     else if ( botData.ev3.sensors[ s ].sensorType === 'lejos.hardware.sensor.EV3UltrasonicSensor' ) {
                         game.world.remove(sensorIDLabels.ultrasonic);
-                        sensorIDLabels.ultrasonic = game.add.text(positionUltrasonic.x+frames['ultrasonic'].width-25, positionUltrasonic.y+4+browserFix, s, statusStyle );
+                        sensorIDLabels.ultrasonic = game.add.text(positionUltrasonic.x+frames['ultrasonic'].width-25, positionUltrasonic.y+1+browserFix, s, statusStyle );
                         if ( typeof sensorOverlays.ultrasonic !== "undefined" ) sensorOverlays.ultrasonic.destroy();
                     }
                 }
@@ -1124,7 +1122,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
-            frames[ 'touch' ] = new Frame( game, 'touch', positionTouch.x, positionTouch.y, 275, 88);
+            frames[ 'touch' ] = new Frame( game, 'touch', positionTouch.x, positionTouch.y, 275, 86);
             frames[ 'color' ] = new Frame( game, 'color', positionColor.x, positionColor.y, 275, 88);
             frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 62);
             frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 62);
@@ -1159,9 +1157,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelTouchTimeUnits = game.add.text(positionTouch.x+210, positionTouch.y+57+browserFix, "seconds", labelStyle);
 
             labelColor = game.add.text(positionColor.x+8, positionColor.y+1+browserFix, "Color Sensor", titleStyle);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27+browserFix, "RGB:", labelStyle);
-            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27+browserFix, "Color:", labelStyle);
-            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50+browserFix, "Light Intensity:", labelStyle);
+            labelColorRGB = game.add.text(positionColor.x+12, positionColor.y+57+browserFix, "RGB:", labelStyle);
+            labelColorName = game.add.text(positionColor.x+138, positionColor.y+32+browserFix, "Color:", labelStyle);
+            labelIntensity = game.add.text(positionColor.x+12, positionColor.y+32+browserFix, "Light Intensity:", labelStyle);
 
             labelIR = game.add.text(positionIR.x+8, positionIR.y+1+browserFix, "Infrared Sensor", titleStyle);
             labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27+browserFix, "Distance:", labelStyle);
@@ -1191,7 +1189,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             colorDisplay = game.add.graphics(0,0);
             colorDisplay.beginFill(0x000000, 0.05);
             colorDisplay.lineStyle(1, 0xa3a3a3, 1);
-            colorDisplay.drawRect(positionColor.x+144, positionColor.y+50, 58, 20);
+            colorDisplay.drawRect(positionColor.x+179, positionColor.y+57, 58, 20);
           /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionSystem.x+204, positionSystem.y+34, 'batteryOutline');
             batteryLevelFill = game.add.graphics(0,0);

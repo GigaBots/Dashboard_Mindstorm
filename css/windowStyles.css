@@ -45,7 +45,8 @@ body {
 }
 .navbar .divider-vertical {
 height: 38px;
-margin: 0 9px;
+margin: 0 9px 0 9px;
+padding-right: 10px;
 border-right: 1px solid #ffffff;
 border-left: 1px solid #f2f2f2;
 }

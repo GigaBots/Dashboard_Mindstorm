@@ -1130,7 +1130,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* Translucent background/underlay */
             underlay = game.add.graphics(0,0);
             underlay.lineStyle( 1 + browserFix/4, 0x808080, .4);
-            underlay.beginFill(0x00000,0.12);
+            underlay.beginFill(0x808080,0.1);
             underlay.drawRect(0, 66, gameBoundX, gameBoundY-66);
 
           /* Frames */

@@ -63,7 +63,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* === Dashboard control panel === */
 
-        var gameBoundX = 1132, gameBoundY = 600;
+        var gameBoundX = 1132, gameBoundY = 595;
         game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
@@ -192,11 +192,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         //resize game window height if we have more than 2 rows
-        var heightMotors = maxMotorRows * ( 232 + 10 );
-        var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 );
+        var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
+        var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
         var heightMax = Math.max( heightMotors, heightGangs );
-        if ( heightMax + 66 - 4 > gameBoundY ) game.height = gameBoundY = heightMax + 66 - 4;
-        else if ( heightMax + 66 - 4 < gameBoundY ) game.height = gameBoundY = heightMax + 66 - 4;
+        if ( heightMax + 66 + 1 > gameBoundY ) {
+            game.height = gameBoundY = heightMax + 66 + 1;
+        }
+        else if ( heightMax + 66 + 1 < gameBoundY ) {
+            game.height = gameBoundY = heightMax + 66 + 1;
+        }
 
         /* Motor object */
         var motors = {}
@@ -472,7 +476,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         Frame = function ( game, recipient, x, y, width, height ) {
             this.recipient = game.add.graphics(0,0);
             this.recipient.lineStyle( 1 + browserFix/4, 0xa3a3a3, 1 - browserFix/10);
-            this.recipient.beginFill( 0x313233, 0.68);
+            this.recipient.beginFill( 0x313233, 0.60);
             this.recipient.drawRect( x, y, width, height );
             this.width = width;
             this.height = height;
@@ -555,6 +559,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Button for testing */
         var getKeyspaceButton;
+
+        /* Translucent background/underlay */
+        var underlay;
 
         /* === Text editor stuff === */
         var userType;
@@ -1119,6 +1126,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var dashboardTitle = game.add.sprite(75,8,'title');
             var botLogo = game.add.sprite(10,9,'gigabotSm');
             var poweredBy = game.add.sprite(917,8,'poweredBy');
+
+          /* Translucent background/underlay */
+            underlay = game.add.graphics(0,0);
+            underlay.lineStyle( 1 + browserFix/4, 0x808080, .4);
+            underlay.beginFill(0x00000,0.12);
+            underlay.drawRect(0, 66, gameBoundX, gameBoundY-66);
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
@@ -1766,7 +1779,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60, "stopped", statusStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                resume.resumeOverlay.drawRect(0, 66, gameBoundX, gameBoundY-69);
+                resume.resumeOverlay.drawRect(0, 66, gameBoundX, gameBoundY-66);
                 resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
                 this.game.input.keyboard.disabled = true;
                 botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)

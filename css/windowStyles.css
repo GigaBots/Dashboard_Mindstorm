@@ -45,7 +45,7 @@ body {
 	padding: 0;
 	border: 0;
 	
-	width: 960px;
+	width: 1132px;
 	/*height: 653px;
 	*/
 	overflow: hidden;
@@ -107,9 +107,9 @@ body {
     left: calc(50% - 466px);
 }
 #repoButton {
-	left: -moz-calc(50% - 455px);
-	left: -webkit-calc(50% - 455px);
-	left: calc(50% - 455px);
+	left: -moz-calc(50% - 466px);
+	left: -webkit-calc(50% - 466px);
+	left: calc(50% - 466px);
 }
 
 

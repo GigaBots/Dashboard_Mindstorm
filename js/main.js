@@ -512,27 +512,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* System info */
         var positionSystem = { x : 1, y : 66 }
 
-        /* IR sensor */
-        var positionIR = { x : 1, y : 290 }
-        var labelIR, labelIRDist, labelIRUnits;
-        var IRDist = 0; 
-        var IR = { IRDistDisplay : 0 }
-
-        /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 1, y : 510 }
-        var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
-        var ultrasonicDist = 0;
-        var ultrasonic = { ultrasonicDistDisplay : 0 }
-
-        /* Color sensor */
-        var positionColor = { x : 1, y : 385 }
-        var labelColor, labelColorValue, labelColorName, labelIntensity, labelColorR, labelColorB, labelColorG;
-        var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
-        var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rDisplay : 0, gDisplay : 0, bDisplay : 0, valueDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
-        var colorDisplay;
-
         /* Touch sensor */
-        var positionTouch = { x : 1, y : 175 }
+        var positionTouch = { x : 1, y : 162 }
         var labelTouch, labelTouched, labelTouchCount, labelTouchTime, labelTouchTimeUnits;
         var touch = {
             count : 0, // total number of touches
@@ -542,6 +523,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             timeDisplay : 0 //display total time pressed
         } 
         var touchIndicator;
+
+        /* Color sensor */
+        var positionColor = { x : 1, y : 260 }
+        var labelColor, labelColorValue, labelColorName, labelIntensity, labelColorR, labelColorB, labelColorG;
+        var colorRDisplay = 0, colorGDisplay = 0, colorBDisplay = 0;
+        var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rDisplay : 0, gDisplay : 0, bDisplay : 0, valueDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
+        var colorDisplay;
+
+        /* IR sensor */
+        var positionIR = { x : 1, y : 358 }
+        var labelIR, labelIRDist, labelIRUnits;
+        var IRDist = 0; 
+        var IR = { IRDistDisplay : 0 }
+
+        /* Ultrasonic sensor */
+        var positionUltrasonic = { x : 1, y : 430 }
+        var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
+        var ultrasonicDist = 0;
+        var ultrasonic = { ultrasonicDistDisplay : 0 }
 
         /* Battery level sensor */
         var labelBattery, batteryOutline;
@@ -656,10 +656,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.world.remove(touch.countDisplay);
                 touch.count++;
                 var countDisplay = touch.count.toString();
-                if ( countDisplay.length > 4 ) {
-                    countDisplay = countDisplay.slice(countDisplay.length-4, countDisplay.length);
+                if ( countDisplay.length > 7 ) {
+                    countDisplay = countDisplay.slice(countDisplay.length-7, countDisplay.length);
                 }
-                touch.countDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24+browserFix, countDisplay, dataOutputStyle);
+                touch.countDisplay = game.add.text(positionTouch.x+198, positionTouch.y+29+browserFix, countDisplay, dataOutputStyle);
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touch.count, 'touchTime' : touch.time });
             }
             else {
@@ -667,13 +667,16 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 touch.time = touch.time + (t2 - touch.t1)/1000; // current total touch time plus delta t (in seconds)
                 game.world.remove(touch.timeDisplay);
                 var timeDisplay = (touch.time.toFixed(2)).toString();
-                if ( timeDisplay.length > 6 ) {
-                    timeDisplay = timeDisplay.slice(timeDisplay.length-6, timeDisplay.length);
-                }
-                if ( timeDisplay.length > 7 ) {
-                    timeDisplay = timeDisplay.slice(timeDisplay.length-7, timeDisplay.length-3);
-                }               
-                touch.timeDisplay = game.add.text(positionTouch.x+125, positionTouch.y+47+browserFix, timeDisplay, dataOutputStyle);
+                if ( timeDisplay.length > 8 ) {
+                    timeDisplay = touch.time.toFixed(1).toString();
+                    if ( timeDisplay.length > 8 ) {
+                        timeDisplay = touch.time.toFixed(0).toString();
+                        if ( timeDisplay.length > 8 ) {
+                            timeDisplay = timeDisplay.slice(0, 8);
+                        }
+                    }
+                } 
+                touch.timeDisplay = game.add.text(positionTouch.x+132, positionTouch.y+54+browserFix, timeDisplay, dataOutputStyle); 
                 channel.getKeyspace(botId).put('touchDash', { 'touchCount' : touch.count, 'touchTime' : touch.time });                
                 touchIndicator.animations.play('up');
             }
@@ -926,19 +929,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof(val) !== "undefined" ) {
                 touch.count = val.touchCount;
                 var countDisplay = touch.count.toString();
-                if ( countDisplay.length > 4 ) {
-                    countDisplay = countDisplay.slice(countDisplay.length-4, countDisplay.length);
+                if ( countDisplay.length > 7 ) {
+                    countDisplay = countDisplay.slice(countDisplay.length-7, countDisplay.length);
                 }
-                touch.countDisplay = game.add.text(positionTouch.x+179, positionTouch.y+24+browserFix, countDisplay, dataOutputStyle);
+                touch.countDisplay = game.add.text(positionTouch.x+198, positionTouch.y+29+browserFix, countDisplay, dataOutputStyle);
                 touch.time = val.touchTime;
                 var timeDisplay = (touch.time.toFixed(2)).toString();
-                if ( timeDisplay.length > 6 ) {
-                    timeDisplay = timeDisplay.slice(timeDisplay.length-6, timeDisplay.length);
-                }
-                if ( timeDisplay.length > 7 ) {
-                    timeDisplay = timeDisplay.slice(timeDisplay.length-7, timeDisplay.length-3);
+                if ( timeDisplay.length > 8 ) {
+                    timeDisplay = touch.time.toFixed(1).toString();
+                    if ( timeDisplay.length > 8 ) {
+                        timeDisplay = touch.time.toFixed(0).toString();
+                        if ( timeDisplay.length > 8 ) {
+                            timeDisplay = timeDisplay.slice(0, 8);
+                        }
+                    }
                 } 
-                touch.timeDisplay = game.add.text(positionTouch.x+125, positionTouch.y+47+browserFix, timeDisplay, dataOutputStyle);                
+                touch.timeDisplay = game.add.text(positionTouch.x+132, positionTouch.y+54+browserFix, timeDisplay, dataOutputStyle);                
             }
             console.log("initial touch count set to " + touch.count + " and total time pressed to " + touch.time);
         }
@@ -1118,18 +1124,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
-            frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 62);
-            frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 62);
             frames[ 'touch' ] = new Frame( game, 'touch', positionTouch.x, positionTouch.y, 275, 88);
             frames[ 'color' ] = new Frame( game, 'color', positionColor.x, positionColor.y, 275, 88);
+            frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 62);
+            frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 62);
             //frames[ 'screen' ] = new Frame( game, 'screen', positionScreen.x, positionScreen.y, 275, 88);
 
           /* Top Bars */
             topBars[ 'system' ] = game.add.sprite( positionSystem.x+1, positionSystem.y+1,'sensorBar');
-            topBars[ 'IR' ] = game.add.sprite( positionIR.x+1, positionIR.y+1,'sensorBar');
-            topBars[ 'ultrasonic' ] = game.add.sprite( positionUltrasonic.x+1, positionUltrasonic.y+1,'sensorBar');
             topBars[ 'touch' ] = game.add.sprite( positionTouch.x+1, positionTouch.y+1,'sensorBar');
             topBars[ 'color' ] = game.add.sprite( positionColor.x+1, positionColor.y+1,'sensorBar');
+            topBars[ 'IR' ] = game.add.sprite( positionIR.x+1, positionIR.y+1,'sensorBar');
+            topBars[ 'ultrasonic' ] = game.add.sprite( positionUltrasonic.x+1, positionUltrasonic.y+1,'sensorBar');
             //topBars[ 'screen' ] = game.add.sprite( positionScreen.x+1, positionScreen.y+1,'sensorBar');
 
           /* Labels */
@@ -1147,10 +1153,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
 
             labelTouch = game.add.text(positionTouch.x+8, positionTouch.y+1+browserFix, "Touch Sensor", titleStyle);
-            labelTouched = game.add.text(positionTouch.x+10, positionTouch.y+27+browserFix, "Touched", labelStyle);
-            labelTouchCount = game.add.text(positionTouch.x+94, positionTouch.y+27+browserFix, "Total Touches:", labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
-            labelTouchTime = game.add.text(positionTouch.x+10, positionTouch.y+50+browserFix, "Total Time Pressed:", labelStyle);
-            labelTouchTimeUnits = game.add.text(positionTouch.x+180, positionTouch.y+50+browserFix, "sec", labelStyle);
+            labelTouched = game.add.text(positionTouch.x+12, positionTouch.y+32+browserFix, "Touched", labelStyle);
+            labelTouchCount = game.add.text(positionTouch.x+108, positionTouch.y+32+browserFix, "Total Touches:", labelStyle); // there is room for 4 characters, so 0 to 9,999. No touching more than that!
+            labelTouchTime = game.add.text(positionTouch.x+12, positionTouch.y+57+browserFix, "Total Time Pressed:", labelStyle);
+            labelTouchTimeUnits = game.add.text(positionTouch.x+210, positionTouch.y+57+browserFix, "seconds", labelStyle);
+
+            labelColor = game.add.text(positionColor.x+8, positionColor.y+1+browserFix, "Color Sensor", titleStyle);
+            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27+browserFix, "RGB:", labelStyle);
+            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27+browserFix, "Color:", labelStyle);
+            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50+browserFix, "Light Intensity:", labelStyle);
 
             labelIR = game.add.text(positionIR.x+8, positionIR.y+1+browserFix, "Infrared Sensor", titleStyle);
             labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27+browserFix, "Distance:", labelStyle);
@@ -1159,11 +1170,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelUltrasonic = game.add.text(positionUltrasonic.x+8+browserFix, positionUltrasonic.y+1+browserFix, "Ultrasonic Sensor", titleStyle);
             labelUltrasonicDist = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+27+browserFix, "Distance:", labelStyle);
             labelUltrasonicUnits = game.add.text(positionUltrasonic.x+121+browserFix, positionUltrasonic.y+27+browserFix, "cm", labelStyle);
-
-            labelColor = game.add.text(positionColor.x+8, positionColor.y+1+browserFix, "Color Sensor", titleStyle);
-            labelColorValue = game.add.text(positionColor.x+10, positionColor.y+27+browserFix, "RGB:", labelStyle);
-            labelColorName = game.add.text(positionColor.x+106, positionColor.y+27+browserFix, "Color:", labelStyle);
-            labelIntensity = game.add.text(positionColor.x+10, positionColor.y+50+browserFix, "Light Intensity:", labelStyle);
             
             //labelScreen = game.add.text(positionScreen.x+8, positionScreen.y+1+browserFix, "LCD Screen", titleStyle);
 
@@ -1177,7 +1183,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
           /* Touch Sensor */
-            touchIndicator = game.add.sprite(positionTouch.x+64, positionTouch.y+25, 'touchIndicator');
+            touchIndicator = game.add.sprite(positionTouch.x+68, positionTouch.y+30, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');

@@ -537,7 +537,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var IR = { IRDistDisplay : 0 }
 
         /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 1, y : 428 }
+        var positionUltrasonic = { x : 1, y : 426 }
         var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
         var ultrasonicDist = 0;
         var ultrasonic = { ultrasonicDistDisplay : 0 }
@@ -760,7 +760,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 color.g = val.values[1];
                 color.b = val.values[2];
                 var rgbDisplay = "(" + color.r.toFixed(0) + ", " + color.g.toFixed(0) + ", " + color.b.toFixed(0) + ")";
-                color.rgbDisplay = game.add.text(positionColor.x+46, positionColor.y+54+browserFix, rgbDisplay, dataOutputStyle);
+                color.rgbDisplay = game.add.text(positionColor.x+45, positionColor.y+54+browserFix, rgbDisplay, dataOutputStyle);
             }
             else if (val.mode === "Ambient") {
                 game.world.remove(color.lightIntensityDisplay)
@@ -775,13 +775,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.world.remove(IR.IRDistDisplay);
             IRDist = val.values[0];
             IRDistDisplay = IRDist;
-            IR.IRDistDisplay = game.add.text(positionIR.x+67, positionIR.y+24+browserFix, IRDistDisplay.toFixed(2), dataOutputStyle);
+            IR.IRDistDisplay = game.add.text(positionIR.x+70, positionIR.y+29+browserFix, IRDistDisplay.toFixed(2), dataOutputStyle);
         }
         function setUltrasonicSensor( val ) {
             ultrasonicDist = val.values[0];
             game.world.remove(ultrasonic.ultrasonicDistDisplay);
             ultrasonicDistDisplay = ultrasonicDist;
-            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+67, positionUltrasonic.y+24+browserFix, ultrasonicDistDisplay.toFixed(1), dataOutputStyle);
+            ultrasonic.ultrasonicDistDisplay = game.add.text(positionUltrasonic.x+70, positionUltrasonic.y+29+browserFix, ultrasonicDistDisplay.toFixed(2), dataOutputStyle);
         }
         function setBatteryLevel( val ) {
             battery.level = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
@@ -1124,8 +1124,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
             frames[ 'touch' ] = new Frame( game, 'touch', positionTouch.x, positionTouch.y, 275, 86);
             frames[ 'color' ] = new Frame( game, 'color', positionColor.x, positionColor.y, 275, 88);
-            frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 62);
-            frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 62);
+            frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 60);
+            frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 60);
             //frames[ 'screen' ] = new Frame( game, 'screen', positionScreen.x, positionScreen.y, 275, 88);
 
           /* Top Bars */
@@ -1162,12 +1162,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelIntensity = game.add.text(positionColor.x+12, positionColor.y+32+browserFix, "Light Intensity:", labelStyle);
 
             labelIR = game.add.text(positionIR.x+8, positionIR.y+1+browserFix, "Infrared Sensor", titleStyle);
-            labelIRDist = game.add.text(positionIR.x+10, positionIR.y+27+browserFix, "Distance:", labelStyle);
-            labelIRUnits = game.add.text(positionIR.x+121, positionIR.y+27+browserFix, "cm", labelStyle);
+            labelIRDist = game.add.text(positionIR.x+12, positionIR.y+32+browserFix, "Distance:", labelStyle);
+            labelIRUnits = game.add.text(positionIR.x+128, positionIR.y+32+browserFix, "cm", labelStyle);
 
             labelUltrasonic = game.add.text(positionUltrasonic.x+8+browserFix, positionUltrasonic.y+1+browserFix, "Ultrasonic Sensor", titleStyle);
-            labelUltrasonicDist = game.add.text(positionUltrasonic.x+10+browserFix, positionUltrasonic.y+27+browserFix, "Distance:", labelStyle);
-            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+121+browserFix, positionUltrasonic.y+27+browserFix, "cm", labelStyle);
+            labelUltrasonicDist = game.add.text(positionUltrasonic.x+12+browserFix, positionUltrasonic.y+32+browserFix, "Distance:", labelStyle);
+            labelUltrasonicUnits = game.add.text(positionUltrasonic.x+128+browserFix, positionUltrasonic.y+32+browserFix, "cm", labelStyle);
             
             //labelScreen = game.add.text(positionScreen.x+8, positionScreen.y+1+browserFix, "LCD Screen", titleStyle);
 

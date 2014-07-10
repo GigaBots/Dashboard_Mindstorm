@@ -37,7 +37,8 @@ var gameStates = {}
 for ( var k in botStore ) {
     var para = document.createElement( "li" ); // create list element
     var node = document.createTextNode( botStore[ k ] ); // create text (the bot name for each bot id in the botStore associative array)
-    para.setAttribute("id", "botName"); // "botName" id to the new element
+    para.setAttribute("class", "botName"); // "botName" class to the new element
+    para.setAttribute("id", k ); // set id of the new element to be the bot's id
     para.appendChild( node ); // append the text to the new list element
     var element = document.getElementById( "botSelectorList" ); // get the parent dropdown menu element, with id "botSelectorList"
     var child = document.getElementById( "dropdownDivider" ); // get the element we want to place the new bot above
@@ -102,27 +103,33 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 // add already connected bots to the drop-down menu
                 var para = document.createElement( "li" );
                 var node = document.createTextNode( botStore[ joined ] );
-                para.setAttribute("id", "botName");
+                para.setAttribute("class", "botName");
+                para.setAttribute("id", joined );
                 para.appendChild( node );
                 var element = document.getElementById( "botSelectorList" );
                 var child = document.getElementById( "dropdownDivider" );
-                element.insertBefore(para,child);
+                element.insertBefore( para, child );
             }
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
                 // add newly connected bots to the drop-down menu
                 var para = document.createElement( "li" );
                 var node = document.createTextNode( botStore[ joined ] );
-                para.setAttribute("id", "botName");
+                para.setAttribute("class", "botName");
+                para.setAttribute("id", joined );
                 para.appendChild( node );
                 var element = document.getElementById( "botSelectorList" );
                 var child = document.getElementById( "dropdownDivider" );
-                element.insertBefore(para,child);
+                element.insertBefore( para, child );
             });
             console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
-            delete botStore[left];
+            // remove bots that have disconnected
+            var parent = document.getElementById( "botSelectorList" );
+            var child = document.getElementById( left );
+            parent.removeChild( child );
+            delete botStore[ left ];
         });
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }

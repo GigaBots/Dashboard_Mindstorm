@@ -35,24 +35,17 @@ body {
 	color: #DFDFDF;
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 }
-.navbar .container-fluid .navbarMiddle .nav .dropdown {
+/*.navbar .container-fluid .navbarMiddle .nav .dropdown {
 	padding-top: 7px;
 	padding-left: 10px;
-}
+}*/
 .navbar .container-fluid .navbarMiddle .nav .dropdown .dropdown-toggle {
 	color: #DFDFDF;
 	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
 }
-.navbar .container-fluid .collapse .nav .navLinks {
+/*.navbar .container-fluid .collapse .nav .navLinks {
 	padding-top: 10px;
 	padding-right: 5px;
-}
-
-
-/*@media (max-width: 767px) {
-.navbar-collapse .nav > .divider-vertical {
-    display: none;
-  }
 }*/
 
 
@@ -110,6 +103,7 @@ body {
     border-top-color: #555;
     border-bottom-color: #555;
 }
+
 /* mobile version */
 .navbar-custom .navbar-toggle {
     border-color: #202020;
@@ -129,6 +123,13 @@ body {
     .navbar-custom .navbar-nav .open .dropdown-menu > li > a:focus {
         color: #282828;
     }
+}
+
+
+/* bot-selector drop-down menu */
+#botName {
+margin-top: -10px;
+margin-bottom: -10px;
 }
 
 /* Progress bar

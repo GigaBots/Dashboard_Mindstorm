@@ -21,13 +21,18 @@ updateBar(24, $("#progressBar"));
 var client;
 var game;
 var restartState;
-var botStore = { // client id (GUID) : bot name
-    'fakeBotId1' : 'Fake Bot 1',
-    'fakeBotId2' : 'Fake Bot 2'
-}
+// var botStore = { // client id (GUID) : bot name
+//     'fakeBotId1' : 'Fake Bot 1',
+//     'fakeBotId2' : 'Fake Bot 2'
+// } // Definen in index.html script now!
+console.dir(botStore);
+
 var botId = "", botIndex = 0;
 
 var gameStates = {}
+
+
+//document.querySelector('#botSelector').innerHTML = botStore['fakeBotId1'];
 
 
 require.config({

@@ -21,11 +21,10 @@ updateBar(24, $("#progressBar"));
 var client;
 var game;
 var restartState;
-// var botStore = { // client id (GUID) : bot name
-//     'fakeBotId1' : 'Fake Bot 1',
-//     'fakeBotId2' : 'Fake Bot 2'
-// } // Definen in index.html script now!
-console.dir(botStore);
+var botStore = { // client id (GUID) : bot name
+    'fakeBotId1' : 'Fake Bot 1',
+    'fakeBotId2' : 'Fake Bot 2'
+}
 
 var botId = "", botIndex = 0;
 
@@ -34,6 +33,16 @@ var gameStates = {}
 
 //document.querySelector('#botSelector').innerHTML = botStore['fakeBotId1'];
 
+// add bots to drop-down menu in navbar (here, it's just for bots that are declared in botStore - the fakebots)
+for ( var k in botStore ) {
+    var para = document.createElement( "li" ); // create list element
+    var node = document.createTextNode( botStore[ k ] ); // create text (the bot name for each bot id in the botStore associative array)
+    para.setAttribute("id", "botName"); // "botName" id to the new element
+    para.appendChild( node ); // append the text to the new list element
+    var element = document.getElementById( "botSelectorList" ); // get the parent dropdown menu element, with id "botSelectorList"
+    var child = document.getElementById( "dropdownDivider" ); // get the element we want to place the new bot above
+    element.insertBefore(para,child); // append the new list element to the dropdown menu element, inserting it above the divider element
+}
 
 require.config({
     baseUrl: 'js',
@@ -89,10 +98,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log('join ' + joined);
             var roboInfo = channel.getKeyspace(joined).get('robot');
             if( roboInfo ) {
-               botStore[joined] = roboInfo.ev3.name;
+                botStore[joined] = roboInfo.ev3.name;
+                // add already connected bots to the drop-down menu
+                var para = document.createElement( "li" );
+                var node = document.createTextNode( botStore[ joined ] );
+                para.setAttribute("id", "botName");
+                para.appendChild( node );
+                var element = document.getElementById( "botSelectorList" );
+                var child = document.getElementById( "dropdownDivider" );
+                element.insertBefore(para,child);
             }
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
+                // add newly connected bots to the drop-down menu
+                var para = document.createElement( "li" );
+                var node = document.createTextNode( botStore[ joined ] );
+                para.setAttribute("id", "botName");
+                para.appendChild( node );
+                var element = document.getElementById( "botSelectorList" );
+                var child = document.getElementById( "dropdownDivider" );
+                element.insertBefore(para,child);
             });
             console.dir(botStore);
         }, function(left) {
@@ -926,6 +951,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             botDropdown.input.start();
             botDropdown.setFrames(1,0,2,0);
             botDropdown.input.useHandCursor = true;
+            var para = document.createElement( "li" );
+            var node = document.createTextNode( botStore[ newBotId ] );
+            para.setAttribute("id", "botName");
+            para.appendChild( node );
+            var element = document.getElementById( "botSelectorList" );
+            element.appendChild(para); 
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData( robotClientId ) {

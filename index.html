@@ -35,28 +35,13 @@
 			      	<li class="dropdown">
 						<a href="#" class="dropdown-toggle" id="botSelector" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
 						<ul class="dropdown-menu" id="botSelectorList">
-							<script>
-								var botStore = { // client id (GUID) : bot name
-								    'fakeBotId1' : 'Fake Bot 1',
-								    'fakeBotId2' : 'Fake Bot 2'
-								}
-								for ( var bot in botStore ) {
-									var para = document.createElement( "li" );
-									var node = document.createTextNode( botStore[ bot ] );
-									para.setAttribute("id", "botName");
-									para.appendChild( node );
-
-									var element = document.getElementById( "botSelectorList" );
-									element.appendChild(para);
-								}
-							</script>
-				            <li>Bot 1</li>
-				            <li><a href="#">Bot 2</a></li>
-				            <li><a href="#">Bot 2</a></li>
+				            <li>Bot 1 (not a link)</li>
+				            <li><a href="#">Bot 2 (link)</a></li>
+				            <li><a href="#">Bot 3 (link)</a></li>
+				            <li class="divider" id="dropdownDivider"></li>
+				            <li><a href="#">Current Bot (link)</a></li>
 				            <li class="divider"></li>
-				            <li><a href="#">Current Bot</a></li>
-				            <li class="divider"></li>
-				            <li><a href="#">Add New Bot</a></li>
+				            <li><a href="#">Add New Bot (link)</a></li>
 			            </ul>
 			        </li>
 			    <!-- other links -->

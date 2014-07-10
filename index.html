@@ -20,75 +20,75 @@
 </head>
 
 <body>
-	<nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+<!-- navigation bar -->
+	<nav class="navbar navbar-custom navbar-static-top" role="navigation">
 		<div class="container-fluid">
 			<div class="navbar-header">
-				<a class="navbar-brand hidden-xs" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -10px;" src="assets/gigabots_dashboard_logo_on_dark.png"></a>
+			<!-- gigabots dashboard logo and title -->
+				<a class="navbar-brand hidden-xs" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png"></a>
 				<a class="navbar-brand visible-xs" id="titleSmall" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>
 			</div>
-		    <!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="navbarMiddle">
-		   	  <ul class="nav navbar-nav">
-		        <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
-		          <ul class="dropdown-menu">
-		            <li><a href="#">Bot 1</a></li>
-		            <li><a href="#">Bot 2</a></li>
-		            <li><a href="#">Bot 2</a></li>
-		            <li class="divider"></li>
-		            <li><a href="#">Current Bot</a></li>
-		            <li class="divider"></li>
-		            <li><a href="#">Add New Bot</a></li>
-		          </ul>
-		        </li>
-		      </ul>
-		    </div>
+		<!-- Collect the nav links, forms, and other content for toggling -->
 		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav navbar-right">
-		        <li class="navLinks hidden-xs">
-		        	<ul class="navbar-nav navbar-right">
-			        	<li class="divider-vertical"></li>
-		        	</ul>
-		        </li>
-		        <li class="hidden-xs"><a href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: -10px;" src="assets/powered_by_big_bang_on_dark.png"></a></li>
-		        <li class="visible-xs"><a href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
-		      </ul>
+		    	<ul class="nav navbar-nav navbar-right">
+		    	<!-- bot selector drop-down -->
+			      	<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
+						<ul class="dropdown-menu">
+				            <li><a href="#">Bot 1</a></li>
+				            <li><a href="#">Bot 2</a></li>
+				            <li><a href="#">Bot 2</a></li>
+				            <li class="divider"></li>
+				            <li><a href="#">Current Bot</a></li>
+				            <li class="divider"></li>
+				            <li><a href="#">Add New Bot</a></li>
+			            </ul>
+			        </li>
+			    <!-- other links -->
+			        <li><a href="#">Directions for Use</a></li>
+		        	<li><a href="#">About</a></li>
+		        <!-- powered by big bang -->
+		        	<li class="hidden-xs" id="poweredBy"><a href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: -12px;" src="assets/powered_by_big_bang_on_dark.png"></a></li>
+		        	<li class="visible-xs" id="poweredBy"><a href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
+		        </ul>
 		    </div><!-- /.navbar-collapse -->
-		  </div><!-- /.container-fluid -->
-		</div>
+		</div><!-- /.container-fluid -->
 	</nav>
 
-<!-- Progress Bar -->
-	<div  id="progressBar"><div></div></div>
+<!-- progress bar -->
+	<div  id="progressBar">
+		<div></div>
+	</div>
+<!-- page content -->
 	<div class="content" -webkit-overflow-scrolling: touch>
+	<!-- control panel in html5 canvas -->
 		<div id="gameWorld">
 			<script src="js/phaser.min.js"></script>
 			<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
 			<script src="js/jquery.min.js"></script>
 			<script type="text/javascript" src="js/jquery.mb.browser.min.js"></script>
     		<script type="text/javascript">
-    			//browser detection to fix formatting/layout in Firefox
+    		/* browser detection to fix formatting/layout in Firefox */
 		        var browserFix = 0;
 		        $(function(){
 		            var txt = ''
-		                    +'jQuery.browser.ua  = '+jQuery.browser.ua+'<br>'
-		                    +'jQuery.browser.name  = '+jQuery.browser.name+'<br>'
-		                    +'jQuery.browser.fullVersion  = '+jQuery.browser.fullVersion+'<br>'
-		                    +'jQuery.browser.version = '+jQuery.browser.version+'<br><br><br>'
-		                    +'jQuery.browser.msie = '+jQuery.browser.msie+'<br>'
-		                    +'jQuery.browser.mozilla = '+jQuery.browser.mozilla+'<br>'
-		                    +'jQuery.browser.opera = '+jQuery.browser.opera+'<br>'
-		                    +'jQuery.browser.webkit = '+jQuery.browser.webkit+'<br>'
-		                    +'jQuery.browser.safari = '+jQuery.browser.safari+'<br>'
-		                    +'jQuery.browser.chrome = '+jQuery.browser.chrome+'<br>';
-
+	                    +'jQuery.browser.ua  = '+jQuery.browser.ua+'<br>'
+	                    +'jQuery.browser.name  = '+jQuery.browser.name+'<br>'
+	                    +'jQuery.browser.fullVersion  = '+jQuery.browser.fullVersion+'<br>'
+	                    +'jQuery.browser.version = '+jQuery.browser.version+'<br><br><br>'
+	                    +'jQuery.browser.msie = '+jQuery.browser.msie+'<br>'
+	                    +'jQuery.browser.mozilla = '+jQuery.browser.mozilla+'<br>'
+	                    +'jQuery.browser.opera = '+jQuery.browser.opera+'<br>'
+	                    +'jQuery.browser.webkit = '+jQuery.browser.webkit+'<br>'
+	                    +'jQuery.browser.safari = '+jQuery.browser.safari+'<br>'
+	                    +'jQuery.browser.chrome = '+jQuery.browser.chrome+'<br>';
 		            $("#result").html(txt);
 		            if( jQuery.browser.name === 'Firefox' ) browserFix = 4;
 		            else browserFix = 0;
 		        });
     		</script>
 		</div>
-		
+	<!-- console-based text editor / repl -->
 	 	<div id="textEditor">
 			<p id="label">Gigabots Console<br></p>
 			<div class="previousCode"></div>
@@ -99,6 +99,7 @@
 			<button class="editorButtons" id="repoButton">&nbsp;&nbsp;Repositories&nbsp;&nbsp;</button>
 		</a>
 	</div>
+<!-- footer -->
 	<div id="footer">
 		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
 	</div>

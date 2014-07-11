@@ -21,15 +21,14 @@ updateBar(24, $("#progressBar"));
 var client;
 var game;
 var restartState;
+var gameStates = {}
+
 var botStore = { // client id (GUID) : bot name
     'fakeBotId1' : 'Fake Bot 1',
     'fakeBotId2' : 'Fake Bot 2'
 }
-
 var botId = "", botIndex = 0, botName = "";
 var bot = { nameDisplay : "" }
-
-var gameStates = {}
 
 var listenToBot;
 var getInitialTouchData;

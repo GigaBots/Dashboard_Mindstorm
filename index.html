@@ -6,52 +6,71 @@
     <META HTTP-EQUIV="Pragma" CONTENT="no-cache">
     <link rel="icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
 	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
-	<link href="css/windowStyles.css" rel="stylesheet" media="screen">
+	<link href="css/main.css" rel="stylesheet" media="screen">
+	<link href="css/dashboard.css" rel="stylesheet" media="screen">
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
-    <link href="css/bootstrap-theme.min.css" rel="stylesheet" media="screen">
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="../../assets/js/html5shiv.js"></script>
-      <script src="../../assets/js/respond.min.js"></script>
-    <![endif]-->
+	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css" media="screen">
 </head>
 
 <body>
 <!-- navigation bar -->
 	<nav class="navbar navbar-custom navbar-static-top" role="navigation">
 		<div class="container-fluid">
+
+
 			<div class="navbar-header">
+
 			<!-- gigabots dashboard logo and title -->
-				<a class="navbar-brand hidden-xs" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png"></a>
-				<a class="navbar-brand visible-xs" id="titleSmall" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>
+				<a class="navbar-brand hidden-xs" target="_blank" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png"></a>
+				<a class="navbar-brand visible-xs" id="titleSmall" target="_blank" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>
+			
 			</div>
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		    	<ul class="nav navbar-nav navbar-right">
-		    	<!-- bot selector drop-down -->
-			      	<li class="dropdown">
-						<a href="#" class="dropdown-toggle" id="botSelector" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
-						<ul class="dropdown-menu" id="botSelectorList">
-				            <li>Bot 1 (not a link)</li>
-				            <li><a href="#">Bot 2 (link)</a></li>
-				            <li><a href="#">Bot 3 (link)</a></li>
-				            <li class="divider" id="dropdownDivider"></li>
-				            <li><a href="#">Current Bot (link)</a></li>
-				            <li class="divider"></li>
-				            <li><a href="#">Add New Bot (link)</a></li>
-			            </ul>
-			        </li>
-			    <!-- other links -->
-			        <li><a href="#">Directions for Use</a></li>
-		        	<li><a href="#">About</a></li>
-		        <!-- powered by big bang -->
-		        	<li class="hidden-xs" id="poweredBy"><a href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: -12px;" src="assets/powered_by_big_bang_on_dark.png"></a></li>
-		        	<li class="visible-xs" id="poweredBy"><a href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
-		        </ul>
-		    </div><!-- /.navbar-collapse -->
+
+  	<!-- bot selector drop-down -->
+	    <ul class="nav navbar-nav">  
+	      <li class="nav navbar-nav dropdown">
+					<a href="#" class="dropdown-toggle" id="botSelector" data-toggle="dropdown">Select Gigabot <span class="caret"></span></a>
+					<ul class="dropdown-menu" id="botSelectorList">
+	          <li>Bot 1 (not a link)</li>
+	          <li><a href="#">Bot 2 (link)</a></li>
+	          <li><a href="#">Bot 3 (link)</a></li>
+	          <li class="divider" id="dropdownDivider"></li>
+	          <li><a href="#">Current Bot (link)</a></li>
+	          <li class="divider"></li>
+	          <li><a href="#">Add New Bot (link)</a></li>
+	        </ul>
+	      </li>
+	    </ul>
+
+		<!-- powered by big bang -->
+		<div class="nav navbar-nav navbar-right">
+			<!-- powered by big bang -->
+	        <a class="hidden-xs hidden-s" id="poweredBy" target="_blank" href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: 0px;" src="assets/powered_by_big_bang_on_dark.png"></a>
+      	</div>
+
+		<!-- Collect the nav links and other content for toggling -->
+			<div class="nav navbar-nav navbar-right">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+		    </button>
+		  </div>
+	    <div class="nav navbar-nav navbar-right collapse navbar-collapse">
+	    	<ul class="nav navbar-nav">
+	    	<!-- links -->
+	        <li><a href="#">Directions for Use</a></li>
+        	<li><a href="#">About</a></li>
+        	<li class="visible-xs visible-s"><a target="_blank" href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
+        </ul>
+
+		  </div><!-- /.navbar-collapse -->
+
 		</div><!-- /.container-fluid -->
 	</nav>
 

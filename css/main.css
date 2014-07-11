@@ -1,0 +1,148 @@
+/* Layout
+================================= */
+html {
+	height: 100%;
+}
+
+body { 
+  background-image: url("../assets/mars_gradient_background.gif");
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+  margin: 0;
+  overflow-y: scroll; /* always show scroll bar --> maybe this will workd for android */
+  min-height: 100%;
+}
+
+/* Navbar
+========================================= */
+.navbar { 
+	line-height: 54px;
+	height: 54px;
+	overflow: visible;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+#titleSmall {
+	font-size: 19px;
+	color: #DFDFDF;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+}
+#poweredBy {
+	color: #DFDFDF;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+}
+#botSelector {
+	color: #BCBCBC;
+	padding-top: 19px;
+}
+
+.navbar-custom {
+	opacity: 0.9;
+    /* gradient */
+    background-image: -webkit-linear-gradient(top, #202020 0%, #1b1b1b 100%);
+	background-image: linear-gradient(to bottom, #202020 0%, #1b1b1b 100%);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff1d1d1d', endColorstr='#ff202020', GradientType=0);
+}
+/* title */
+.navbar-custom .navbar-brand {
+    color: #DFDFDF;
+}
+.navbar-custom .navbar-brand:hover,
+.navbar-custom .navbar-brand:focus {
+    color: #DFDFDF;
+}
+/* links */
+.navbar-custom .navbar-nav li a {
+    padding-top: 19px;
+}
+.navbar-custom .navbar-nav > li > a {
+    color: #BCBCBC;
+}
+.navbar-custom .navbar-nav > li > a:hover,
+.navbar-custom .navbar-nav > li > a:focus {
+    color: #000000;
+}
+.navbar-custom .navbar-nav > .active > a, 
+.navbar-custom .navbar-nav > .active > a:hover, 
+.navbar-custom .navbar-nav > .active > a:focus {
+    color: #555;
+    background-color: #E7E7E7;
+}
+.navbar-custom .navbar-nav > .open > a, 
+.navbar-custom .navbar-nav > .open > a:hover, 
+.navbar-custom .navbar-nav > .open > a:focus {
+    color: #555;
+    background-color: #D5D5D5;
+}
+/* link powered by big bang */
+#poweredBy {
+	margin-left: 32px;
+}
+
+/* caret */
+.navbar-custom .navbar-nav > .dropdown > a .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
+}
+.navbar-custom .navbar-nav > .dropdown > a:hover .caret,
+.navbar-custom .navbar-nav > .dropdown > a:focus .caret {
+    border-top-color: #333;
+    border-bottom-color: #333;
+}
+.navbar-custom .navbar-nav > .open > a .caret, 
+.navbar-custom .navbar-nav > .open > a:hover .caret, 
+.navbar-custom .navbar-nav > .open > a:focus .caret {
+    border-top-color: #555;
+    border-bottom-color: #555;
+}
+
+/* mobile version */
+.navbar-custom .navbar-toggle {
+    border-color: #1F1F1F;
+}
+.navbar-custom .navbar-toggle:hover,
+.navbar-custom .navbar-toggle:focus {
+    background-color: #E7E7E7;
+}
+.navbar-custom .navbar-toggle .icon-bar {
+    background-color: #A3A3A3;
+}
+@media (max-width: 767px) {
+    .navbar-custom .navbar-nav .open .dropdown-menu > li > a {
+        color: #1F1F1F;
+    }
+    .navbar-custom .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-custom .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: #282828;
+    }
+}
+
+/* bot-selector drop-down menu */
+.navbar .container-fluid .collapse .nav .dropdown .dropdown-menu .botName {
+margin-top: -10px;
+margin-bottom: -10px;
+padding-top: -10px;
+padding-bottom: -10px;
+}
+
+/* Footer
+========================================= */
+#footer {
+	background: #1F1F1F; 
+	padding-top: 10px;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+	font-size: 12px;
+	color: #A3A3A3;
+	height: 40px; /* Should be same as bottom padding on content */
+	bottom: 0;
+
+}
+#footer a {
+	text-decoration: none;
+	color: #A3A3A3;
+}

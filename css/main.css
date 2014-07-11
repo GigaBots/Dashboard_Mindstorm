@@ -39,6 +39,12 @@ body {
 	color: #BCBCBC;
 	padding-top: 19px;
 }
+#botSelectorList {
+  max-height: 500px;
+  overflow-y: auto; /* add vertical scroll bar if necessary */
+  max-width: 250px;
+  overflow-x: auto; /* add horizontal scroll bar if necessary */
+}
 
 .navbar-custom {
 	opacity: 0.9;
@@ -121,14 +127,6 @@ body {
     .navbar-custom .navbar-nav .open .dropdown-menu > li > a:focus {
         color: #282828;
     }
-}
-
-/* bot-selector drop-down menu */
-.navbar .container-fluid .collapse .nav .dropdown .dropdown-menu .botName {
-margin-top: -10px;
-margin-bottom: -10px;
-padding-top: -10px;
-padding-bottom: -10px;
 }
 
 /* Footer

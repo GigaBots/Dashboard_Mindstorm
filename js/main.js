@@ -1062,6 +1062,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.image('sensorBar','assets/sensor_bar.png',273,23);
             game.load.image('dividerLine','assets/divider_line.png',144,1);
             game.load.image('dividerLine2','assets/divider_line_2.png',261,22);
+            game.load.image('dividerPair','assets/divider_pair.png',99,24);
         } //end preload
       //==============================================================================================================================
         function create() {          
@@ -1109,9 +1110,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
 
-            var botBackground = game.add.graphics(0,0);
-            botBackground.beginFill(0x808080, 0.7);
-            botBackground.drawRect(positionSystem.x+95, positionSystem.y+33, 99, 1);
+            var botLabelivider = game.add.sprite(positionSystem.x+95,positionSystem.y+33,'dividerPair');
             var botLabel = game.add.text(positionSystem.x+98, positionSystem.y+36+browserFix,"Controlling bot:", { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" } );
             if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
             else { 

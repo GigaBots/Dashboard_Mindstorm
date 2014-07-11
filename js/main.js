@@ -26,7 +26,8 @@ var botStore = { // client id (GUID) : bot name
     'fakeBotId2' : 'Fake Bot 2'
 }
 
-var botId = "", botIndex = 0;
+var botId = "", botIndex = 0, botName = "";
+var bot = { nameDisplay : "" }
 
 var gameStates = {}
 
@@ -131,6 +132,43 @@ require(['BrowserBigBangClient'], function (bigbang) {
             parent.removeChild( child );
             delete botStore[ left ];
         });
+
+        /* Select which robot to control */
+        $(".botName").click(function() {
+            botId = this.id;
+            console.log("selected bot with clientId " + botId + " and name " + botStore[ botId ]);
+            botName = botStore[ botId ];
+            botIndex++; // increment the index corresponding to the bot being listened to
+            listenToBot( botId, botIndex ); // start listening to the bot that was just selected
+            // dashboard and keyspace initializations:
+            getInitialTouchData( botId );
+            getInitialBatteryLevel( botId );
+            setInitialDashboardSettings( botId );
+            setSensorIDs();
+            // bot name display on dashboard in system box
+            game.world.remove( bot.nameDisplay );
+            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
+            else var botNameDisplay = botName;
+            bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
+        })
+        /* Add new bot */
+        $("#addBot").click(function() {
+            var newBotName = prompt("Enter the name of the bot.");
+            var newBotId = prompt("Enter a temporary id for the bot.");
+            if ( newBotName === '' || typeof newBotName ===  "undefined" || newBotName === null ) {
+                newBotName = 'default name';
+            }
+            if ( newBotId === '' || typeof newBotId === "undefined" || newBotId === null ) {
+                newBotId = 'defaultId';
+            }
+            botStore[ newBotId ] = newBotName;
+            var para = document.createElement( "li" );
+            var node = document.createTextNode( botStore[ newBotId ] );
+            para.setAttribute("id", "botName");
+            para.appendChild( node );
+            var element = document.getElementById( "botSelectorList" );
+            element.appendChild(para); 
+        })
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var noteStyle = { font: "italic 12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#808080" }
@@ -528,13 +566,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var status = { statusDisplay : "running..." } // initially running
         var resume = { messageDisplay : 0, resumeOverlay : 0 }
 
-        /* Bot selector */
-        var botDropdown, dropdownBox, dropdown;
-        var dropHighlight = { 1 : 0 }
-        var botLabels = new Array();
-        var botName;
-        var bot = { nameDisplay : "" }
-
         /* Sensor ID labels */
         var sensorIDLabels = {
             IR : '',
@@ -829,7 +860,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setBatteryLevel( val ) {
             battery.level = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             game.world.remove( battery.levelDisplay );
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
             if ( battery.level <= 0.15 ) { // for almost-dead battery!
                 if( battery.level > -0.01 ) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -856,114 +887,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 batteryLevelFill.drawRect(positionSystem.x+207, positionSystem.y+37, 50, 16);
             }
             channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : battery.level });
-        }
-      /* Bot selection */
-        function getSize(obj) { // get size of an object
-            var size = 0, key;
-            for (key in obj) {
-                if(obj.hasOwnProperty(key)) size++;
-            }
-            return size;
-        };
-        function actionDropdown() {
-            var numBots = getSize(botStore);
-            botDropdown.setFrames(2,2,2,2);
-            dropdownBox = game.add.graphics(0,0);
-            dropdownBox.beginFill(0xFFFFFF,0.85);
-            dropdownBox.drawRect(positionSystem.x+94, positionSystem.y+59, 150, (numBots+1)*24); //24 is height of a row (the highlight "button")
-            var j = 0;
-            for ( var key in botStore ) {
-                var obj = botStore[key];
-                var name = botStore[key];
-                dropHighlight[j] = game.add.button(positionSystem.x+94, positionSystem.y+59+24*j, 'highlighter');
-                dropHighlight[j].setFrames(0,2,1,2);
-                dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
-                dropHighlight[j].input.useHandCursor = true;
-                if ( name.length < 20 ) var botNameDropdown = name;
-                else var botNameDropdown = name.slice(0, 19);
-                botLabels[j] = game.add.text(positionSystem.x+97, positionSystem.y+61+24*j+browserFix, botNameDropdown, dropdownStyle);
-                j++;
-            }
-            /* create a 'Add a New Bot' button at the bottom of the list */
-            dropHighlight[j] = game.add.button(positionSystem.x+94, positionSystem.y+59+24*j, 'highlighter');
-            dropHighlight[j].setFrames(0,2,1,2);
-            dropHighlight[j].events.onInputDown.add(actionAddNewBot);
-            dropHighlight[j].input.useHandCursor = true;
-            botLabels[j] = game.add.text(positionSystem.x+97, positionSystem.y+61+24*j+browserFix, 'Add a New Bot', dropdownStyle);
-            
-            botDropdown.input.stop();
-            dropdown = {
-                noBotSelection : game.add.button(positionSystem.x+94, positionSystem.y+33, 'botDropdown')
-            }
-            dropdown.noBotSelection.events.onInputDown.add(actionNoBotSelection);
-            dropdown.noBotSelection.setFrames(2,2,2,2);
-            dropdown.noBotSelection.input.useHandCursor = true;
-        }
-        function actionSelectBot() {
-            console.log("selected bot with clientId " + this + " and name " + botStore[this]);
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-
-            botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-            botName = botStore[ this ];
-            botIndex++;
-            listenToBot( botId, botIndex ); // start listening to the bot that was just selected
-            getInitialTouchData( botId );
-            getInitialBatteryLevel( botId );
-            game.world.remove( bot.nameDisplay );
-            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-            else var botNameDisplay = botName;
-            bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+60+browserFix, botNameDisplay, statusStyle);
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-            //getInitialMotorStatus();
-            setInitialDashboardSettings(botId);
-            setSensorIDs();
-        }
-        function actionNoBotSelection() {
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-        }
-        function actionAddNewBot() {
-            var newBotName = prompt("Enter the name of the bot.");
-            var newBotId = prompt("Enter a temporary id for the bot.");
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-            if ( newBotName === '' || typeof newBotName ===  "undefined" || newBotName === null ) {
-                newBotName = 'default name';
-            }
-            if ( newBotId === '' || typeof newBotId === "undefined" || newBotId === null ) {
-                newBotId = 'defaultId';
-            }
-            botStore[ newBotId ] = newBotName;
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-            var para = document.createElement( "li" );
-            var node = document.createTextNode( botStore[ newBotId ] );
-            para.setAttribute("id", "botName");
-            para.appendChild( node );
-            var element = document.getElementById( "botSelectorList" );
-            element.appendChild(para); 
         }
         /* Initialization of touch sensor display and battery display on dashboard */
         function getInitialTouchData( robotClientId ) {
@@ -1003,7 +926,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof val !== 'undefined' ) {
                 battery.level = val.batteryLevel;
                 game.world.remove( battery.levelDisplay );
-                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
                 if (battery.level <= 0.15) { // for almost-dead battery!
                     if(battery.level > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                         batteryLevelFill.destroy();
@@ -1153,7 +1076,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     this.game.paused = false;
                     dashboardStatus = 1;
                     game.world.remove(status.statusDisplay);
-                    status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60+browserFix, "running...", statusStyle);
+                    status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
                     statusButton.setFrames(1,0,0,0);
                     resume.resumeMessageDisplay.destroy();
                     resume.resumeOverlay.destroy();
@@ -1184,18 +1107,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //topBars[ 'screen' ] = game.add.sprite( positionScreen.x+1, positionScreen.y+1,'sensorBar');
 
           /* Labels */
-            status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+60+browserFix, "running...", statusStyle);
+            labelSystem = game.add.text(positionSystem.x+8, positionSystem.y+1+browserFix, "System", titleStyle);
 
-            if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+61+browserFix, "Select a robot ", selectBotStyle);
+            status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
+
+            bot.label1 = game.add.text(positionSystem.x+111, positionSystem.y+29+browserFix,"Controlling", labelStyle);
+            bot.label1 = game.add.text(positionSystem.x+113, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
+            if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
             else { 
                 if ( botStore[ botId ].length > 15 ) var botNameDisplay = botStore[ botId ].slice(0, 15);
                 else var botNameDisplay = botStore[ botId ];
-                bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+60+browserFix, botNameDisplay, statusStyle); // for a restart state, since a bot is already selected
+                bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
             }
 
-            labelSystem = game.add.text(positionSystem.x+8, positionSystem.y+1+browserFix, "System", titleStyle);
-
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
 
             labelTouch = game.add.text(positionTouch.x+8, positionTouch.y+1+browserFix, "Touch Sensor", titleStyle);
             labelTouched = game.add.text(positionTouch.x+12, positionTouch.y+32+browserFix, "Touched", labelStyle);
@@ -1222,11 +1147,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             statusButton = game.add.button(positionSystem.x+10, positionSystem.y+33, 'statusButton', actionStopOnClick);
             statusButton.setFrames(1,0,0,0);
             statusButton.input.useHandCursor = true;
-          /* Select which robot to control */
-            botDropdown = game.add.button(positionSystem.x+94, positionSystem.y+33, 'botDropdown');
-            botDropdown.events.onInputDown.add(actionDropdown);
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
           /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+68, positionTouch.y+30, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
@@ -1810,11 +1730,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 dashboardStatus = 0;
                 game.paused = true;
                 game.world.remove(status.statusDisplay);
-                status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60, "stopped", statusStyle);
+                status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+61, "stopped", statusStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
                 resume.resumeOverlay.drawRect(0, 0, gameBoundX, gameBoundY);
-                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
+                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,225,'resume');
                 this.game.input.keyboard.disabled = true;
                 botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)
             } else {
@@ -2040,7 +1960,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             //getInitialTouchData( botId );
                             //getInitialBatteryLevel( botId );
                             setInitialDashboardSettings( botId );
-                            //getInitialMotorStatus();
                             //var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
                             console.log("Reconnected to bot " + botId + " with name " + botName);
                         }

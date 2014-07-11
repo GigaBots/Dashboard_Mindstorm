@@ -1,0 +1,164 @@
+/* Progress bar
+========================================= */
+#progressBar {
+	margin: 15% auto;
+	width: 600px;
+	height: 24px;
+	background-color: #292929;
+	box-shadow: 0 2px 3px #333;	
+	border-radius: 11px;
+	padding: 2px;
+	border: 1px solid #111;
+}
+#progressBar div {
+	height: 100%;
+	color: #000;
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+    text-align: right;
+    line-height: 24px; /* same as #progressBar height if we want text middle aligned */
+    width: 0;
+    background-color: #111;
+    background: #7E430C;
+	border-radius: 8px;
+	box-shadow: 0 3px 5px #ccc inset;
+	overflow: hidden;
+}
+
+/* Control panel canvas
+========================================= */
+#gameWorld {	
+	display: block;
+	vertical-align: baseline;
+	margin: -14px auto 0 auto;
+	padding: 0;
+	border: 0;
+	
+	width: 1132px;
+	/*height: 653px;
+	*/
+	overflow: hidden;
+	clear: both;
+}
+
+/* Text editor
+========================================= */
+#textEditor {
+	background-color: #313233;
+	color: #C8C8C8;
+	opacity: 0.95;
+	overflow: auto;
+	min-height: 180px;
+	width: 1132px;
+	font-family: Courier New, Lucida Console, Monaco, monospace;
+	border-radius: 1px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #6f6f6f;
+	margin: 8px auto 0 auto;
+	font-size: 12px;
+	position: relative;
+}
+.previousCode {
+	overflow: auto;
+	max-height: 170px;
+	padding: 6px;
+}
+
+#currentCode {
+	overflow: auto;
+	max-height: 170px;
+	background-color: #606060;
+	outline: none;
+	padding: 6px;
+	margin: 0;
+	border-top: 3px solid #CF9158;
+}
+
+#label {
+	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+	font-size: 16px;
+	color: #202020;
+	text-align: left;
+	padding: 1px 8px;
+	margin-bottom: 2px;
+	/* gradient */
+	background-image: -webkit-linear-gradient(top, #777879 0%, #626263 100%);
+	background-image: linear-gradient(to bottom, #777879 0%, #626263 100%);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff626263', endColorstr='#ff777879', GradientType=0);
+
+}
+
+/* Run and Repository buttons to align with textEditor */
+.editorButtons {
+	position: relative;
+	top: 5px;
+	bottom: 2px;
+	background: transparent;
+	border-radius: 1px;
+	color: #C8C8C8;
+}
+#runButton {
+	font-size: 12px;
+    left: -moz-calc(50% - 566px);
+    left: -webkit-calc(50% - 566px);
+    left: calc(50% - 566px);
+}
+#repoButton {
+	font-size: 12px;
+	left: -moz-calc(50% - 566px);
+	left: -webkit-calc(50% - 566px);
+	left: calc(50% - 566px);
+}
+
+
+/* Create placeholder text for textEditor*/
+[contentEditable="true"]:empty:not(:focus):before {
+        content:attr(placeholder);
+        font-style: italic;
+}
+
+.content {
+	padding-bottom: 50px; /* This should be the same as the footer height */
+	height: 100%
+}
+
+/* Scroll bar
+========================================= */
+html::-WebKit-scrollbar {
+	-WebKit-appearance: none;
+	width: 18px;
+}
+
+html::-WebKit-scrollbar-thumb {
+	border-radius: 8px;
+	background-color: rgba(0,0,0,.5);
+	-WebKit-box-shadow: 0 0 1px rgba(49,50,51,.5);
+}
+
+.previousCode::-WebKit-scrollbar-track {
+	border-radius: 10px;
+	background-color: #313233
+}
+.previousCode::-WebKit-scrollbar {
+	width: 12px;
+	background-color: #313233;
+}
+.previousCode::-WebKit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #D55379;
+}
+#currentCode::-WebKit-scrollbar-track {
+	border-radius: 10px;
+	background-color: #606060
+}
+#currentCode::-WebKit-scrollbar {
+	width: 12px;
+	background-color: #606060;
+}
+#currentCode::-WebKit-scrollbar-thumb {
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #CF9158;
+}

@@ -31,20 +31,52 @@ var bot = { nameDisplay : "" }
 
 var gameStates = {}
 
+var listenToBot;
+var getInitialTouchData;
+var setInitialTouchData;
+var getInitialBatteryLevel;
+var setInitialBatteryLevel;
+var setSensorIDs;
+var setInitialDashboardSettings;
+var displayName;
 
-//document.querySelector('#botSelector').innerHTML = botStore['fakeBotId1'];
-
-// add bots to drop-down menu in navbar (here, it's just for bots that are declared in botStore - the fakebots)
-for ( var k in botStore ) {
+function appendDropdown( robotClientId ) {
+  /* add a new html element to the dropdown menu for the new bot */
     var para = document.createElement( "li" ); // create list element
-    var node = document.createTextNode( botStore[ k ] ); // create text (the bot name for each bot id in the botStore associative array)
+    var subPara = document.createElement( "a" ); // create link element in the list element
+    var node = document.createTextNode( botStore[ robotClientId ] ); // create text (the bot name for each bot id in the botStore associative array)
+    subPara.appendChild( node ); // append the text to the new link element
     para.setAttribute("class", "botName"); // "botName" class to the new element
-    para.setAttribute("id", k ); // set id of the new element to be the bot's id
-    para.appendChild( node ); // append the text to the new list element
+    para.setAttribute("id", robotClientId ); // set id of the new element to be the bot's id
+    para.appendChild( subPara ); // append the link element (containing bot name) to the new list element
     var element = document.getElementById( "botSelectorList" ); // get the parent dropdown menu element, with id "botSelectorList"
     var child = document.getElementById( "dropdownDivider" ); // get the element we want to place the new bot above
     element.insertBefore(para,child); // append the new list element to the dropdown menu element, inserting it above the divider element
+    var newString = "#" + robotClientId;
+  /* action once a bot is selected */
+    $( newString ).click( function() {
+        botId = this.id;
+        console.log("selected bot with clientId " + botId + " and name " + botStore[ botId ]);
+        botName = botStore[ botId ];
+        botIndex++; // increment the index corresponding to the bot being listened to
+        listenToBot( botId, botIndex ); // start listening to the bot that was just selected
+        // dashboard and keyspace initializations:
+        getInitialTouchData( botId );
+        getInitialBatteryLevel( botId );
+        setInitialDashboardSettings( botId );
+        setSensorIDs();
+        // bot name display on dashboard in system box
+        displayName( botName );
+    });
 }
+
+// add bots to drop-down menu in navbar (here, it's just for bots that are declared in botStore - the fakebots)
+for ( var k in botStore ) {
+    appendDropdown( k );
+}
+
+$("#botSelector").css('cursor', 'pointer');
+$("#botSelectorList").css('cursor', 'pointer'); // the bot names don't link to anywhere, so manually show to the hand when hovering within the drop-down menu
 
 require.config({
     baseUrl: 'js',
@@ -102,55 +134,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if( roboInfo ) {
                 botStore[joined] = roboInfo.ev3.name;
                 // add already connected bots to the drop-down menu
-                var para = document.createElement( "li" );
-                var node = document.createTextNode( botStore[ joined ] );
-                para.setAttribute("class", "botName");
-                para.setAttribute("id", joined );
-                para.appendChild( node );
-                var element = document.getElementById( "botSelectorList" );
-                var child = document.getElementById( "dropdownDivider" );
-                element.insertBefore( para, child );
+                appendDropdown( joined );
             }
             channel.getKeyspace(joined).on('robot', function(val) {
                 botStore[joined] = val.ev3.name;
                 // add newly connected bots to the drop-down menu
-                var para = document.createElement( "li" );
-                var node = document.createTextNode( botStore[ joined ] );
-                para.setAttribute("class", "botName");
-                para.setAttribute("id", joined );
-                para.appendChild( node );
-                var element = document.getElementById( "botSelectorList" );
-                var child = document.getElementById( "dropdownDivider" );
-                element.insertBefore( para, child );
+                appendDropdown( joined );
             });
             console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
-            // remove bots that have disconnected
-            var parent = document.getElementById( "botSelectorList" );
-            var child = document.getElementById( left );
-            parent.removeChild( child );
-            delete botStore[ left ];
+            var roboInfo = channel.getKeyspace(left).get('robot');
+            if( roboInfo ) {
+                // remove bots that have disconnected
+                var parent = document.getElementById( "botSelectorList" );
+                var child = document.getElementById( left );
+                parent.removeChild( child );
+                delete botStore[ left ];
+            }
         });
 
-        /* Select which robot to control */
-        $(".botName").click(function() {
-            botId = this.id;
-            console.log("selected bot with clientId " + botId + " and name " + botStore[ botId ]);
-            botName = botStore[ botId ];
-            botIndex++; // increment the index corresponding to the bot being listened to
-            listenToBot( botId, botIndex ); // start listening to the bot that was just selected
-            // dashboard and keyspace initializations:
-            getInitialTouchData( botId );
-            getInitialBatteryLevel( botId );
-            setInitialDashboardSettings( botId );
-            setSensorIDs();
-            // bot name display on dashboard in system box
-            game.world.remove( bot.nameDisplay );
-            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-            else var botNameDisplay = botName;
-            bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
-        })
         /* Add new bot */
         $("#addBot").click(function() {
             var newBotName = prompt("Enter the name of the bot.");
@@ -162,19 +165,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 newBotId = 'defaultId';
             }
             botStore[ newBotId ] = newBotName;
-            var para = document.createElement( "li" );
-            var node = document.createTextNode( botStore[ newBotId ] );
-            para.setAttribute("id", "botName");
-            para.appendChild( node );
-            var element = document.getElementById( "botSelectorList" );
-            element.appendChild(para); 
+            appendDropdown( newBotId );
         })
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var noteStyle = { font: "italic 12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#808080" }
         var titleStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#202020"}
         var dialLabelStyle = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
-        var dropdownStyle = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
         var selectBotStyle = { font: "italic 13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#ff5000" }
         var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
         var statusStyle = { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#eaeaea" }
@@ -648,7 +645,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        function listenToBot( robotClientId, selectionIndex ) { // this is called once the user selects a bot from the drop-down
+        listenToBot = function ( robotClientId, selectionIndex ) { // this is called once the user selects a bot from the drop-down
 
             channel.getKeyspace(robotClientId).onValue(function (key, val) {
                 //console.log("Add:" + key +"->"+JSON.stringify(val) );
@@ -889,7 +886,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : battery.level });
         }
         /* Initialization of touch sensor display and battery display on dashboard */
-        function getInitialTouchData( robotClientId ) {
+        getInitialTouchData = function( robotClientId ) {
             var touchData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
             setInitialTouchData('touchDash', touchData);
         }
@@ -918,11 +915,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             console.log("initial touch count set to " + touch.count + " and total time pressed to " + touch.time);
         }
-        function getInitialBatteryLevel( robotClientId ) {
+        getInitialBatteryLevel = function( robotClientId ) {
             var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
             setInitialBatteryLevel('batteryDash', batteryLevelData);
         }
-        function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
+        setInitialBatteryLevel = function( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
             if ( typeof val !== 'undefined' ) {
                 battery.level = val.batteryLevel;
                 game.world.remove( battery.levelDisplay );
@@ -954,7 +951,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
-        function setSensorIDs() {
+        setSensorIDs = function() {
             var botData = channel.getKeyspace(botId).get('robot');
             if ( typeof botData !== "undefined" ) {
                 for ( var s in botData.ev3.sensors ) {
@@ -1015,7 +1012,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             //console.dir(sensorOverlays);
         }
-        function setInitialDashboardSettings( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
+        setInitialDashboardSettings = function( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
             if ( typeof dashMotorA === 'undefined' ) { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
                 console.log("initializing keyspace and dashboard settings for the newly connected bot...");
@@ -1039,6 +1036,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
+        displayName = function( robotName ) {
+            game.world.remove( bot.nameDisplay );
+            if ( robotName.length > 15 ) var botNameDisplay = robotName.slice(0, 15);
+            else var botNameDisplay = robotName;
+            bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
+        }
       //==============================================================================================================================
         function preload() {
             game.load.spritesheet('forwardButton','assets/buttons/forward_button_spritesheet.png', 89, 45);
@@ -1048,8 +1051,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('plusButton','assets/buttons/plus_button_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/touch_sensor_spritesheet.png', 21, 21);
             game.load.spritesheet('statusButton','assets/buttons/status_button_spritesheet.png', 76, 26);
-            game.load.spritesheet('botDropdown','assets/buttons/dropdown_button_spritesheet.png', 101, 25);
-            game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png', 151, 25);
             game.load.spritesheet('dialFace','assets/dial_face_spritesheet.png', 52, 52);
             //game.load.image('screenInputButton', 'assets/buttons/lcd_screen_input_button.png', 43, 22);
             game.load.image('sliderBar','assets/buttons/slider_bar.png', 72, 24);
@@ -1115,9 +1116,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             bot.label1 = game.add.text(positionSystem.x+113, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
             if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
             else { 
-                if ( botStore[ botId ].length > 15 ) var botNameDisplay = botStore[ botId ].slice(0, 15);
-                else var botNameDisplay = botStore[ botId ];
-                bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
+                displayName( botName );
             }
 
             battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );

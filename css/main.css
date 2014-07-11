@@ -73,9 +73,10 @@ body {
 .navbar-custom .navbar-nav > .open > a, 
 .navbar-custom .navbar-nav > .open > a:hover, 
 .navbar-custom .navbar-nav > .open > a:focus {
-    color: #555;
+    color: #282828;
     background-color: #D5D5D5;
 }
+
 /* link powered by big bang */
 #poweredBy {
 	margin-left: 32px;
@@ -83,13 +84,13 @@ body {
 
 /* caret */
 .navbar-custom .navbar-nav > .dropdown > a .caret {
-    border-top-color: #777;
-    border-bottom-color: #777;
+    border-top-color: #F48E40;
+    border-bottom-color: #F48E40;
 }
 .navbar-custom .navbar-nav > .dropdown > a:hover .caret,
 .navbar-custom .navbar-nav > .dropdown > a:focus .caret {
-    border-top-color: #333;
-    border-bottom-color: #333;
+    border-top-color: #EA3669;
+    border-bottom-color: #EA3669;
 }
 .navbar-custom .navbar-nav > .open > a .caret, 
 .navbar-custom .navbar-nav > .open > a:hover .caret, 

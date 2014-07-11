@@ -132,20 +132,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log('join ' + joined);
             var roboInfo = channel.getKeyspace(joined).get('robot');
             if( roboInfo ) {
-                botStore[joined] = roboInfo.ev3.name;
-                // add already connected bots to the drop-down menu
-                appendDropdown( joined );
+                if ( !(joined in botStore) ) {
+                    console.log("new");
+                    // add newly connected bots to botStore and the drop-down menu
+                    botStore[joined] = roboInfo.ev3.name;
+                    appendDropdown( joined );
+                }
             }
             channel.getKeyspace(joined).on('robot', function(val) {
-                botStore[joined] = val.ev3.name;
-                // add newly connected bots to the drop-down menu
-                appendDropdown( joined );
+                if ( !(joined in botStore) ) {
+                    console.log('old');
+                    // add already connected bots to botStore and the drop-down menu
+                    botStore[joined] = val.ev3.name;
+                    appendDropdown( joined );
+                }
             });
             console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
-            var roboInfo = channel.getKeyspace(left).get('robot');
-            if( roboInfo ) {
+            if ( left in botStore ) {
                 // remove bots that have disconnected
                 var parent = document.getElementById( "botSelectorList" );
                 var child = document.getElementById( left );
@@ -704,7 +709,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     setBatteryLevel(val.ev3.power);
                 }
             }, function (key) {
-                console.log("bot " + botId + " left");
+                console.log("bot " + robotClientId + " left");
                 //console.log("Delete:" + key);
             });
 
@@ -1112,8 +1117,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
 
-            bot.label1 = game.add.text(positionSystem.x+111, positionSystem.y+29+browserFix,"Controlling", labelStyle);
-            bot.label1 = game.add.text(positionSystem.x+113, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
+            bot.label1 = game.add.text(positionSystem.x+112, positionSystem.y+29+browserFix,"Controlling", labelStyle);
+            bot.label1 = game.add.text(positionSystem.x+114, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
             if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
             else { 
                 displayName( botName );

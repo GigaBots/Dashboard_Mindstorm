@@ -25,10 +25,58 @@ var botStore = { // client id (GUID) : bot name
     'fakeBotId1' : 'Fake Bot 1',
     'fakeBotId2' : 'Fake Bot 2'
 }
-var botId = "", botIndex = 0;
 
 var gameStates = {}
 
+var botId = "", botIndex = 0, botName = "";
+var bot = { nameDisplay : "" }
+
+var listenToBot;
+var getInitialTouchData;
+var setInitialTouchData;
+var getInitialBatteryLevel;
+var setInitialBatteryLevel;
+var setSensorIDs;
+var setInitialDashboardSettings;
+var displayName;
+
+function appendDropdown( robotClientId ) {
+  /* add a new html element to the dropdown menu for the new bot */
+    var para = document.createElement( "li" ); // create list element
+    var subPara = document.createElement( "a" ); // create link element in the list element
+    var node = document.createTextNode( botStore[ robotClientId ] ); // create text (the bot name for each bot id in the botStore associative array)
+    subPara.appendChild( node ); // append the text to the new link element
+    para.setAttribute("class", "botName"); // "botName" class to the new element
+    para.setAttribute("id", robotClientId ); // set id of the new element to be the bot's id
+    para.appendChild( subPara ); // append the link element (containing bot name) to the new list element
+    var element = document.getElementById( "botSelectorList" ); // get the parent dropdown menu element, with id "botSelectorList"
+    var child = document.getElementById( "dropdownDivider" ); // get the element we want to place the new bot above
+    element.insertBefore(para,child); // append the new list element to the dropdown menu element, inserting it above the divider element
+    var newString = "#" + robotClientId;
+  /* action once a bot is selected */
+    $( newString ).click( function() {
+        botId = this.id;
+        console.log("selected bot with clientId " + botId + " and name " + botStore[ botId ]);
+        botName = botStore[ botId ];
+        botIndex++; // increment the index corresponding to the bot being listened to
+        listenToBot( botId, botIndex ); // start listening to the bot that was just selected
+        // dashboard and keyspace initializations:
+        getInitialTouchData( botId );
+        getInitialBatteryLevel( botId );
+        setInitialDashboardSettings( botId );
+        setSensorIDs();
+        // bot name display on dashboard in system box
+        displayName( botName );
+    });
+}
+
+// add bots to drop-down menu in navbar (here, it's just for bots that are declared in botStore - the fakebots)
+for ( var k in botStore ) {
+    appendDropdown( k );
+}
+
+$("#botSelector").css('cursor', 'pointer');
+$("#botSelectorList").css('cursor', 'pointer'); // the bot names don't link to anywhere, so manually show to the hand when hovering within the drop-down menu
 
 require.config({
     baseUrl: 'js',
@@ -63,7 +111,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* === Dashboard control panel === */
 
-        var gameBoundX = 1132, gameBoundY = 600;
+        var gameBoundX = 1132, gameBoundY = 530;
         game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
@@ -84,23 +132,51 @@ require(['BrowserBigBangClient'], function (bigbang) {
             console.log('join ' + joined);
             var roboInfo = channel.getKeyspace(joined).get('robot');
             if( roboInfo ) {
-               botStore[joined] = roboInfo.ev3.name;
+                if ( !(joined in botStore) ) {
+                    console.log("new");
+                    // add newly connected bots to botStore and the drop-down menu
+                    botStore[joined] = roboInfo.ev3.name;
+                    appendDropdown( joined );
+                }
             }
             channel.getKeyspace(joined).on('robot', function(val) {
-                botStore[joined] = val.ev3.name;
+                if ( !(joined in botStore) ) {
+                    console.log('old');
+                    // add already connected bots to botStore and the drop-down menu
+                    botStore[joined] = val.ev3.name;
+                    appendDropdown( joined );
+                }
             });
             console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
-            delete botStore[left];
+            if ( left in botStore ) {
+                // remove bots that have disconnected
+                var parent = document.getElementById( "botSelectorList" );
+                var child = document.getElementById( left );
+                parent.removeChild( child );
+                delete botStore[ left ];
+            }
         });
+
+        /* Add new bot */
+        $("#addBot").click(function() {
+            var newBotName = prompt("Enter the name of the bot.");
+            var newBotId = prompt("Enter a temporary id for the bot.");
+            if ( newBotName === '' || typeof newBotName ===  "undefined" || newBotName === null ) {
+                newBotName = 'default name';
+            }
+            if ( newBotId === '' || typeof newBotId === "undefined" || newBotId === null ) {
+                newBotId = 'defaultId';
+            }
+            botStore[ newBotId ] = newBotName;
+            appendDropdown( newBotId );
+        })
 
         var labelStyle = { font: "12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }
         var noteStyle = { font: "italic 12px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#808080" }
-        var largeTitleStyle = { font: "19px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" }        
         var titleStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#202020"}
         var dialLabelStyle = { font: "20px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#414242" } 
-        var dropdownStyle = { font: "14px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#313233"}        
         var selectBotStyle = { font: "italic 13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#ff5000" }
         var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
         var statusStyle = { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#eaeaea" }
@@ -131,14 +207,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         // set motor frame positions
         if ( maxMotorRows === 1 ) {
             for ( var j = 1; j <= maxMotorColumns; j++ ) {
-                positionMotors[ letters[ j ] ] = { x : 286 + (j-1)*285, y : 66 }
+                positionMotors[ letters[ j ] ] = { x : 286 + (j-1)*285, y : 1 }
             }            
         }
         else {
             switch ( maxMotorColumns ) {
                 case 1:
                     for ( var i = 1; i <= maxMotorRows; i++ ) {
-                        positionMotors[ letters[ i ] ] = { x : 286, y : 66 + (i-1)*242 }
+                        positionMotors[ letters[ i ] ] = { x : 286, y : 1 + (i-1)*242 }
                     }
                     break;
                 case 2:
@@ -148,7 +224,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             else var subIndex = j + 1;
                             var index = subIndex * i - i;
                             if (index > numMotors) break;
-                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 66 + (i-1)*242 }
+                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
                         } // this is a sequence to position motors (laid out in a grid)
                     }
                     break;
@@ -168,7 +244,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             else if ( j === 3 ) subIndex = 4;
                             var index = subIndex * i -i;
                             if (index > numMotors) break;
-                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 66 + (i-1)*242 }
+                            positionMotors[ letters[ index ] ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
                         } // this is a sequence to position motors (laid out in a grid)
                     }
                     break;
@@ -181,7 +257,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var numCheckboxRows = 1 + Math.floor( (numMotors - 1) / 6 );
         var positionGangs = {}
         for ( var i = 1; i <= numGangs; i++ ) {
-            positionGangs[ i ] = { x : 856, y : 66 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+            positionGangs[ i ] = { x : 856, y : 1 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
         }
         if ( gangColumns !== '' && typeof gangRows === 'string' ) {
             var maxGangColumns = gangColumns;
@@ -192,11 +268,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         //resize game window height if we have more than 2 rows
-        var heightMotors = maxMotorRows * ( 232 + 10 );
-        var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 );
+        var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
+        var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
         var heightMax = Math.max( heightMotors, heightGangs );
-        if ( heightMax + 66 - 4 > gameBoundY ) game.height = gameBoundY = heightMax + 66 - 4;
-        else if ( heightMax + 66 - 4 < gameBoundY ) game.height = gameBoundY = heightMax + 66 - 4;
+        if ( heightMax + 2 > gameBoundY ) {
+            game.height = gameBoundY = heightMax + 2;
+        }
+        else if ( heightMax + 2 < gameBoundY ) {
+            game.height = gameBoundY = heightMax + 2;
+        }
 
         /* Motor object */
         var motors = {}
@@ -472,7 +552,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         Frame = function ( game, recipient, x, y, width, height ) {
             this.recipient = game.add.graphics(0,0);
             this.recipient.lineStyle( 1 + browserFix/4, 0xa3a3a3, 1 - browserFix/10);
-            this.recipient.beginFill( 0x313233, 0.68);
+            this.recipient.beginFill( 0x313233, 0.60);
             this.recipient.drawRect( x, y, width, height );
             this.width = width;
             this.height = height;
@@ -487,13 +567,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var dashboardStatus = 1; // 1 = 'running/resumed', 0 = 'stopped/paused'
         var status = { statusDisplay : "running..." } // initially running
         var resume = { messageDisplay : 0, resumeOverlay : 0 }
-
-        /* Bot selector */
-        var botDropdown, dropdownBox, dropdown;
-        var dropHighlight = { 1 : 0 }
-        var botLabels = new Array();
-        var botName;
-        var bot = { nameDisplay : "" }
 
         /* Sensor ID labels */
         var sensorIDLabels = {
@@ -510,10 +583,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
         }
 
         /* System info */
-        var positionSystem = { x : 1, y : 66 }
+        var positionSystem = { x : 1, y : 2 }
 
         /* Touch sensor */
-        var positionTouch = { x : 1, y : 162 }
+        var positionTouch = { x : 1, y : 96 }
         var labelTouch, labelTouched, labelTouchCount, labelTouchTime, labelTouchTimeUnits;
         var touch = {
             count : 0, // total number of touches
@@ -525,19 +598,19 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var touchIndicator;
 
         /* Color sensor */
-        var positionColor = { x : 1, y : 258 }
+        var positionColor = { x : 1, y : 192 }
         var labelColor, labelColorName, labelIntensity, labelColorRGB;
         var color = { r : 0, g : 0, b : 0, value : 0, name : '', lightIntensity : 0, rgbDisplay : 0, nameDisplay : '', lightIntensityDisplay : 0 }
         var colorDisplay;
 
         /* IR sensor */
-        var positionIR = { x : 1, y : 356 }
+        var positionIR = { x : 1, y : 290 }
         var labelIR, labelIRDist, labelIRUnits;
         var IRDist = 0; 
         var IR = { IRDistDisplay : 0 }
 
         /* Ultrasonic sensor */
-        var positionUltrasonic = { x : 1, y : 426 }
+        var positionUltrasonic = { x : 1, y : 360 }
         var labelUltrasonic, labelUltrasonicDist, labelUltrasonicUnits;
         var ultrasonicDist = 0;
         var ultrasonic = { ultrasonicDistDisplay : 0 }
@@ -555,6 +628,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Button for testing */
         var getKeyspaceButton;
+
+        /* Translucent background/underlay */
+        var underlay;
 
         /* === Text editor stuff === */
         var userType;
@@ -574,7 +650,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         //===================================================
 
-        function listenToBot( robotClientId, selectionIndex ) { // this is called once the user selects a bot from the drop-down
+        listenToBot = function ( robotClientId, selectionIndex ) { // this is called once the user selects a bot from the drop-down
 
             channel.getKeyspace(robotClientId).onValue(function (key, val) {
                 //console.log("Add:" + key +"->"+JSON.stringify(val) );
@@ -633,7 +709,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     setBatteryLevel(val.ev3.power);
                 }
             }, function (key) {
-                console.log("bot " + botId + " left");
+                console.log("bot " + robotClientId + " left");
                 //console.log("Delete:" + key);
             });
 
@@ -786,7 +862,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setBatteryLevel( val ) {
             battery.level = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             game.world.remove( battery.levelDisplay );
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
             if ( battery.level <= 0.15 ) { // for almost-dead battery!
                 if( battery.level > -0.01 ) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -814,110 +890,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace(botId).put('batteryDash', { 'batteryLevel' : battery.level });
         }
-      /* Bot selection */
-        function getSize(obj) { // get size of an object
-            var size = 0, key;
-            for (key in obj) {
-                if(obj.hasOwnProperty(key)) size++;
-            }
-            return size;
-        };
-        function actionDropdown() {
-            var numBots = getSize(botStore);
-            botDropdown.setFrames(2,2,2,2);
-            dropdownBox = game.add.graphics(0,0);
-            dropdownBox.beginFill(0xFFFFFF,0.85);
-            dropdownBox.drawRect(positionSystem.x+94, positionSystem.y+59, 150, (numBots+1)*24); //24 is height of a row (the highlight "button")
-            var j = 0;
-            for ( var key in botStore ) {
-                var obj = botStore[key];
-                var name = botStore[key];
-                dropHighlight[j] = game.add.button(positionSystem.x+94, positionSystem.y+59+24*j, 'highlighter');
-                dropHighlight[j].setFrames(0,2,1,2);
-                dropHighlight[j].events.onInputDown.add(actionSelectBot, key);
-                dropHighlight[j].input.useHandCursor = true;
-                if ( name.length < 20 ) var botNameDropdown = name;
-                else var botNameDropdown = name.slice(0, 19);
-                botLabels[j] = game.add.text(positionSystem.x+97, positionSystem.y+61+24*j+browserFix, botNameDropdown, dropdownStyle);
-                j++;
-            }
-            /* create a 'Add a New Bot' button at the bottom of the list */
-            dropHighlight[j] = game.add.button(positionSystem.x+94, positionSystem.y+59+24*j, 'highlighter');
-            dropHighlight[j].setFrames(0,2,1,2);
-            dropHighlight[j].events.onInputDown.add(actionAddNewBot);
-            dropHighlight[j].input.useHandCursor = true;
-            botLabels[j] = game.add.text(positionSystem.x+97, positionSystem.y+61+24*j+browserFix, 'Add a New Bot', dropdownStyle);
-            
-            botDropdown.input.stop();
-            dropdown = {
-                noBotSelection : game.add.button(positionSystem.x+94, positionSystem.y+33, 'botDropdown')
-            }
-            dropdown.noBotSelection.events.onInputDown.add(actionNoBotSelection);
-            dropdown.noBotSelection.setFrames(2,2,2,2);
-            dropdown.noBotSelection.input.useHandCursor = true;
-        }
-        function actionSelectBot() {
-            console.log("selected bot with clientId " + this + " and name " + botStore[this]);
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-
-            botId = this.toString(); //for some reason the botId was becoming a JSON object of the clientId string's letters without this
-            botName = botStore[ this ];
-            botIndex++;
-            listenToBot( botId, botIndex ); // start listening to the bot that was just selected
-            getInitialTouchData( botId );
-            getInitialBatteryLevel( botId );
-            game.world.remove( bot.nameDisplay );
-            if ( botName.length > 15 ) var botNameDisplay = botName.slice(0, 15);
-            else var botNameDisplay = botName;
-            bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+60+browserFix, botNameDisplay, statusStyle);
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-            //getInitialMotorStatus();
-            setInitialDashboardSettings(botId);
-            setSensorIDs();
-        }
-        function actionNoBotSelection() {
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-        }
-        function actionAddNewBot() {
-            var newBotName = prompt("Enter the name of the bot.");
-            var newBotId = prompt("Enter a temporary id for the bot.");
-            dropdownBox.destroy();
-            dropdown.noBotSelection.destroy();
-            var numBots = getSize(botStore);
-            for ( var j = 0; j < numBots+1; j++ ) {
-                botLabels[j].destroy();
-                dropHighlight[j].destroy();
-            }
-            if ( newBotName === '' || typeof newBotName ===  "undefined" || newBotName === null ) {
-                newBotName = 'default name';
-            }
-            if ( newBotId === '' || typeof newBotId === "undefined" || newBotId === null ) {
-                newBotId = 'defaultId';
-            }
-            botStore[ newBotId ] = newBotName;
-            botDropdown.input.start();
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
-        }
         /* Initialization of touch sensor display and battery display on dashboard */
-        function getInitialTouchData( robotClientId ) {
+        getInitialTouchData = function( robotClientId ) {
             var touchData = channel.getKeyspace(botId).get('touchDash'); // get the current touch count
             setInitialTouchData('touchDash', touchData);
         }
@@ -946,15 +920,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             console.log("initial touch count set to " + touch.count + " and total time pressed to " + touch.time);
         }
-        function getInitialBatteryLevel( robotClientId ) {
+        getInitialBatteryLevel = function( robotClientId ) {
             var batteryLevelData = channel.getKeyspace(botId).get('batteryDash'); // get the current battery level, before occassional updates
             setInitialBatteryLevel('batteryDash', batteryLevelData);
         }
-        function setInitialBatteryLevel( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
+        setInitialBatteryLevel = function( key, val ) { // set the current battery level if it exists (it's been calculated in a dashboard somewhere)
             if ( typeof val !== 'undefined' ) {
                 battery.level = val.batteryLevel;
                 game.world.remove( battery.levelDisplay );
-                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
                 if (battery.level <= 0.15) { // for almost-dead battery!
                     if(battery.level > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                         batteryLevelFill.destroy();
@@ -982,7 +956,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
-        function setSensorIDs() {
+        setSensorIDs = function() {
             var botData = channel.getKeyspace(botId).get('robot');
             if ( typeof botData !== "undefined" ) {
                 for ( var s in botData.ev3.sensors ) {
@@ -1043,7 +1017,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             //console.dir(sensorOverlays);
         }
-        function setInitialDashboardSettings( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
+        setInitialDashboardSettings = function( robotClientId ) { // if the bot has just been connected and has no dashboard settings in its keyspace
             var dashMotorA = channel.getKeyspace(robotClientId).get('aDash');
             if ( typeof dashMotorA === 'undefined' ) { // if this is undefined, that will mean that the bot is just being accessed for the first time, so it doesn't have any dashboard settings in each keyspace.
                 console.log("initializing keyspace and dashboard settings for the newly connected bot...");
@@ -1067,6 +1041,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
         }
+        displayName = function( robotName ) {
+            game.world.remove( bot.nameDisplay );
+            if ( robotName.length > 15 ) var botNameDisplay = robotName.slice(0, 15);
+            else var botNameDisplay = robotName;
+            bot.nameDisplay = game.add.text(positionSystem.x+145-botNameDisplay.length*60/16, positionSystem.y+61+browserFix, botNameDisplay, statusStyle);
+        }
       //==============================================================================================================================
         function preload() {
             game.load.spritesheet('forwardButton','assets/buttons/forward_button_spritesheet.png', 89, 45);
@@ -1076,20 +1056,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('plusButton','assets/buttons/plus_button_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/touch_sensor_spritesheet.png', 21, 21);
             game.load.spritesheet('statusButton','assets/buttons/status_button_spritesheet.png', 76, 26);
-            game.load.spritesheet('botDropdown','assets/buttons/dropdown_button_spritesheet.png', 101, 25);
-            game.load.spritesheet('highlighter','assets/buttons/dropdown_highlight_spritesheet.png', 151, 25);
             game.load.spritesheet('dialFace','assets/dial_face_spritesheet.png', 52, 52);
             //game.load.image('screenInputButton', 'assets/buttons/lcd_screen_input_button.png', 43, 22);
             game.load.image('sliderBar','assets/buttons/slider_bar.png', 72, 24);
             game.load.image('sliderBar2','assets/buttons/slider_bar_2.png', 72, 24);
             game.load.image('needle','assets/needle.png', 5, 26);
-            game.load.image('gigabotSm', 'assets/gigabots_logo_colors_sm_on_dark.png', 48, 48);
-            game.load.image('title','assets/gigabot_dashboard_title_on_dark.png', 400, 50);
-            game.load.image('poweredBy','assets/powered_by_big_bang_on_dark.png', 205, 50);
             game.load.image('resume','assets/resume_message.png',502,49);
             game.load.image('sliderIncrements','assets/slider_increments.png',52,156);
             game.load.image('batteryOutline','assets/battery_outline.png',60,22);
-            game.load.image('testingButton','assets/buttons/testing_button.png',100,50);
+            game.load.image('testingButton','assets/buttons/testing_button.png',70,32);
             game.load.image('motorBar','assets/motor_bar.png',273,23);
             game.load.image('gangBar','assets/gang_bar.png',273,23);
             game.load.image('sensorBar','assets/sensor_bar.png',273,23);
@@ -1107,7 +1082,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     this.game.paused = false;
                     dashboardStatus = 1;
                     game.world.remove(status.statusDisplay);
-                    status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60+browserFix, "running...", statusStyle);
+                    status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
                     statusButton.setFrames(1,0,0,0);
                     resume.resumeMessageDisplay.destroy();
                     resume.resumeOverlay.destroy();
@@ -1115,10 +1090,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }, this);
 
-          /* Title */
-            var dashboardTitle = game.add.sprite(75,8,'title');
-            var botLogo = game.add.sprite(10,9,'gigabotSm');
-            var poweredBy = game.add.sprite(917,8,'poweredBy');
+          /* Translucent background/underlay */
+            underlay = game.add.graphics(0,0);
+            underlay.lineStyle( 1 + browserFix/4, 0x808080, .4);
+            underlay.beginFill(0x808080,0.1);
+            underlay.drawRect(0, 0, gameBoundX, gameBoundY);
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
@@ -1137,18 +1113,18 @@ require(['BrowserBigBangClient'], function (bigbang) {
             //topBars[ 'screen' ] = game.add.sprite( positionScreen.x+1, positionScreen.y+1,'sensorBar');
 
           /* Labels */
-            status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+60+browserFix, "running...", statusStyle);
-
-            if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+61+browserFix, "Select a robot ", selectBotStyle);
-            else { 
-                if ( botStore[ botId ].length > 15 ) var botNameDisplay = botStore[ botId ].slice(0, 15);
-                else var botNameDisplay = botStore[ botId ];
-                bot.nameDisplay = game.add.text(positionSystem.x+96, positionSystem.y+60+browserFix, botNameDisplay, statusStyle); // for a restart state, since a bot is already selected
-            }
-
             labelSystem = game.add.text(positionSystem.x+8, positionSystem.y+1+browserFix, "System", titleStyle);
 
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+60, Math.round(battery.level * 100) + " %", statusStyle );
+            status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
+
+            bot.label1 = game.add.text(positionSystem.x+112, positionSystem.y+29+browserFix,"Controlling", labelStyle);
+            bot.label1 = game.add.text(positionSystem.x+114, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
+            if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
+            else { 
+                displayName( botName );
+            }
+
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", statusStyle );
 
             labelTouch = game.add.text(positionTouch.x+8, positionTouch.y+1+browserFix, "Touch Sensor", titleStyle);
             labelTouched = game.add.text(positionTouch.x+12, positionTouch.y+32+browserFix, "Touched", labelStyle);
@@ -1175,11 +1151,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             statusButton = game.add.button(positionSystem.x+10, positionSystem.y+33, 'statusButton', actionStopOnClick);
             statusButton.setFrames(1,0,0,0);
             statusButton.input.useHandCursor = true;
-          /* Select which robot to control */
-            botDropdown = game.add.button(positionSystem.x+94, positionSystem.y+33, 'botDropdown');
-            botDropdown.events.onInputDown.add(actionDropdown);
-            botDropdown.setFrames(1,0,2,0);
-            botDropdown.input.useHandCursor = true;
           /* Touch Sensor */
             touchIndicator = game.add.sprite(positionTouch.x+68, positionTouch.y+30, 'touchIndicator');
             touchIndicator.animations.add('up', [0], 1);
@@ -1320,8 +1291,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             }
 
-          /* this button is for testing. it's invisible and in the upper right corner */   
-            getKeyspaceButton = game.add.button(840,0,'testingButton', actionGetKeyspace);
+          /* this button is for testing. it's invisible but it's placed above the battery level display */   
+            getKeyspaceButton = game.add.button(positionSystem.x+203, positionSystem.y+28,'testingButton', actionGetKeyspace);
 
         } // end create 
 
@@ -1763,11 +1734,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 dashboardStatus = 0;
                 game.paused = true;
                 game.world.remove(status.statusDisplay);
-                status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+60, "stopped", statusStyle);
+                status.statusDisplay = game.add.text(positionSystem.x+12, positionSystem.y+61, "stopped", statusStyle);
                 resume.resumeOverlay = game.add.graphics(0,0);
                 resume.resumeOverlay.beginFill(0x00000,0.45);
-                resume.resumeOverlay.drawRect(0, 66, gameBoundX, gameBoundY-69);
-                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,280,'resume');
+                resume.resumeOverlay.drawRect(0, 0, gameBoundX, gameBoundY);
+                resume.resumeMessageDisplay = game.add.sprite(gameBoundX/2-251,225,'resume');
                 this.game.input.keyboard.disabled = true;
                 botIndex++; //this is part of a little hack, to exit the channel.getKeyspace.onValue function while we're paused, so we don't update anything (like we do to deal with selecting the same bot multiple times)
             } else {
@@ -1993,7 +1964,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             //getInitialTouchData( botId );
                             //getInitialBatteryLevel( botId );
                             setInitialDashboardSettings( botId );
-                            //getInitialMotorStatus();
                             //var textDisplay = game.add.text(400, 20, "reconnected...", dataOutputStyle);                
                             console.log("Reconnected to bot " + botId + " with name " + botName);
                         }

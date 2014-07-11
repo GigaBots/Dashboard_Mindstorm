@@ -27,6 +27,7 @@ var botStore = { // client id (GUID) : bot name
     'fakeBotId1' : 'Fake Bot 1',
     'fakeBotId2' : 'Fake Bot 2'
 }
+
 var botId = "", botIndex = 0, botName = "";
 var bot = { nameDisplay : "" }
 

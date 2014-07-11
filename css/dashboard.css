@@ -27,6 +27,7 @@
 /* Control panel canvas
 ========================================= */
 #gameWorld {	
+	background-color: rgba(128, 128, 128, 0.15);
 	display: block;
 	vertical-align: baseline;
 	margin: -14px auto 0 auto;
@@ -34,8 +35,6 @@
 	border: 0;
 	
 	width: 1132px;
-	/*height: 653px;
-	*/
 	overflow: hidden;
 	clear: both;
 }
@@ -162,3 +161,17 @@ html::-WebKit-scrollbar-thumb {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
 	background-color: #CF9158;
 }
+
+/* Media queries
+========================================= */
+/* 1132, 847, 562 */
+@media (max-width: 1132px) {
+	#gameWorld {
+		width: 1132px;
+	}
+}
+@media (max-width: 847px) {
+	#gameWorld {
+		width: 847px;
+	}
+}`

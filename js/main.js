@@ -111,7 +111,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* === Dashboard control panel === */
 
-        var gameBoundX = 1132, gameBoundY = 530;
+        var canvasWidth = document.getElementById('gameWorld').offsetWidth;
+        //console.log(canvasWidth);
+
+        var gameBoundX = canvasWidth, gameBoundY = 530;
+
+        //var gameBoundX = 1132, gameBoundY = 530;
         game = new Phaser.Game(gameBoundX, gameBoundY, Phaser.AUTO, "gameWorld", {
             preload: preload, 
             create: create,
@@ -554,6 +559,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.recipient.drawRect( x, y, width, height );
             this.width = width;
             this.height = height;
+            // this.move = function ( x2, y2 ) {
+            //     this.recipient.x = x2;
+            //     this.recipient.y = y2;
+            //     // var newRecipient = this.recipient;
+            //     // this.recipient.destroy();
+            //     // newRecipient.drawRect( x2, y2, width, height );
+                
+            // }
         }
         Frame.prototype.constructor = Frame;
 
@@ -626,9 +639,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Button for testing */
         var getKeyspaceButton;
-
-        /* Translucent background/underlay */
-        var underlay;
 
         /* === Text editor stuff === */
         var userType;
@@ -1070,7 +1080,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             updateBar(100, $("#progressBar")); 
             this.game.stage.disableVisibilityChange = true;
             game.input.keyboard.disabled = false;
-            game.world.setBounds(0, 0, gameBoundX, gameBoundY);
+            // game.world.setBounds(0, 0, gameBoundX, gameBoundY);
             game.input.onDown.add(function () {
                 if ( this.game.paused ) {
                     this.game.paused = false;
@@ -1083,12 +1093,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
                     botIndex--; // //this is part of a little hack, to resume the channel.getKeyspace.onValue function after we resume, so we don't update anything (like we do to deal with selecting the same bot multiple times)
                 }
             }, this);
-
-          /* Translucent background/underlay */
-            underlay = game.add.graphics(0,0);
-            underlay.lineStyle( 1 + browserFix/4, 0x808080, .4);
-            underlay.beginFill(0x808080,0.1);
-            underlay.drawRect(0, 0, gameBoundX, gameBoundY);
 
           /* Frames */
             frames[ 'system' ] = new Frame( game, 'system', positionSystem.x, positionSystem.y, 275, 86);
@@ -1175,22 +1179,23 @@ require(['BrowserBigBangClient'], function (bigbang) {
             for ( var i = 1; i <= numMotors; i++ ) {
                 var motorPort = letters[i];
                 motors[ motorPort ] = new Motor( game, motorPort );
-              /* inside motor frames */                
-                frames[ motorPort ] = new Frame( game, motorPort, positionMotors[ motorPort ].x, positionMotors[ motorPort ].y, 275, 232);
-                topBars[ motorPort ] = game.add.sprite( positionMotors[ motorPort ].x+1, positionMotors[ motorPort ].y+1,'motorBar');
-                labelMotors[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+8, positionMotors[ motorPort ].y+1+browserFix, motors[ letters[i] ].name, titleStyle );
+                var positionX = positionMotors[ motorPort ].x;
+                var positionY = positionMotors[ motorPort ].y;
+                frames[ motorPort ] = new Frame( game, motorPort, positionX, positionY, 275, 232);
+                topBars[ motorPort ] = game.add.sprite( positionX+1, positionY+1,'motorBar');
+                labelMotors[ motorPort ] = game.add.text( positionX+8, positionY+1+browserFix, motors[ letters[i] ].name, titleStyle );
                 dials[ motorPort ] = new RotationDial( game, motorPort , numbers[ motorPort ] );               
                 dials[ motorPort ].animations.play('pluggedIn');
                 needles[ motorPort ] = new RotationNeedle( game, motorPort , numbers[ motorPort ] );
-                dividers[ motorPort ] = game.add.sprite( positionMotors[ motorPort ].x+7, positionMotors[ motorPort ].y+93, 'dividerLine' );
-                sliderTracks[ motorPort] = game.add.sprite( positionMotors[ motorPort ].x+170, positionMotors[ motorPort].y+39, 'sliderIncrements' );
+                dividers[ motorPort ] = game.add.sprite( positionX+7, positionY+93, 'dividerLine' );
+                sliderTracks[ motorPort] = game.add.sprite( positionX+170, positionY+39, 'sliderIncrements' );
                 for ( var k = 0; k <= 7; k++ ) {
                     var speedLabel = 100 * k + "";
-                    sliderSpeedIncrements[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+243, positionMotors[ motorPort ].y+185-22*k+browserFix, speedLabel, labelStyle );
+                    sliderSpeedIncrements[ motorPort ] = game.add.text( positionX+243, positionY+185-22*k+browserFix, speedLabel, labelStyle );
                 }
-                sliderSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+160, positionMotors[ motorPort ].y+206+browserFix, "Speed (\xB0/sec)", labelStyle );
-                currentSpeedLabels[ motorPort ] = game.add.text( positionMotors[ motorPort ].x+69, positionMotors[ motorPort ].y+38+browserFix, "Current Speed", labelStyle );
-                directionConfigLabels[ motorPort ] = game.add.text(positionMotors[ motorPort ].x+37, positionMotors[ motorPort ].y+206+browserFix, "Swap Directions", labelStyle );
+                sliderSpeedLabels[ motorPort ] = game.add.text( positionX+160, positionY+206+browserFix, "Speed (\xB0/sec)", labelStyle );
+                currentSpeedLabels[ motorPort ] = game.add.text( positionX+69, positionY+38+browserFix, "Current Speed", labelStyle );
+                directionConfigLabels[ motorPort ] = game.add.text(positionX+37, positionY+206+browserFix, "Swap Directions", labelStyle );
                 forwardButtons[ motorPort ] = new ForwardButton( game, motorPort );
                 reverseButtons[ motorPort ] = new ReverseButton( game, motorPort );
                 motorPlusButtons[ motorPort ] = new MotorPlusButton( game, motorPort );
@@ -1201,19 +1206,21 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* Create Gangs */
             for ( var i = 1; i <= numGangs; i++ ) {
                 gangs[ i ] = new Gang( game, i );
-                frames[ i ] = new Frame( game, i, positionGangs[ i ].x, positionGangs[ i ].y, 275, 231 + numCheckboxRows * 28);
-                topBars[ i ] = game.add.sprite( positionGangs[ i ].x+1, positionGangs[ i ].y+1,'gangBar');                
-                dividers[ i + 'a' ] = game.add.sprite( positionGangs[ i ].x+7, positionGangs[ i ].y+58, 'dividerLine' );
-                dividers[ i + 'b' ] = game.add.sprite( positionGangs[ i ].x+7, positionGangs[ i ].y+204, 'dividerLine2' );
-                gangLabels[ i ] = game.add.text( positionGangs[ i ].x+8, positionGangs[ i ].y+1+browserFix, gangs[ i ].name, titleStyle );
-                sliderTracks[ i ] = game.add.sprite( positionGangs[ i ].x+170, positionGangs[ i ].y+39, 'sliderIncrements' );                
+                var positionX = positionGangs[ i ].x;
+                var positionY = positionGangs[ i ].y;
+                frames[ i ] = new Frame( game, i, positionX, positionY, 275, 231 + numCheckboxRows * 28);
+                topBars[ i ] = game.add.sprite( positionX+1, positionY+1,'gangBar');                
+                dividers[ i + 'a' ] = game.add.sprite( positionX+7, positionY+58, 'dividerLine' );
+                dividers[ i + 'b' ] = game.add.sprite( positionX+7, positionY+204, 'dividerLine2' );
+                gangLabels[ i ] = game.add.text( positionX+8, positionY+1+browserFix, gangs[ i ].name, titleStyle );
+                sliderTracks[ i ] = game.add.sprite( positionX+170, positionY+39, 'sliderIncrements' );                
                 for ( var k = 0; k <= 7; k++ ) {
                     var speedLabel = 100 * k + "";
-                    sliderSpeedIncrements[ i ] = game.add.text( positionGangs[ i ].x+243, positionGangs[ i ].y+185-22*k+browserFix, speedLabel, labelStyle );
+                    sliderSpeedIncrements[ i ] = game.add.text( positionX+243, positionY+185-22*k+browserFix, speedLabel, labelStyle );
                 }
-                sliderSpeedLabels[ i ] = game.add.text( positionGangs[ i ].x+160, positionGangs[ i ].y+206+browserFix, "Speed (\xB0/sec)", labelStyle );
-                currentSpeedLabels[ i ] = game.add.text( positionGangs[ i ].x+12, positionGangs[ i ].y+33+browserFix, "Current Speed", labelStyle );
-                directionsNote[ i ] = game.add.text(positionGangs[ i ].x+11, positionGangs[ i ].y+166+browserFix, "*Forward and Reverse\n directions are relative", noteStyle), 
+                sliderSpeedLabels[ i ] = game.add.text( positionX+160, positionY+206+browserFix, "Speed (\xB0/sec)", labelStyle );
+                currentSpeedLabels[ i ] = game.add.text( positionX+12, positionY+33+browserFix, "Current Speed", labelStyle );
+                directionsNote[ i ] = game.add.text(positionX+11, positionY+166+browserFix, "*Forward and Reverse\n directions are relative", noteStyle), 
                 gangForwardButtons[ i ] = new GangForwardButton( game, i );
                 gangReverseButtons[ i ] = new GangReverseButton( game, i );
                 gangPlusButtons[ i ] = new GangPlusButton( game, i );
@@ -1221,12 +1228,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 gangSliderBars[ i ] = new GangSliderBar( game, i );
                 gangCheckboxes[ i ] = new GangCheckbox( game, i );
                 gangMotorLabels[ i ] = new GangMotorLabel( game, i );
-                gangMotorLabels[ i ][ 'motors' ] = game.add.text( positionGangs[ i ].x+12, positionGangs[ i ].y+207+browserFix, "Motors Selected", labelStyle );
+                gangMotorLabels[ i ][ 'motors' ] = game.add.text( positionX+12, positionY+207+browserFix, "Motors Selected", labelStyle );
                 // arrange checkboxes:
                 if ( numMotors <= 6 ) {
                     var spacing = Math.ceil( frames[ i ].width / ( numMotors + 1 ) );
                     for ( var j = 1; j <= numMotors; j++ ) {
-                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x + Math.floor( spacing/2 ) + (j-1) * spacing, positionGangs[ i ].y + 231 );
+                        gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionX + Math.floor( spacing/2 ) + (j-1) * spacing, positionY + 231 );
                         gangMotorLabels[ i ][ letters[j] ] = game.add.text( gangCheckboxes[i][ letters[j] ].x + 26, gangCheckboxes[i][ letters[j] ].y + 2 + browserFix, letters[j].toUpperCase(), labelStyle );
                     }
                 }
@@ -1238,7 +1245,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             checkboxRow[ k ] = Math.ceil( numMotors / numCheckboxRows )
                             checkboxRow[ k + 'spacing' ] = Math.ceil( frames[ i ].width / ( checkboxRow[ k ] + 1 ) );
                             for ( var j = 1; j <= checkboxRow[ k ]; j++ ) {
-                                gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x + Math.floor( checkboxRow[ k + 'spacing' ] / 2 ) + (j-1) * checkboxRow[ k + 'spacing' ], positionGangs[ i ].y + 203 + k * 28 );
+                                gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionX + Math.floor( checkboxRow[ k + 'spacing' ] / 2 ) + (j-1) * checkboxRow[ k + 'spacing' ], positionY + 203 + k * 28 );
                                 gangMotorLabels[ i ][ letters[j] ] = game.add.text( gangCheckboxes[i][ letters[j] ].x + 26, gangCheckboxes[i][ letters[j] ].y + 2 + browserFix, letters[j].toUpperCase(), labelStyle );
                             }
                             numMotorsAdded += checkboxRow[ k ];
@@ -1247,7 +1254,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                             checkboxRow[ k ] = Math.ceil( ( numMotors - numMotorsAdded ) / ( numCheckboxRows - ( k - 1 ) ) );
                             checkboxRow[ k + 'spacing' ] = Math.ceil( frames[ i ].width / ( checkboxRow[ k ] + 1 ) );
                             for ( var j = numMotorsAdded + 1; j <= numMotorsAdded + checkboxRow[ k ]; j++ ) {
-                                gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionGangs[ i ].x + Math.floor( checkboxRow[ k + 'spacing' ] / 2 ) + (j-1-numMotorsAdded) * checkboxRow[ k + 'spacing' ], positionGangs[ i ].y + 203 + k * 28 );
+                                gangCheckboxes[ i ][ letters[j] ] = new MotorCheckbox( game, i, letters[j], positionX + Math.floor( checkboxRow[ k + 'spacing' ] / 2 ) + (j-1-numMotorsAdded) * checkboxRow[ k + 'spacing' ], positionY + 203 + k * 28 );
                                 gangMotorLabels[ i ][ letters[j] ] = game.add.text( gangCheckboxes[i][ letters[j] ].x + 26, gangCheckboxes[i][ letters[j] ].y + 2 + browserFix, letters[j].toUpperCase(), labelStyle );
                             }
                             numMotorsAdded += checkboxRow[ k ];
@@ -1291,6 +1298,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* this button is for testing. it's invisible but it's placed above the battery level display */   
             getKeyspaceButton = game.add.button(positionSystem.x+203, positionSystem.y+28,'testingButton', actionGetKeyspace);
 
+
+console.dir(frames);
         } // end create 
 
         function configDirectionsActionDown () {
@@ -1980,8 +1989,75 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 }
             });
 
+        }
+
+        /* respnsive stuff */
+
+        var $window = $(window);
+
+        function checkWidth() {
+            var windowWidth = $window.width();
+            if ( windowWidth >= 1132 ) {
+                gameBoundX = 1132; // 4 columns
+            } 
+            else if ( windowWidth <= 562 ) {
+                gameBoundX = 562; // 2 columns
+            }
+            else {
+                gameBoundX = 847; // 3 columns
+            }
+            if ( game.width > gameBoundX ) { // if current game width is greater than the new width, make it smaller
+                game.width = gameBoundX;
+                for ( var k in gangs ) {
+                    moveGang( k, 3 )
+                }
+            }
+            else { // make it bigger;
+                game.width = gameBoundX;
+            }
 
         }
+        checkWidth(); // execute on load
+        $(window).resize(checkWidth); // bind event listener
+
+        function moveGang( id, col ) {
+            var gangCol = 2; // make 2 columns of gangs
+            game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
+            if ( id % gangCol === 0 ) {
+                var x = 286 + 285;
+            }
+            else {
+                var x = 286;
+            }
+            var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * frames[1].height;
+            positionGangs[ id ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
+            frames[ id ].recipient.x = x;
+            frames[ id ].recipient.y = y;
+            //frames[ id ].move( x, y );
+            topBars[ id ].x = x + 1;
+            topBars[ id ].y = y + 1;
+            dividers[ id + 'a' ].x = x + 7;
+            dividers[ id + 'a' ].y = y + 58;
+            dividers[ id + 'b' ].x = x + 7;
+            dividers[ id + 'b' ].y = y + 204;
+            gangLabels[ id ].x = x + 8;
+            gangLabels[ id ].y = y + 1 + browserFix;
+            sliderTracks[ id ].x = x + 170;
+            sliderTracks[ id ].y = y + 39;
+            for ( var k = 0; k <= 7; k++ ) {
+                var speedLabel = 100 * k + "";
+                sliderSpeedIncrements[ id ].x = x + 243;
+                sliderSpeedIncrements[ id ].y = y + 185 - 22*k + browserFix;
+            }
+            sliderSpeedLabels[ id ].x = x + 160;
+            sliderSpeedLabels[ id ].y = y + 206 + browserFix;
+            currentSpeedLabels[ id ].x = x + 12;
+            currentSpeedLabels[ id ].y = y + 33 + browserFix;
+            console.dir(frames);
+
+        }
+
+        // end responsive stuff
 
         /* === Dashboard console-based text editor === */
 

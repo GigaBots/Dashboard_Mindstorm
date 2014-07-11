@@ -177,7 +177,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var selectBotStyle = { font: "italic 13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#ff5000" }
         var dataOutputStyle = { font: "16px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#dfdfdf"}
         var statusStyle = { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#eaeaea" }
-        var messageStyle = { font: "14px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
+        var messageStyle = { font: "12px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
 
         /* Two objects, for referring to motors (or sensors, etc), by a letter corresponding to a number and a number coresponding to the letter. This is for building objects and then using them */
         var numbers = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20, u: 21, v: 22, w: 23, x: 24, y: 25, z: 26 }
@@ -619,9 +619,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             levelDisplay : 1
         }
         /* LCD Screen */
-        // var positionScreen = { x : 15, y : 133 }
-        // var labelScreen, LCDScreenBox;
-        // var screenMessage = { messageDisplay1 : "", messageDisplay2 : "", messageDisplay3 : "" }
+        var positionScreen = { x : 1, y : 430 }
+        var labelScreen, LCDScreenBox;
+        var screenMessage = { messageDisplay1 : "", messageDisplay2 : "", messageDisplay3 : "", messageDisplay4 : "" }
 
         /* Button for testing */
         var getKeyspaceButton;
@@ -1052,9 +1052,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('minusButton','assets/buttons/minus_button_spritesheet.png', 44, 44);
             game.load.spritesheet('plusButton','assets/buttons/plus_button_spritesheet.png', 44, 44);
             game.load.spritesheet('touchIndicator','assets/touch_sensor_spritesheet.png', 21, 21);
-            game.load.spritesheet('statusButton','assets/buttons/status_button_spritesheet.png', 76, 26);
+            game.load.spritesheet('statusButton','assets/buttons/status_button_spritesheet.png', 76, 32);
             game.load.spritesheet('dialFace','assets/dial_face_spritesheet.png', 52, 52);
-            //game.load.image('screenInputButton', 'assets/buttons/lcd_screen_input_button.png', 43, 22);
+            game.load.spritesheet('screenInputButton', 'assets/buttons/lcd_screen_input_button_spritesheet.png', 56, 32);
             game.load.image('sliderBar','assets/buttons/slider_bar.png', 72, 24);
             game.load.image('sliderBar2','assets/buttons/slider_bar_2.png', 72, 24);
             game.load.image('needle','assets/needle.png', 5, 26);
@@ -1099,7 +1099,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             frames[ 'color' ] = new Frame( game, 'color', positionColor.x, positionColor.y, 275, 88);
             frames[ 'IR' ] = new Frame( game, 'IR', positionIR.x, positionIR.y, 275, 60);
             frames[ 'ultrasonic' ] = new Frame( game, 'ultrasonic', positionUltrasonic.x, positionUltrasonic.y, 275, 60);
-            //frames[ 'screen' ] = new Frame( game, 'screen', positionScreen.x, positionScreen.y, 275, 88);
+            frames[ 'screen' ] = new Frame( game, 'screen', positionScreen.x, positionScreen.y, 275, 99);
 
           /* Top Bars */
             topBars[ 'system' ] = game.add.sprite( positionSystem.x+1, positionSystem.y+1,'sensorBar');
@@ -1107,7 +1107,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             topBars[ 'color' ] = game.add.sprite( positionColor.x+1, positionColor.y+1,'sensorBar');
             topBars[ 'IR' ] = game.add.sprite( positionIR.x+1, positionIR.y+1,'sensorBar');
             topBars[ 'ultrasonic' ] = game.add.sprite( positionUltrasonic.x+1, positionUltrasonic.y+1,'sensorBar');
-            //topBars[ 'screen' ] = game.add.sprite( positionScreen.x+1, positionScreen.y+1,'sensorBar');
+            topBars[ 'screen' ] = game.add.sprite( positionScreen.x+1, positionScreen.y+1,'sensorBar');
 
           /* Labels */
             labelSystem = game.add.text(positionSystem.x+8, positionSystem.y+1+browserFix, "System", titleStyle);
@@ -1142,7 +1142,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             labelUltrasonicDist = game.add.text(positionUltrasonic.x+12+browserFix, positionUltrasonic.y+32+browserFix, "Distance:", labelStyle);
             labelUltrasonicUnits = game.add.text(positionUltrasonic.x+128+browserFix, positionUltrasonic.y+32+browserFix, "cm", labelStyle);
             
-            //labelScreen = game.add.text(positionScreen.x+8, positionScreen.y+1+browserFix, "LCD Screen", titleStyle);
+            labelScreen = game.add.text(positionScreen.x+8, positionScreen.y+1+browserFix, "LCD Screen", titleStyle);
 
           /* Dashboard stop/resume button */
             statusButton = game.add.button(positionSystem.x+10, positionSystem.y+33, 'statusButton', actionStopOnClick);
@@ -1164,12 +1164,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
             batteryLevelFill.beginFill(0x808080, 1);
             batteryLevelFill.drawRect(positionSystem.x+207, positionSystem.y+37, Math.round(battery.level*50), 16); // the "x50" converts the battery level (whatever it initially is) to the scale of 50 px wide
           /* LCD Screen */
-            // LCDScreenBox = game.add.graphics(0,0);
-            // LCDScreenBox.beginFill(0x808080, 0.6);
-            // LCDScreenBox.lineStyle(2, 0xa3a3a3, 1);
-            // LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+29, 172, 46);
-            // screenInputButton = game.add.button(positionScreen.x+142, positionScreen.y+4, 'screenInputButton', actionInputOnClick);
-            // screenInputButton.input.useHandCursor = true;
+            LCDScreenBox = game.add.graphics(0,0);
+            LCDScreenBox.beginFill(0x808080, 0.6);
+            LCDScreenBox.lineStyle(2, 0xa3a3a3, 1);
+            LCDScreenBox.drawRect(positionScreen.x+10, positionScreen.y+32, 190, 57);
+            screenInputButton = game.add.button(positionScreen.x+210, positionScreen.y+31, 'screenInputButton', actionInputMessageOnClick);
+            screenInputButton.setFrames(1,0,2,0);
+            screenInputButton.input.useHandCursor = true;
+            displayOnLCDScreen( "Display a message on the  Gigabots's LCD screen..." );
 
           /* Create Motors */
             for ( var i = 1; i <= numMotors; i++ ) {
@@ -1744,21 +1746,27 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 game.paused = false;
             }
         }
-        // function actionInputOnClick () {
-        //     game.world.remove(screenMessage.messageDisplay1); // remove any messages present
-        //     game.world.remove(screenMessage.messageDisplay2);
-        //     game.world.remove(screenMessage.messageDisplay3);
-        //     messageDisplay = prompt("What would you like to display on the Gigabot's LCD screen?");
-        //     var messageDisplay1 = messageDisplay.substring(0,20);
-        //     var messageDisplay2 = messageDisplay.substring(20,40);
-        //     var messageDisplay3 = messageDisplay.substring(40,60);
-        //     if ( messageDisplay.length > 60 ) {
-        //         alert("Sorry, too many characters! The following will be displayed on the screen: \n \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3);
-        //     }
-        //     screenMessage.messageDisplay1 = game.add.text(positionScreen.x+15, positionScreen.y+32+browserFix, messageDisplay1, messageStyle);
-        //     screenMessage.messageDisplay2 = game.add.text(positionScreen.x+15, positionScreen.y+46+browserFix, messageDisplay2, messageStyle);
-        //     screenMessage.messageDisplay3 = game.add.text(positionScreen.x+15, positionScreen.y+60+browserFix, messageDisplay3, messageStyle);
-        // }
+        function actionInputMessageOnClick() {
+            var messageDisplay = prompt("What would you like to display on the Gigabot's LCD screen?");
+            displayOnLCDScreen( messageDisplay );
+        }
+        function displayOnLCDScreen( message ) {
+            game.world.remove(screenMessage.messageDisplay1); // remove any messages present
+            game.world.remove(screenMessage.messageDisplay2);
+            game.world.remove(screenMessage.messageDisplay3);
+            game.world.remove(screenMessage.messageDisplay4);
+            var messageDisplay1 = message.substring(0,26);
+            var messageDisplay2 = message.substring(26,52);
+            var messageDisplay3 = message.substring(52,78);
+            var messageDisplay4 = message.substring(78,104);
+            if ( message.length > 104 ) {
+                alert("Sorry, too many characters! The following will be displayed on the screen: \n \n" + messageDisplay1 + "\n" + messageDisplay2 + "\n" + messageDisplay3 + "\n" + messageDisplay4);
+            }
+            screenMessage.messageDisplay1 = game.add.text(positionScreen.x+13, positionScreen.y+36+browserFix, messageDisplay1, messageStyle);
+            screenMessage.messageDisplay2 = game.add.text(positionScreen.x+13, positionScreen.y+49+browserFix, messageDisplay2, messageStyle);
+            screenMessage.messageDisplay3 = game.add.text(positionScreen.x+13, positionScreen.y+62+browserFix, messageDisplay3, messageStyle);
+            screenMessage.messageDisplay4 = game.add.text(positionScreen.x+13, positionScreen.y+75+browserFix, messageDisplay4, messageStyle);
+        }
         function actionGetKeyspace() {
             // this is to query the current bot's keyspace, for testing/debugging
             console.log("\nGetting Keyspace Info for Bot " + botStore[ botId ] + "...\nBot Client Id = " + botId + "\nand bot selection index = " + botIndex);

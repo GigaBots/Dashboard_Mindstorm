@@ -132,7 +132,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var roboInfo = channel.getKeyspace(joined).get('robot');
             if( roboInfo ) {
                 if ( !(joined in botStore) ) {
-                    console.log("new");
                     // add newly connected bots to botStore and the drop-down menu
                     botStore[joined] = roboInfo.ev3.name;
                     appendDropdown( joined );
@@ -140,13 +139,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace(joined).on('robot', function(val) {
                 if ( !(joined in botStore) ) {
-                    console.log('old');
                     // add already connected bots to botStore and the drop-down menu
                     botStore[joined] = val.ev3.name;
                     appendDropdown( joined );
                 }
             });
-            console.dir(botStore);
+            //console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
             if ( left in botStore ) {

@@ -21,15 +21,14 @@ updateBar(24, $("#progressBar"));
 var client;
 var game;
 var restartState;
+var gameStates = {}
+
 var botStore = { // client id (GUID) : bot name
     'fakeBotId1' : 'Fake Bot 1',
     'fakeBotId2' : 'Fake Bot 2'
 }
-
 var botId = "", botIndex = 0, botName = "";
 var bot = { nameDisplay : "" }
-
-var gameStates = {}
 
 var listenToBot;
 var getInitialTouchData;
@@ -133,7 +132,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var roboInfo = channel.getKeyspace(joined).get('robot');
             if( roboInfo ) {
                 if ( !(joined in botStore) ) {
-                    console.log("new");
                     // add newly connected bots to botStore and the drop-down menu
                     botStore[joined] = roboInfo.ev3.name;
                     appendDropdown( joined );
@@ -141,13 +139,12 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             channel.getKeyspace(joined).on('robot', function(val) {
                 if ( !(joined in botStore) ) {
-                    console.log('old');
                     // add already connected bots to botStore and the drop-down menu
                     botStore[joined] = val.ev3.name;
                     appendDropdown( joined );
                 }
             });
-            console.dir(botStore);
+            //console.dir(botStore);
         }, function(left) {
             console.log("leave " + left);
             if ( left in botStore ) {

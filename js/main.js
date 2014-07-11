@@ -756,76 +756,70 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setColorSensor( val ) {
             if (val.mode === "ColorID") {
                 var colorNameDisplay;
-                var colorDisplayFill;
                 game.world.remove(color.nameDisplay);
-                colorDisplay.destroy();
                 switch ( val.values[ 0 ] ) {
                     case 0:
                         colorNameDisplay = "Red";
-                        colorDisplayFill = '0xFF1919';
+                        colorDisplay.animations.play(0);
                         break;
                     case 1:
                         colorNameDisplay = "Green";
-                        colorDisplayFill = '0x00FF00';
+                        colorDisplay.animations.play(1);
                         break;
                     case 2:
                         colorNameDisplay = "Blue";
-                        colorDisplayFill = '0x8000FF';
+                        colorDisplay.animations.play(2);
                         break;
                     case 3:
                         colorNameDisplay = "Yellow";
-                        colorDisplayFill = '0xFFFF00';
+                        colorDisplay.animations.play(3);
                         break;
                     case 4:
                         colorNameDisplay = "Magenta";
-                        colorDisplayFill = '0xFF00FF';
+                        colorDisplay.animations.play(4);
                         break;
                     case 5:
                         colorNameDisplay = "Orange";
-                        colorDisplayFill = '0xF48E40';
+                        colorDisplay.animations.play(5);
                         break;
                     case 6:
                         colorNameDisplay = "White";
-                        colorDisplayFill = '0xFFFFFF';
+                        colorDisplay.animations.play(6);
                         break;
                     case 7:
                         colorNameDisplay = "Black";
-                        colorDisplayFill = '0x000000';
+                        colorDisplay.animations.play(7);
                         break;
                     case 8:
                         colorNameDisplay = "Pink";
-                        colorDisplayFill = '0xFF00FF';
+                        colorDisplay.animations.play(8);
                         break;
                     case 9:
                         colorNameDisplay = "Gray";
-                        colorDisplayFill = '0x808080';
+                        colorDisplay.animations.play(9);
                         break;
                     case 10:
                         colorNameDisplay = "Light Gray";
-                        colorDisplayFill = '0xD0D0D0';
+                        colorDisplay.animations.play(10);
                         break;
                     case 11:
                         colorNameDisplay = "Dark Gray";
-                        colorDisplayFill = '0x505050';
+                        colorDisplay.animations.play(11);
                         break;
                     case 12:
                         colorNameDisplay = "Cyan";
-                        colorDisplayFill = '0x00FFFF';
+                        colorDisplay.animations.play(12);
                         break;
                     case 13:
                         colorNameDisplay = "Brown";
-                        colorDisplayFill = '0x926239';
+                        colorDisplay.animations.play(13);
                         break;
                     default:
                         colorNameDisplay = "N/A";
-                        colorDisplayFill = '0x313233';
+                        colorDisplay.animations.play(14);
                         break;
                     }
                 color.nameDisplay = game.add.text(positionColor.x + 182, positionColor.y+29+browserFix,colorNameDisplay, dataOutputStyle);
-                colorDisplay = game.add.graphics(0,0);
-                colorDisplay.beginFill(colorDisplayFill, 1);
-                colorDisplay.lineStyle(1, 0xa3a3a3, 1);
-                colorDisplay.drawRect(positionColor.x+179, positionColor.y+57, 58, 20);
             } 
             else if (val.mode === "RGB") {
                 game.world.remove(color.rgbDisplay)
@@ -1055,6 +1049,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             game.load.spritesheet('statusButton','assets/buttons/status_button_spritesheet.png', 76, 32);
             game.load.spritesheet('dialFace','assets/dial_face_spritesheet.png', 52, 52);
             game.load.spritesheet('screenInputButton', 'assets/buttons/lcd_screen_input_button_spritesheet.png', 56, 32);
+            game.load.spritesheet('colorOutput', 'assets/color_output_spritesheet.png', 59, 20);
             game.load.image('sliderBar','assets/buttons/slider_bar.png', 72, 24);
             game.load.image('sliderBar2','assets/buttons/slider_bar_2.png', 72, 24);
             game.load.image('needle','assets/needle.png', 5, 26);
@@ -1114,8 +1109,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
             status.statusDisplay =  game.add.text(positionSystem.x+12, positionSystem.y+61+browserFix, "running...", statusStyle);
 
-            bot.label1 = game.add.text(positionSystem.x+112, positionSystem.y+29+browserFix,"Controlling", labelStyle);
-            bot.label1 = game.add.text(positionSystem.x+114, positionSystem.y+43+browserFix,"Gigabot...", labelStyle);
+            var botBackground = game.add.graphics(0,0);
+            botBackground.beginFill(0x808080, 0.7);
+            botBackground.drawRect(positionSystem.x+95, positionSystem.y+33, 99, 1);
+            var botLabel = game.add.text(positionSystem.x+98, positionSystem.y+36+browserFix,"Controlling bot:", { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#bcbcbc" } );
             if ( botId === '' ) bot.nameDisplay = game.add.text(positionSystem.x+91, positionSystem.y+62+browserFix, "No robot selected ", selectBotStyle);
             else { 
                 displayName( botName );
@@ -1154,10 +1151,11 @@ require(['BrowserBigBangClient'], function (bigbang) {
             touchIndicator.animations.add('pressed', [1], 1);
             touchIndicator.animations.play('up');
           /* Color Sensor */        
-            colorDisplay = game.add.graphics(0,0);
-            colorDisplay.beginFill(0x000000, 0.05);
-            colorDisplay.lineStyle(1, 0xa3a3a3, 1);
-            colorDisplay.drawRect(positionColor.x+179, positionColor.y+57, 58, 20);
+            colorDisplay = game.add.sprite( positionColor.x+179, positionColor.y+57, 'colorOutput' );
+            for (var i = 0; i<=14; i++) {
+                colorDisplay.animations.add(i,[i],1);
+            }
+            colorDisplay.animations.play(14);
           /* Battery Level Sensor */
             batteryLevelOutline = game.add.sprite(positionSystem.x+204, positionSystem.y+34, 'batteryOutline');
             batteryLevelFill = game.add.graphics(0,0);

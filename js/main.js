@@ -1216,6 +1216,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 sliderTracks[ i ] = game.add.sprite( positionX+170, positionY+39, 'sliderIncrements' );                
                 for ( var k = 0; k <= 7; k++ ) {
                     var speedLabel = 100 * k + "";
+                    //sliderSpeedIncrements[ i ] = {}
                     sliderSpeedIncrements[ i ] = game.add.text( positionX+243, positionY+185-22*k+browserFix, speedLabel, labelStyle );
                 }
                 sliderSpeedLabels[ i ] = game.add.text( positionX+160, positionY+206+browserFix, "Speed (\xB0/sec)", labelStyle );
@@ -1991,38 +1992,49 @@ console.dir(frames);
 
         }
 
-        /* respnsive stuff */
+        /* responsive stuff */
 
         var $window = $(window);
-
+        var size = '';
         function checkWidth() {
-            var windowWidth = $window.width();
-            if ( windowWidth >= 1132 ) {
+            var width = $window.width();
+            if ( width >= 1132 ) {
                 gameBoundX = 1132; // 4 columns
             } 
-            else if ( windowWidth <= 562 ) {
+            else if ( width <= 562 ) {
                 gameBoundX = 562; // 2 columns
             }
             else {
                 gameBoundX = 847; // 3 columns
             }
             if ( game.width > gameBoundX ) { // if current game width is greater than the new width, make it smaller
-                game.width = gameBoundX;
-                for ( var k in gangs ) {
-                    moveGang( k, 3 )
+                game.scale.width = game.canvas.width = game.stage.width = game.width = gameBoundX;
+                if ( size !== 'smaller') {
+                    for ( var k in gangs ) {
+                        moveGang( k, 3 )
+                    }
                 }
+                size = 'smaller';
             }
-            else { // make it bigger;
+            else if ( game.width > gameBoundX ) { // make it bigger;
                 game.width = gameBoundX;
+                size = 'bigger';
             }
-
+            console.log('run');
+            console.log(size);
         }
         checkWidth(); // execute on load
         $(window).resize(checkWidth); // bind event listener
 
+        // function checkHeight() {
+        //     var height = $window.height();
+
+        // }
+
         function moveGang( id, col ) {
+            console.log(id);
             var gangCol = 2; // make 2 columns of gangs
-            game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
+            game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
             if ( id % gangCol === 0 ) {
                 var x = 286 + 285;
             }
@@ -2031,6 +2043,9 @@ console.dir(frames);
             }
             var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * frames[1].height;
             positionGangs[ id ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
+            
+            // quick and dirty for now - work out a more efficient way to do this. Maybe after creating everything, store it all in a gang object (for each gang id), and then just move everything by the same amount that the gang position moved.
+
             frames[ id ].recipient.x = x;
             frames[ id ].recipient.y = y;
             //frames[ id ].move( x, y );
@@ -2053,6 +2068,40 @@ console.dir(frames);
             sliderSpeedLabels[ id ].y = y + 206 + browserFix;
             currentSpeedLabels[ id ].x = x + 12;
             currentSpeedLabels[ id ].y = y + 33 + browserFix;
+            directionsNote[ id ].x = x + 11;
+            directionsNote[ id ].y = y + 166 + browserFix;
+            gangForwardButtons[ id ].x = x + 10;
+            gangForwardButtons[ id ].y = y + 65;
+            gangReverseButtons[ id ].x = x + 10;
+            gangReverseButtons[ id ].y = y + 117;
+            gangPlusButtons[ id ].x = x + 112;
+            gangPlusButtons[ id ].y = y + 68
+            gangMinusButtons[ id ].x = x + 112;
+            gangMinusButtons[ id ].y = y + 115;
+            gangSliderBars[ id ].x = x + 165;
+            gangSliderBars[ id ].y = y + 188;
+            gangMotorLabels[ id ][ 'motors' ].x = x + 12;
+            gangMotorLabels[ id ][ 'motors' ].y = y + 207;
+
+            if ( typeof gangs[ id ].currentSpeedDisplay !== "undefined") {
+                gangs[ id ].currentSpeedDisplay.x = x + 103;
+                gangs[ id ].currentSpeedDisplay.y = y + 30 + browserFix;
+            }
+
+            // do this a little more efficient (make a position ganged motor checkbox function that takes the gang id and the number of motors or something, which we can use in create() and here)
+            if ( numMotors <= 6 ) {
+                var spacing = Math.ceil( frames[ id ].width / ( numMotors + 1 ) );
+                for ( var j = 1; j <= numMotors; j++ ) {
+                    gangCheckboxes[ id ][ letters[j] ].x = x + Math.floor( spacing/2 ) + (j-1) * spacing
+                    gangCheckboxes[ id ][ letters[j] ].y = y + 231;
+                    gangMotorLabels[ id ][ letters[j] ].x = gangCheckboxes[id][ letters[j] ].x + 26;
+                    gangMotorLabels[ id ][ letters[j] ].y = gangCheckboxes[id][ letters[j] ].y + 2 + browserFix;
+                }
+            }
+            else {
+                //
+            }
+
             console.dir(frames);
 
         }

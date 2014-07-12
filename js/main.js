@@ -559,14 +559,20 @@ require(['BrowserBigBangClient'], function (bigbang) {
             this.recipient.drawRect( x, y, width, height );
             this.width = width;
             this.height = height;
-            // this.move = function ( x2, y2 ) {
-            //     this.recipient.x = x2;
-            //     this.recipient.y = y2;
-            //     // var newRecipient = this.recipient;
-            //     // this.recipient.destroy();
-            //     // newRecipient.drawRect( x2, y2, width, height );
-                
-            // }
+            this.recipient.pos = {
+                x : x,
+                y : y
+            }
+            //this.recipient.delete = function ( x1, y1 ) {
+                //this.destroy();
+            //}
+            this.recipient.move = function ( x2, y2 ) {
+                 this.pos = {
+                    x : x2,
+                    y : y2
+                }
+                this.drawRect( x2, y2, width, height );
+            }
         }
         Frame.prototype.constructor = Frame;
 
@@ -1033,8 +1039,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 for ( var g in gangs ) {
                     var dashKey = g + 'Dash';
                     var initialChannelData = {
-                        speed : 0,
-                        direction : "stopped"
+                        'speed' : 0,
+                        'direction' : "stopped"
                     }
                     for ( var k in motors ) {
                         initialChannelData[ k ] = false;
@@ -1299,79 +1305,81 @@ require(['BrowserBigBangClient'], function (bigbang) {
           /* this button is for testing. it's invisible but it's placed above the battery level display */   
             getKeyspaceButton = game.add.button(positionSystem.x+203, positionSystem.y+28,'testingButton', actionGetKeyspace);
 
-
-console.dir(frames);
         } // end create 
 
         function configDirectionsActionDown () {
-            directionChecks[ this.port ].state = 'down';
+            var motorPort = this.port;
+            directionChecks[ motorPort ].state = 'down';
             var temp = this.directionSwapped;
             if ( !this.directionSwapped ) {
                 this.directionSwapped = true;
-                directionChecks[ this.port ].setFrames(1,1,1,1); //checked
+                directionChecks[ motorPort ].setFrames(1,1,1,1); //checked
             } 
             else {
                 this.directionSwapped = false;
-                directionChecks[ this.port ].setFrames(2,0,1,0); //unchecked
+                directionChecks[ motorPort ].setFrames(2,0,1,0); //unchecked
             }
-            //motors[ this.port ].previousDirectionSwapped = motors[ this.port ].directionSwapped;
-            var dashKey = this.port + 'Dash';
+            //motors[ motorPort ].previousDirectionSwapped = motors[ motorPort ].directionSwapped;
+            var dashKey = motorPort + 'Dash';
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { // if the motor is currently moving, we need to make it move in the updated direction
-                moveMotor( botId, this.port, keyspaceData.direction, keyspaceData.speed, this.directionSwapped );
+                moveMotor( botId, motorPort, keyspaceData.direction, keyspaceData.speed, this.directionSwapped );
             }
             channel.getKeyspace(botId).put(dashKey, { 'speed': keyspaceData.speed, 'direction': keyspaceData.direction, 'directionSwapped': this.directionSwapped }); 
-            //console.log("flipping directions for motor " + this.port + " from " + temp + " to " + this.directionSwapped );
+            //console.log("flipping directions for motor " + motorPort + " from " + temp + " to " + this.directionSwapped );
         }
         function configDirectionsActionUp () {
             directionChecks[ this.port ].state = 'up';
         }
         function increaseSpeedClickActionDown () {
-            if ( motors[ this.port ].speed <= 650 ) {
-                motors[ this.port ].speed += 50; // increase speed by 50 degrees/sec
-                sliderBars[ this.port ].y -= 11;
+            var motorPort = this.port;
+            if ( motors[ motorPort ].speed <= 650 ) {
+                motors[ motorPort ].speed += 50; // increase speed by 50 degrees/sec
+                sliderBars[ motorPort ].y -= 11;
             }
             else {
-                motors[ this.port ].speed = 700; // just set the speed to the maximum
-                sliderBars[ this.port ].y = positionMotors[ this.port ].y + 34;
+                motors[ motorPort ].speed = 700; // just set the speed to the maximum
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 34;
             }
-            var dashKey = this.port + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
+            var dashKey = motorPort + 'Dash'; // we're creating a string which will be the keyspace key for this motor's dashboard settings
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { // if the motor is currently moving, we need to make it move at the updated speed
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
+                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
-            game.world.remove( motors[ this.port ].currentSpeedDisplay );
-            motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+91, positionMotors[this.port].y+59+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
-            //console.log("increasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text(positionMotors[motorPort].x+91, positionMotors[motorPort].y+59+browserFix, motors[ motorPort ].speed.toFixed(1), dataOutputStyle);
+            //console.log("increasing motor " + motorPort + " speed to " + motors[ motorPort ].speed.toFixed(2) );
         }
         function decreaseSpeedClickActionDown () {
-            if (motors[ this.port ].speed >= 50) {
-                motors[ this.port ].speed -= 50;
-                sliderBars[ this.port ].y += 11;
+            var motorPort = this.port;
+            if (motors[ motorPort ].speed >= 50) {
+                motors[ motorPort ].speed -= 50;
+                sliderBars[ motorPort ].y += 11;
             } else {
-                motors[ this.port ].speed = 0; // just set the speed to the minimum
-                sliderBars[ this.port ].y = positionMotors[ this.port ].y + 188; 
+                motors[ motorPort ].speed = 0; // just set the speed to the minimum
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y + 188; 
             }
-            var dashKey = this.port + 'Dash'; 
+            var dashKey = motorPort + 'Dash'; 
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { 
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
+                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
-            game.world.remove( motors[ this.port ].currentSpeedDisplay );
-            motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+91, positionMotors[this.port].y+59+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
-            //console.log("decreasing motor " + this.port + " speed to " + motors[ this.port ].speed.toFixed(2) );
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text(positionMotors[motorPort].x+91, positionMotors[motorPort].y+59+browserFix, motors[ motorPort ].speed.toFixed(1), dataOutputStyle);
+            //console.log("decreasing motor " + motorPort + " speed to " + motors[ motorPort ].speed.toFixed(2) );
         }
         function changeSpeedSlideActionDown () {
-            //sliderBars[ this.port ].state = 'down';
-            motors[ this.port ].previousSpeed = motors[ this.port ].speed;
+            var motorPort = this.port;
+            //sliderBars[ motorPort ].state = 'down';
+            motors[ motorPort ].previousSpeed = motors[ motorPort ].speed;
             // add something for changing the slider bar in realtime while the motor is moving (e.g. for smooth acceleration functionality)
-            var dashKey = this.port + 'Dash';
+            var dashKey = motorPort + 'Dash';
             var dashData = channel.getKeyspace(botId).get(dashKey);
             if ( dashData.direction !== "stopped" ) {
                 //console.log('motor is moving');
-                var motorPort = this.port;
+                var motorPort = motorPort;
                 liveSpeed = setInterval( function() { changeLiveSpeed(motorPort) }, 17 );
                 grabHeight = game.input.mousePointer.y - sliderBars[ motorPort ].y;
             }
@@ -1397,24 +1405,25 @@ console.dir(frames);
             //console.log("changing speed of motor " + motorPort + " to " + motors[ motorPort ].speed.toFixed(2));
         }
         function changeSpeedSlideActionUp () {
+            var motorPort = this.port;
             clearInterval(liveSpeed); // stop the live speed adjusting
-            //sliderBars[ this.port ].state = 'up';
-            //we're sliding between positionMotors[ this.port ].y + 13 px (0 deg/sec) and positionMotors[ this.port ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-            if ( sliderBars[ this.port ].y < positionMotors[ this.port ].y+34 ) { //set max speed boundary limit
-                sliderBars[ this.port ].y = positionMotors[ this.port ].y+34;
-            } else if ( sliderBars[this.port].y > positionMotors[this.port].y+188 ) { //set min speed boundary limit
-                sliderBars[ this.port ].y = positionMotors[ this.port ].y+188;
+            //sliderBars[ motorPort ].state = 'up';
+            //we're sliding between positionMotors[ motorPort ].y + 13 px (0 deg/sec) and positionMotors[ motorPort ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            if ( sliderBars[ motorPort ].y < positionMotors[ motorPort ].y+34 ) { //set max speed boundary limit
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y+34;
+            } else if ( sliderBars[motorPort].y > positionMotors[motorPort].y+188 ) { //set min speed boundary limit
+                sliderBars[ motorPort ].y = positionMotors[ motorPort ].y+188;
             }
-            motors[ this.port ].speed = 700 + ( 700/154 ) * (positionMotors[this.port].y + 34 - sliderBars[this.port].y); // normalize speed over the range of y values on the slider track
-            var dashKey = this.port + 'Dash'; 
+            motors[ motorPort ].speed = 700 + ( 700/154 ) * (positionMotors[motorPort].y + 34 - sliderBars[motorPort].y); // normalize speed over the range of y values on the slider track
+            var dashKey = motorPort + 'Dash'; 
             var keyspaceData = channel.getKeyspace(botId).get(dashKey);
             if ( keyspaceData.direction !== "stopped" ) { 
-                moveMotor( botId, this.port, keyspaceData.direction, motors[ this.port ].speed, keyspaceData.directionSwapped );
+                moveMotor( botId, motorPort, keyspaceData.direction, motors[ motorPort ].speed, keyspaceData.directionSwapped );
             }
-            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ this.port ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
-            game.world.remove( motors[ this.port ].currentSpeedDisplay );
-            motors[ this.port ].currentSpeedDisplay = game.add.text(positionMotors[this.port].x+91, positionMotors[this.port].y+59+browserFix, motors[ this.port ].speed.toFixed(1), dataOutputStyle);
-            //console.log("changing speed of motor " + this.port + " to " + motors[ this.port ].speed.toFixed(2));
+            channel.getKeyspace(botId).put(dashKey, { 'speed': motors[ motorPort ].speed, 'direction': keyspaceData.direction, 'directionSwapped': keyspaceData.directionSwapped }); 
+            game.world.remove( motors[ motorPort ].currentSpeedDisplay );
+            motors[ motorPort ].currentSpeedDisplay = game.add.text(positionMotors[motorPort].x+91, positionMotors[motorPort].y+59+browserFix, motors[ motorPort ].speed.toFixed(1), dataOutputStyle);
+            //console.log("changing speed of motor " + motorPort + " to " + motors[ motorPort ].speed.toFixed(2));
         }
         function forwardDirectionActionDown () {
             //console.log("move motor " + this.port + " forward"); 
@@ -1439,71 +1448,74 @@ console.dir(frames);
 
         /* Gang controls */
         function increaseGangSpeedClickActionDown () {
-            if ( gangs[ this.gangId ].speed <= 650 ) {
-                gangs[ this.gangId ].speed += 50; // increase speed by 50 degrees/sec
-                gangSliderBars[ this.gangId ].y -= 11;
+            var id = this.gangId;
+            if ( gangs[ id ].speed <= 650 ) {
+                gangs[ id ].speed += 50; // increase speed by 50 degrees/sec
+                gangSliderBars[ id ].y -= 11;
             }
             else {
-                gangs[ this.gangId ].speed = 700; // just set the speed to the maximum
-                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y + 34;
+                gangs[ id ].speed = 700; // just set the speed to the maximum
+                gangSliderBars[ id ].y = positionGangs[ id ].y + 34;
             }
-            var dashKey = this.gangId + 'Dash'; // we're creating a string which will be the keyspace key for this gang's dashboard settings
+            var dashKey = id + 'Dash'; // we're creating a string which will be the keyspace key for this gang's dashboard settings
             var gangChannelData = {
-                'speed' : gangs[ this.gangId ].speed,
-                'direction' : gangs[ this.gangId ].direction
+                'speed' : gangs[ id ].speed,
+                'direction' : gangs[ id ].direction
             }
             for ( var k in motors ) {
-                gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].direction === "f" || gangs[ this.gangId ].direction === "r"  ) { // update the gang's motors speed if changed while the motors are moving
+                gangChannelData[ k ] = gangs[ id ][ k ];
+                if ( gangs[ id ].direction === "f" || gangs[ id ].direction === "r"  ) { // update the gang's motors speed if changed while the motors are moving
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ id ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
-            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
-            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+103, positionGangs[this.gangId].y+30+browserFix, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
-            //console.log("increasing gang " + this.gangId + " speed to " + gangs[ this.gangId ].speed.toFixed(2) );
+            game.world.remove( gangs[ id ].currentSpeedDisplay );
+            gangs[ id ].currentSpeedDisplay = game.add.text(positionGangs[id].x+103, positionGangs[id].y+30+browserFix, gangs[ id ].speed.toFixed(1), dataOutputStyle);
+            //console.log("increasing gang " + id + " speed to " + gangs[ id ].speed.toFixed(2) );
         }
         function decreaseGangSpeedClickActionDown () {
-            if (gangs[ this.gangId ].speed >= 50) {
-                gangs[ this.gangId ].speed -= 50;
-                gangSliderBars[ this.gangId ].y += 11;
+            var id = this.gangId;
+            if (gangs[ id ].speed >= 50) {
+                gangs[ id ].speed -= 50;
+                gangSliderBars[ id ].y += 11;
             } else {
-                gangs[ this.gangId ].speed = 0; // just set the speed to the minimum
-                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y + 188; 
+                gangs[ id ].speed = 0; // just set the speed to the minimum
+                gangSliderBars[ id ].y = positionGangs[ id ].y + 188; 
             }
-            var dashKey = this.gangId + 'Dash'; 
+            var dashKey = id + 'Dash'; 
             var gangChannelData = {
-                'speed' : gangs[ this.gangId ].speed,
-                'direction' : gangs[ this.gangId ].direction
+                'speed' : gangs[ id ].speed,
+                'direction' : gangs[ id ].direction
             }
             for ( var k in motors ) {
-                gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].direction === "f" || gangs[ this.gangId ].direction === "r" ) { 
+                gangChannelData[ k ] = gangs[ id ][ k ];
+                if ( gangs[ id ].direction === "f" || gangs[ id ].direction === "r" ) { 
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ id ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
-            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
-            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+103, positionGangs[this.gangId].y+30+browserFix, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
-            //console.log("decreasing gang " + this.gangId + " speed to " + gangs[ this.gangId ].speed.toFixed(2) );
+            game.world.remove( gangs[ id ].currentSpeedDisplay );
+            gangs[ id ].currentSpeedDisplay = game.add.text(positionGangs[id].x+103, positionGangs[id].y+30+browserFix, gangs[ id ].speed.toFixed(1), dataOutputStyle);
+            //console.log("decreasing gang " + id + " speed to " + gangs[ id ].speed.toFixed(2) );
         }
         function changeGangSpeedSlideActionDown () {
-            //gangSliderBars[ this.gangId ].state = 'down';
-            gangs[ this.gangId ].previousSpeed = gangs[ this.gangId ].speed;
+            var id = this.gangId;
+            //gangSliderBars[ id ].state = 'down';
+            gangs[ id ].previousSpeed = gangs[ id ].speed;
             // add something for changing the slider bar in realtime while the motor is moving (e.g. for smooth acceleration functionality)
-            var dashKey = this.gangId + 'Dash';
+            var dashKey = id + 'Dash';
             var dashData = channel.getKeyspace(botId).get(dashKey);
             if ( dashData.direction !== "stopped" ) {
                 //console.log('motor is moving');
-                var gangId = this.gangId;
+                var gangId = id;
                 liveGangSpeed = setInterval( function() { changeLiveGangSpeed(gangId) }, 1000/60 );
                 gangGrabHeight = game.input.mousePointer.y - gangSliderBars[ gangId ].y;
             }
@@ -1539,34 +1551,35 @@ console.dir(frames);
             //console.log("changing speed of gang " + this.gangId + " to " + gangs[ this.gangId ].speed.toFixed(2));
         }
         function changeGangSpeedSlideActionUp () {
+            var id = this.gangId;
             clearInterval(liveGangSpeed); // stop the live gang speed adjusting
-            //gangSliderBars[ this.gangId ].state = 'up';
-            //we're sliding between positionGangs[ this.gangId ].y + 13 px (0 deg/sec) and positionGangs[ this.gangId ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
-            if ( gangSliderBars[ this.gangId ].y < positionGangs[ this.gangId ].y+34 ) { //set max speed boundary limit
-                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y+34;
-            } else if ( gangSliderBars[this.gangId].y > positionGangs[this.gangId].y+188 ) { //set min speed boundary limit
-                gangSliderBars[ this.gangId ].y = positionGangs[ this.gangId ].y+188;
+            //gangSliderBars[ id ].state = 'up';
+            //we're sliding between positionGangs[ id ].y + 13 px (0 deg/sec) and positionGangs[ id ].y + 167px (700 deg/sec). These y coordinates are at the top of the slider bar, so the center goes from 362 to 202
+            if ( gangSliderBars[ id ].y < positionGangs[ id ].y+34 ) { //set max speed boundary limit
+                gangSliderBars[ id ].y = positionGangs[ id ].y+34;
+            } else if ( gangSliderBars[id].y > positionGangs[id].y+188 ) { //set min speed boundary limit
+                gangSliderBars[ id ].y = positionGangs[ id ].y+188;
             }
-            gangs[ this.gangId ].speed = 700 + ( 700/154 ) * (positionGangs[this.gangId].y + 34 - gangSliderBars[this.gangId].y); // normalize speed over the range of y values on the slider track
-            var dashKey = this.gangId + 'Dash'; 
+            gangs[ id ].speed = 700 + ( 700/154 ) * (positionGangs[id].y + 34 - gangSliderBars[id].y); // normalize speed over the range of y values on the slider track
+            var dashKey = id + 'Dash'; 
             var gangChannelData = {
-                'speed' : gangs[ this.gangId ].speed,
-                'direction' : gangs[ this.gangId ].direction
+                'speed' : gangs[ id ].speed,
+                'direction' : gangs[ id ].direction
             }
             for ( var k in motors ) {
-                gangChannelData[ k ] = gangs[ this.gangId ][ k ];
-                if ( gangs[ this.gangId ].direction === "f" || gangs[ this.gangId ].direction === "r"  ) {
+                gangChannelData[ k ] = gangs[ id ][ k ];
+                if ( gangs[ id ].direction === "f" || gangs[ id ].direction === "r"  ) {
                     if ( gangChannelData[ k ] === true ) {
                         var dashMotorKey = k + 'Dash';
                         var keyspaceMotorData = channel.getKeyspace(botId).get(dashMotorKey);
-                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ this.gangId ].speed, keyspaceMotorData.directionSwapped );
+                        moveMotor( botId, k, keyspaceMotorData.direction, gangs[ id ].speed, keyspaceMotorData.directionSwapped );
                     }
                 }
             }
             channel.getKeyspace(botId).put( dashKey, gangChannelData ); 
-            game.world.remove( gangs[ this.gangId ].currentSpeedDisplay );
-            gangs[ this.gangId ].currentSpeedDisplay = game.add.text(positionGangs[this.gangId].x+103, positionGangs[this.gangId].y+30+browserFix, gangs[ this.gangId ].speed.toFixed(1), dataOutputStyle);
-            //console.log("changing speed of gang " + this.gangId + " to " + gangs[ this.gangId ].speed.toFixed(2));
+            game.world.remove( gangs[ id ].currentSpeedDisplay );
+            gangs[ id ].currentSpeedDisplay = game.add.text(positionGangs[id].x+103, positionGangs[id].y+30+browserFix, gangs[ id ].speed.toFixed(1), dataOutputStyle);
+            //console.log("changing speed of gang " + id + " to " + gangs[ id ].speed.toFixed(2));
         }
         function actionMotorCheckbox () {
             var gangId = this.gang;
@@ -1995,13 +2008,17 @@ console.dir(frames);
         /* responsive stuff */
 
         var $window = $(window);
-        var size = '';
-        function checkWidth() {
-            var width = $window.width();
-            if ( width >= 1132 ) {
+        var compare = 'same';
+
+        window.onresize = function(event) {
+            var size = {
+                width : $window.width(),
+                height : $window.height()
+            }
+            if ( size.width >= 1132 ) {
                 gameBoundX = 1132; // 4 columns
             } 
-            else if ( width <= 562 ) {
+            else if ( size.width <= 562 ) {
                 gameBoundX = 562; // 2 columns
             }
             else {
@@ -2009,46 +2026,67 @@ console.dir(frames);
             }
             if ( game.width > gameBoundX ) { // if current game width is greater than the new width, make it smaller
                 game.scale.width = game.canvas.width = game.stage.width = game.width = gameBoundX;
-                if ( size !== 'smaller') {
+                game.renderer.resize(gameBoundX, gameBoundY);
+                if ( compare !== 'smaller') {
                     for ( var k in gangs ) {
                         moveGang( k, 3 )
                     }
                 }
-                size = 'smaller';
+                compare = 'smaller';
             }
-            else if ( game.width > gameBoundX ) { // make it bigger;
-                game.width = gameBoundX;
-                size = 'bigger';
-            }
-            console.log('run');
-            console.log(size);
-        }
-        checkWidth(); // execute on load
-        $(window).resize(checkWidth); // bind event listener
-
-        // function checkHeight() {
-        //     var height = $window.height();
-
-        // }
-
-        function moveGang( id, col ) {
-            console.log(id);
-            var gangCol = 2; // make 2 columns of gangs
-            game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
-            if ( id % gangCol === 0 ) {
-                var x = 286 + 285;
+            else if ( game.width < gameBoundX ) { // make it bigger;
+                game.scale.width = game.canvas.width = game.stage.width = game.width = gameBoundX;
+                game.renderer.resize(gameBoundX, gameBoundY);
+                if ( compare !== 'bigger') {
+                    for ( var k in gangs ) {
+                        moveGang( k, 4 )
+                    }
+                }
+                compare = 'bigger';
             }
             else {
-                var x = 286;
+                return 0;
             }
-            var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * frames[1].height;
-            positionGangs[ id ] = { x : 286 + (j-1)*285 , y : 1 + (i-1)*242 }
-            
-            // quick and dirty for now - work out a more efficient way to do this. Maybe after creating everything, store it all in a gang object (for each gang id), and then just move everything by the same amount that the gang position moved.
+            if (game.renderType === Phaser.WEBGL) {
+                game.renderer.resize(gameBoundX, gameBoundY);
+            }
+        }
 
-            frames[ id ].recipient.x = x;
-            frames[ id ].recipient.y = y;
-            //frames[ id ].move( x, y );
+
+        function moveGang( id, col ) {
+          // set new positions:
+            if ( col === 3 ) { //total # columns in dashboard
+                var gangCol = 2; // make 2 columns of gangs
+                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
+                game.renderer.resize(gameBoundX, gameBoundY);
+                if ( id % gangCol === 0 ) {
+                    var x = 286 + 285;
+                }
+                else {
+                    var x = 286;
+                }
+                var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * frames[1].height;
+
+            }
+            if ( col === 4 ) {
+                var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
+                var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
+                var heightMax = Math.max( heightMotors, heightGangs );
+                if ( heightMax + 2 > gameBoundY ) {
+                    gameBoundY = heightMax + 2;
+                }
+                else if ( heightMax + 2 < gameBoundY ) {
+                    gameBoundY = heightMax + 2;
+                }
+                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY;
+                game.renderer.resize(gameBoundX, gameBoundY);
+                var x = 286 + 285*2;
+                var y = 1 + ( id - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 );
+            }
+
+            // really quick and dirty for now, just trying to get this movement to work - work out a more efficient way to do this. Maybe after creating everything, store it all in a gang object (for each gang id), and then just move everything by the same amount that the gang position moved.
+            //frames[ id ].recipient.delete( positionGangs[ id ].x, positionGangs[ id ]. y ); // old positions;
+            frames[ id ].recipient.move( x, y );
             topBars[ id ].x = x + 1;
             topBars[ id ].y = y + 1;
             dividers[ id + 'a' ].x = x + 7;
@@ -2088,7 +2126,7 @@ console.dir(frames);
                 gangs[ id ].currentSpeedDisplay.y = y + 30 + browserFix;
             }
 
-            // do this a little more efficient (make a position ganged motor checkbox function that takes the gang id and the number of motors or something, which we can use in create() and here)
+            // do this more efficiently... (make a position ganged motor checkbox function that takes the gang id and the number of motors or something, which we can use in create() and here)
             if ( numMotors <= 6 ) {
                 var spacing = Math.ceil( frames[ id ].width / ( numMotors + 1 ) );
                 for ( var j = 1; j <= numMotors; j++ ) {
@@ -2098,13 +2136,22 @@ console.dir(frames);
                     gangMotorLabels[ id ][ letters[j] ].y = gangCheckboxes[id][ letters[j] ].y + 2 + browserFix;
                 }
             }
-            else {
-                //
+            else if ( numMotors > 6 ) {
+                /*
+                do something more efficient here (and above) later...
+                */
+            }
+            
+
+            positionGangs[ id ] = { // replace old positions 
+                x : x , 
+                y : y 
             }
 
+            console.log( id + ", " + compare );
             console.dir(frames);
-
         }
+
 
         // end responsive stuff
 

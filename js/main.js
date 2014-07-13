@@ -552,26 +552,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* Dashboard components frames */
         var frames = {}
-        Frame = function ( game, recipient, x, y, width, height ) {
-            this.recipient = game.add.graphics(0,0);
-            this.recipient.lineStyle( 1 + browserFix/4, 0xa3a3a3, 1 - browserFix/10);
-            this.recipient.beginFill( 0x313233, 0.60);
-            this.recipient.drawRect( x, y, width, height );
+        Frame = function ( game, owner, x, y, width, height ) {
+            this.owner = game.add.graphics(0,0);
+            this.owner.lineStyle( 1 + browserFix/4, 0xa3a3a3, 1 - browserFix/10);
+            this.owner.beginFill( 0x313233, 0.60);
+            this.owner.drawRect( x, y, width, height );
             this.width = width;
             this.height = height;
-            this.recipient.pos = {
-                x : x,
-                y : y
-            }
-            //this.recipient.delete = function ( x1, y1 ) {
-                //this.destroy();
-            //}
-            this.recipient.move = function ( x2, y2 ) {
-                 this.pos = {
-                    x : x2,
-                    y : y2
-                }
-                this.drawRect( x2, y2, width, height );
+            this.initialX = this.x = x;
+            this.initialY = this.y = y;
+            this.move = function ( x1, y1, x2, y2 ) {
+                if ( x2 === this.initialX ) this.owner.x = 0; //return to initial x position
+                else this.owner.x = x2 - x1; //this actually increments the x coordinate by this difference
+                if ( y2 === this.initialY ) this.owner.y = 0; //return to initial y position
+                else this.owner.y = y2 - y1; //this increments the y coordinate by this difference
+                this.x = x2;
+                this.y = y2;
             }
         }
         Frame.prototype.constructor = Frame;
@@ -1220,10 +1216,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 dividers[ i + 'b' ] = game.add.sprite( positionX+7, positionY+204, 'dividerLine2' );
                 gangLabels[ i ] = game.add.text( positionX+8, positionY+1+browserFix, gangs[ i ].name, titleStyle );
                 sliderTracks[ i ] = game.add.sprite( positionX+170, positionY+39, 'sliderIncrements' );                
+                sliderSpeedIncrements[ i ] = {}
                 for ( var k = 0; k <= 7; k++ ) {
                     var speedLabel = 100 * k + "";
-                    //sliderSpeedIncrements[ i ] = {}
-                    sliderSpeedIncrements[ i ] = game.add.text( positionX+243, positionY+185-22*k+browserFix, speedLabel, labelStyle );
+                    sliderSpeedIncrements[ i ][ k ] = game.add.text( positionX+243, positionY+185-22*k+browserFix, speedLabel, labelStyle );
                 }
                 sliderSpeedLabels[ i ] = game.add.text( positionX+160, positionY+206+browserFix, "Speed (\xB0/sec)", labelStyle );
                 currentSpeedLabels[ i ] = game.add.text( positionX+12, positionY+33+browserFix, "Current Speed", labelStyle );
@@ -2054,20 +2050,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
 
         function moveGang( id, col ) {
-          // set new positions:
-            if ( col === 3 ) { //total # columns in dashboard
-                var gangCol = 2; // make 2 columns of gangs
-                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + (numGangs / 2) * frames[1].height;
-                game.renderer.resize(gameBoundX, gameBoundY);
-                if ( id % gangCol === 0 ) {
-                    var x = 286 + 285;
-                }
-                else {
-                    var x = 286;
-                }
-                var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * frames[1].height;
 
-            }
+          // set new positions:
             if ( col === 4 ) {
                 var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
                 var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
@@ -2083,10 +2067,26 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var x = 286 + 285*2;
                 var y = 1 + ( id - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 );
             }
+            else if ( col === 3 ) { //total # columns in dashboard
+                var gangCol = 2; // make 2 columns of gangs
+                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + Math.ceil( numGangs / 2 ) * (frames[1].height + 10 ) - 10;
+                game.renderer.resize(gameBoundX, gameBoundY);
+                if ( id % gangCol === 0 ) {
+                    var x = 286 + 285;
+                }
+                else {
+                    var x = 286;
+                }
+                var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * ( frames[id].height + 10 );
+            }
+            else if ( col === 2 ) {
+                /*
+                * TODO
+                */
+            }
 
             // really quick and dirty for now, just trying to get this movement to work - work out a more efficient way to do this. Maybe after creating everything, store it all in a gang object (for each gang id), and then just move everything by the same amount that the gang position moved.
-            //frames[ id ].recipient.delete( positionGangs[ id ].x, positionGangs[ id ]. y ); // old positions;
-            frames[ id ].recipient.move( x, y );
+            frames[ id ].move( positionGangs[ id ].x, positionGangs[ id ].y, x, y );
             topBars[ id ].x = x + 1;
             topBars[ id ].y = y + 1;
             dividers[ id + 'a' ].x = x + 7;
@@ -2099,8 +2099,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             sliderTracks[ id ].y = y + 39;
             for ( var k = 0; k <= 7; k++ ) {
                 var speedLabel = 100 * k + "";
-                sliderSpeedIncrements[ id ].x = x + 243;
-                sliderSpeedIncrements[ id ].y = y + 185 - 22*k + browserFix;
+                sliderSpeedIncrements[ id ][ k ].x = x + 243;
+                sliderSpeedIncrements[ id ][ k ].y = y + 185 - 22*k + browserFix;
             }
             sliderSpeedLabels[ id ].x = x + 160;
             sliderSpeedLabels[ id ].y = y + 206 + browserFix;
@@ -2138,7 +2138,8 @@ require(['BrowserBigBangClient'], function (bigbang) {
             }
             else if ( numMotors > 6 ) {
                 /*
-                do something more efficient here (and above) later...
+                * TODO
+                * prob something more efficient here (and above) later...
                 */
             }
             

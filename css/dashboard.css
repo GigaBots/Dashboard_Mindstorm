@@ -30,12 +30,11 @@
 	background-color: rgba(128, 128, 128, 0.15);
 	display: block;
 	vertical-align: baseline;
-	margin: -14px auto 0 auto;
+	margin: auto auto auto auto;
 	padding: 0;
 	border: 0;
-	
-	width: 1132px;
-	overflow: hidden;
+	resize:both;
+	overflow: auto;
 	clear: both;
 }
 
@@ -101,13 +100,13 @@
 	font-size: 12px;
     left: -moz-calc(50% - 566px);
     left: -webkit-calc(50% - 566px);
-    left: calc(50% - 566px);
+    left: calc(50% - 566px);*/
 }
 #repoButton {
 	font-size: 12px;
 	left: -moz-calc(50% - 566px);
 	left: -webkit-calc(50% - 566px);
-	left: calc(50% - 566px);
+	left: calc(50% - 566px);*/
 }
 
 
@@ -130,7 +129,7 @@ html::-WebKit-scrollbar {
 }
 
 html::-WebKit-scrollbar-thumb {
-	border-radius: 8px;
+	border-radius: 18px;
 	background-color: rgba(0,0,0,.5);
 	-WebKit-box-shadow: 0 0 1px rgba(49,50,51,.5);
 }

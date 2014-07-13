@@ -185,6 +185,9 @@ require(['BrowserBigBangClient'], function (bigbang) {
         var statusStyle = { font: "13px Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#eaeaea" }
         var messageStyle = { font: "12px Lucida Console, Courier New, Monaco, monospace, Helvetica, Trebuchet MS, Arial, sans-serif", fill: "#080808"}   
 
+        /* Responsive page stuff */
+        var $window = $(window); // this is used with the window resive event listener
+
         /* Two objects, for referring to motors (or sensors, etc), by a letter corresponding to a number and a number coresponding to the letter. This is for building objects and then using them */
         var numbers = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8, i: 9, j: 10, k: 11, l: 12, m: 13, n: 14, o: 15, p: 16, q: 17, r: 18, s: 19, t: 20, u: 21, v: 22, w: 23, x: 24, y: 25, z: 26 }
         var letters = { 1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h', 9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n', 15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 's', 20: 't', 21: 'u', 22: 'v', 23: 'w', 24: 'x', 25: 'y', 26: 'z' }
@@ -259,27 +262,110 @@ require(['BrowserBigBangClient'], function (bigbang) {
         /* Gang positions */
         var numCheckboxRows = 1 + Math.floor( (numMotors - 1) / 6 );
         var positionGangs = {}
-        for ( var i = 1; i <= numGangs; i++ ) {
-            positionGangs[ i ] = { x : 856, y : 1 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+        var col = 4; // just a default, to prevent error in case window width isn't found
+        var windowWidth = $window.width();
+        if ( windowWidth >= 1132 ) {
+            gameBoundX = 1132; // 4 columns
+            col = 4;
+        } 
+        else if ( windowWidth <= 562 ) {
+            gameBoundX = 562; // 2 columns
+            col = 2;
         }
-        if ( gangColumns !== '' && typeof gangRows === 'string' ) {
-            var maxGangColumns = gangColumns;
-            var maxGangRows = numGangs/gangColumns;
-        } else {
-            var maxGangColumns = numGangs/gangRows;
-            var maxGangRows = gangRows;
+        else {
+            gameBoundX = 847; // 3 columns
+            col = 3;
+        }
+        if ( col === 4 ) { //total # columns in dashboard
+            var maxGangColumns = gangColumns = 1; // make 1 column of gangs
+            var maxGangRows = Math.ceil(numGangs/gangColumns);
+            var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
+            var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
+            var heightMax = Math.max( heightMotors, heightGangs );
+            if ( heightMax + 2 > gameBoundY ) {
+                gameBoundY = heightMax + 2;
+            }
+            else if ( heightMax + 2 < gameBoundY ) {
+                gameBoundY = heightMax + 2;
+            }
+            for ( var i = 1; i <= numGangs; i++ ) {
+                positionGangs[ i ] = { x : 856, y : 1 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+            }
+            console.dir(positionGangs);
+        }
+        else if ( col === 3 ) { //total # columns in dashboard
+            var maxGangColumns = gangColumns = 2; // make 2 columns of gangs
+            var maxGangRows = Math.ceil(numGangs/maxGangColumns);
+            gameBoundY = 2 + maxMotorRows * (232 + 10) + maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
+            for ( var i = 1; i <= maxGangRows; i++ ) { 
+                for ( var j = 1; j <= maxGangColumns; j++ ) {
+                    if ( j === 1 ) var subIndex = j + 1 + (i - 1)/i;
+                    else var subIndex = j + 1;
+                    var index = subIndex * i - i;
+                    if (index > numGangs) break;
+                    positionGangs[ index ] = { x : 286 + (j-1)*285 , y : 1 + maxMotorRows * ( 232 + 10 ) + (i-1) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+                } // this is a sequence to position gangs (laid out in a grid)
+            }
+        }
+        else if ( col === 2 ) {
+            /*
+            * TODO
+            */
         }
 
-        //resize game window height if we have more than 2 rows
-        var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
-        var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
-        var heightMax = Math.max( heightMotors, heightGangs );
-        if ( heightMax + 2 > gameBoundY ) {
-            game.height = gameBoundY = heightMax + 2;
+        game.height = gameBoundY;
+        game.width = gameBoundX;
+
+        // resize html elements
+        function adjustHtml( boundX, boundY) {
+            var widthStr = {
+                x : boundX + 'px',
+                y : boundY + 'px'
+            }
+            // resize #gameWorld width and height
+            document.getElementById("gameWorld").style.width = widthStr.x;
+            document.getElementById("gameWorld").style.height = widthStr.y; 
+            // resize #textEditor width
+            document.getElementById("textEditor").style.width = widthStr.x; 
+            // move text editor buttons
+            var textEditButtons1 = '-moz-calc(50% - ' + boundX/2 + 'px)';
+            var textEditButtons2 = '-webkit-calc(50% - ' + boundX/2 + 'px)';
+            var textEditButtons3 = 'calc(50% - ' + boundX/2 + 'px)';
+            document.getElementById("runButton").style.left = textEditButtons1; 
+            document.getElementById("runButton").style.left = textEditButtons2;
+            document.getElementById("runButton").style.left = textEditButtons3;
+            document.getElementById("repoButton").style.left = textEditButtons1; 
+            document.getElementById("repoButton").style.left = textEditButtons2;
+            document.getElementById("repoButton").style.left = textEditButtons3;      
         }
-        else if ( heightMax + 2 < gameBoundY ) {
-            game.height = gameBoundY = heightMax + 2;
-        }
+
+        adjustHtml( gameBoundX, gameBoundY );
+
+
+  
+        // var numCheckboxRows = 1 + Math.floor( (numMotors - 1) / 6 );
+        // var positionGangs = {}
+        // for ( var i = 1; i <= numGangs; i++ ) {
+        //     positionGangs[ i ] = { x : 856, y : 1 + ( i - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) }
+        // }
+        // if ( gangColumns !== '' && typeof gangRows === 'string' ) {
+        //     var maxGangColumns = gangColumns;
+        //     var maxGangRows = numGangs/gangColumns;
+        // } else {
+        //     var maxGangColumns = numGangs/gangRows;
+        //     var maxGangRows = gangRows;
+        // }
+
+        // //resize game window height if we have more than 2 rows
+        // var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
+        // var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
+        // var heightMax = Math.max( heightMotors, heightGangs );
+        // if ( heightMax + 2 > gameBoundY ) {
+        //     game.height = gameBoundY = heightMax + 2;
+        // }
+        // else if ( heightMax + 2 < gameBoundY ) {
+        //     game.height = gameBoundY = heightMax + 2;
+        // }
 
         /* Motor object */
         var motors = {}
@@ -2003,7 +2089,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         /* responsive stuff */
 
-        var $window = $(window);
+        //var $window = $(window);
         var compare = 'same';
 
         window.onresize = function(event) {
@@ -2046,13 +2132,17 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if (game.renderType === Phaser.WEBGL) {
                 game.renderer.resize(gameBoundX, gameBoundY);
             }
+
+            // resize html elements
+            adjustHtml( gameBoundX, gameBoundY );
+
         }
 
-
         function moveGang( id, col ) {
-
           // set new positions:
             if ( col === 4 ) {
+                maxGangColumns = gangColumns = 1; // make 1 column of gangs
+                maxGangRows = numGangs/gangColumns;
                 var heightMotors = maxMotorRows * ( 232 + 10 ) - 10;
                 var heightGangs = maxGangRows * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
                 var heightMax = Math.max( heightMotors, heightGangs );
@@ -2068,23 +2158,22 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 var y = 1 + ( id - 1 ) * ( 231 + ( numCheckboxRows ) * 28 + 10 );
             }
             else if ( col === 3 ) { //total # columns in dashboard
-                var gangCol = 2; // make 2 columns of gangs
-                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + Math.ceil( numGangs / 2 ) * (frames[1].height + 10 ) - 10;
+                gangColumns = 2; // make 2 columns of gangs
+                game.scale.height = game.canvas.height = game.stage.height = game.height = gameBoundY = 2 + maxMotorRows * (232 + 10) + Math.ceil( numGangs / gangColumns ) * ( 231 + ( numCheckboxRows ) * 28 + 10 ) - 10;
                 game.renderer.resize(gameBoundX, gameBoundY);
-                if ( id % gangCol === 0 ) {
+                if ( id % gangColumns === 0 ) {
                     var x = 286 + 285;
                 }
                 else {
                     var x = 286;
                 }
-                var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * ( frames[id].height + 10 );
+                var y = 1 + maxMotorRows * (232 + 10) + ( Math.floor( id / 2 - .25 ) ) * (  231 + ( numCheckboxRows ) * 28 + 10 );
             }
             else if ( col === 2 ) {
                 /*
                 * TODO
                 */
             }
-
             // really quick and dirty for now, just trying to get this movement to work - work out a more efficient way to do this. Maybe after creating everything, store it all in a gang object (for each gang id), and then just move everything by the same amount that the gang position moved.
             frames[ id ].move( positionGangs[ id ].x, positionGangs[ id ].y, x, y );
             topBars[ id ].x = x + 1;
@@ -2120,12 +2209,10 @@ require(['BrowserBigBangClient'], function (bigbang) {
             gangSliderBars[ id ].y = y + 188;
             gangMotorLabels[ id ][ 'motors' ].x = x + 12;
             gangMotorLabels[ id ][ 'motors' ].y = y + 207;
-
             if ( typeof gangs[ id ].currentSpeedDisplay !== "undefined") {
                 gangs[ id ].currentSpeedDisplay.x = x + 103;
                 gangs[ id ].currentSpeedDisplay.y = y + 30 + browserFix;
             }
-
             // do this more efficiently... (make a position ganged motor checkbox function that takes the gang id and the number of motors or something, which we can use in create() and here)
             if ( numMotors <= 6 ) {
                 var spacing = Math.ceil( frames[ id ].width / ( numMotors + 1 ) );
@@ -2142,15 +2229,15 @@ require(['BrowserBigBangClient'], function (bigbang) {
                 * prob something more efficient here (and above) later...
                 */
             }
-            
-
             positionGangs[ id ] = { // replace old positions 
                 x : x , 
                 y : y 
             }
-
             console.log( id + ", " + compare );
-            console.dir(frames);
+            
+            // resize html elements
+            adjustHtml( gameBoundX, gameBoundY );
+
         }
 
 

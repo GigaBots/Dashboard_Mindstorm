@@ -23,6 +23,9 @@ body {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+#titleLarge {
+  margin-right: 22px;
+}
 #titleSmall {
 	font-size: 19px;
 	color: #DFDFDF;
@@ -36,45 +39,51 @@ body {
 	color: #BCBCBC;
 	padding-top: 19px;
 }
+#botSelectorList {
+  max-height: 500px;
+  overflow-y: auto; /* add vertical scroll bar if necessary */
+  max-width: 250px;
+  overflow-x: auto; /* add horizontal scroll bar if necessary */
+}
 
 .navbar-custom {
 	opacity: 0.9;
-    /* gradient */
-    background-image: -webkit-linear-gradient(top, #202020 0%, #1b1b1b 100%);
+  /* gradient */
+  background-image: -webkit-linear-gradient(top, #202020 0%, #1b1b1b 100%);
 	background-image: linear-gradient(to bottom, #202020 0%, #1b1b1b 100%);
 	background-repeat: repeat-x;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff1d1d1d', endColorstr='#ff202020', GradientType=0);
 }
 /* title */
 .navbar-custom .navbar-brand {
-    color: #DFDFDF;
+  color: #DFDFDF;
 }
 .navbar-custom .navbar-brand:hover,
 .navbar-custom .navbar-brand:focus {
-    color: #DFDFDF;
+  color: #DFDFDF;
 }
 /* links */
 .navbar-custom .navbar-nav li a {
-    padding-top: 19px;
+  padding-top: 19px;
 }
 .navbar-custom .navbar-nav > li > a {
-    color: #BCBCBC;
+  color: #BCBCBC;
 }
 .navbar-custom .navbar-nav > li > a:hover,
 .navbar-custom .navbar-nav > li > a:focus {
-    color: #000000;
+  color: #000000;
 }
 .navbar-custom .navbar-nav > .active > a, 
 .navbar-custom .navbar-nav > .active > a:hover, 
 .navbar-custom .navbar-nav > .active > a:focus {
-    color: #555;
-    background-color: #E7E7E7;
+  color: #555;
+  background-color: #E7E7E7;
 }
 .navbar-custom .navbar-nav > .open > a, 
 .navbar-custom .navbar-nav > .open > a:hover, 
 .navbar-custom .navbar-nav > .open > a:focus {
-    color: #282828;
-    background-color: #D5D5D5;
+  color: #282828;
+  background-color: #D5D5D5;
 }
 
 /* link powered by big bang */
@@ -118,14 +127,6 @@ body {
     .navbar-custom .navbar-nav .open .dropdown-menu > li > a:focus {
         color: #282828;
     }
-}
-
-/* bot-selector drop-down menu */
-.navbar .container-fluid .collapse .nav .dropdown .dropdown-menu .botName {
-margin-top: -10px;
-margin-bottom: -10px;
-padding-top: -10px;
-padding-bottom: -10px;
 }
 
 /* Footer

@@ -46,6 +46,7 @@ body {
   overflow-x: auto; /* add horizontal scroll bar if necessary */
 }
 
+
 .navbar-custom {
 	opacity: 0.9;
   /* gradient */
@@ -147,6 +148,10 @@ body {
   #botSelector {
     /*display: block;*/
     display: inline-block;
+  }
+  .navbar-collapse {
+    background-color: #313233;
+    text-align: right;
   }
 
 }

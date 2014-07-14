@@ -129,6 +129,46 @@ body {
     }
 }
 
+@media (max-width: 931px) {
+
+  #poweredBy {
+    display: none;
+  }
+  #poweredByText {
+    display: block;
+  }
+  #twitterText {
+    display: block;
+  }
+  #githubText {
+    display: block;
+  }
+
+  #botSelector {
+    /*display: block;*/
+    display: inline-block;
+  }
+
+}
+
+@media (min-width: 932px) {
+
+  #poweredBy {
+    display: block;
+  }
+  #poweredByText {
+    display: none;
+  }
+  #twitterText {
+    display: none;
+  }
+  #githubText {
+    display: none;
+  }
+
+}
+
+
 /* Footer
 ========================================= */
 #footer {

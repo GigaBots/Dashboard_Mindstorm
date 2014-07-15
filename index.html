@@ -20,21 +20,12 @@
 <!-- navigation bar -->
 	<nav class="navbar navbar-custom navbar-static-top" role="navigation">
 		<div class="container-fluid">
-			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header pull-left">
-				<!-- collapse button toggle dropdown -->
-<!-- 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-		    </button> -->
-				<!-- gigabots dashboard logo and title -->
+		<!-- gigabots dashboard title -->
 				<a class="navbar-brand hidden-xs" id="titleLarge" target="_blank" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png" alt="Gigabots Dashboard"></a>
 				<a class="navbar-brand visible-xs" id="titleSmall" target="_blank" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>	
 			</div>
-
-			<!-- bot selector drop-down -->
+		<!-- bot selector drop-down -->
 	    <div class="nav navbar-header pull-left">  
 	      <li class="dropdown">
 					<a class="dropdown-toggle" id="botSelector" data-toggle="dropdown" title="Control a Currently Connected Gigabot">Select Gigabot <span class="caret"></span></a>
@@ -44,24 +35,21 @@
 		      </ul>
 	      </li>
 	    </div>
-
+	  <!-- navbar collapse dropdown toggle button -->
 			<div class="nav navbar-header pull-right">
-	    	<!-- collapse button toggle dropdown -->
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 		    </button>
-	    	
 	    </div>
-
 		<!-- powered by big bang -->
 			<div class="nav navbar-nav navbar-right pull-right">
-			<!-- powered by big bang -->
+		<!-- powered by big bang -->
         <a id="poweredBy" target="_blank" href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: 0px;" src="assets/powered_by_big_bang_on_dark.png" alt="Powered by Big Bang"></a>
       </div>
-
+    <!-- links for collapsing -->
 	    <div class="nav navbar-nav navbar-right collapse navbar-collapse">
 	    	<ul class="nav navbar-nav">
 	    	<!-- links -->
@@ -71,7 +59,6 @@
         	<li id="twitterText"><a target="_blank" href="https://twitter.com/TheGigabots" title="The Gigabots on Twitter">The Gigabots on Twitter</a></li>
         	<li id="githubText"><a target="_blank" href="https://github.com/GigaBots" title="The Gigabots on GitHub">The Gigabots on GitHub</a></li>
         </ul>
-
 		  </div><!-- /.navbar-collapse -->
 		</div><!-- /.container-fluid -->
 	</nav>
@@ -121,9 +108,33 @@
 		</a>
 	</div>
 <!-- footer -->
-	<div id="footer">
-		<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
-	</div>
+	<footer class="main-footer hidden-sm hidden-xs">
+		<div class="row">
+			<div class="col-md-6 col-md-offset-1 footer-text" id="rights">
+				<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
+			</div>
+			<div class="col-md-4" id="social-media-large">
+				<p id="emptySpace"></p>
+				<p class="pull-right site-icon">
+					<a a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span data-icon="&#xe17d;"></span></a>
+					<a a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span data-icon="&#xe177;"></span></a>
+				</p>
+			</div>
+		</div>
+	</footer>
+
+	<footer class="mobile-footer visible-sm visible-xs">
+		<div class="row footer-text">
+			<p>All Rights Reserved, <a href="http://thegigabots.com">TheGigabots.com</a></p>
+		</div>
+		<div class="row">
+			<p class="site-icon">
+				<a a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span aria-hidden="true" data-icon="&#xe17d;"></span></a>
+				<a a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span aria-hidden="true" data-icon="&#xe177;"></span></a>
+			</p>
+		</div>
+	</footer>
+</script>
 
 </body>
 

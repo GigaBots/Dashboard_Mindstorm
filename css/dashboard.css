@@ -117,8 +117,8 @@
 }
 
 .content {
-	padding-bottom: 50px; /* This should be the same as the footer height */
-	height: 100%
+	padding-bottom: 60px; /* This should be the footer height + 10px */
+	height: 100%;
 }
 
 /* Scroll bar
@@ -163,14 +163,9 @@ html::-WebKit-scrollbar-thumb {
 
 /* Media queries
 ========================================= */
-/* 1132, 847, 562 */
-@media (max-width: 1132px) {
-	#gameWorld {
-		width: 1132px;
+@media (max-width: 992px) {
+	.content {
+		padding-bottom: 85px;
+		height: 100%;
 	}
 }
-@media (max-width: 847px) {
-	#gameWorld {
-		width: 847px;
-	}
-}`

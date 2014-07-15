@@ -23,29 +23,6 @@ body {
 	padding-left: 10px;
 	padding-right: 10px;
 }
-#titleLarge {
-  margin-right: 22px;
-}
-#titleSmall {
-	font-size: 19px;
-	color: #DFDFDF;
-	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
-}
-#poweredBy {
-	color: #DFDFDF;
-	font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
-}
-#botSelector {
-	color: #BCBCBC;
-	padding-top: 19px;
-}
-#botSelectorList {
-  max-height: 500px;
-  overflow-y: auto; /* add vertical scroll bar if necessary */
-  max-width: 250px;
-  overflow-x: auto; /* add horizontal scroll bar if necessary */
-}
-
 .navbar-custom {
 	opacity: 0.9;
   /* gradient */
@@ -65,6 +42,7 @@ body {
 /* links */
 .navbar-custom .navbar-nav li a {
   padding-top: 19px;
+  max-height: 53px;
 }
 .navbar-custom .navbar-nav > li > a {
   color: #BCBCBC;
@@ -86,9 +64,31 @@ body {
   background-color: #D5D5D5;
 }
 
-/* link powered by big bang */
+
+#titleLarge {
+  margin-right: 22px;
+}
+#titleSmall {
+  font-size: 19px;
+  color: #DFDFDF;
+  font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
+  padding-top: 18px;
+  margin-right: 24px;
+  max-height: 53px;
+}
 #poweredBy {
-	margin-left: 32px;
+  margin-left: 32px;
+}
+#botSelector {
+  color: #BCBCBC;
+  padding-top: 2px;
+  max-height: 53px;
+}
+#botSelectorList {
+  max-height: 500px;
+  overflow-y: auto; /* add vertical scroll bar if necessary */
+  max-width: 250px;
+  overflow-x: auto; /* add horizontal scroll bar if necessary */
 }
 
 /* caret */
@@ -128,6 +128,43 @@ body {
         color: #282828;
     }
 }
+
+@media (max-width: 931px) {
+  #poweredBy {
+    display: none;
+  }
+  #poweredByText {
+    display: block;
+  }
+  #twitterText {
+    display: block;
+  }
+  #githubText {
+    display: block;
+  }
+  .navbar-collapse { /* add styles to dropdown menu of collapsed navbar items */
+    background-color: #313233;
+    text-align: right;
+    /*max-width: 300px;*/
+  }
+}
+
+@media (min-width: 932px) {
+  #poweredBy {
+    display: block;
+  }
+  #poweredByText {
+    display: none;
+  }
+  #twitterText {
+    display: none;
+  }
+  #githubText {
+    display: none;
+  }
+
+}
+
 
 /* Footer
 ========================================= */

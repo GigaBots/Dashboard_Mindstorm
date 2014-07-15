@@ -21,32 +21,43 @@
 	<nav class="navbar navbar-custom navbar-static-top" role="navigation">
 		<div class="container-fluid">
 			<!-- Brand and toggle get grouped for better mobile display -->
-			<div class="navbar-header">
+			<div class="navbar-header pull-left">
 				<!-- collapse button toggle dropdown -->
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+<!-- 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
 					<span class="sr-only">Toggle navigation</span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
-		    </button>
+		    </button> -->
 				<!-- gigabots dashboard logo and title -->
 				<a class="navbar-brand hidden-xs" id="titleLarge" target="_blank" href="http://thegigabots.com/" title="The Gigabots"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png" alt="Gigabots Dashboard"></a>
 				<a class="navbar-brand visible-xs" id="titleSmall" target="_blank" href="http://thegigabots.com/" title="The Gigabots">Gigabots Dashboard</a>	
 			</div>
 
-  	<!-- bot selector drop-down -->
-	    <div class="nav navbar-nav">  
+			<!-- bot selector drop-down -->
+	    <div class="nav navbar-header pull-left">  
 	      <li class="dropdown">
 					<a class="dropdown-toggle" id="botSelector" data-toggle="dropdown" title="Control a Currently Connected Gigabot">Select Gigabot <span class="caret"></span></a>
-					<ul class="dropdown-menu" id="botSelectorList" data-no-collapse="true">
+					<ul class="dropdown-menu" id="botSelectorList">
 	          <li class="divider" id="dropdownDivider"></li>
 	          <li><a id="addBot">Add a New Bot</a></li>
 		      </ul>
 	      </li>
 	    </div>
 
+			<div class="nav navbar-header pull-right">
+	    	<!-- collapse button toggle dropdown -->
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+		    </button>
+	    	
+	    </div>
+
 		<!-- powered by big bang -->
-			<div class="nav navbar-nav navbar-right">
+			<div class="nav navbar-nav navbar-right pull-right">
 			<!-- powered by big bang -->
         <a id="poweredBy" target="_blank" href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: 0px;" src="assets/powered_by_big_bang_on_dark.png" alt="Powered by Big Bang"></a>
       </div>
@@ -61,10 +72,7 @@
         	<li id="githubText"><a target="_blank" href="https://github.com/GigaBots" title="The Gigabots on GitHub">The Gigabots on GitHub</a></li>
         </ul>
 
-
-
 		  </div><!-- /.navbar-collapse -->
-
 		</div><!-- /.container-fluid -->
 	</nav>
 

@@ -946,7 +946,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setBatteryLevel( val ) {
             battery.level = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             game.world.remove( battery.levelDisplay );
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", textStyles.status );
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61+browserFix, Math.round(battery.level * 100) + " %", textStyles.status );
             if ( battery.level <= 0.15 ) { // for almost-dead battery!
                 if( battery.level > -0.01 ) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -1012,7 +1012,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof val !== 'undefined' ) {
                 battery.level = val.batteryLevel;
                 game.world.remove( battery.levelDisplay );
-                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", textStyles.status );
+                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61+browserFix, Math.round(battery.level * 100) + " %", textStyles.status );
                 if (battery.level <= 0.15) { // for almost-dead battery!
                     if(battery.level > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                         batteryLevelFill.destroy();

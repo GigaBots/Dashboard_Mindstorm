@@ -30,10 +30,10 @@
 	background-color: rgba(128, 128, 128, 0.15);
 	display: block;
 	vertical-align: baseline;
-	margin: auto auto auto auto;
+	margin: -13px auto auto auto;
 	padding: 0;
 	border: 0;
-	resize:both;
+	/*resize:both;*/
 	overflow: auto;
 	clear: both;
 }
@@ -47,6 +47,7 @@
 	overflow: auto;
 	min-height: 180px;
 	width: 1132px;
+	resize: horizontal;
 	font-family: Courier New, Lucida Console, Monaco, monospace;
 	border-radius: 1px;
 	border-style: solid;
@@ -58,18 +59,26 @@
 }
 .previousCode {
 	overflow: auto;
-	max-height: 170px;
+	height: 112px;
 	padding: 6px;
+	resize: vertical;
 }
 
 #currentCode {
 	overflow: auto;
-	max-height: 170px;
+	height: 154px;
 	background-color: #606060;
 	outline: none;
 	padding: 6px;
 	margin: 0;
-	border-top: 3px solid #CF9158;
+	border-top: 2px solid #CF9158;
+	resize: vertical;
+}
+
+#bottomBar {
+	height: 16px;
+	/*background-color: #606060;*/
+	border-top: 2px solid #282828;
 }
 
 #label {
@@ -85,6 +94,16 @@
 	background-repeat: repeat-x;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff626263', endColorstr='#ff777879', GradientType=0);
 
+}
+/* resizer grabber */
+::-webkit-resizer {
+	border: 9px solid rgba(0,0,0,0);
+	border-left-color: rgba(0, 0, 0, 0);
+	border-top-color: rgba(0, 0, 0, 0);
+	border-bottom-color: rgba(255, 165, 0, .9);
+	border-right-color: rgba(255, 165, 0, .9);
+	outline: 1px solid rgba(0,0,0,.1);
+	box-shadow: 0 0 5px 3px rgba(0,0,0,.05)
 }
 
 /* Run and Repository buttons to align with textEditor */
@@ -117,8 +136,8 @@
 }
 
 .content {
-	padding-bottom: 50px; /* This should be the same as the footer height */
-	height: 100%
+	padding-bottom: 58px; /* This should be the footer height + 10px */
+	height: 100%;
 }
 
 /* Scroll bar
@@ -163,14 +182,9 @@ html::-WebKit-scrollbar-thumb {
 
 /* Media queries
 ========================================= */
-/* 1132, 847, 562 */
-@media (max-width: 1132px) {
-	#gameWorld {
-		width: 1132px;
+@media (max-width: 992px) {
+	.content {
+		padding-bottom: 85px;
+		height: 100%;
 	}
 }
-@media (max-width: 847px) {
-	#gameWorld {
-		width: 847px;
-	}
-}`

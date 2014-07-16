@@ -84,10 +84,11 @@ require.config({
     baseUrl: 'js',
     paths: {
         "BrowserBigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min",
-        "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
+        "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min",
+        "PewRuntime": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
     }
 });
-require(['BrowserBigBangClient'], function (bigbang) {
+require(['BrowserBigBangClient', 'PewRuntime'], function (bigbang, pew) {
 
     client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
@@ -2282,7 +2283,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var evalCode = document.getElementById("currentCode").innerText;
 
 
-            channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
+            console.log(evalCode);
+
+            //There fix up special funky characters.
+
+
+
+            channel.publish({ "type": "js", "js": pew.base64_encode(evalCode), "recipient": botId });
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);

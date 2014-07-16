@@ -108,10 +108,11 @@ require.config({
     baseUrl: 'js',
     paths: {
         "BrowserBigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min",
-        "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
+        "BigBangClient": "http://thegigabots.app.bigbang.io/client/js/bbclient.min",
+        "PewRuntime": "http://thegigabots.app.bigbang.io/client/js/bbclient.min"
     }
 });
-require(['BrowserBigBangClient'], function (bigbang) {
+require(['BrowserBigBangClient', 'PewRuntime'], function (bigbang, pew) {
 
     client = new bigbang.client.BrowserBigBangClient();
     client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
@@ -946,7 +947,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
         function setBatteryLevel( val ) {
             battery.level = (val.voltage - 5) / (9 - 5); //9 V battery (6 AAs), and the robot dies around 5V
             game.world.remove( battery.levelDisplay );
-            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", textStyles.status );
+            battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61+browserFix, Math.round(battery.level * 100) + " %", textStyles.status );
             if ( battery.level <= 0.15 ) { // for almost-dead battery!
                 if( battery.level > -0.01 ) { //lower boundary limit, with a little safety net for inaccuracy/error
                     batteryLevelFill.destroy();
@@ -1012,7 +1013,7 @@ require(['BrowserBigBangClient'], function (bigbang) {
             if ( typeof val !== 'undefined' ) {
                 battery.level = val.batteryLevel;
                 game.world.remove( battery.levelDisplay );
-                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61, Math.round(battery.level * 100) + " %", textStyles.status );
+                battery.levelDisplay = game.add.text( positionSystem.x+216, positionSystem.y+61+browserFix, Math.round(battery.level * 100) + " %", textStyles.status );
                 if (battery.level <= 0.15) { // for almost-dead battery!
                     if(battery.level > -0.01) { //lower boundary limit, with a little safety net for inaccuracy/error
                         batteryLevelFill.destroy();
@@ -2271,7 +2272,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             var evalCode = document.getElementById("currentCode").innerText;
 
 
-            channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
+            console.log(evalCode);
+
+            //There fix up special funky characters.
+
+
+
+            channel.publish({ "type": "js", "js": pew.base64_encode(evalCode), "recipient": botId });
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);

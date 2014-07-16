@@ -148,7 +148,9 @@ body {
   .navbar-collapse { /* add styles to dropdown menu of collapsed navbar items */
     background-color: #313233;
     text-align: right;
-    /*max-width: 300px;*/
+    overflow-x: auto; 
+    overflow-y: auto; 
+/*    max-width: 250px;*/
   }
 }
 @media (min-width: 932px) {
@@ -175,9 +177,10 @@ body {
 	width: 100%;
 	height: 48px; /* Should be 10px less than bottom padding on content */
 	bottom: 0;
+  padding-left:10px;
 }
 .footer-text {
-  padding-top: 15px;
+  padding-top: 14px;
   font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
   font-size: 12px;
   color: #A3A3A3;

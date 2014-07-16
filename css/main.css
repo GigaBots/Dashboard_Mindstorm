@@ -18,7 +18,7 @@ body {
 ========================================= */
 .navbar { 
 	line-height: 54px;
-	height: 54px;
+	height: 45px;
 	overflow: visible;
 	padding-left: 10px;
 	padding-right: 10px;
@@ -180,7 +180,7 @@ body {
 	bottom: 0;
 }
 .footer-text {
-  padding-top: 18px;
+  padding-top: 17px;
   font-family: Open Sans, Helvetica, Trebuchet MS, Arial, sans-serif;
   font-size: 12px;
   color: #A3A3A3;

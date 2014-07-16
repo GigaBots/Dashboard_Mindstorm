@@ -2240,7 +2240,6 @@ require(['BrowserBigBangClient'], function (bigbang) {
 
         }
 
-
         // end responsive stuff
 
         /* === Dashboard console-based text editor === */

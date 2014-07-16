@@ -132,7 +132,6 @@ body {
         color: #282828;
     }
 }
-
 @media (max-width: 931px) {
   #poweredBy {
     display: none;
@@ -152,7 +151,6 @@ body {
     /*max-width: 300px;*/
   }
 }
-
 @media (min-width: 932px) {
   #poweredBy {
     display: block;
@@ -168,7 +166,6 @@ body {
   }
 
 }
-
 
 /* Footer
 ========================================= */
@@ -193,10 +190,6 @@ body {
   text-decoration: none;
   color: #E7E7E7;
 }.
-#emptySpace {
-  margin-bottom: -20px;
-  padding: 0;
-}
 .main-footer .site-icon {
   color: #A3A3A3;
   font-size: 24px;

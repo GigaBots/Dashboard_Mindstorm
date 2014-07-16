@@ -4,15 +4,15 @@
     <meta charset="utf-8"/>
     <title>Gigabots Dashboard</title>
     <!-- <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> -->
-    <link rel="icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
-		<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
-		<link href="css/main.css" rel="stylesheet" media="screen">
-		<link href="css/dashboard.css" rel="stylesheet" media="screen">
-		<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
-		<script type="text/javascript" src="js/jquery.min.js"></script>
-		<script type="text/javascript" src="js/bootstrap.min.js"></script>
-		<link rel="stylesheet" href="css/bootstrap.css" media="screen">
-		<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+    <link rel="icon" type="image/png" href="assets/gigabots_favicon.png">
+	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
+	<link href="css/main.css" rel="stylesheet" media="screen">
+	<link href="css/dashboard.css" rel="stylesheet" media="screen">
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
+	<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css" media="screen">
 </head>
 
@@ -101,6 +101,7 @@
 			<p id="label">Gigabots Console<br></p>
 			<div class="previousCode"></div>
 			<p id="currentCode" contentEditable="true" placeholder="Type your JavaScript code here!"></p>
+			<div id="bottomBar"></div>
 		</div>			
 		<button class="editorButtons" id="runButton">&nbsp;&nbsp;&nbsp;Run Code&nbsp;&nbsp;&nbsp;</button>
 		<a href="https://github.com/GigaBots/Dashboard_Mindstorm" target="_tab">
@@ -109,31 +110,33 @@
 	</div>
 <!-- footer -->
 	<footer class="main-footer hidden-sm hidden-xs">
-		<div class="row">
-			<div class="col-md-6 col-md-offset-1 footer-text" id="rights">
-				<p>All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
+		<div class="container-fluid"
+			<div class="row">
+				<div class="col-md-6 col-md-offset-1 footer-text" id="rights">
+					<p>All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
+				</div>
+				<div class="col-md-4" id="social-media-large">
+					<p class="pull-right site-icon" style="margin-top: 8px; margin-bottom: -8px;">
+						<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span data-icon="&#xe17d;"></span></a>
+						<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span data-icon="&#xe177;"></span></a>
+					</p>
+				</div>
 			</div>
-			<div class="col-md-4" id="social-media-large">
-				<p class="pull-right site-icon" style="margin-top: 8px; margin-bottom: -8px;">
-					<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span data-icon="&#xe17d;"></span></a>
-					<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span data-icon="&#xe177;"></span></a>
+		</div>
+	</footer>
+	<footer class="mobile-footer visible-sm visible-xs">
+		<div class="container-fluid"
+			<div class="row">
+				<p class="footer-text">All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
+			</div>
+			<div class="row">
+				<p class="site-icon" style="margin-bottom:-4px;">
+					<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span aria-hidden="true" data-icon="&#xe17d;"></span></a>
+					<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span aria-hidden="true" data-icon="&#xe177;"></span></a>
 				</p>
 			</div>
 		</div>
 	</footer>
-
-	<footer class="mobile-footer visible-sm visible-xs">
-		<div class="row footer-text">
-			<p>All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
-		</div>
-		<div class="row">
-			<p class="site-icon" style="margin-bottom: -4px;"">
-				<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span aria-hidden="true" data-icon="&#xe17d;"></span></a>
-				<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span aria-hidden="true" data-icon="&#xe177;"></span></a>
-			</p>
-		</div>
-	</footer>
-</script>
 
 </body>
 

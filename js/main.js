@@ -28,6 +28,8 @@ var botStore = { // client id (GUID) : bot name
     'fakeBotId2' : 'Fake Bot 2'
 }
 
+var gameStates = {}
+
 var botId = "", botIndex = 0, botName = "";
 var bot = { nameDisplay : "" }
 
@@ -154,6 +156,14 @@ require(['BrowserBigBangClient'], function (bigbang) {
         game.state.add( 'newState', NewState );
 
         updateBar(78, $("#progressBar"));
+
+        channel.onMessage( function(evt ) {
+            var msg = evt.payload.getBytesAsJSON();
+            if( 'log' === msg.type) {
+               consoleAppend(msg.message);
+            }
+        });
+
 
         channel.onSubscribers( function(joined) { // keep track of subscribers to the gigabots channel, and determine which subscribers are robots
             console.log('join ' + joined);
@@ -2254,35 +2264,25 @@ require(['BrowserBigBangClient'], function (bigbang) {
             channel.publish({ "type": "js", "js": botCode, "recipient": botId });
         }
 
-        // When the Submit button is clicked
+        // When the Run Code button is clicked
         document.getElementById("runButton").onclick = function() {
             // get text along with formatting from text editor text area
             var formatCode = document.getElementById("currentCode").innerHTML;
             // get plain text w/o format from text editor
             var evalCode = document.getElementById("currentCode").innerText;
 
-            /* // in the current build of the gigabots firmware, code can be "bot.beep()" and "bot.sing()", and then for motor 'a' as an example: "bot.a.rotateTo(100)", "bot.a.rtz()", "bot.a.rotate(100)", "bot.a.position()" --> rotate motor 'a' to 100', rotate motor 'a' to 0', rotate motor 'a' 100' forward, and return position of motor 'a'
-            // publish message to channel for JS interpreter and then execution through the Gigabots API 
+
             channel.publish({ "type": "js", "js": evalCode.toString(), "recipient": botId });
-            */
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);
             // = codeArray[inputCode]
             
-            try {
-            // try to evalate user's input code in text editor area. Will evaluate if possible.
-                codeArray[iterationNum].push(eval(evalCode));
-                // = codeArray[inputCode, evaluatedCode]
-            }
-            // if input code is not able to be run, display console's error message to user in text editor area. codeArray[input, output#]. If error, stored as an output in codeArray. Multidimensional: codeArray[inputIteration, outPut[0 or 1]]. output[0] stores input of iteration. output[1] stores output, be it an error message or a console log.
-            catch(err) {
-                codeArray[iterationNum][1] = codeArray[iterationNum][1] + "<br>Error: "+ err.message;
-                // = codeArray[inputCode, evaluatedCode + errorMessage]
-            }
 
-            $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[iterationNum][0] + '</div>');
-            $( ".previousCode" ).append( '<div style="text-align:right; color:orange; margin:0;">' +  "Output: " + codeArray[iterationNum][1] +  '</div>');
+
+           // $( ".previousCode" ).append( '<div style="text-align:left; color:white; margin:0;">' +  codeArray[iterationNum][0] + '</div>');
+
+
 
             iterationNum = iterationNum + 1;
             indexArray = iterationNum;
@@ -2291,7 +2291,13 @@ require(['BrowserBigBangClient'], function (bigbang) {
             document.getElementById("currentCode").innerHTML = "";
 
         } // end .onclick
-        
+
+
+        function consoleAppend( msg ) {
+            $( ".previousCode" ).append( '<div style="text-align:left; color:orange; margin:0;">' + msg  +  '</div>');
+        }
+
+
         // Handling up and down arrow key event to maneuver through user's previously input code.
         // When a key is pressed
         $(document).keydown(function(e) {

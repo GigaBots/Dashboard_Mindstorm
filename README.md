@@ -1,15 +1,15 @@
 # Gigabots Dashboard
 
-A JavaScript web app for controlling LEGO Mindstorm Robots from a computer, phone, or tablet. Powered by the Big Bang platform and uses the Phaser JavaScript framework. This project is funded by the Mozilla Gigabit Community Fund.
+A JavaScript web app for controlling LEGO Mindstorm Robots from a computer, phone, or tablet. Powered by the Big Bang platform and uses the Phaser JavaScript framework. This project is a part of the Mozilla Gigabit Community Fund and is funded by Mozilla and the National Science Foundation.
 
 By Jonathan Wagner, John DiBaggio, and Cole Bittel
-Version 2.0.1 - Released June 9th, 2014
+Version 1.2.1 - Released July 10th, 2014
 
 * View the [Official Website] (https://thegigabots.com)
 * Follow on [Twitter] (https://twitter.com/TheGigabots)
 * Join developers on [Github] (#)
 
-![div](http://thegigabots.com/wp-content/uploads/2014/04/hi_mozilla.jpg)
+![div](http://thegigabots.com/wp-content/uploads/2014/04/hello_gigabot.jpg)
 
 
 #Instructions for Use

@@ -5,139 +5,163 @@
     <title>Gigabots Dashboard</title>
     <!-- <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> -->
     <link rel="icon" type="image/png" href="assets/gigabots_favicon.png">
-	<link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
-	<link href="css/main.css" rel="stylesheet" media="screen">
-	<link href="css/dashboard.css" rel="stylesheet" media="screen">
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
-	<script type="text/javascript" src="js/jquery.min.js"></script>
-	<script type="text/javascript" src="js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="css/bootstrap.css" media="screen">
-	<link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/gigabots_favicon.ico">
+    <link href="css/main.css" rel="stylesheet" media="screen">
+    <link href="css/dashboard.css" rel="stylesheet" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,600,800,700,300' rel='stylesheet' type='text/css'>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="css/bootstrap.css" media="screen">
+    <link rel="stylesheet" href="css/bootstrap.min.css" media="screen">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css" media="screen">
 </head>
 
 <body>
 <!-- navigation bar -->
-	<nav class="navbar navbar-custom navbar-static-top" role="navigation">
-		<div class="container-fluid">
-			<div class="navbar-header pull-left">
-		<!-- gigabots dashboard title -->
-				<a class="navbar-brand hidden-xs" id="titleLarge" target="_blank" href="http://thegigabots.app.bigbang.io/dash/index.html" title="The Gigabots Dashboard"><img style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png" alt="Gigabots Dashboard"></a>
-				<a class="navbar-brand visible-xs" id="titleSmall" target="_blank" href="http://thegigabots.app.bigbang.io/dash/index.html" title="The Gigabots Dashboard">Gigabots Dashboard</a>	
-			</div>
-		<!-- bot selector drop-down -->
-	    <div class="nav navbar-header pull-left">  
-	      	<li class="dropdown">
-				<a class="dropdown-toggle" id="botSelector" data-toggle="dropdown" title="Control a Currently Connected Gigabot">Select Gigabot <span class="caret"></span></a>
-				<ul class="dropdown-menu" id="botSelectorList">
-	            <li class="divider" id="dropdownDivider"></li>
-	            <li><a id="addBot">Add a New Bot</a></li>
-		        </ul>
-	      	</li>
-	    </div>
-	  <!-- navbar collapse dropdown toggle button -->
-			<div class="nav navbar-header pull-right">
-				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-		    </button>
-	    </div>
-		<!-- powered by big bang -->
-			<div class="nav navbar-nav navbar-right pull-right">
-		<!-- powered by big bang -->
-        <a id="poweredBy" target="_blank" href="http://getbigbang.com/" title="Get Big Bang"><img style="max-height:50px; margin-top: 0px;" src="assets/powered_by_big_bang_on_dark.png" alt="Powered by Big Bang"></a>
-      </div>
-    <!-- links for collapsing -->
-	    <div class="nav navbar-nav navbar-right collapse navbar-collapse">
-	    	<ul class="nav navbar-nav">
-	    	<!-- links -->
-	        <li><a href="#" title="Directions for Use">Directions</a></li>
-        	<li><a target="_blank" href="http://thegigabots.com/" title="About The Gigabots">About</a></li>
-        	<li id="poweredByText"><a target="_blank" href="http://getbigbang.com/" title="Get Big Bang">Powered by Big Bang</a></li>
-        	<li class="divider"></li>
-        	<li id="twitterText"><a target="_blank" href="https://twitter.com/TheGigabots" title="The Gigabots on Twitter">The Gigabots on Twitter</a></li>
-        	<li id="githubText"><a target="_blank" href="https://github.com/GigaBots" title="The Gigabots on GitHub">The Gigabots on GitHub</a></li>
-        </ul>
-		  </div><!-- /.navbar-collapse -->
-		</div><!-- /.container-fluid -->
-	</nav>
+<nav class="navbar navbar-custom navbar-static-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header pull-left">
+            <!-- gigabots dashboard title -->
+            <a class="navbar-brand hidden-xs" id="titleLarge" target="_blank"
+               href="http://thegigabots.app.bigbang.io/dash/index.html" title="The Gigabots Dashboard"><img
+                    style="max-height:48px; margin-top: -12px;" src="assets/gigabots_dashboard_logo_on_dark.png"
+                    alt="Gigabots Dashboard"></a>
+            <a class="navbar-brand visible-xs" id="titleSmall" target="_blank"
+               href="http://thegigabots.app.bigbang.io/dash/index.html" title="The Gigabots Dashboard">Gigabots
+                Dashboard</a>
+        </div>
+        <!-- bot selector drop-down -->
+        <div class="nav navbar-header pull-left">
+            <li class="dropdown">
+                <a class="dropdown-toggle" id="botSelector" data-toggle="dropdown"
+                   title="Control a Currently Connected Gigabot">Select Gigabot <span class="caret"></span></a>
+                <ul class="dropdown-menu" id="botSelectorList">
+                    <li class="divider" id="dropdownDivider"></li>
+                    <li><a id="addBot">Add a New Bot</a></li>
+                </ul>
+            </li>
+        </div>
+        <!-- navbar collapse dropdown toggle button -->
+        <div class="nav navbar-header pull-right">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <!-- powered by big bang -->
+        <div class="nav navbar-nav navbar-right pull-right">
+            <!-- powered by big bang -->
+            <a id="poweredBy" target="_blank" href="http://getbigbang.com/" title="Get Big Bang"><img
+                    style="max-height:50px; margin-top: 0px;" src="assets/powered_by_big_bang_on_dark.png"
+                    alt="Powered by Big Bang"></a>
+        </div>
+        <!-- links for collapsing -->
+        <div class="nav navbar-nav navbar-right collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <!-- links -->
+                <li><a href="#" title="Directions for Use">Directions</a></li>
+                <li><a target="_blank" href="http://thegigabots.com/" title="About The Gigabots">About</a></li>
+                <li id="poweredByText"><a target="_blank" href="http://getbigbang.com/" title="Get Big Bang">Powered by
+                    Big Bang</a></li>
+                <li class="divider"></li>
+                <li id="twitterText"><a target="_blank" href="https://twitter.com/TheGigabots"
+                                        title="The Gigabots on Twitter">The Gigabots on Twitter</a></li>
+                <li id="githubText"><a target="_blank" href="https://github.com/GigaBots"
+                                       title="The Gigabots on GitHub">The Gigabots on GitHub</a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>
 
 <!-- progress bar -->
-	<div  id="progressBar">
-		<div></div>
-	</div>
+<div id="progressBar">
+    <div></div>
+</div>
 <!-- page content -->
-	<div class="content" -webkit-overflow-scrolling: touch>
-	<!-- control panel in html5 canvas -->
-		<div id="gameWorld">
-			<script src="js/phaser.min.js"></script>
-			<script data-main="js/main" type="text/javascript" src="js/require.js"></script>
-			<script src="js/jquery.min.js"></script>
-			<script type="text/javascript" src="js/jquery.mb.browser.min.js"></script>
-    		<script type="text/javascript">
-    		/* browser detection to fix formatting/layout in Firefox */
-		        var browserFix = 0;
-		        $(function(){
-		            var txt = ''
-	                    +'jQuery.browser.ua  = '+jQuery.browser.ua+'<br>'
-	                    +'jQuery.browser.name  = '+jQuery.browser.name+'<br>'
-	                    +'jQuery.browser.fullVersion  = '+jQuery.browser.fullVersion+'<br>'
-	                    +'jQuery.browser.version = '+jQuery.browser.version+'<br><br><br>'
-	                    +'jQuery.browser.msie = '+jQuery.browser.msie+'<br>'
-	                    +'jQuery.browser.mozilla = '+jQuery.browser.mozilla+'<br>'
-	                    +'jQuery.browser.opera = '+jQuery.browser.opera+'<br>'
-	                    +'jQuery.browser.webkit = '+jQuery.browser.webkit+'<br>'
-	                    +'jQuery.browser.safari = '+jQuery.browser.safari+'<br>'
-	                    +'jQuery.browser.chrome = '+jQuery.browser.chrome+'<br>';
-		            $("#result").html(txt);
-		            if( jQuery.browser.name === 'Firefox' ) browserFix = 4;
-		            else browserFix = 0;
-		        });
-    		</script>
-		</div>
-	<!-- console-based text editor / repl -->
-	 	<div id="textEditor">
-			<p id="label">Gigabots Console<br></p>
-			<div class="previousCode"></div>
-			<p id="currentCode" contentEditable="true" placeholder="Type your JavaScript code here!"></p>
-			<div id="bottomBar"></div>
-		</div>			
-		<button class="editorButtons" id="runButton">&nbsp;&nbsp;&nbsp;Run Code&nbsp;&nbsp;&nbsp;</button>
-		<a href="https://github.com/GigaBots/Dashboard_Mindstorm" target="_tab">
-			<button class="editorButtons" id="repoButton">&nbsp;&nbsp;Repositories&nbsp;&nbsp;</button>
-		</a>
-	</div>
+<div class="content" -webkit-overflow-scrolling: touch>
+    <!-- control panel in html5 canvas -->
+    <div id="gameWorld">
+        <script type="text/javascript">
+            /* browser detection to fix formatting/layout in Firefox */
+            var browserFix = 0;
+            $(function () {
+                var txt = ''
+                        + 'jQuery.browser.ua  = ' + jQuery.browser.ua + '<br>'
+                        + 'jQuery.browser.name  = ' + jQuery.browser.name + '<br>'
+                        + 'jQuery.browser.fullVersion  = ' + jQuery.browser.fullVersion + '<br>'
+                        + 'jQuery.browser.version = ' + jQuery.browser.version + '<br><br><br>'
+                        + 'jQuery.browser.msie = ' + jQuery.browser.msie + '<br>'
+                        + 'jQuery.browser.mozilla = ' + jQuery.browser.mozilla + '<br>'
+                        + 'jQuery.browser.opera = ' + jQuery.browser.opera + '<br>'
+                        + 'jQuery.browser.webkit = ' + jQuery.browser.webkit + '<br>'
+                        + 'jQuery.browser.safari = ' + jQuery.browser.safari + '<br>'
+                        + 'jQuery.browser.chrome = ' + jQuery.browser.chrome + '<br>';
+                $("#result").html(txt);
+                if (jQuery.browser.name === 'Firefox') browserFix = 4;
+                else browserFix = 0;
+            });
+        </script>
+    </div>
+    <!-- console-based text editor / repl -->
+    <div id="textEditor">
+        <p id="label">Gigabots Console<br></p>
+
+        <div class="previousCode"></div>
+        <p id="currentCode" contentEditable="true" placeholder="Type your JavaScript code here!"></p>
+
+        <div id="bottomBar"></div>
+    </div>
+    <button class="editorButtons" id="runButton">&nbsp;&nbsp;&nbsp;Run Code&nbsp;&nbsp;&nbsp;</button>
+    <a href="https://github.com/GigaBots/Dashboard_Mindstorm" target="_tab">
+        <button class="editorButtons" id="repoButton">&nbsp;&nbsp;Repositories&nbsp;&nbsp;</button>
+    </a>
+</div>
 <!-- footer -->
-	<footer class="main-footer hidden-sm hidden-xs">
-		<div class="container-fluid"
-			<div class="row">
-				<div class="col-md-6 col-md-offset-1 footer-text" id="rights">
-					<p>All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
-				</div>
-				<div class="col-md-4" id="social-media-large">
-					<p class="pull-right site-icon" style="margin-top: 8px; margin-bottom: -8px;">
-						<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span data-icon="&#xe17d;"></span></a>
-						<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span data-icon="&#xe177;"></span></a>
-					</p>
-				</div>
-			</div>
-		</div>
-	</footer>
-	<footer class="mobile-footer visible-sm visible-xs">
-		<div class="container-fluid"
-			<div class="row">
-				<p class="footer-text">All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a></p>
-			</div>
-			<div class="row">
-				<p class="site-icon" style="margin-bottom:-4px;">
-					<a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span aria-hidden="true" data-icon="&#xe17d;"></span></a>
-					<a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span aria-hidden="true" data-icon="&#xe177;"></span></a>
-				</p>
-			</div>
-		</div>
-	</footer>
+<footer class="main-footer hidden-sm hidden-xs">
+    <div class="container-fluid"
+    <div class="row">
+        <div class="col-md-6 col-md-offset-1 footer-text" id="rights">
+            <p>All Rights Reserved, <a target="_blank" href="http://thegigabots.com" title="Visit The Gigabots">TheGigabots.com</a>
+            </p>
+        </div>
+        <div class="col-md-4" id="social-media-large">
+            <p class="pull-right site-icon" style="margin-top: 8px; margin-bottom: -8px;">
+                <a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span
+                        data-icon="&#xe17d;"></span></a>
+                <a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span
+                        data-icon="&#xe177;"></span></a>
+            </p>
+        </div>
+    </div>
+    </div>
+</footer>
+<footer class="mobile-footer visible-sm visible-xs">
+    <div class="container-fluid"
+    <div class="row">
+        <p class="footer-text">All Rights Reserved, <a target="_blank" href="http://thegigabots.com"
+                                                       title="Visit The Gigabots">TheGigabots.com</a></p>
+    </div>
+    <div class="row">
+        <p class="site-icon" style="margin-bottom:-4px;">
+            <a target="_blank" href="https://github.com/GigaBots" title="Follow us on Twitter"><span aria-hidden="true"
+                                                                                                     data-icon="&#xe17d;"></span></a>
+            <a target="_blank" href="https://github.com/GigaBots" title="Check us out on GitHub"><span
+                    aria-hidden="true" data-icon="&#xe177;"></span></a>
+        </p>
+    </div>
+    </div>
+</footer>
+<script src="js/vendor/bigbang.io/web/bigbang.io.min.js"></script>
+<script src="js/vendor/sockjs-client/dist/sockjs.js"></script>
+<script src="js/vendor/phaser/build/phaser.min.js"></script>
+<script src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery.mb.browser.min.js"></script>
+<script src="js/main.js"></script>
+
 
 </body>
 

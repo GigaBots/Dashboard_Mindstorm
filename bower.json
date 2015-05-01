@@ -1,0 +1,21 @@
+{
+  "name": "The Gigabots Dashboard",
+  "version": "0.0.1",
+  "homepage": "https://github.com/GigaBots/Dashboard_Mindstorm",
+  "authors": [
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bigbang.io": "0.0.6",
+    "phaser": "2.3.0"
+  }
+}
+

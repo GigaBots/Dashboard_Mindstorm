@@ -14,7 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "bigbang.io": "0.0.6",
+    "bigbang.io": "0.0.9",
     "phaser": "2.3.0"
   }
 }

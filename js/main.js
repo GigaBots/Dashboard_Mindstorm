@@ -24,8 +24,7 @@ var restartState;
 var gameStates = {}
 
 var botStore = { // client id (GUID) : bot name
-    'fakeBotId1' : 'Fake Bot 1',
-    'fakeBotId2' : 'Fake Bot 2'
+
 }
 
 var gameStates = {}
@@ -107,9 +106,9 @@ $("#botSelectorList").css('cursor', 'pointer'); // the bot names don't link to a
 
 
 
-    var client = new BigBang.Client();
+    var client = new BigBang.Client('https://thegigabots.bigbang.io');
 
-client.connect('https://thegigabots.bigbang.io', function (err) {
+client.connect(function (err) {
 
     if (err) {
         alert('Unable to connect: ' + err);
@@ -130,6 +129,8 @@ client.connect('https://thegigabots.bigbang.io', function (err) {
     updateBar(59, $("#progressBar"));    
 
     function beginGame(client, channel) {
+
+        console.log("SUBBED " + channel.name);
 
         /* === Dashboard control panel === */
 
@@ -163,6 +164,9 @@ client.connect('https://thegigabots.bigbang.io', function (err) {
         channel.on('join', function(joined) {
             console.log('join ' + joined);
             var roboInfo = channel.getChannelData(joined).get('robot');
+
+            console.log('robo:' +roboInfo);
+
             if( roboInfo ) {
                 if ( !(joined in botStore) ) {
                     // add newly connected bots to botStore and the drop-down menu
@@ -2113,7 +2117,7 @@ client.connect('https://thegigabots.bigbang.io', function (err) {
 
         restartState = function () {
             console.log("Connection timeout. Reconnecting client and restarting dashboard state...");
-            client.connectAnonymous("thegigabots.app.bigbang.io:80", function(result) {
+            client.connectAnonymous("thegigabots.bigbang.io:80", function(result) {
                 if( result.success) {
                     client.subscribe("newBot", function( err, c) {
                         if(!err) {
@@ -2345,7 +2349,7 @@ client.connect('https://thegigabots.bigbang.io', function (err) {
 
 
 
-            channel.publish({ "type": "js", "js": pew.base64_encode(evalCode), "recipient": botId });
+            channel.publish({ "type": "js", "js": base64_encode(evalCode), "recipient": botId });
 
             // store currentCode in an array to be accessed if they press the up key
             codeArray.push([formatCode]);
@@ -2421,3 +2425,42 @@ client.connect('https://thegigabots.bigbang.io', function (err) {
         restartState(); //restart the current game state, without refreshing the page. Select the same bot as before
     });
 
+
+
+ function base64_encode(data) {
+    // http://kevin.vanzonneveld.net
+    // +   original by: Tyler Akins (http://rumkin.com)
+    // +   improved by: Bayron Guevara
+    // +   improved by: Thunder.m
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   bugfixed by: Pellentesque Malesuada
+    // +   improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+    // +   improved by: Rafał Kukawski (http://kukawski.pl)
+    // *     example 1: base64_encode('Kevin van Zonneveld');
+    // *     returns 1: 'S2V2aW4gdmFuIFpvbm5ldmVsZA=='
+    // mozilla has this native
+    // - but breaks in 2.0.0.12!
+    //if (typeof this.window['btoa'] == 'function') {
+    //    return btoa(data);
+    //}
+    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=";
+    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc = "", tmp_arr = [];
+    if (!data) {
+        return data;
+    }
+    do {
+        o1 = data.charCodeAt(i++);
+        o2 = data.charCodeAt(i++);
+        o3 = data.charCodeAt(i++);
+        bits = o1 << 16 | o2 << 8 | o3;
+        h1 = bits >> 18 & 0x3f;
+        h2 = bits >> 12 & 0x3f;
+        h3 = bits >> 6 & 0x3f;
+        h4 = bits & 0x3f;
+        // use hexets to index into b64, and append result to encoded string
+        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+    } while (i < data.length);
+    enc = tmp_arr.join('');
+    var r = data.length % 3;
+    return (r ? enc.slice(0, r - 3) : enc) + '==='.slice(r || 3);
+}
